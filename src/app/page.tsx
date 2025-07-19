@@ -86,16 +86,16 @@ const FeaturedEventsSection = ({ title, description, items, href }: { title: str
 
 export default function Home() {
   const featuredCars = [
-    { id: 1, name: "2021 Porsche 911 Turbo S", price: "203,500", location: "Los Angeles, CA", image: "https://placehold.co/600x400.png", hint: "silver porsche" },
-    { id: 2, name: "1967 Ford Mustang Shelby GT500", price: "250,000", location: "Miami, FL", image: "https://placehold.co/600x400.png", hint: "classic mustang" },
-    { id: 3, name: "2022 Ferrari SF90 Stradale", price: "511,295", location: "New York, NY", image: "https://placehold.co/600x400.png", hint: "red ferrari" },
-    { id: 4, name: "2020 McLaren 720S", price: "301,500", location: "Chicago, IL", image: "https://placehold.co/600x400.png", hint: "orange mclaren" },
+    { id: 1, name: "2021 Porsche 911 Turbo S", price: "203,500", location: "Los Angeles, CA", image: "https://images.unsplash.com/photo-1616422285623-13ff0162193c?q=80&w=2070&auto=format&fit=crop", hint: "silver porsche" },
+    { id: 2, name: "1967 Ford Mustang Shelby GT500", price: "250,000", location: "Miami, FL", image: "https://images.unsplash.com/photo-1588632682404-733365d79e57?q=80&w=2070&auto=format&fit=crop", hint: "classic mustang" },
+    { id: 3, name: "2022 Ferrari SF90 Stradale", price: "511,295", location: "New York, NY", image: "https://images.unsplash.com/photo-1626964342353-763442468357?q=80&w=2070&auto=format&fit=crop", hint: "red ferrari" },
+    { id: 4, name: "2020 McLaren 720S", price: "301,500", location: "Chicago, IL", image: "https://images.unsplash.com/photo-1594910237616-8c8a143b3511?q=80&w=1974&auto=format&fit=crop", hint: "orange mclaren" },
   ];
 
   const featuredEvents = [
-    { id: 1, name: "Monaco Classic Car Show", date: "March 15-17, 2024", location: "Monte Carlo, Monaco", image: "https://placehold.co/600x400.png", hint: "classic car", description: "The most prestigious classic car exhibition in Europe, showcasing rare and exceptional vehicles from around the globe.", type: "Car Show", tags: ["Luxury", "Classic Cars", "Europe"] },
-    { id: 2, name: "Vintage Racing Championship", date: "April 8-10, 2024", location: "Silverstone, UK", image: "https://placehold.co/600x400.png", hint: "race car", description: "Experience the thrill of historic racing as legendary cars from different eras compete on the iconic Silverstone circuit.", type: "Racing", tags: ["Vintage", "Motorsport", "UK"] },
-    { id: 3, name: "American Muscle Car Festival", date: "May 20-22, 2024", location: "Detroit, USA", image: "https://placehold.co/600x400.png", hint: "muscle car", description: "A celebration of pure American power, featuring classic and modern muscle cars, drag races, and live entertainment.", type: "Festival", tags: ["Muscle Cars", "USA", "Family Friendly"] },
+    { id: 1, name: "Monaco Classic Car Show", date: "March 15-17, 2024", location: "Monte Carlo, Monaco", image: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=2070&auto=format&fit=crop", hint: "classic car", description: "The most prestigious classic car exhibition in Europe, showcasing rare and exceptional vehicles from around the globe.", type: "Car Show", tags: ["Luxury", "Classic Cars", "Europe"] },
+    { id: 2, name: "Vintage Racing Championship", date: "April 8-10, 2024", location: "Silverstone, UK", image: "https://images.unsplash.com/photo-1541447280853-518349a8d2d6?q=80&w=2070&auto=format&fit=crop", hint: "race car", description: "Experience the thrill of historic racing as legendary cars from different eras compete on the iconic Silverstone circuit.", type: "Racing", tags: ["Vintage", "Motorsport", "UK"] },
+    { id: 3, name: "American Muscle Car Festival", date: "May 20-22, 2024", location: "Detroit, USA", image: "https://images.unsplash.com/photo-1603912443422-3c130a430b55?q=80&w=2070&auto=format&fit=crop", hint: "muscle car", description: "A celebration of pure American power, featuring classic and modern muscle cars, drag races, and live entertainment.", type: "Festival", tags: ["Muscle Cars", "USA", "Family Friendly"] },
   ];
 
   return (

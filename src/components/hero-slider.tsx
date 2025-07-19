@@ -10,19 +10,19 @@ const slides = [
     {
         headline: "Discover Premium Car Events",
         subheadline: "Connect with automotive excellence worldwide",
-        image: "https://placehold.co/1920x1080.png",
+        image: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=2070&auto=format&fit=crop",
         hint: "dark sports car",
     },
     {
         headline: "Find Your Next Masterpiece",
         subheadline: "Our curated marketplace features thousands of unique vehicles",
-        image: "https://placehold.co/1920x1080.png",
+        image: "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?q=80&w=2070&auto=format&fit=crop",
         hint: "vintage car show",
     },
     {
         headline: "Join a Community of Enthusiasts",
         subheadline: "Attend exclusive meetups, track days, and auctions.",
-        image: "https://placehold.co/1920x1080.png",
+        image: "https://images.unsplash.com/photo-1549399542-7e3f8b4aca54?q=80&w=1974&auto=format&fit=crop",
         hint: "car community meetup",
     }
 ]
