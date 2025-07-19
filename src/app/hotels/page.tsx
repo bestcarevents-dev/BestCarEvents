@@ -4,9 +4,9 @@ import Image from "next/image";
 
 export default function CarHotelsPage() {
   const hotels = [
-    { name: "The Auto Club", location: "New York, NY", image: "https://placehold.co/600x400.png", hint: "luxury garage", features: ["Climate Controlled", "24/7 Security", "Detailing Services"] },
-    { name: "Collector's Garage", location: "Los Angeles, CA", image: "https://placehold.co/600x400.png", hint: "modern garage", features: ["Member's Lounge", "Battery Tending", "Transportation"] },
-    { name: "The Paddock", location: "Miami, FL", image: "https://placehold.co/600x400.png", hint: "car storage", features: ["Climate Controlled", "24/7 Access", "Social Events"] },
+    { name: "The Auto Club", location: "New York, NY", image: "https://images.unsplash.com/photo-1582066249336-d24912fb6518?q=80&w=2070&auto=format&fit=crop", hint: "luxury garage", features: ["Climate Controlled", "24/7 Security", "Detailing Services"] },
+    { name: "Collector's Garage", location: "Los Angeles, CA", image: "https://images.unsplash.com/photo-1614266395300-580749a1738d?q=80&w=2070&auto=format&fit=crop", hint: "modern garage", features: ["Member's Lounge", "Battery Tending", "Transportation"] },
+    { name: "The Paddock", location: "Miami, FL", image: "https://images.unsplash.com/photo-1549399542-7e3f8b4aca54?q=80&w=1974&auto=format&fit=crop", hint: "car storage", features: ["Climate Controlled", "24/7 Access", "Social Events"] },
   ];
   return (
     <div className="container mx-auto px-4 py-8">

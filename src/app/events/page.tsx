@@ -9,7 +9,20 @@ import { Card, CardContent } from "@/components/ui/card";
 
 
 export default function EventsPage() {
-    const events = Array(12).fill({ id: 1, name: "Pebble Beach Concours d'Elegance", date: "August 18, 2024", location: "Pebble Beach, CA", image: "https://placehold.co/600x400.png", hint: "vintage cars" });
+    const events = [
+      { id: 1, name: "Pebble Beach Concours d'Elegance", date: "August 18, 2024", location: "Pebble Beach, CA", image: "https://images.unsplash.com/photo-1506548861230-de24569a4569?q=80&w=2070&auto=format&fit=crop", hint: "vintage cars" },
+      { id: 2, name: "The Quail, A Motorsports Gathering", date: "August 16, 2024", location: "Carmel, CA", image: "https://images.unsplash.com/photo-1549399542-7e3f8b4aca54?q=80&w=1974&auto=format&fit=crop", hint: "sports cars grass" },
+      { id: 3, name: "Goodwood Festival of Speed", date: "July 11-14, 2024", location: "Goodwood, UK", image: "https://images.unsplash.com/photo-1517588147728-df6434cf4a4c?q=80&w=2070&auto=format&fit=crop", hint: "race track cars" },
+      { id: 4, name: "Rolex Monterey Motorsports Reunion", date: "August 14-17, 2024", location: "Monterey, CA", image: "https://images.unsplash.com/photo-1541447280853-518349a8d2d6?q=80&w=2070&auto=format&fit=crop", hint: "vintage race car" },
+      { id: 5, name: "Concours of Elegance", date: "Aug 30 - Sep 1, 2024", location: "Hampton Court, UK", image: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=2070&auto=format&fit=crop", hint: "classic cars" },
+      { id: 6, name: "Supercar Owners Circle", date: "September 4-8, 2024", location: "Andermatt, CH", image: "https://images.unsplash.com/photo-1614266395300-580749a1738d?q=80&w=2070&auto=format&fit=crop", hint: "supercar lineup" },
+      { id: 7, name: "Cars & Coffee", date: "Every First Sunday", location: "Your Local Town", image: "https://images.unsplash.com/photo-1603912443422-3c130a430b55?q=80&w=2070&auto=format&fit=crop", hint: "muscle cars" },
+      { id: 8, name: "Le Mans Classic", date: "July 3-6, 2025", location: "Le Mans, FR", image: "https://images.unsplash.com/photo-1628159349669-a8909893540a?q=80&w=2070&auto=format&fit=crop", hint: "classic racing" },
+      { id: 9, name: "SEMA Show", date: "November 5-8, 2024", location: "Las Vegas, NV", image: "https://images.unsplash.com/photo-1502877338535-766e1452684a?q=80&w=2070&auto=format&fit=crop", hint: "modified cars" },
+      { id: 10, name: "Tokyo Auto Salon", date: "January 10-12, 2025", location: "Chiba, JP", image: "https://images.unsplash.com/photo-1599599810694-27c578419830?q=80&w=2070&auto=format&fit=crop", hint: "japanese cars" },
+      { id: 11, name: "Daytona 500", date: "February 16, 2025", location: "Daytona Beach, FL", image: "https://images.unsplash.com/photo-1654157925394-b1511015f207?q=80&w=2070&auto=format&fit=crop", hint: "nascar racing" },
+      { id: 12, name: "Indy 500", date: "May 25, 2025", location: "Indianapolis, IN", image: "https://images.unsplash.com/photo-1590244463891-11503734d618?q=80&w=2070&auto=format&fit=crop", hint: "indy car" }
+    ];
 
     return (
     <div className="container mx-auto px-4 py-8">

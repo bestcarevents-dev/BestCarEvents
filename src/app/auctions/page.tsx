@@ -6,10 +6,10 @@ import { Clock } from "lucide-react";
 
 export default function AuctionsPage() {
   const auctionItems = [
-    { id: 1, name: "1989 Porsche 911 Speedster", price: "155,000", location: "Bidding ends in 2 days", image: "https://placehold.co/600x400.png", hint: "red porsche" },
-    { id: 2, name: "1957 Mercedes-Benz 300SL", price: "1,200,000", location: "Bidding ends in 18 hours", image: "https://placehold.co/600x400.png", hint: "silver mercedes" },
-    { id: 3, name: "2005 Porsche Carrera GT", price: "1,500,000", location: "Bidding ends in 5 days", image: "https://placehold.co/600x400.png", hint: "grey porsche" },
-    { id: 4, name: "1966 Jaguar E-Type Series 1", price: "275,000", location: "Bidding ends in 1 day", image: "https://placehold.co/600x400.png", hint: "blue jaguar" },
+    { id: 1, name: "1989 Porsche 911 Speedster", price: "155,000", location: "Bidding ends in 2 days", image: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=2070&auto=format&fit=crop", hint: "red porsche" },
+    { id: 2, name: "1957 Mercedes-Benz 300SL", price: "1,200,000", location: "Bidding ends in 18 hours", image: "https://images.unsplash.com/photo-1587829792651-3448f86381a1?q=80&w=2070&auto=format&fit=crop", hint: "silver mercedes" },
+    { id: 3, name: "2005 Porsche Carrera GT", price: "1,500,000", location: "Bidding ends in 5 days", image: "https://images.unsplash.com/photo-1626964342353-763442468357?q=80&w=2070&auto=format&fit=crop", hint: "grey porsche" },
+    { id: 4, name: "1966 Jaguar E-Type Series 1", price: "275,000", location: "Bidding ends in 1 day", image: "https://images.unsplash.com/photo-1541447280853-518349a8d2d6?q=80&w=2070&auto=format&fit=crop", hint: "blue jaguar" },
   ];
 
   return (
