@@ -124,10 +124,10 @@ const FeaturedEventsSection = () => {
 
 const FeaturedAuctionsSection = () => {
   const auctionItems = [
-    { id: 1, name: "1989 Porsche 911 Speedster", price: "155,000", location: "2 days", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRvqpUQXW_OsrzEA3ERbsZ3ZrLD0hXa4Lw-oQ&s", hint: "red porsche" },
-    { id: 2, name: "1957 Mercedes-Benz 300SL", price: "1,200,000", location: "18 hours", image: "https://www.performanceracing.com/sites/default/files/styles/article_full/public/2022-03/0301fd.jpg?itok=zlTAgHBo", hint: "silver mercedes" },
-    { id: 3, name: "2005 Porsche Carrera GT", price: "1,500,000", location: "5 days", image: "https://img2.10bestmedia.com/Images/Photos/402463/Iola-Old-Car-Show_54_990x660.jpg?auto=webp&width=3840&quality=75", hint: "grey porsche" },
-    { id: 4, name: "1966 Jaguar E-Type Series 1", price: "275,000", location: "1 day", image: "https://cdn.aarp.net/content/dam/aarp/travel/destinations/2024/01/1140-thunderbirds-detroit-michigan-car-show.jpg", hint: "blue jaguar" },
+    { id: 1, name: "The Monterey Collector Auction", price: "24 Cars", location: "Live Now", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRvqpUQXW_OsrzEA3ERbsZ3ZrLD0hXa4Lw-oQ&s", hint: "red porsche" },
+    { id: 2, name: "European Classics Sale", price: "72 Cars", location: "Ends in 18h", image: "https://www.performanceracing.com/sites/default/files/styles/article_full/public/2022-03/0301fd.jpg?itok=zlTAgHBo", hint: "silver mercedes" },
+    { id: 3, name: "Supercar Showcase Event", price: "15 Cars", location: "Ends in 5d", image: "https://img2.10bestmedia.com/Images/Photos/402463/Iola-Old-Car-Show_54_990x660.jpg?auto=webp&width=3840&quality=75", hint: "grey porsche" },
+    { id: 4, name: "British Icons Auction", price: "31 Cars", location: "Ends in 1d", image: "https://cdn.aarp.net/content/dam/aarp/travel/destinations/2024/01/1140-thunderbirds-detroit-michigan-car-show.jpg", hint: "blue jaguar" },
   ];
 
   return (
@@ -140,7 +140,7 @@ const FeaturedAuctionsSection = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {auctionItems.map(car => (
                  <div key={car.id} className="relative group">
-                    <CarCard {...car} location={car.location} />
+                    <CarCard {...car} />
                     <div className="absolute top-4 right-4 bg-background/80 backdrop-blur-sm text-foreground px-3 py-1.5 rounded-full flex items-center gap-2 text-sm font-semibold">
                         <Clock className="w-4 h-4 text-primary" />
                         <span>{car.location}</span>

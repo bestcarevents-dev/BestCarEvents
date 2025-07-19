@@ -18,17 +18,11 @@ export default function CarCard({ name, price, location, image, hint }: CarCardP
       <div className="relative overflow-hidden rounded-2xl">
         <Image src={image} alt={name} width={600} height={400} className="object-cover aspect-video w-full group-hover:scale-105 transition-transform duration-500 ease-in-out" data-ai-hint={hint} />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-black/0" />
-        <div className="absolute bottom-4 left-4">
-            <div className="flex items-center gap-1.5 text-sm text-white bg-black/30 backdrop-blur-sm px-3 py-1.5 rounded-full">
-                <MapPin className="w-4 h-4" />
-                <span>{location}</span>
-            </div>
-        </div>
       </div>
       <CardContent className="p-0 pt-5 flex-grow flex flex-col">
         <h3 className="text-xl font-headline font-bold leading-tight text-foreground group-hover:text-primary transition-colors">{name}</h3>
         <div className="flex justify-between items-center mt-auto pt-4">
-            <p className="text-2xl font-mono font-bold text-primary">${price}</p>
+            <p className="text-2xl font-mono font-bold text-primary">{price}</p>
             <Button variant="ghost" size="icon" asChild>
                 <Link href="#">
                     <ArrowRight className="w-6 h-6 transform group-hover:translate-x-1 transition-transform"/>
