@@ -1,9 +1,9 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Star, ShieldCheck, Users, BadgeCheck, Trophy, Group } from 'lucide-react';
+import { ArrowRight, Star, ShieldCheck, Users, BadgeCheck, Trophy, Group, Calendar, MapPin } from 'lucide-react';
 import HeroSlider from '@/components/hero-slider';
 import EventListItem from '@/components/event-list-item';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import Image from 'next/image';
 
 const ValueProposition = () => (
