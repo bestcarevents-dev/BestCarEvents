@@ -46,7 +46,7 @@ const FeaturedCarsSection = () => {
             name: "Bugatti Tourbillon",
             year: "2026",
             price: "4,000,000",
-            image: "https://i.ibb.co/C0yCg1Q/bugatti-tourbillon.webp",
+            image: "https://cf-img-a-in.tosshub.com/sites/visualstory/wp/2024/07/opener-w-Bugatti-3.webp?size=*:675",
             hint: "blue bugatti",
             specs: [
                 { name: "0-60 mph", value: "2.0s" },
@@ -76,7 +76,7 @@ const FeaturedCarsSection = () => {
                     <h2 className="text-4xl font-headline font-extrabold sm:text-5xl tracking-tight text-foreground">Featured Cars</h2>
                     <p className="mt-4 text-lg text-muted-foreground">Explore a selection of exceptional vehicles from our curated marketplace.</p>
                 </div>
-                <div className="space-y-16">
+                <div className="space-y-8 max-w-5xl mx-auto">
                     {featuredCars.map((car) => <FeaturedCarCard key={car.id} {...car} />)}
                 </div>
                 <div className="text-center mt-16">
