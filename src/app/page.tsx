@@ -1,12 +1,13 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import CarCard from '@/components/car-card';
-import { ArrowRight, Star, ShieldCheck, Users } from 'lucide-react';
+import { ArrowRight, Star, ShieldCheck, Users, BadgeCheck, Trophy, Group } from 'lucide-react';
 import HeroSlider from '@/components/hero-slider';
 import EventListItem from '@/components/event-list-item';
+import { Card, CardContent } from '@/components/ui/card';
+import Image from 'next/image';
 
 const ValueProposition = () => (
-    <div className="bg-card">
+    <div className="bg-background">
         <div className="container mx-auto px-4 py-24 sm:py-32">
              <div className="text-center max-w-3xl mx-auto mb-16">
                 <h2 className="text-4xl font-headline font-extrabold sm:text-5xl tracking-tight text-foreground">A Community Built for Car Lovers</h2>
@@ -15,21 +16,21 @@ const ValueProposition = () => (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-12 text-center">
                 <div className="flex flex-col items-center">
                     <div className="flex items-center justify-center h-16 w-16 rounded-full bg-primary/10 mb-6">
-                        <Star className="h-8 w-8 text-primary"/>
+                        <BadgeCheck className="h-8 w-8 text-primary"/>
                     </div>
                     <h3 className="text-xl font-headline font-semibold text-foreground">Curated Marketplace</h3>
                     <p className="mt-2 text-muted-foreground">Access a curated marketplace of the world's most desirable vehicles.</p>
                 </div>
                 <div className="flex flex-col items-center">
                      <div className="flex items-center justify-center h-16 w-16 rounded-full bg-primary/10 mb-6">
-                        <ShieldCheck className="h-8 w-8 text-primary"/>
+                        <Trophy className="h-8 w-8 text-primary"/>
                     </div>
                     <h3 className="text-xl font-headline font-semibold text-foreground">Verified & Trusted</h3>
                     <p className="mt-2 text-muted-foreground">Connect with verified enthusiasts, collectors, and event organizers.</p>
                 </div>
                 <div className="flex flex-col items-center">
                     <div className="flex items-center justify-center h-16 w-16 rounded-full bg-primary/10 mb-6">
-                        <Users className="h-8 w-8 text-primary"/>
+                        <Group className="h-8 w-8 text-primary"/>
                     </div>
                     <h3 className="text-xl font-headline font-semibold text-foreground">Premier Experiences</h3>
                     <p className="mt-2 text-muted-foreground">Discover and attend the most prestigious automotive events.</p>
@@ -39,20 +40,35 @@ const ValueProposition = () => (
     </div>
 );
 
+const CarCard = ({ name, price, image, hint }: { name: string, price: string, image: string, hint: string }) => (
+  <Link href="/cars" className="group block">
+    <Card className="overflow-hidden bg-card border-border transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
+      <div className="relative aspect-video">
+        <Image src={image} alt={name} fill className="object-cover" data-ai-hint={hint} />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+      </div>
+      <CardContent className="p-4">
+        <h3 className="text-lg font-headline font-semibold text-foreground truncate group-hover:text-primary transition-colors">{name}</h3>
+        <p className="text-2xl font-mono font-bold text-primary mt-2">${price}</p>
+      </CardContent>
+    </Card>
+  </Link>
+);
 
-const FeaturedCarsSection = ({ title, description, items, href, card: ItemCard }: { title: string, description: string, items: any[], href: string, card: React.ElementType }) => (
+
+const FeaturedCarsSection = ({ title, description, items, href }: { title: string, description: string, items: any[], href: string }) => (
   <section className="py-20 sm:py-28 bg-muted/30">
     <div className="container mx-auto px-4">
         <div className="text-center max-w-3xl mx-auto mb-16">
             <h2 className="text-4xl font-headline font-extrabold sm:text-5xl tracking-tight text-foreground">{title}</h2>
             <p className="mt-4 text-lg text-muted-foreground">{description}</p>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-6 gap-y-12">
-            {items.map((item) => <ItemCard key={item.id} {...item} />)}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            {items.map((item) => <CarCard key={item.id} {...item} />)}
         </div>
         <div className="text-center mt-16">
-            <Button size="lg" asChild className="font-bold">
-                <Link href={href}>View All {title} <ArrowRight className="w-5 h-5 ml-2" /></Link>
+            <Button size="lg" asChild className="font-bold rounded-full">
+                <Link href={href}>View Marketplace <ArrowRight className="w-5 h-5 ml-2" /></Link>
             </Button>
         </div>
     </div>
@@ -73,7 +89,7 @@ const FeaturedEventsSection = ({ title, description, items, href }: { title: str
               ))}
           </div>
           <div className="text-center mt-16">
-              <Button size="lg" asChild className="font-bold">
+              <Button size="lg" asChild className="font-bold rounded-full">
                   <Link href={href}>
                       View All Events <ArrowRight className="w-5 h-5 ml-2" />
                   </Link>
@@ -86,10 +102,10 @@ const FeaturedEventsSection = ({ title, description, items, href }: { title: str
 
 export default function Home() {
   const featuredCars = [
-    { id: 1, name: "2021 Porsche 911 Turbo S", price: "203,500", location: "Los Angeles, CA", image: "https://images.unsplash.com/photo-1616422285623-13ff0162193c?q=80&w=2070&auto=format&fit=crop", hint: "silver porsche" },
-    { id: 2, name: "1967 Ford Mustang Shelby GT500", price: "250,000", location: "Miami, FL", image: "https://images.unsplash.com/photo-1588632682404-733365d79e57?q=80&w=2070&auto=format&fit=crop", hint: "classic mustang" },
-    { id: 3, name: "2022 Ferrari SF90 Stradale", price: "511,295", location: "New York, NY", image: "https://images.unsplash.com/photo-1626964342353-763442468357?q=80&w=2070&auto=format&fit=crop", hint: "red ferrari" },
-    { id: 4, name: "2020 McLaren 720S", price: "301,500", location: "Chicago, IL", image: "https://images.unsplash.com/photo-1594910237616-8c8a143b3511?q=80&w=1974&auto=format&fit=crop", hint: "orange mclaren" },
+    { id: 1, name: "2021 Porsche 911 Turbo S", price: "203,500", image: "https://images.unsplash.com/photo-1616422285623-13ff0162193c?q=80&w=2070&auto=format&fit=crop", hint: "silver porsche" },
+    { id: 2, name: "1967 Ford Mustang Shelby GT500", price: "250,000", image: "https://images.unsplash.com/photo-1588632682404-733365d79e57?q=80&w=2070&auto=format&fit=crop", hint: "classic mustang" },
+    { id: 3, name: "2022 Ferrari SF90 Stradale", price: "511,295", image: "https://images.unsplash.com/photo-1626964342353-763442468357?q=80&w=2070&auto=format&fit=crop", hint: "red ferrari" },
+    { id: 4, name: "2020 McLaren 720S", price: "301,500", image: "https://images.unsplash.com/photo-1594910237616-8c8a143b3511?q=80&w=1974&auto=format&fit=crop", hint: "orange mclaren" },
   ];
 
   const featuredEvents = [
@@ -107,7 +123,6 @@ export default function Home() {
         description="Explore a selection of exceptional vehicles from our curated marketplace."
         items={featuredCars}
         href="/cars"
-        card={CarCard}
       />
        <FeaturedEventsSection
         title="Upcoming Events"
