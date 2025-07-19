@@ -2,9 +2,9 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import CarCard from '@/components/car-card';
-import EventCard from '@/components/event-card';
-import { ArrowRight, Search, ShieldCheck, Star, Users } from 'lucide-react';
+import { ArrowRight, Calendar, MapPin, Search, ShieldCheck, Star, Users } from 'lucide-react';
 import HeroSlider from '@/components/hero-slider';
+import EventListItem, { type EventListItemProps } from '@/components/event-list-item';
 
 const ValueProposition = () => (
     <div className="bg-background">
@@ -37,7 +37,7 @@ const ValueProposition = () => (
 );
 
 
-const FeaturedSection = ({ title, description, items, href, card: ItemCard }: { title: string, description: string, items: any[], href: string, card: React.ElementType }) => (
+const FeaturedCarsSection = ({ title, description, items, href, card: ItemCard }: { title: string, description: string, items: any[], href: string, card: React.ElementType }) => (
   <section className="py-20 sm:py-28 bg-muted/30">
     <div className="container mx-auto px-4">
         <div className="text-center max-w-3xl mx-auto mb-16">
@@ -57,11 +57,46 @@ const FeaturedSection = ({ title, description, items, href, card: ItemCard }: { 
 );
 
 
+const FeaturedEventsSection = ({ title, description, items, href }: { title: string, description: string, items: EventListItemProps[], href: string }) => (
+  <section className="py-20 sm:py-28 bg-background">
+      <div className="container mx-auto px-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+              <div className="relative aspect-square lg:aspect-[4/5] rounded-3xl overflow-hidden">
+                  <Image
+                      src="https://placehold.co/600x750.png"
+                      alt="Featured Events"
+                      fill
+                      className="object-cover"
+                      data-ai-hint="vintage cars show"
+                  />
+              </div>
+              <div>
+                  <h2 className="text-4xl font-headline font-extrabold sm:text-5xl tracking-tight text-foreground">{title}</h2>
+                  <p className="mt-4 text-lg text-muted-foreground">{description}</p>
+                  <div className="mt-12 space-y-4">
+                      {items.map((item) => (
+                          <EventListItem key={item.id} {...item} />
+                      ))}
+                  </div>
+                  <div className="mt-10">
+                       <Button size="lg" asChild className="font-bold bg-foreground text-background hover:bg-foreground/80">
+                          <Link href={href}>
+                              View All Events <ArrowRight className="w-5 h-5 ml-2" />
+                          </Link>
+                      </Button>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </section>
+);
+
+
 const CtaSection = () => (
     <div className="bg-background">
         <div className="container mx-auto px-4 py-20 sm:py-24">
             <div className="relative rounded-3xl overflow-hidden">
-                <Image 
+                <Image
                     src="https://placehold.co/1200x600.png"
                     alt="Car interior"
                     fill
@@ -95,31 +130,29 @@ export default function Home() {
     { id: 4, name: "2020 McLaren 720S", price: "301,500", location: "Chicago, IL", image: "https://placehold.co/600x400.png", hint: "orange mclaren" },
   ];
 
-  const featuredEvents = [
-    { id: 1, name: "Pebble Beach Concours d'Elegance", date: "August 18, 2024", location: "Pebble Beach, CA", image: "https://placehold.co/600x400.png", hint: "vintage cars" },
-    { id: 2, name: "The Amelia Concours d'Elegance", date: "March 2, 2025", location: "Amelia Island, FL", image: "https://placehold.co/600x400.png", hint: "luxury cars" },
-    { id: 3, name: "Goodwood Festival of Speed", date: "July 11, 2025", location: "Chichester, UK", image: "https://placehold.co/600x400.png", hint: "race track" },
-    { id: 4, name: "Cars & Coffee Los Angeles", date: "Every Saturday", location: "Los Angeles, CA", image: "https://placehold.co/600x400.png", hint: "parked cars" },
+  const featuredEvents: EventListItemProps[] = [
+    { id: 1, name: "Monaco Classic Car Show", date: "March 15-17, 2024", location: "Monte Carlo, Monaco", image: "https://placehold.co/100x100.png", hint: "classic car", description: "The most prestigious classic car exhibition in Europe" },
+    { id: 2, name: "Vintage Racing Championship", date: "April 8-10, 2024", location: "Silverstone, UK", image: "https://placehold.co/100x100.png", hint: "race car", description: "Historic racing cars compete on legendary tracks" },
+    { id: 3, name: "American Muscle Car Festival", date: "May 20-22, 2024", location: "Detroit, USA", image: "https://placehold.co/100x100.png", hint: "muscle car", description: "Celebrating American automotive heritage and power" },
   ];
 
   return (
     <div className="bg-background">
       <HeroSlider />
       <ValueProposition />
-      <FeaturedSection 
-        title="Featured Cars" 
-        description="Explore a selection of exceptional vehicles from our curated marketplace." 
-        items={featuredCars} 
-        href="/cars" 
-        card={CarCard} 
+      <FeaturedCarsSection
+        title="Featured Cars"
+        description="Explore a selection of exceptional vehicles from our curated marketplace."
+        items={featuredCars}
+        href="/cars"
+        card={CarCard}
       />
       <CtaSection />
-       <FeaturedSection 
-        title="Upcoming Events"
-        description="From local meetups to international shows, find your next car adventure."
-        items={featuredEvents} 
-        href="/events" 
-        card={EventCard} 
+       <FeaturedEventsSection
+        title="Featured Events"
+        description="Discover the most exclusive automotive gatherings around the world"
+        items={featuredEvents}
+        href="/events"
       />
     </div>
   );
