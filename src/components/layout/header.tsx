@@ -1,43 +1,49 @@
 "use client";
 
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Car, Menu, User, Plus } from "lucide-react";
+import { Search } from "lucide-react";
 import { cn } from "@/lib/utils";
+import Image from "next/image";
 
 const navLinks = [
   { href: "/events", label: "Events" },
   { href: "/cars", label: "Cars for Sale" },
   { href: "/auctions", label: "Auctions" },
   { href: "/hotels", label: "Car Hotels" },
+  { href: "/advertise", label: "Advertise" },
+  { href: "/about", label: "About" },
 ];
 
 export default function Header() {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [hasScrolled, setHasScrolled] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
-      setHasScrolled(window.scrollY > 20);
+      const isScrolled = window.scrollY > 10;
+      if (isScrolled !== scrolled) {
+        setScrolled(isScrolled);
+      }
     };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+
+    document.addEventListener("scroll", handleScroll);
+    return () => {
+      document.removeEventListener("scroll", handleScroll);
+    };
+  }, [scrolled]);
 
   return (
     <header className={cn(
       "fixed top-0 z-50 w-full text-white transition-all duration-300",
-      hasScrolled ? "bg-background/80 backdrop-blur-lg shadow-md" : "bg-transparent"
+       "bg-transparent"
     )}>
-      <div className={cn("container flex items-center justify-between transition-all duration-300", hasScrolled ? "h-20" : "h-24")}>
+      <div className={cn("container mx-auto flex items-center justify-between transition-all duration-300 h-24 border-b border-white/10")}>
         <Link href="/" className="flex items-center gap-2">
-          <Car className="h-8 w-8 text-primary" />
-          <span className="text-xl font-bold font-headline tracking-tighter">BestCarEvents</span>
+            <Image src="https://placehold.co/150x50.png" alt="BestCarEvents Logo" width={150} height={50} data-ai-hint="logo" />
         </Link>
 
-        <nav className="hidden md:flex items-center gap-8 text-sm font-medium">
+        <nav className="hidden lg:flex items-center gap-8 text-sm font-medium">
           {navLinks.map((link) => (
             <Link key={link.href} href={link.href} className="transition-colors hover:text-primary">
               {link.label}
@@ -46,48 +52,16 @@ export default function Header() {
         </nav>
 
         <div className="flex items-center gap-2">
-           <Button variant="ghost" size="icon" asChild className="hover:text-primary">
-            <Link href="/dashboard"><User className="h-5 w-5" /><span className="sr-only">Dashboard</span></Link>
+           <Button variant="ghost" size="icon" className="hover:text-primary">
+            <Search className="h-5 w-5" />
+            <span className="sr-only">Search</span>
           </Button>
-          <Button className="hidden sm:inline-flex rounded-full font-bold" variant="outline">
-            <Plus className="mr-2 h-4 w-4"/>
-            List Your Car
+          <Button variant="ghost" className="hover:text-primary px-4 font-semibold">
+            Login
           </Button>
-          <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
-            <SheetTrigger asChild className="md:hidden">
-              <Button variant="ghost" size="icon" className="hover:text-primary">
-                <Menu className="h-6 w-6" />
-                <span className="sr-only">Toggle menu</span>
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="right" className="w-[300px] bg-background text-foreground">
-               <div className="p-4 mt-8 flex flex-col h-full">
-                <nav className="flex flex-col gap-6">
-                  {navLinks.map((link) => (
-                    <Link
-                      key={link.href}
-                      href={link.href}
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className="text-lg font-medium transition-colors hover:text-primary"
-                    >
-                      {link.label}
-                    </Link>
-                  ))}
-                   <Link
-                      href="/dashboard"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className="text-lg font-medium transition-colors hover:text-primary"
-                    >
-                      Dashboard
-                    </Link>
-                </nav>
-                 <Button className="w-full mt-auto" size="lg">
-                    <Plus className="mr-2 h-4 w-4"/>
-                    List Your Car
-                 </Button>
-              </div>
-            </SheetContent>
-          </Sheet>
+          <Button className="rounded-md font-bold bg-primary text-primary-foreground hover:bg-primary/90">
+            Register
+          </Button>
         </div>
       </div>
     </header>

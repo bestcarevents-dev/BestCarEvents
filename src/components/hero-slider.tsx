@@ -1,46 +1,61 @@
-
 "use client"
+import React, { useState } from 'react';
 import Image from 'next/image';
-import { Button } from '@/components/ui/button';
-import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay"
+import HeroSearch from './hero-search';
+import { cn } from '@/lib/utils';
 
 const slides = [
     {
-        headline: "Experience the Thrill of the Drive",
-        subheadline: "Discover premier car events, find rare and exclusive vehicles, and connect with a community that shares your passion.",
+        headline: "Discover Premium Car Events",
+        subheadline: "Connect with automotive excellence worldwide",
         image: "https://placehold.co/1920x1080.png",
-        hint: "sports car sunset",
-        cta: "Explore Events"
+        hint: "dark sports car",
     },
     {
         headline: "Find Your Next Masterpiece",
-        subheadline: "Our curated marketplace features thousands of unique vehicles, from timeless classics to modern supercars.",
+        subheadline: "Our curated marketplace features thousands of unique vehicles",
         image: "https://placehold.co/1920x1080.png",
         hint: "vintage car show",
-        cta: "Browse Cars"
     },
     {
         headline: "Join a Community of Enthusiasts",
-        subheadline: "Attend exclusive meetups, track days, and auctions. The ultimate destination for automotive lovers.",
+        subheadline: "Attend exclusive meetups, track days, and auctions.",
         image: "https://placehold.co/1920x1080.png",
         hint: "car community meetup",
-        cta: "Become a Member"
     }
 ]
 
 export default function HeroSlider() {
+    const [api, setApi] = useState<any>()
+    const [current, setCurrent] = useState(0)
+
+    React.useEffect(() => {
+        if (!api) {
+            return
+        }
+        setCurrent(api.selectedScrollSnap())
+        const onSelect = () => {
+            setCurrent(api.selectedScrollSnap())
+        }
+        api.on("select", onSelect)
+        return () => {
+            api.off("select", onSelect)
+        }
+    }, [api])
+
     return (
-        <div className="relative h-[90vh] md:h-screen w-full text-white overflow-hidden">
+        <div className="relative w-full text-white -mt-24">
             <Carousel
-                className="w-full h-full"
+                className="w-full"
                 plugins={[Autoplay({ delay: 5000, stopOnInteraction: true })]}
                 opts={{ loop: true }}
+                setApi={setApi}
             >
                 <CarouselContent>
                     {slides.map((slide, index) => (
-                        <CarouselItem key={index} className="relative w-full h-full">
+                        <CarouselItem key={index} className="relative w-full h-screen min-h-[700px]">
                             <Image
                                 src={slide.image}
                                 alt={slide.headline}
@@ -50,27 +65,36 @@ export default function HeroSlider() {
                                 className="object-cover"
                                 data-ai-hint={slide.hint}
                             />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent"></div>
-                            <div className="absolute inset-0 flex items-center justify-center">
-                                <div className="relative text-center container mx-auto px-4">
-                                    <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl font-headline">
-                                        {slide.headline}
-                                    </h1>
-                                    <p className="mt-6 max-w-lg mx-auto text-xl text-neutral-200 sm:max-w-3xl">
-                                        {slide.subheadline}
-                                    </p>
-                                    <div className="mt-10">
-                                        <Button size="lg" className="font-bold">
-                                            {slide.cta} <ArrowRight className="w-5 h-5 ml-2" />
-                                        </Button>
-                                    </div>
-                                </div>
-                            </div>
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
                         </CarouselItem>
                     ))}
                 </CarouselContent>
-                <CarouselPrevious className="absolute left-4 top-1/2 -translate-y-1/2 text-white bg-white/10 hover:bg-white/20 border-0 h-12 w-12" />
-                <CarouselNext className="absolute right-4 top-1/2 -translate-y-1/2 text-white bg-white/10 hover:bg-white/20 border-0 h-12 w-12" />
+                 <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="container mx-auto px-4 text-center">
+                        <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl font-headline text-shadow-lg">
+                            {slides[current].headline}
+                        </h1>
+                        <p className="mt-6 text-xl text-neutral-200 text-shadow-md max-w-3xl mx-auto">
+                            {slides[current].subheadline}
+                        </p>
+                        <div className="mt-10 max-w-2xl mx-auto">
+                            <HeroSearch />
+                        </div>
+                    </div>
+                </div>
+
+                <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex space-x-3">
+                    {slides.map((_, i) => (
+                        <button
+                            key={i}
+                            onClick={() => api?.scrollTo(i)}
+                            className={cn("h-2.5 w-2.5 rounded-full transition-all duration-300", current === i ? "bg-primary w-8" : "bg-white/50")}
+                        />
+                    ))}
+                </div>
+
+                <CarouselPrevious className="absolute left-8 top-1/2 -translate-y-1/2 text-white bg-black/30 hover:bg-black/50 border-white/20 h-12 w-12" />
+                <CarouselNext className="absolute right-8 top-1/2 -translate-y-1/2 text-white bg-black/30 hover:bg-black/50 border-white/20 h-12 w-12" />
             </Carousel>
         </div>
     );

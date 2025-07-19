@@ -13,40 +13,44 @@ export default function Footer() {
               <span className="text-xl font-bold font-headline tracking-tighter text-foreground">BestCarEvents</span>
             </Link>
             <p className="text-sm max-w-xs">The premier destination for automotive enthusiasts to discover events, buy and sell unique cars, and connect with a vibrant community.</p>
-          </div>
-
-          <div className="md:col-span-8 grid grid-cols-2 md:grid-cols-4 gap-8">
-            <div>
-              <h3 className="font-semibold font-headline text-foreground">Explore</h3>
-              <ul className="mt-4 space-y-3">
-                <li><Link href="/events" className="text-sm hover:text-primary transition-colors">Events</Link></li>
-                <li><Link href="/cars" className="text-sm hover:text-primary transition-colors">Cars for Sale</Link></li>
-                 <li><Link href="/auctions" className="text-sm hover:text-primary transition-colors">Auctions</Link></li>
-                <li><Link href="/hotels" className="text-sm hover:text-primary transition-colors">Car Hotels</Link></li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="font-semibold font-headline text-foreground">Company</h3>
-              <ul className="mt-4 space-y-3">
-                <li><Link href="/about" className="text-sm hover:text-primary transition-colors">About Us</Link></li>
-                <li><Link href="/advertise" className="text-sm hover:text-primary transition-colors">Advertise</Link></li>
-                <li><Link href="/contact" className="text-sm hover:text-primary transition-colors">Contact</Link></li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="font-semibold font-headline text-foreground">Legal</h3>
-              <ul className="mt-4 space-y-3">
-                 <li><Link href="/terms" className="text-sm hover:text-primary transition-colors">Terms of Service</Link></li>
-                 <li><Link href="/privacy" className="text-sm hover:text-primary transition-colors">Privacy Policy</Link></li>
-              </ul>
-            </div>
-             <div>
-              <h3 className="font-semibold font-headline text-foreground">Follow Us</h3>
-              <div className="flex mt-4 space-x-4">
+             <div className="flex mt-6 space-x-4">
                 <Link href="#" className="hover:text-primary transition-colors"><Facebook size={20}/></Link>
                 <Link href="#" className="hover:text-primary transition-colors"><Twitter size={20}/></Link>
                 <Link href="#" className="hover:text-primary transition-colors"><Instagram size={20}/></Link>
               </div>
+          </div>
+
+          <div className="md:col-span-8 grid grid-cols-2 md:grid-cols-4 gap-8">
+            <div>
+              <h3 className="font-semibold font-headline text-foreground">Marketplace</h3>
+              <ul className="mt-4 space-y-3">
+                <li><Link href="/cars" className="text-sm hover:text-primary transition-colors">Cars for Sale</Link></li>
+                 <li><Link href="/auctions" className="text-sm hover:text-primary transition-colors">Auctions</Link></li>
+              </ul>
+            </div>
+             <div>
+              <h3 className="font-semibold font-headline text-foreground">Events</h3>
+              <ul className="mt-4 space-y-3">
+                <li><Link href="/events" className="text-sm hover:text-primary transition-colors">All Events</Link></li>
+                <li><Link href="#" className="text-sm hover:text-primary transition-colors">Submit an Event</Link></li>
+              </ul>
+            </div>
+            <div>
+              <h3 className="font-semibold font-headline text-foreground">Community</h3>
+              <ul className="mt-4 space-y-3">
+                <li><Link href="/hotels" className="text-sm hover:text-primary transition-colors">Car Storage</Link></li>
+                <li><Link href="#" className="text-sm hover:text-primary transition-colors">Forums</Link></li>
+                <li><Link href="/advertise" className="text-sm hover:text-primary transition-colors">Advertise</Link></li>
+              </ul>
+            </div>
+             <div>
+              <h3 className="font-semibold font-headline text-foreground">Company</h3>
+              <ul className="mt-4 space-y-3">
+                 <li><Link href="/about" className="text-sm hover:text-primary transition-colors">About Us</Link></li>
+                 <li><Link href="/contact" className="text-sm hover:text-primary transition-colors">Contact</Link></li>
+                 <li><Link href="/terms" className="text-sm hover:text-primary transition-colors">Terms of Service</Link></li>
+                 <li><Link href="/privacy" className="text-sm hover:text-primary transition-colors">Privacy Policy</Link></li>
+              </ul>
             </div>
           </div>
         </div>
