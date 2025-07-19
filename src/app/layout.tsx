@@ -4,6 +4,20 @@ import { Toaster } from "@/components/ui/toaster";
 import Header from '@/components/layout/header';
 import Footer from '@/components/layout/footer';
 import { cn } from '@/lib/utils';
+import { Poppins, PT_Sans } from 'next/font/google';
+
+const fontHeadline = Poppins({
+  subsets: ['latin'],
+  weight: ['400', '600', '700', '800'],
+  variable: '--font-headline',
+});
+
+const fontBody = PT_Sans({
+  subsets: ['latin'],
+  weight: ['400', '700'],
+  variable: '--font-body',
+});
+
 
 export const metadata: Metadata = {
   title: 'BestCarEvents',
@@ -17,12 +31,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className='dark'>
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
-      </head>
-      <body className={cn("font-body antialiased flex flex-col min-h-screen bg-background")}>
+      <body className={cn(
+        "font-body antialiased flex flex-col min-h-screen bg-background",
+        fontHeadline.variable,
+        fontBody.variable
+      )}>
         <Header />
         <main className="flex-1">{children}</main>
         <Footer />

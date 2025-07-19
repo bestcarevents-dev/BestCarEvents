@@ -1,121 +1,85 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
 import CarCard from '@/components/car-card';
 import EventCard from '@/components/event-card';
-import { ArrowRight, Search } from 'lucide-react';
+import { ArrowRight, Search, ShieldCheck, Star, Users } from 'lucide-react';
+import HeroSlider from '@/components/hero-slider';
 
-const HeroSection = () => (
-  <div className="relative bg-black text-white overflow-hidden">
-    <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="relative pt-48 pb-64">
-        <div className="absolute inset-0">
-          <Image
-            src="https://placehold.co/1920x1080.png"
-            alt="Luxury car"
-            fill
-            priority
-            quality={100}
-            className="object-cover opacity-30"
-            data-ai-hint="dark luxury car"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent"></div>
-        </div>
-
-        <div className="relative text-center">
-          <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl font-headline">
-            <span className="block">The Destination For</span>
-            <span className="block text-primary">Automotive Enthusiasts</span>
-          </h1>
-          <p className="mt-6 max-w-lg mx-auto text-xl text-neutral-300 sm:max-w-3xl">
-            Discover premier car events, find rare and exclusive vehicles, and connect with a community that shares your passion.
-          </p>
-          <form className="mt-12 sm:flex sm:max-w-xl sm:mx-auto">
-            <div className="min-w-0 flex-1">
-              <label htmlFor="search" className="sr-only">Search</label>
-              <Input
-                id="search"
-                type="search"
-                placeholder="Search for cars or events..."
-                className="block w-full h-14 bg-white/10 border-neutral-600 placeholder:text-neutral-400 focus:ring-primary focus:border-primary text-lg"
-              />
+const ValueProposition = () => (
+    <div className="bg-background">
+        <div className="container mx-auto px-4 py-24 sm:py-32">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-12 text-center">
+                <div className="flex flex-col items-center">
+                    <div className="flex items-center justify-center h-16 w-16 rounded-full bg-primary/10 mb-6">
+                        <Star className="h-8 w-8 text-primary"/>
+                    </div>
+                    <h3 className="text-xl font-headline font-semibold text-foreground">Exclusive Listings</h3>
+                    <p className="mt-2 text-muted-foreground">Access a curated marketplace of the world's most desirable vehicles.</p>
+                </div>
+                <div className="flex flex-col items-center">
+                     <div className="flex items-center justify-center h-16 w-16 rounded-full bg-primary/10 mb-6">
+                        <ShieldCheck className="h-8 w-8 text-primary"/>
+                    </div>
+                    <h3 className="text-xl font-headline font-semibold text-foreground">Trusted Community</h3>
+                    <p className="mt-2 text-muted-foreground">Connect with verified enthusiasts, collectors, and event organizers.</p>
+                </div>
+                <div className="flex flex-col items-center">
+                    <div className="flex items-center justify-center h-16 w-16 rounded-full bg-primary/10 mb-6">
+                        <Users className="h-8 w-8 text-primary"/>
+                    </div>
+                    <h3 className="text-xl font-headline font-semibold text-foreground">Premier Events</h3>
+                    <p className="mt-2 text-muted-foreground">Discover and attend the most prestigious automotive events.</p>
+                </div>
             </div>
-            <div className="mt-4 sm:mt-0 sm:ml-3">
-              <Button type="submit" size="lg" className="block w-full h-14 text-lg font-bold px-8">
-                <Search className="h-5 w-5 mr-2 -ml-1" />
-                Search
-              </Button>
-            </div>
-          </form>
         </div>
-      </div>
     </div>
-  </div>
-);
-
-const TrustBadges = () => (
-  <div className="bg-black">
-    <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="py-8">
-        <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
-          <div className="text-center">
-            <p className="font-bold text-3xl text-white">10,000+</p>
-            <p className="text-sm text-neutral-400 uppercase tracking-wider">Listings</p>
-          </div>
-          <div className="text-center">
-            <p className="font-bold text-3xl text-white">500+</p>
-            <p className="text-sm text-neutral-400 uppercase tracking-wider">Trusted Partners</p>
-          </div>
-          <div className="text-center">
-            <p className="font-bold text-3xl text-white">1M+</p>
-            <p className="text-sm text-neutral-400 uppercase tracking-wider">Community Members</p>
-          </div>
-          <div className="text-center">
-            <p className="font-bold text-3xl text-white">4.9/5</p>
-            <p className="text-sm text-neutral-400 uppercase tracking-wider">User Rating</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
 );
 
 
-const FeaturedSection = ({ title, items, href, card: ItemCard }: { title: string, items: any[], href: string, card: React.ElementType }) => (
-  <section className="py-20 sm:py-28">
-    <div className="flex justify-between items-center mb-12">
-      <h2 className="text-3xl font-headline font-extrabold sm:text-4xl tracking-tight">{title}</h2>
-      <Button variant="ghost" asChild>
-        <Link href={href}>View All <ArrowRight className="w-4 h-4 ml-2" /></Link>
-      </Button>
-    </div>
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-      {items.map((item) => <ItemCard key={item.id} {...item} />)}
+const FeaturedSection = ({ title, description, items, href, card: ItemCard }: { title: string, description: string, items: any[], href: string, card: React.ElementType }) => (
+  <section className="py-20 sm:py-28 bg-muted/30">
+    <div className="container mx-auto px-4">
+        <div className="text-center max-w-3xl mx-auto mb-16">
+            <h2 className="text-4xl font-headline font-extrabold sm:text-5xl tracking-tight text-foreground">{title}</h2>
+            <p className="mt-4 text-lg text-muted-foreground">{description}</p>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-6 gap-y-12">
+            {items.map((item) => <ItemCard key={item.id} {...item} />)}
+        </div>
+        <div className="text-center mt-16">
+            <Button size="lg" asChild className="font-bold">
+                <Link href={href}>View All {title} <ArrowRight className="w-5 h-5 ml-2" /></Link>
+            </Button>
+        </div>
     </div>
   </section>
 );
 
 
 const CtaSection = () => (
-    <div className="bg-muted">
+    <div className="bg-background">
         <div className="container mx-auto px-4 py-20 sm:py-24">
-            <div className="relative rounded-2xl overflow-hidden p-8 sm:p-12">
+            <div className="relative rounded-3xl overflow-hidden">
                 <Image 
                     src="https://placehold.co/1200x600.png"
                     alt="Car interior"
                     fill
-                    className="object-cover opacity-20"
-                    data-ai-hint="car interior"
+                    className="object-cover"
+                    data-ai-hint="dark car interior"
                 />
-                <div className="absolute inset-0 bg-gradient-to-r from-background via-background/80 to-transparent"></div>
-                <div className="relative max-w-xl">
-                    <h2 className="text-3xl font-extrabold font-headline sm:text-4xl">Ready to Sell Your Car?</h2>
-                    <p className="mt-4 text-lg text-muted-foreground">Reach thousands of potential buyers by listing your car on our marketplace. It's simple, fast, and effective.</p>
-                    <Button size="lg" className="mt-8">
-                        List Your Car Now
-                    </Button>
+                <div className="absolute inset-0 bg-black/60"></div>
+                <div className="relative text-center p-12 sm:p-20">
+                    <h2 className="text-4xl font-extrabold font-headline sm:text-5xl text-white">List Your Car or Event</h2>
+                    <p className="mt-4 text-xl text-neutral-300 max-w-2xl mx-auto">Join our community of enthusiasts and reach thousands of potential buyers and attendees. It's simple, fast, and effective.</p>
+                    <div className="mt-10 flex gap-4 justify-center">
+                        <Button size="lg" className="font-bold bg-white text-black hover:bg-neutral-200">
+                            Create a Listing
+                        </Button>
+                         <Button size="lg" variant="outline" className="font-bold border-white text-white hover:bg-white/10">
+                            Learn More
+                        </Button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -140,15 +104,23 @@ export default function Home() {
 
   return (
     <div className="bg-background">
-      <HeroSection />
-      <TrustBadges />
-      <div className="container mx-auto px-4">
-        <FeaturedSection title="Featured Cars For Sale" items={featuredCars} href="/cars" card={CarCard} />
-      </div>
+      <HeroSlider />
+      <ValueProposition />
+      <FeaturedSection 
+        title="Featured Cars" 
+        description="Explore a selection of exceptional vehicles from our curated marketplace." 
+        items={featuredCars} 
+        href="/cars" 
+        card={CarCard} 
+      />
       <CtaSection />
-       <div className="container mx-auto px-4">
-        <FeaturedSection title="Upcoming Events" items={featuredEvents} href="/events" card={EventCard} />
-       </div>
+       <FeaturedSection 
+        title="Upcoming Events"
+        description="From local meetups to international shows, find your next car adventure."
+        items={featuredEvents} 
+        href="/events" 
+        card={EventCard} 
+      />
     </div>
   );
 }
