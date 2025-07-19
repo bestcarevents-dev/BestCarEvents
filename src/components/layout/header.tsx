@@ -11,6 +11,7 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
+  SheetClose
 } from "@/components/ui/sheet";
 
 const navLinks = [
@@ -21,22 +22,26 @@ const navLinks = [
   { href: "/advertise", label: "Advertise" },
 ];
 
-const AuthButtons = () => (
-  <div className="flex flex-col lg:flex-row items-center gap-4">
-    <Button variant="ghost" className="w-full lg:w-auto justify-start lg:justify-center">
+const AuthButtons = ({ inMobileNav = false }: { inMobileNav?: boolean}) => (
+  <div className={cn(
+    "flex items-center", 
+    inMobileNav ? "flex-col w-full gap-4" : "flex-row gap-2"
+  )}>
+    <Button variant={inMobileNav ? "outline" : "ghost"} className="w-full lg:w-auto justify-center">
       Login
     </Button>
     <Button className="w-full lg:w-auto">Sign Up</Button>
   </div>
 );
 
-const NavMenu = () => (
-    <nav className="flex flex-col lg:flex-row items-start lg:items-center gap-6 mt-6 lg:mt-0 lg:gap-8 text-lg lg:text-sm font-medium">
+const NavMenu = ({ onLinkClick }: { onLinkClick?: () => void }) => (
+    <nav className="flex flex-col lg:flex-row items-center gap-6 lg:gap-8 text-lg lg:text-sm font-medium">
         {navLinks.map((link) => (
         <Link
             key={link.href}
             href={link.href}
-            className="transition-colors hover:text-primary w-full"
+            className="transition-colors hover:text-primary w-full lg:w-auto text-center lg:text-left"
+            onClick={onLinkClick}
         >
             {link.label}
         </Link>
@@ -84,20 +89,28 @@ export default function Header() {
         <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
           <SheetTrigger asChild className="lg:hidden">
             <Button variant="ghost" size="icon">
-                { mobileMenuOpen ? <X /> : <AlignJustify /> }
-                <span className="sr-only">Toggle Menu</span>
+                <AlignJustify />
+                <span className="sr-only">Open Menu</span>
             </Button>
           </SheetTrigger>
-          <SheetContent side="left" className="w-[300px] sm:w-[400px] bg-background text-foreground p-8">
-            <SheetHeader>
-                <SheetTitle className="text-2xl font-bold text-left font-headline tracking-tighter">BestCarEvents</SheetTitle>
-            </SheetHeader>
-            <div className="mt-8 flex flex-col h-full">
-                <NavMenu />
-                <div className="mt-auto border-t pt-6">
-                    <AuthButtons />
+          <SheetContent side="left" className="w-full bg-background text-foreground p-0">
+              <div className="flex flex-col h-full">
+                <SheetHeader className="flex flex-row items-center justify-between p-4 border-b">
+                  <SheetTitle className="text-2xl font-bold text-left font-headline tracking-tighter">BestCarEvents</SheetTitle>
+                   <SheetClose asChild>
+                    <Button variant="ghost" size="icon">
+                      <X />
+                      <span className="sr-only">Close menu</span>
+                    </Button>
+                   </SheetClose>
+                </SheetHeader>
+                <div className="p-6 flex-grow flex flex-col gap-8">
+                  <NavMenu onLinkClick={() => setMobileMenuOpen(false)} />
                 </div>
-            </div>
+                <div className="p-6 border-t">
+                    <AuthButtons inMobileNav />
+                </div>
+              </div>
           </SheetContent>
         </Sheet>
       </div>
