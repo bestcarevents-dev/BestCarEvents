@@ -5,6 +5,7 @@ import HeroSlider from '@/components/hero-slider';
 import EventListItem from '@/components/event-list-item';
 import FeaturedCarCard from '@/components/featured-car-card';
 import CarCard from '@/components/car-card';
+import { Card } from '@/components/ui/card';
 
 const ValueProposition = () => (
     <div className="bg-background">
@@ -93,9 +94,9 @@ const FeaturedCarsSection = () => {
 
 const FeaturedEventsSection = () => {
   const featuredEvents = [
-    { id: 1, name: "Monaco Classic Car Show", date: "August 15-17, 2024", location: "Monte Carlo, Monaco", image: "https://images.unsplash.com/photo-1599599810694-27c578419830?q=80&w=2070&auto=format&fit=crop", hint: "classic car show", description: "The most prestigious classic car exhibition in Europe, showcasing rare and exceptional vehicles from around the globe." },
-    { id: 2, name: "Vintage Racing Championship", date: "September 8-10, 2024", location: "Silverstone, UK", image: "https://images.unsplash.com/photo-1517588147728-df6434cf4a4c?q=80&w=2070&auto=format&fit=crop", hint: "race car track", description: "Experience the thrill of historic racing as legendary cars compete on the iconic Silverstone circuit." },
-    { id: 3, name: "American Muscle Car Festival", date: "October 20-22, 2024", location: "Detroit, USA", image: "https://images.unsplash.com/photo-1553975294-0131062b8026?q=80&w=2070&auto=format&fit=crop", hint: "american muscle car", description: "A celebration of pure American power, featuring classic and modern muscle cars, drag races, and live entertainment." },
+    { id: 1, name: "Monaco Classic Car Show", date: "August 15-17, 2024", location: "Monte Carlo, Monaco", image: "https://img2.10bestmedia.com/Images/Photos/402463/Iola-Old-Car-Show_54_990x660.jpg?auto=webp&width=3840&quality=75", hint: "classic car show", description: "The most prestigious classic car exhibition in Europe, showcasing rare and exceptional vehicles from around the globe." },
+    { id: 2, name: "Vintage Racing Championship", date: "September 8-10, 2024", location: "Silverstone, UK", image: "https://cdn.aarp.net/content/dam/aarp/travel/destinations/2024/01/1140-thunderbirds-detroit-michigan-car-show.jpg", hint: "race car track", description: "Experience the thrill of historic racing as legendary cars compete on the iconic Silverstone circuit." },
+    { id: 3, name: "American Muscle Car Festival", date: "October 20-22, 2024", location: "Detroit, USA", image: "https://images.msv.com/high-res/7ebccdb2-57a4-47c7-b987-4d063cafa425.jpg", hint: "american muscle car", description: "A celebration of pure American power, featuring classic and modern muscle cars, drag races, and live entertainment." },
   ];
   return (
     <section className="py-20 sm:py-28 bg-background">
@@ -123,10 +124,10 @@ const FeaturedEventsSection = () => {
 
 const FeaturedAuctionsSection = () => {
   const auctionItems = [
-    { id: 1, name: "1989 Porsche 911 Speedster", price: "155,000", location: "2 days", image: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=2070&auto=format&fit=crop", hint: "red porsche" },
-    { id: 2, name: "1957 Mercedes-Benz 300SL", price: "1,200,000", location: "18 hours", image: "https://images.unsplash.com/photo-1587829792651-3448f86381a1?q=80&w=2070&auto=format&fit=crop", hint: "silver mercedes" },
-    { id: 3, name: "2005 Porsche Carrera GT", price: "1,500,000", location: "5 days", image: "https://images.unsplash.com/photo-1626964342353-763442468357?q=80&w=2070&auto=format&fit=crop", hint: "grey porsche" },
-    { id: 4, name: "1966 Jaguar E-Type Series 1", price: "275,000", location: "1 day", image: "https://images.unsplash.com/photo-1541447280853-518349a8d2d6?q=80&w=2070&auto=format&fit=crop", hint: "blue jaguar" },
+    { id: 1, name: "1989 Porsche 911 Speedster", price: "155,000", location: "2 days", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRvqpUQXW_OsrzEA3ERbsZ3ZrLD0hXa4Lw-oQ&s", hint: "red porsche" },
+    { id: 2, name: "1957 Mercedes-Benz 300SL", price: "1,200,000", location: "18 hours", image: "https://www.performanceracing.com/sites/default/files/styles/article_full/public/2022-03/0301fd.jpg?itok=zlTAgHBo", hint: "silver mercedes" },
+    { id: 3, name: "2005 Porsche Carrera GT", price: "1,500,000", location: "5 days", image: "https://img2.10bestmedia.com/Images/Photos/402463/Iola-Old-Car-Show_54_990x660.jpg?auto=webp&width=3840&quality=75", hint: "grey porsche" },
+    { id: 4, name: "1966 Jaguar E-Type Series 1", price: "275,000", location: "1 day", image: "https://cdn.aarp.net/content/dam/aarp/travel/destinations/2024/01/1140-thunderbirds-detroit-michigan-car-show.jpg", hint: "blue jaguar" },
   ];
 
   return (

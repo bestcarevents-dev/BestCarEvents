@@ -34,6 +34,26 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'cf-img-a-in.tosshub.com',
       },
+      {
+        protocol: 'https',
+        hostname: 'img2.10bestmedia.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'cdn.aarp.net',
+      },
+      {
+        protocol: 'https',
+        hostname: 'images.msv.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'encrypted-tbn0.gstatic.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'www.performanceracing.com',
+      },
     ],
   },
 };
