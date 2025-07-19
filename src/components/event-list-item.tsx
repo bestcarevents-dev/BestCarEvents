@@ -1,6 +1,8 @@
 import Image from 'next/image';
-import { Calendar, MapPin } from 'lucide-react';
+import { Calendar, MapPin, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
+import { Card, CardContent } from './ui/card';
+import { Button } from './ui/button';
 
 export type EventListItemProps = {
   id: number;
@@ -14,32 +16,43 @@ export type EventListItemProps = {
 
 export default function EventListItem({ name, date, location, image, hint, description }: EventListItemProps) {
   return (
-    <Link href="/events" className="block w-full">
-      <div className="flex items-start gap-4 p-4 rounded-2xl border border-border hover:bg-muted/50 transition-colors duration-300">
-        <div className="relative w-20 h-20 sm:w-24 sm:h-24 shrink-0">
+    <Card className="w-full overflow-hidden shadow-lg transition-shadow duration-300 hover:shadow-2xl bg-card">
+      <div className="flex flex-col md:flex-row">
+        <div className="relative w-full md:w-1/3 aspect-video md:aspect-auto shrink-0">
           <Image
             src={image}
             alt={name}
             fill
-            className="rounded-xl object-cover"
+            className="object-cover"
             data-ai-hint={hint}
           />
         </div>
-        <div className="flex-grow">
-          <h3 className="font-headline font-semibold text-lg text-foreground">{name}</h3>
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground mt-1">
-            <div className="flex items-center gap-1.5">
-              <Calendar className="w-4 h-4" />
-              <span>{date}</span>
+        <div className="flex flex-col flex-grow p-6 md:p-8">
+          <div className="flex-grow">
+            <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-muted-foreground mb-3">
+              <div className="flex items-center gap-2">
+                <Calendar className="w-4 h-4 text-primary" />
+                <span>{date}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <MapPin className="w-4 h-4 text-primary" />
+                <span>{location}</span>
+              </div>
             </div>
-            <div className="flex items-center gap-1.5">
-              <MapPin className="w-4 h-4" />
-              <span>{location}</span>
-            </div>
+            <h3 className="font-headline font-bold text-2xl text-foreground mb-3">
+              <Link href="/events" className="hover:text-primary transition-colors">{name}</Link>
+            </h3>
+            <p className="text-muted-foreground line-clamp-2 leading-relaxed">{description}</p>
           </div>
-          <p className="text-sm text-muted-foreground mt-2 line-clamp-2">{description}</p>
+          <div className="mt-6 flex justify-end">
+            <Button asChild variant="outline">
+              <Link href="/events">
+                View Event <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
+          </div>
         </div>
       </div>
-    </Link>
+    </Card>
   );
 }

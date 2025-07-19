@@ -60,32 +60,21 @@ const FeaturedCarsSection = ({ title, description, items, href, card: ItemCard }
 const FeaturedEventsSection = ({ title, description, items, href }: { title: string, description: string, items: EventListItemProps[], href: string }) => (
   <section className="py-20 sm:py-28 bg-background">
       <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-              <div className="relative aspect-square lg:aspect-[4/5] rounded-3xl overflow-hidden">
-                  <Image
-                      src="https://placehold.co/600x750.png"
-                      alt="Featured Events"
-                      fill
-                      className="object-cover"
-                      data-ai-hint="vintage cars show"
-                  />
-              </div>
-              <div>
-                  <h2 className="text-4xl font-headline font-extrabold sm:text-5xl tracking-tight text-foreground">{title}</h2>
-                  <p className="mt-4 text-lg text-muted-foreground">{description}</p>
-                  <div className="mt-12 space-y-4">
-                      {items.map((item) => (
-                          <EventListItem key={item.id} {...item} />
-                      ))}
-                  </div>
-                  <div className="mt-10">
-                       <Button size="lg" asChild className="font-bold bg-foreground text-background hover:bg-foreground/80">
-                          <Link href={href}>
-                              View All Events <ArrowRight className="w-5 h-5 ml-2" />
-                          </Link>
-                      </Button>
-                  </div>
-              </div>
+          <div className="text-center max-w-3xl mx-auto mb-16">
+              <h2 className="text-4xl font-headline font-extrabold sm:text-5xl tracking-tight text-foreground">{title}</h2>
+              <p className="mt-4 text-lg text-muted-foreground">{description}</p>
+          </div>
+          <div className="space-y-8">
+              {items.map((item) => (
+                  <EventListItem key={item.id} {...item} />
+              ))}
+          </div>
+          <div className="text-center mt-16">
+              <Button size="lg" asChild className="font-bold">
+                  <Link href={href}>
+                      View All Events <ArrowRight className="w-5 h-5 ml-2" />
+                  </Link>
+              </Button>
           </div>
       </div>
   </section>
@@ -131,9 +120,9 @@ export default function Home() {
   ];
 
   const featuredEvents: EventListItemProps[] = [
-    { id: 1, name: "Monaco Classic Car Show", date: "March 15-17, 2024", location: "Monte Carlo, Monaco", image: "https://placehold.co/100x100.png", hint: "classic car", description: "The most prestigious classic car exhibition in Europe" },
-    { id: 2, name: "Vintage Racing Championship", date: "April 8-10, 2024", location: "Silverstone, UK", image: "https://placehold.co/100x100.png", hint: "race car", description: "Historic racing cars compete on legendary tracks" },
-    { id: 3, name: "American Muscle Car Festival", date: "May 20-22, 2024", location: "Detroit, USA", image: "https://placehold.co/100x100.png", hint: "muscle car", description: "Celebrating American automotive heritage and power" },
+    { id: 1, name: "Monaco Classic Car Show", date: "March 15-17, 2024", location: "Monte Carlo, Monaco", image: "https://placehold.co/600x400.png", hint: "classic car", description: "The most prestigious classic car exhibition in Europe, showcasing rare and exceptional vehicles from around the globe." },
+    { id: 2, name: "Vintage Racing Championship", date: "April 8-10, 2024", location: "Silverstone, UK", image: "https://placehold.co/600x400.png", hint: "race car", description: "Experience the thrill of historic racing as legendary cars from different eras compete on the iconic Silverstone circuit." },
+    { id: 3, name: "American Muscle Car Festival", date: "May 20-22, 2024", location: "Detroit, USA", image: "https://placehold.co/600x400.png", hint: "muscle car", description: "A celebration of pure American power, featuring classic and modern muscle cars, drag races, and live entertainment." },
   ];
 
   return (
@@ -149,8 +138,8 @@ export default function Home() {
       />
       <CtaSection />
        <FeaturedEventsSection
-        title="Featured Events"
-        description="Discover the most exclusive automotive gatherings around the world"
+        title="Upcoming Events"
+        description="Discover the most exclusive automotive gatherings around the world."
         items={featuredEvents}
         href="/events"
       />
