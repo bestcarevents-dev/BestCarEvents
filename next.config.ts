@@ -21,7 +21,15 @@ const nextConfig: NextConfig = {
         hostname: 'images.unsplash.com',
         port: '',
         pathname: '/**',
-      }
+      },
+      {
+        protocol: 'https',
+        hostname: 'www.carpro.com',
+      },
+       {
+        protocol: 'https',
+        hostname: 'i.ibb.co',
+      },
     ],
   },
 };
