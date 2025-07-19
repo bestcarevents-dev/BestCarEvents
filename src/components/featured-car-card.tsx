@@ -1,7 +1,6 @@
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Zap, Gauge, Rocket } from 'lucide-react';
-import { cn } from '@/lib/utils';
 import Link from 'next/link';
 
 type CarSpec = {
@@ -26,7 +25,7 @@ const iconMap: { [key: string]: React.ElementType } = {
 
 export default function FeaturedCarCard({ name, year, price, image, hint, specs }: FeaturedCarCardProps) {
   return (
-    <div className="relative w-full aspect-[16/9] rounded-2xl overflow-hidden shadow-2xl group">
+    <div className="relative w-full max-w-6xl mx-auto aspect-[16/9] rounded-2xl overflow-hidden shadow-2xl group">
       <Image
         src={image}
         alt={name}

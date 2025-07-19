@@ -43,15 +43,15 @@ const FeaturedCarsSection = () => {
     const featuredCars = [
         {
             id: 1,
-            name: "Lamborghini Temerario",
-            year: "2025",
-            price: "480,000",
-            image: "https://i.ibb.co/6y4Sp1g/blue-lambo.webp",
-            hint: "blue lamborghini",
+            name: "Bugatti Tourbillon",
+            year: "2026",
+            price: "4,000,000",
+            image: "https://i.ibb.co/C0yCg1Q/bugatti-tourbillon.webp",
+            hint: "blue bugatti",
             specs: [
-                { name: "0-60 mph", value: "2.8s" },
-                { name: "Horsepower", value: "887 hp" },
-                { name: "Top Speed", value: "217 mph" }
+                { name: "0-60 mph", value: "2.0s" },
+                { name: "Horsepower", value: "1800 hp" },
+                { name: "Top Speed", value: "277 mph" }
             ]
         },
         {
