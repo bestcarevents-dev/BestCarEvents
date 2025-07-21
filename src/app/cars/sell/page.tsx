@@ -51,7 +51,7 @@ const carSchema = z.object({
   sellerContact: z.string().email("Invalid email address"),
   
   // Media
-  images: z.instanceof(FileList).refine(files => files.length > 0, "At least one image is required")
+  images: z.array(z.instanceof(File)).refine(files => files.length > 0, "At least one image is required")
 });
 
 type CarFormData = z.infer<typeof carSchema>;
@@ -73,7 +73,17 @@ export default function SellCarPage() {
     setIsSubmitting(true);
     try {
       const imageUrls = [];
-      for (const file of Array.from(data.images)) {
+      // Access files from the form data
+      const files = data.images;
+
+      // Validate files length
+      if (files.length === 0) {
+          // Handle error: no files selected
+          setIsSubmitting(false);
+          return;
+      }
+
+      for (const file of Array.from(files)) {
         const imageRef = ref(storage, `car_images/${Date.now()}_${file.name}`);
         await uploadBytes(imageRef, file);
         const imageUrl = await getDownloadURL(imageRef);
