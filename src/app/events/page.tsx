@@ -4,8 +4,9 @@ import { Input } from "@/components/ui/input";
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { List, Map } from "lucide-react";
+import { List, Map, PlusCircle } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import Link from "next/link";
 
 
 export default function EventsPage() {
@@ -26,12 +27,20 @@ export default function EventsPage() {
 
     return (
     <div className="container mx-auto px-4 py-8">
-      <div className="text-center mb-12">
-        <h1 className="text-4xl md:text-5xl font-extrabold font-headline">Discover Events</h1>
-        <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
-          From local meetups to international shows, find your next car adventure.
-        </p>
-      </div>
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-12">
+            <div className="text-center md:text-left mb-4 md:mb-0">
+                <h1 className="text-4xl md:text-5xl font-extrabold font-headline">Discover Events</h1>
+                <p className="mt-4 text-lg text-muted-foreground max-w-2xl">
+                From local meetups to international shows, find your next car adventure.
+                </p>
+            </div>
+            <Button asChild>
+                <Link href="/events/host" className="flex items-center">
+                    <PlusCircle className="mr-2 h-5 w-5" />
+                    Host an Event
+                </Link>
+            </Button>
+        </div>
 
       <div className="bg-card p-6 rounded-lg border mb-8">
         <div className="grid grid-cols-1 md:grid-cols-5 gap-4">

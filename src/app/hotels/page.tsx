@@ -1,6 +1,8 @@
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import Link from "next/link";
+import { PlusCircle } from "lucide-react";
 
 export default function CarHotelsPage() {
   const hotels = [
@@ -10,11 +12,19 @@ export default function CarHotelsPage() {
   ];
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="text-center mb-12">
-        <h1 className="text-4xl md:text-5xl font-extrabold font-headline">Car Hotels &amp; Storage</h1>
-        <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
-          Secure, climate-controlled storage and services for your prized vehicle.
-        </p>
+       <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-12">
+        <div className="text-center md:text-left mb-4 md:mb-0">
+          <h1 className="text-4xl md:text-5xl font-extrabold font-headline">Car Hotels &amp; Storage</h1>
+          <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto md:mx-0">
+           Secure, climate-controlled storage and services for your prized vehicle.
+          </p>
+        </div>
+        <Button asChild>
+            <Link href="/hotels/list" className="flex items-center">
+                <PlusCircle className="mr-2 h-5 w-5" />
+                List Your Hotel
+            </Link>
+        </Button>
       </div>
 
        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">

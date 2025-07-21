@@ -3,6 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { PlusCircle } from "lucide-react";
+import Link from "next/link";
 
 export default function CarsPage() {
     const cars = [
@@ -22,11 +24,19 @@ export default function CarsPage() {
 
     return (
     <div className="container mx-auto px-4 py-8">
-      <div className="text-center mb-12">
-        <h1 className="text-4xl md:text-5xl font-extrabold font-headline">Cars for Sale</h1>
-        <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
-          Browse thousands of unique cars from our curated marketplace.
-        </p>
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-12">
+        <div className="text-center md:text-left mb-4 md:mb-0">
+          <h1 className="text-4xl md:text-5xl font-extrabold font-headline">Cars for Sale</h1>
+          <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto md:mx-0">
+            Browse thousands of unique cars from our curated marketplace.
+          </p>
+        </div>
+        <Button asChild>
+            <Link href="/cars/sell" className="flex items-center">
+                <PlusCircle className="mr-2 h-5 w-5" />
+                Sell Your Car
+            </Link>
+        </Button>
       </div>
 
       <div className="bg-card p-6 rounded-lg border mb-12">

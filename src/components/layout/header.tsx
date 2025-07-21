@@ -13,26 +13,51 @@ import {
   SheetTrigger,
   SheetClose
 } from "@/components/ui/sheet";
+import { getAuth, onAuthStateChanged, signOut, User } from "firebase/auth";
+import { app } from "@/lib/firebase";
+import { useRouter } from "next/navigation";
 
 const navLinks = [
   { href: "/events", label: "Events" },
   { href: "/cars", label: "Cars for Sale" },
   { href: "/auctions", label: "Auctions" },
   { href: "/hotels", label: "Car Hotels" },
+  { href: "/clubs", label: "Car Clubs" },
+  { href: "/partners", label: "Partners" },
   { href: "/advertise", label: "Advertise" },
 ];
 
-const AuthButtons = ({ inMobileNav = false }: { inMobileNav?: boolean}) => (
-  <div className={cn(
-    "flex items-center", 
-    inMobileNav ? "flex-col w-full gap-4" : "flex-row gap-2"
-  )}>
-    <Button variant={inMobileNav ? "outline" : "ghost"} className="w-full lg:w-auto justify-center">
-      Login
-    </Button>
-    <Button className="w-full lg:w-auto">Sign Up</Button>
-  </div>
-);
+const AuthButtons = ({ inMobileNav = false, user }: { inMobileNav?: boolean, user: User | null }) => {
+  const router = useRouter();
+  const auth = getAuth(app);
+
+  const handleLogout = async () => {
+    await signOut(auth);
+    router.push("/");
+  };
+
+  if (user) {
+    return (
+      <div className={cn("flex items-center", inMobileNav ? "flex-col w-full gap-4" : "flex-row gap-2")}>
+         <span className="text-sm mr-4">Hi, {user.email}</span>
+        <Button onClick={handleLogout} variant={inMobileNav ? "outline" : "ghost"} className="w-full lg:w-auto justify-center">
+          Logout
+        </Button>
+      </div>
+    );
+  }
+
+  return (
+    <div className={cn("flex items-center", inMobileNav ? "flex-col w-full gap-4" : "flex-row gap-2")}>
+      <Button asChild variant={inMobileNav ? "outline" : "ghost"} className="w-full lg:w-auto justify-center">
+        <Link href="/login">Login</Link>
+      </Button>
+      <Button asChild className="w-full lg:w-auto">
+        <Link href="/register">Sign Up</Link>
+      </Button>
+    </div>
+  );
+};
 
 const NavMenu = ({ onLinkClick }: { onLinkClick?: () => void }) => (
     <nav className="flex flex-col lg:flex-row items-center gap-6 lg:gap-8 text-lg lg:text-sm font-medium">
@@ -53,14 +78,24 @@ const NavMenu = ({ onLinkClick }: { onLinkClick?: () => void }) => (
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+  const auth = getAuth(app);
 
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 10);
     };
     window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+    
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+    });
+
+    return () => {
+        window.removeEventListener("scroll", handleScroll);
+        unsubscribe();
+    }
+  }, [auth]);
 
   return (
     <header
@@ -83,7 +118,7 @@ export default function Header() {
                 <Search />
                 <span className="sr-only">Search</span>
             </Button>
-            <AuthButtons />
+            <AuthButtons user={user} />
         </div>
 
         <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
@@ -108,7 +143,7 @@ export default function Header() {
                   <NavMenu onLinkClick={() => setMobileMenuOpen(false)} />
                 </div>
                 <div className="p-6 border-t">
-                    <AuthButtons inMobileNav />
+                    <AuthButtons inMobileNav user={user} />
                 </div>
               </div>
           </SheetContent>
