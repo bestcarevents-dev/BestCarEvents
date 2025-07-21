@@ -22,7 +22,7 @@ const slides = [
     {
         headline: "Join a Community of Enthusiasts",
         subheadline: "Attend exclusive meetups, track days, and auctions.",
-        image: "https://images.unsplash.com/photo-1549399542-7e3f8b4aca54?q=80&w=1974&auto=format&fit=crop",
+        image: "https://plus.unsplash.com/premium_photo-1664303847960-586318f59035?q=80&w=774&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
         hint: "car community meetup",
     }
 ]

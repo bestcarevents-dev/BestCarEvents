@@ -54,6 +54,10 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'www.performanceracing.com',
       },
+      {
+        protocol: 'https',
+        hostname: 'plus.unsplash.com',
+      },
     ],
   },
 };

@@ -16,6 +16,7 @@ import {
 import { getAuth, onAuthStateChanged, signOut, User } from "firebase/auth";
 import { app } from "@/lib/firebase";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 const navLinks = [
   { href: "/events", label: "Events" },
@@ -106,6 +107,7 @@ export default function Header() {
     >
       <div className="container mx-auto flex items-center justify-between h-20">
         <Link href="/" className="flex items-center gap-2 text-2xl font-bold font-headline tracking-tighter">
+            <Image src="/logo.png" alt="BestCarEvents Logo" width={40} height={40} />
             BestCarEvents
         </Link>
 
@@ -131,7 +133,10 @@ export default function Header() {
           <SheetContent side="left" className="w-full bg-background text-foreground p-0">
               <div className="flex flex-col h-full">
                 <SheetHeader className="flex flex-row items-center justify-between p-4 border-b">
-                  <SheetTitle className="text-2xl font-bold text-left font-headline tracking-tighter">BestCarEvents</SheetTitle>
+                    <div className="flex items-center gap-2">
+                         <Image src="/logo.png" alt="BestCarEvents Logo" width={40} height={40} />
+                        <SheetTitle className="text-2xl font-bold text-left font-headline tracking-tighter">BestCarEvents</SheetTitle>
+                    </div>
                    <SheetClose asChild>
                     <Button variant="ghost" size="icon">
                       <X />

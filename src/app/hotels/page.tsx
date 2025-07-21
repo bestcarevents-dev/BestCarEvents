@@ -13,11 +13,14 @@ export default function CarHotelsPage() {
   return (
     <div className="container mx-auto px-4 py-8">
        <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-12">
-        <div className="text-center md:text-left mb-4 md:mb-0">
-          <h1 className="text-4xl md:text-5xl font-extrabold font-headline">Car Hotels &amp; Storage</h1>
+        <div className="text-center md:text-left md:mb-0">
+          <h1 className="text-4xl md:text-5xl font-extrabold font-headline">Car Hotels</h1>
           <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto md:mx-0">
-           Secure, climate-controlled storage and services for your prized vehicle.
-          </p>
+            Looking to take your passion for cars further while being in the company of other car lovers and petrolheads. Look no further. Keep reading for the world’s most and less popular car clubs. Each car club offers exclusive parties and events, recreational races, and more.
+         </p>
+          <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto md:mx-0">
+            Choosing the right hotel can considerably impact your travel experience. By considering factors such as location, price, facilities, reviews, and safety, you can make a decision that meets your needs and preferences. Choose one of our partners.
+         </p>
         </div>
         <Button asChild>
             <Link href="/hotels/list" className="flex items-center">
@@ -25,6 +28,11 @@ export default function CarHotelsPage() {
                 List Your Hotel
             </Link>
         </Button>
+      </div>
+
+      {/* Added Text */}
+      <div className="mb-12 text-center md:text-left">
+        
       </div>
 
        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
