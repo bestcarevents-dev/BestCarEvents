@@ -15,7 +15,8 @@ import {
   Calendar,
   Gavel,
   Hotel,
-  Handshake
+  Handshake,
+  Mail
 } from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
@@ -49,9 +50,10 @@ const navLinks = [
     { href: "/admin/cars", icon: Car, label: "Cars for Sale" },
     { href: "/admin/auctions", icon: Gavel, label: "Auction Requests" },
     { href: "/admin/hotels", icon: Hotel, label: "Hotel Submissions" },
-    { href: "/admin/clubs", icon: Users, label: "Club Registrations" }, // Changed icon to Users
+    { href: "/admin/clubs", icon: Users, label: "Club Registrations" },
     { href: "/admin/partners", icon: Handshake, label: "Partner Applications" },
     { href: "/admin/users", icon: Users, label: "Manage Users" },
+    { href: "/admin/newsletter", icon: Mail, label: "Newsletter" },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {

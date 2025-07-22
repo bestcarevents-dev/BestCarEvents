@@ -5,14 +5,16 @@ import { MapPin, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 
 type CarCardProps = {
+  id: string;
   name: string;
   price: string;
   location: string;
   image: string;
   hint: string;
+  type?: 'car' | 'auction';
 };
 
-export default function CarCard({ name, price, location, image, hint }: CarCardProps) {
+export default function CarCard({ id, name, price, location, image, hint, type = 'car' }: CarCardProps) {
   return (
     <Card className="overflow-hidden flex flex-col group bg-transparent border-0 shadow-none rounded-none">
       <div className="relative overflow-hidden rounded-2xl">
@@ -24,7 +26,7 @@ export default function CarCard({ name, price, location, image, hint }: CarCardP
         <div className="flex justify-between items-center mt-auto pt-4">
             <p className="text-2xl font-mono font-bold text-primary">{price}</p>
             <Button variant="ghost" size="icon" asChild>
-                <Link href="#">
+                <Link href={`/${type === 'auction' ? 'auctions' : 'cars'}/${id}`}>
                     <ArrowRight className="w-6 h-6 transform group-hover:translate-x-1 transition-transform"/>
                     <span className="sr-only">View Details</span>
                 </Link>

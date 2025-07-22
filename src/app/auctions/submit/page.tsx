@@ -19,6 +19,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import React from "react";
 
 const auctionSchema = z.object({
   auctionName: z.string().min(5, "Auction name is required"),
@@ -35,7 +36,6 @@ const auctionSchema = z.object({
   // Details
   description: z.string().min(20, "A detailed description of the auction event is required"),
   auctionType: z.enum(["Online", "In-Person", "Hybrid"]),
-  registrationLink: z.string().url("Must be a valid URL").optional().or(z.literal('')),
   viewingTimes: z.string().optional(),
 
   // Organizer Info
@@ -50,13 +50,28 @@ type AuctionFormData = z.infer<typeof auctionSchema>;
 
 export default function RegisterAuctionPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const router = useRouter();
   const db = getFirestore(app);
   const storage = getStorage(app);
 
-  const { control, register, handleSubmit, formState: { errors } } = useForm<AuctionFormData>({
+  const { control, register, handleSubmit, formState: { errors }, setValue, watch } = useForm<AuctionFormData>({
     resolver: zodResolver(auctionSchema),
   });
+
+  // Watch for image changes to update preview
+  const imageFile = watch("image");
+
+  // Update preview when image changes
+  React.useEffect(() => {
+    if (imageFile && imageFile instanceof File) {
+      const url = URL.createObjectURL(imageFile);
+      setImagePreview(url);
+      return () => URL.revokeObjectURL(url);
+    } else {
+      setImagePreview(null);
+    }
+  }, [imageFile]);
 
   const onSubmit = async (data: AuctionFormData) => {
     setIsSubmitting(true);
@@ -66,7 +81,19 @@ export default function RegisterAuctionPage() {
       const imageUrl = await getDownloadURL(imageRef);
 
       await addDoc(collection(db, "pendingAuctions"), {
-        ...data,
+        auctionName: data.auctionName,
+        auctionHouse: data.auctionHouse,
+        startDate: data.startDate,
+        endDate: data.endDate,
+        address: data.address,
+        city: data.city,
+        state: data.state,
+        country: data.country,
+        description: data.description,
+        auctionType: data.auctionType,
+        viewingTimes: data.viewingTimes,
+        organizerName: data.organizerName,
+        organizerContact: data.organizerContact,
         imageUrl,
         status: "pending",
         submittedAt: new Date(),
@@ -162,11 +189,6 @@ export default function RegisterAuctionPage() {
                         )} />
                         {errors.auctionType && <p className="text-red-500 text-sm">{errors.auctionType.message}</p>}
                     </div>
-                     <div className="space-y-2">
-                        <Label htmlFor="registrationLink">Registration Link (URL)</Label>
-                        <Input id="registrationLink" {...register("registrationLink")} placeholder="https://example.com/register" />
-                        {errors.registrationLink && <p className="text-red-500 text-sm">{errors.registrationLink.message}</p>}
-                    </div>
                 </div>
                  <div className="space-y-2">
                     <Label htmlFor="viewingTimes">Public Viewing Times</Label>
@@ -175,13 +197,19 @@ export default function RegisterAuctionPage() {
                 </div>
                 <div className="space-y-2">
                     <Label htmlFor="image">Venue Image or Event Poster</Label>
-                     <div className="flex items-center justify-center w-full">
-                        <label htmlFor="image" className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed rounded-lg cursor-pointer bg-card hover:bg-muted">
+                     <div className="flex flex-col items-center justify-center w-full">
+                        <label htmlFor="image" className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed rounded-lg cursor-pointer bg-card hover:bg-muted relative">
                             <div className="flex flex-col items-center justify-center pt-5 pb-6">
                                 <UploadCloud className="w-10 h-10 mb-3 text-muted-foreground" />
                                 <p className="mb-2 text-sm text-muted-foreground"><span className="font-semibold">Click to upload</span> or drag and drop</p>
                             </div>
-                            <Controller name="image" control={control} render={({ field }) => <Input id="image" type="file" className="hidden" onChange={(e) => field.onChange(e.target.files ? e.target.files[0] : null)} />} />
+                            <Controller name="image" control={control} render={({ field }) => <Input id="image" type="file" className="hidden" accept="image/*" onChange={(e) => field.onChange(e.target.files ? e.target.files[0] : null)} />} />
+                            {imagePreview && (
+                              <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/60 rounded-lg">
+                                <img src={imagePreview} alt="Preview" className="max-h-40 max-w-full rounded shadow mb-2" />
+                                <Button type="button" size="sm" variant="destructive" onClick={() => { setValue("image", null); setImagePreview(null); }}>Remove</Button>
+                              </div>
+                            )}
                         </label>
                     </div>
                     {errors.image && <p className="text-red-500 text-sm">{errors.image.message as string}</p>}

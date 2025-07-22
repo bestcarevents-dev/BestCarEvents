@@ -15,93 +15,91 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 import Image from "next/image";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { X } from "lucide-react";
 
-interface ClubRequest {
+interface PartnerRequest {
   id: string;
-  clubName: string;
-  city: string;
-  country: string;
-  website?: string;
-  socialMediaLink?: string;
-  description: string;
-  membershipCriteria: string;
-  typicalActivities: string;
-  contactName: string;
+  partnerName: string;
+  businessName: string;
   contactEmail: string;
+  phone?: string;
+  website?: string;
+  socialMedia?: string;
+  categories: string[];
+  description: string;
   logoUrl: string;
+  paymentMethod: string;
   status: "pending" | "approved" | "rejected";
   createdAt?: any;
 }
 
-export default function AdminClubsPage() {
-  const [pendingRequests, setPendingRequests] = useState<ClubRequest[]>([]);
-  const [approvedRequests, setApprovedRequests] = useState<ClubRequest[]>([]);
+export default function AdminPartnersPage() {
+  const [pendingRequests, setPendingRequests] = useState<PartnerRequest[]>([]);
+  const [approvedRequests, setApprovedRequests] = useState<PartnerRequest[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedClub, setSelectedClub] = useState<ClubRequest | null>(null);
+  const [selectedPartner, setSelectedPartner] = useState<PartnerRequest | null>(null);
   const [tab, setTab] = useState("pending");
   const db = getFirestore(app);
 
   useEffect(() => {
     const fetchRequests = async () => {
       setLoading(true);
-      // Fetch pending clubs
-      const pendingSnapshot = await getDocs(collection(db, "pendingClubs"));
-      const pendingData = pendingSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as ClubRequest));
+      // Fetch pending partners
+      const pendingSnapshot = await getDocs(collection(db, "pendingPartners"));
+      const pendingData = pendingSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as PartnerRequest));
       setPendingRequests(pendingData);
-      // Fetch approved clubs
-      const approvedSnapshot = await getDocs(collection(db, "clubs"));
-      const approvedData = approvedSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as ClubRequest));
+      // Fetch approved partners
+      const approvedSnapshot = await getDocs(collection(db, "partners"));
+      const approvedData = approvedSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as PartnerRequest));
       setApprovedRequests(approvedData);
       setLoading(false);
     };
     fetchRequests();
   }, [db]);
 
-  const handleApprove = async (request: ClubRequest) => {
+  const handleApprove = async (request: PartnerRequest) => {
     try {
-      const clubData = { ...request, status: "approved", createdAt: new Date() };
-      delete clubData.id;
-      await addDoc(collection(db, "clubs"), clubData);
-      await deleteDoc(doc(db, "pendingClubs", request.id));
+      const { id, ...partnerData } = { ...request, status: "approved", createdAt: new Date() };
+      await addDoc(collection(db, "partners"), partnerData);
+      await deleteDoc(doc(db, "pendingPartners", request.id));
       setPendingRequests(pendingRequests.filter(r => r.id !== request.id));
-      setSelectedClub(null);
+      setSelectedPartner(null);
     } catch (error) {
-      console.error("Error approving club: ", error);
+      console.error("Error approving partner: ", error);
     }
   };
 
   const handleReject = async (id: string) => {
     try {
-      await deleteDoc(doc(db, "pendingClubs", id));
+      await deleteDoc(doc(db, "pendingPartners", id));
       setPendingRequests(pendingRequests.filter(r => r.id !== id));
-      setSelectedClub(null);
+      setSelectedPartner(null);
     } catch (error) {
-      console.error("Error rejecting club: ", error);
+      console.error("Error rejecting partner: ", error);
     }
   };
 
   const handleDeleteApproved = async (id: string) => {
     try {
-      await deleteDoc(doc(db, "clubs", id));
+      await deleteDoc(doc(db, "partners", id));
       setApprovedRequests(approvedRequests.filter(r => r.id !== id));
-      setSelectedClub(null);
+      setSelectedPartner(null);
     } catch (error) {
-      console.error("Error deleting approved club: ", error);
+      console.error("Error deleting approved partner: ", error);
     }
   };
 
   const DetailItem = ({ label, value }: { label: string, value: any }) => (
     <div>
       <p className="text-sm font-semibold text-muted-foreground">{label}</p>
-      <p className="text-md">{value || 'N/A'}</p>
+      <p className="text-md break-words">{value || 'N/A'}</p>
     </div>
   );
 
   return (
     <>
-      <h1 className="text-2xl font-semibold mb-4">Club Registrations</h1>
+      <h1 className="text-2xl font-semibold mb-4">Partner Applications</h1>
       <Tabs value={tab} onValueChange={setTab} className="mb-6">
         <TabsList>
           <TabsTrigger value="pending">Pending</TabsTrigger>
@@ -118,8 +116,8 @@ export default function AdminClubsPage() {
               <TableHeader>
                 <TableRow>
                   <TableHead>Logo</TableHead>
-                  <TableHead>Club Name</TableHead>
-                  <TableHead>Location</TableHead>
+                  <TableHead>Business Name</TableHead>
+                  <TableHead>Categories</TableHead>
                   <TableHead>Contact</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
@@ -127,18 +125,18 @@ export default function AdminClubsPage() {
               </TableHeader>
               <TableBody>
                 {pendingRequests.map(request => (
-                  <TableRow key={request.id} onClick={() => setSelectedClub(request)} className="cursor-pointer">
+                  <TableRow key={request.id} onClick={() => setSelectedPartner(request)} className="cursor-pointer">
                     <TableCell>
-                      <Image src={request.logoUrl} alt={request.clubName} width={40} height={40} className="rounded-md object-contain" />
+                      <Image src={request.logoUrl} alt={request.businessName} width={40} height={40} className="rounded-md object-contain" />
                     </TableCell>
-                    <TableCell className="font-medium">{request.clubName}</TableCell>
-                    <TableCell>{request.city}, {request.country}</TableCell>
-                    <TableCell>{request.contactName}</TableCell>
+                    <TableCell className="font-medium">{request.businessName}</TableCell>
+                    <TableCell>{request.categories?.join(", ")}</TableCell>
+                    <TableCell>{request.contactEmail}</TableCell>
                     <TableCell>
                       <Badge variant={request.status === 'pending' ? 'default' : 'outline'}>{request.status}</Badge>
                     </TableCell>
                     <TableCell className="text-right">
-                      <Button variant="outline" size="sm" onClick={e => { e.stopPropagation(); setSelectedClub(request); }}>View Details</Button>
+                      <Button variant="outline" size="sm" onClick={e => { e.stopPropagation(); setSelectedPartner(request); }}>View Details</Button>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -156,8 +154,8 @@ export default function AdminClubsPage() {
               <TableHeader>
                 <TableRow>
                   <TableHead>Logo</TableHead>
-                  <TableHead>Club Name</TableHead>
-                  <TableHead>Location</TableHead>
+                  <TableHead>Business Name</TableHead>
+                  <TableHead>Categories</TableHead>
                   <TableHead>Contact</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Created At</TableHead>
@@ -166,13 +164,13 @@ export default function AdminClubsPage() {
               </TableHeader>
               <TableBody>
                 {approvedRequests.map(request => (
-                  <TableRow key={request.id} onClick={() => setSelectedClub(request)} className="cursor-pointer">
+                  <TableRow key={request.id} onClick={() => setSelectedPartner(request)} className="cursor-pointer">
                     <TableCell>
-                      <Image src={request.logoUrl} alt={request.clubName} width={40} height={40} className="rounded-md object-contain" />
+                      <Image src={request.logoUrl} alt={request.businessName} width={40} height={40} className="rounded-md object-contain" />
                     </TableCell>
-                    <TableCell className="font-medium">{request.clubName}</TableCell>
-                    <TableCell>{request.city}, {request.country}</TableCell>
-                    <TableCell>{request.contactName}</TableCell>
+                    <TableCell className="font-medium">{request.businessName}</TableCell>
+                    <TableCell>{request.categories?.join(", ")}</TableCell>
+                    <TableCell>{request.contactEmail}</TableCell>
                     <TableCell>
                       <Badge variant="secondary">Approved</Badge>
                     </TableCell>
@@ -189,16 +187,16 @@ export default function AdminClubsPage() {
       )}
       {tab === "denied" && (
         <div className="p-8 text-center text-muted-foreground">
-          <h2 className="text-xl font-semibold mb-2">Denied Clubs</h2>
-          <p>Denied clubs are not stored. Once denied, a club registration is permanently removed from the system.</p>
+          <h2 className="text-xl font-semibold mb-2">Denied Partners</h2>
+          <p>Denied partners are not stored. Once denied, a partner application is permanently removed from the system.</p>
         </div>
       )}
-      {selectedClub && (
-        <Dialog open={!!selectedClub} onOpenChange={() => setSelectedClub(null)}>
+      {selectedPartner && (
+        <Dialog open={!!selectedPartner} onOpenChange={() => setSelectedPartner(null)}>
           <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto p-0">
             <button
               className="absolute right-4 top-4 z-10 rounded-full bg-white/80 hover:bg-red-500 hover:text-white text-gray-700 p-2 shadow-md transition-colors"
-              onClick={() => setSelectedClub(null)}
+              onClick={() => setSelectedPartner(null)}
               aria-label="Close"
               type="button"
             >
@@ -206,30 +204,27 @@ export default function AdminClubsPage() {
             </button>
             <DialogHeader className="px-6 pt-6">
               <DialogTitle className="font-headline text-2xl flex items-center gap-4">
-                <Image src={selectedClub.logoUrl} alt={selectedClub.clubName} width={50} height={50} className="rounded-lg object-contain" />
-                {selectedClub.clubName}
+                <Image src={selectedPartner.logoUrl} alt={selectedPartner.businessName} width={50} height={50} className="rounded-lg object-contain" />
+                {selectedPartner.businessName}
               </DialogTitle>
-              <DialogDescription>{selectedClub.city}, {selectedClub.country}</DialogDescription>
+              <DialogDescription>{selectedPartner.categories?.join(", ")}</DialogDescription>
             </DialogHeader>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 py-4 px-6">
               <div>
                 <h3 className="font-semibold text-lg mb-2">Description</h3>
-                <p className="text-muted-foreground mb-6">{selectedClub.description}</p>
-                <h3 className="font-semibold text-lg mb-2">Membership Criteria</h3>
-                <p className="text-muted-foreground mb-6">{selectedClub.membershipCriteria}</p>
-                <h3 className="font-semibold text-lg mb-2">Typical Activities</h3>
-                <p className="text-muted-foreground">{selectedClub.typicalActivities}</p>
+                <p className="text-muted-foreground mb-6">{selectedPartner.description}</p>
+                <h3 className="font-semibold text-lg mb-2">Contact Information</h3>
+                <DetailItem label="Contact Name" value={selectedPartner.partnerName} />
+                <DetailItem label="Email" value={selectedPartner.contactEmail} />
+                <DetailItem label="Phone" value={selectedPartner.phone} />
+                <DetailItem label="Website" value={selectedPartner.website ? <a href={selectedPartner.website} target="_blank" rel="noreferrer" className="text-primary underline">Link</a> : 'N/A'} />
+                <DetailItem label="Social Media" value={selectedPartner.socialMedia ? <a href={selectedPartner.socialMedia} target="_blank" rel="noreferrer" className="text-primary underline">Link</a> : 'N/A'} />
               </div>
               <div>
-                <div className="grid grid-cols-1 gap-4 mb-6">
-                  <DetailItem label="Website" value={selectedClub.website ? <a href={selectedClub.website} target="_blank" rel="noreferrer" className="text-primary underline">Link</a> : 'N/A'} />
-                  <DetailItem label="Social Media" value={selectedClub.socialMediaLink ? <a href={selectedClub.socialMediaLink} target="_blank" rel="noreferrer" className="text-primary underline">Link</a> : 'N/A'} />
-                </div>
-                <h3 className="font-semibold text-lg mb-2">Contact Information</h3>
-                <DetailItem label="Name" value={selectedClub.contactName} />
-                <DetailItem label="Email" value={selectedClub.contactEmail} />
-                {selectedClub.createdAt && (
-                  <DetailItem label="Created At" value={selectedClub.createdAt?.seconds ? new Date(selectedClub.createdAt.seconds * 1000).toLocaleString() : selectedClub.createdAt.toString()} />
+                <DetailItem label="Categories" value={selectedPartner.categories?.join(", ") || 'N/A'} />
+                <DetailItem label="Payment Method" value={selectedPartner.paymentMethod} />
+                {selectedPartner.createdAt && (
+                  <DetailItem label="Created At" value={selectedPartner.createdAt?.seconds ? new Date(selectedPartner.createdAt.seconds * 1000).toLocaleString() : selectedPartner.createdAt.toString()} />
                 )}
               </div>
             </div>
@@ -238,8 +233,8 @@ export default function AdminClubsPage() {
                 <DialogClose asChild>
                   <Button variant="outline">Cancel</Button>
                 </DialogClose>
-                <Button variant="destructive" onClick={() => handleReject(selectedClub.id)}>Reject</Button>
-                <Button onClick={() => handleApprove(selectedClub)}>Approve</Button>
+                <Button variant="destructive" onClick={() => handleReject(selectedPartner.id)}>Reject</Button>
+                <Button onClick={() => handleApprove(selectedPartner)}>Approve</Button>
               </DialogFooter>
             )}
           </DialogContent>
@@ -247,4 +242,4 @@ export default function AdminClubsPage() {
       )}
     </>
   );
-}
+} 

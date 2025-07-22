@@ -17,6 +17,7 @@ export default function RegisterPage() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [name, setName] = useState("");
   const router = useRouter();
   const auth = getAuth(app);
   const db = getFirestore(app); // Initialize Firestore
@@ -42,6 +43,7 @@ export default function RegisterPage() {
       // Create user document in Firestore
       if (user) {
         await setDoc(doc(db, "users", user.uid), {
+          name: name,
           email: user.email,
           userType: "regular", // Default user type
           createdAt: new Date(),
@@ -73,6 +75,18 @@ export default function RegisterPage() {
             </p>
           </div>
           <form onSubmit={handleRegister} className="grid gap-4">
+            <div className="grid gap-2">
+              <Label htmlFor="name">Name</Label>
+              <Input
+                id="name"
+                type="text"
+                placeholder="Your Name"
+                required
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="bg-input"
+              />
+            </div>
             <div className="grid gap-2">
               <Label htmlFor="email">Email</Label>
               <Input

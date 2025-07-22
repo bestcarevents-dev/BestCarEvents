@@ -6,10 +6,11 @@ import EventListItem from '@/components/event-list-item';
 import FeaturedCarCard from '@/components/featured-car-card';
 import CarCard from '@/components/car-card';
 import { Card } from '@/components/ui/card';
+import NewsletterSubscribe from '@/components/NewsletterSubscribe';
 
 const ValueProposition = () => (
     <div className="bg-background">
-        <div className="container mx-auto px-4 py-24 sm:py-32">
+        <div className="container mx-auto px-4 py-20">
              <div className="text-center max-w-3xl mx-auto mb-16">
                 <h2 className="text-4xl font-headline font-extrabold sm:text-5xl tracking-tight text-foreground">A Community Built for Car Lovers</h2>
                 <p className="mt-4 text-lg text-muted-foreground">We are more than a marketplace. We are a global community of enthusiasts, collectors, and connoisseurs.</p>
@@ -79,7 +80,7 @@ const FeaturedCarsSection = () => {
                     <p className="mt-4 text-lg text-muted-foreground">Explore a selection of exceptional vehicles from our curated marketplace.</p>
                 </div>
                 <div className="space-y-8 max-w-5xl mx-auto">
-                    {featuredCars.map((car) => <FeaturedCarCard key={car.id} {...car} />)}
+                    {featuredCars.map((car) => <FeaturedCarCard key={String(car.id)} {...car} />)}
                 </div>
                 <div className="text-center mt-16">
                     <Button size="lg" asChild className="font-bold rounded-full">
@@ -165,6 +166,7 @@ export default function Home() {
   return (
     <div className="bg-background">
       <HeroSlider />
+      <NewsletterSubscribe />
       <ValueProposition />
       <FeaturedCarsSection />
       <FeaturedEventsSection />

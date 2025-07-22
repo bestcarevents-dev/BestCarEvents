@@ -1,7 +1,7 @@
 "use client";
 
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { getFirestore, collection, addDoc } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
@@ -49,10 +49,18 @@ export default function HostEventPage() {
   const router = useRouter();
   const db = getFirestore(app);
   const storage = getStorage(app);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   const { control, register, handleSubmit, formState: { errors } } = useForm<EventFormData>({
     resolver: zodResolver(eventSchema),
   });
+
+  // Watch for image changes and update preview
+  useEffect(() => {
+    return () => {
+      if (imagePreview) URL.revokeObjectURL(imagePreview);
+    };
+  }, [imagePreview]);
 
   const onSubmit = async (data: EventFormData) => {
     setIsSubmitting(true);
@@ -62,8 +70,22 @@ export default function HostEventPage() {
       const imageUrl = await getDownloadURL(imageRef);
 
       await addDoc(collection(db, "pendingEvents"), {
-        ...data,
+        eventName: data.eventName,
+        eventDate: data.eventDate,
+        location: data.location,
+        description: data.description,
+        organizerName: data.organizerName,
+        organizerContact: data.organizerContact,
         imageUrl,
+        eventType: data.eventType,
+        vehicleFocus: data.vehicleFocus,
+        expectedAttendance: data.expectedAttendance,
+        entryFee: data.entryFee,
+        scheduleHighlights: data.scheduleHighlights,
+        activities: data.activities,
+        rulesUrl: data.rulesUrl,
+        sponsors: data.sponsors,
+        websiteUrl: data.websiteUrl,
         status: "pending",
         submittedAt: new Date(),
       });
@@ -213,19 +235,37 @@ export default function HostEventPage() {
             {/* Existing Image Upload */}
             <div className="space-y-2">
               <Label htmlFor="image">Event Image</Label>
-              <div className="flex items-center justify-center w-full">
-                  <label htmlFor="image" className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed rounded-lg cursor-pointer bg-card hover:bg-muted">
-                      <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                          <UploadCloud className="w-10 h-10 mb-3 text-muted-foreground" />
-                          <p className="mb-2 text-sm text-muted-foreground"><span className="font-semibold">Click to upload</span> or drag and drop</p>
-                          <p className="text-xs text-muted-foreground">PNG, JPG or GIF (MAX. 800x400px)</p>
-                      </div>
-                      <Controller
-                          name="image"
-                          control={control}
-                          render={({ field }) => <Input id="image" type="file" className="hidden" onChange={(e) => field.onChange(e.target.files ? e.target.files[0] : null)} />}
+              <div className="flex flex-col items-center justify-center w-full">
+                {imagePreview && (
+                  <img src={imagePreview} alt="Preview" className="mb-4 rounded-lg max-h-48 object-contain border" />
+                )}
+                <label htmlFor="image" className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed rounded-lg cursor-pointer bg-card hover:bg-muted">
+                  <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                    <UploadCloud className="w-10 h-10 mb-3 text-muted-foreground" />
+                    <p className="mb-2 text-sm text-muted-foreground"><span className="font-semibold">Click to upload</span> or drag and drop</p>
+                    <p className="text-xs text-muted-foreground">PNG, JPG or GIF (MAX. 800x400px)</p>
+                  </div>
+                  <Controller
+                    name="image"
+                    control={control}
+                    render={({ field }) => (
+                      <Input
+                        id="image"
+                        type="file"
+                        className="hidden"
+                        onChange={e => {
+                          const file = e.target.files ? e.target.files[0] : null;
+                          field.onChange(file);
+                          if (file) {
+                            setImagePreview(URL.createObjectURL(file));
+                          } else {
+                            setImagePreview(null);
+                          }
+                        }}
                       />
-                  </label>
+                    )}
+                  />
+                </label>
               </div>
               {errors.image && <p className="text-red-500 text-sm">{errors.image.message as string}</p>}
             </div>

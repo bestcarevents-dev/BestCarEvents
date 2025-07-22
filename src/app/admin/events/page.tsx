@@ -5,7 +5,7 @@ import { app } from "@/lib/firebase";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { MoreHorizontal } from "lucide-react";
+import { MoreHorizontal, X } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import Image from "next/image";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 interface EventRequest {
   id: string;
@@ -41,17 +42,26 @@ interface EventRequest {
 }
 
 export default function PendingEventsPage() {
-  const [requests, setRequests] = useState<EventRequest[]>([]);
+  const [pendingRequests, setPendingRequests] = useState<EventRequest[]>([]);
+  const [approvedRequests, setApprovedRequests] = useState<EventRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedEvent, setSelectedEvent] = useState<EventRequest | null>(null);
+  const [tab, setTab] = useState("pending");
   const db = getFirestore(app);
 
   useEffect(() => {
     const fetchRequests = async () => {
       setLoading(true);
-      const querySnapshot = await getDocs(collection(db, "pendingEvents"));
-      const requestsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as EventRequest));
-      setRequests(requestsData);
+      // Fetch pending events
+      const pendingSnapshot = await getDocs(collection(db, "pendingEvents"));
+      const pendingData = pendingSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as EventRequest));
+      setPendingRequests(pendingData);
+      // Fetch approved events
+      const approvedSnapshot = await getDocs(collection(db, "events"));
+      const approvedData = approvedSnapshot.docs
+        .map(doc => ({ id: doc.id, ...doc.data() } as EventRequest))
+        .filter(event => event.status === "approved");
+      setApprovedRequests(approvedData);
       setLoading(false);
     };
     fetchRequests();
@@ -78,9 +88,9 @@ export default function PendingEventsPage() {
           sponsors: request.sponsors,
           websiteUrl: request.websiteUrl,
       };
-      await addDoc(collection(db, "events"), { ...approvedEventData, status: "approved", submittedAt: request.submittedAt });
+      await addDoc(collection(db, "events"), { ...approvedEventData, status: "approved", submittedAt: request.submittedAt, createdAt: new Date() });
       await deleteDoc(doc(db, "pendingEvents", request.id));
-      setRequests(requests.filter(r => r.id !== request.id));
+      setPendingRequests(pendingRequests.filter(r => r.id !== request.id));
       setSelectedEvent(null); // Close modal after action
     } catch (error) {
       console.error("Error approving event: ", error);
@@ -92,7 +102,7 @@ export default function PendingEventsPage() {
         // For rejection, you might want to move to a rejected collection
         // or simply delete. Here we delete.
         await deleteDoc(doc(db, "pendingEvents", id));
-        setRequests(requests.filter(r => r.id !== id));
+        setPendingRequests(pendingRequests.filter(r => r.id !== id));
         setSelectedEvent(null); // Close modal after action
     } catch (error) {
         console.error("Error rejecting event: ", error);
@@ -102,7 +112,7 @@ export default function PendingEventsPage() {
   const handleDelete = async (id: string) => {
       try {
           await deleteDoc(doc(db, "pendingEvents", id));
-          setRequests(requests.filter(r => r.id !== id));
+          setPendingRequests(pendingRequests.filter(r => r.id !== id));
            setSelectedEvent(null); // Close modal after action
       } catch (error) {
           console.error("Error deleting event: ", error);
@@ -113,144 +123,207 @@ export default function PendingEventsPage() {
       setSelectedEvent(request);
   };
 
-  return (
-      <>
-        <h1 className="text-2xl font-semibold mb-4">Pending Event Requests</h1>
-        {loading ? (
-            <p>Loading...</p>
-        ) : (
-            <div className="overflow-x-auto">
-                <Table className="min-w-full">
-                <TableHeader>
-                    <TableRow>
-                    <TableHead>Image</TableHead>
-                    <TableHead>Event Name</TableHead>
-                    <TableHead>Date</TableHead>
-                    <TableHead>Location</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Actions</TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    {requests.map(request => (
-                    <TableRow key={request.id} onClick={() => handleRowClick(request)} className="cursor-pointer hover:bg-gray-100">
-                        <TableCell>
-                            {request.imageUrl && (
-                                <Image src={request.imageUrl} alt={request.eventName} width={50} height={30} className="rounded-md object-cover" />
-                            )}
-                        </TableCell>
-                        <TableCell>{request.eventName}</TableCell>
-                        <TableCell>{request.eventDate?.seconds ? new Date(request.eventDate.seconds * 1000).toLocaleDateString() : 'N/A'}</TableCell>
-                        <TableCell>{request.location}</TableCell>
-                        <TableCell>
-                            <Badge variant={request.status === 'pending' ? 'default' : request.status === 'approved' ? 'secondary' : 'destructive'}>{request.status}</Badge>
-                        </TableCell>
-                        <TableCell onClick={(e) => e.stopPropagation()}> {/* Prevent row click when clicking dropdown */}
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="h-8 w-8 p-0">
-                                <span className="sr-only">Open menu</span>
-                                <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                             {request.status === 'pending' && (
-                                 <>
-                                    <DropdownMenuItem onClick={() => handleApprove(request)}>Approve</DropdownMenuItem>
-                                    <DropdownMenuItem onClick={() => handleReject(request.id)}>Reject</DropdownMenuItem>
-                                 </>
-                             )}
-                             {(request.status === 'approved' || request.status === 'rejected') && (
-                                  <DropdownMenuItem onClick={() => handleDelete(request.id)}>Delete</DropdownMenuItem>
-                             )}
-                            </DropdownMenuContent>
-                        </DropdownMenu>
-                        </TableCell>
-                    </TableRow>
-                    ))}
-                </TableBody>
-                </Table>
-            </div>
-        )}
+  // Add this function to handle deleting approved events
+  const handleDeleteApproved = async (id: string) => {
+    try {
+      await deleteDoc(doc(db, "events", id));
+      setApprovedRequests(approvedRequests.filter(r => r.id !== id));
+      setSelectedEvent(null);
+    } catch (error) {
+      console.error("Error deleting approved event: ", error);
+    }
+  };
 
-        {/* Event Details Modal */}
-        <Dialog open={selectedEvent !== null} onOpenChange={() => setSelectedEvent(null)}>
-            <DialogContent className="sm:max-w-[600px]">
-                <DialogHeader>
-                    <DialogTitle>{selectedEvent?.eventName}</DialogTitle>
-                    <DialogDescription>Details of the event submission.</DialogDescription>
-                </DialogHeader>
-                {selectedEvent && (
-                    <div className="grid gap-4 py-4">
-                        <div className="grid grid-cols-[100px_1fr] items-center gap-4">
-                             <div className="font-semibold">Image:</div>
-                             <div>{selectedEvent.imageUrl && <Image src={selectedEvent.imageUrl} alt={selectedEvent.eventName} width={200} height={150} className="rounded-md object-cover" />}</div>
-                        </div>
-                         <div className="grid grid-cols-[100px_1fr] items-center gap-4">
-                            <div className="font-semibold">Status:</div>
-                            <div><Badge variant={selectedEvent.status === 'pending' ? 'default' : selectedEvent.status === 'approved' ? 'secondary' : 'destructive'}>{selectedEvent.status}</Badge></div>
-                        </div>
-                        <div className="grid grid-cols-[100px_1fr] items-center gap-4">
-                            <div className="font-semibold">Date:</div>
-                            <div>{selectedEvent.eventDate?.seconds ? new Date(selectedEvent.eventDate.seconds * 1000).toLocaleDateString() : 'N/A'}</div>
-                        </div>
-                        <div className="grid grid-cols-[100px_1fr] items-center gap-4">
-                            <div className="font-semibold">Location:</div>
-                            <div>{selectedEvent.location}</div>
-                        </div>
-                         <div className="grid grid-cols-[100px_1fr] items-center gap-4">
-                            <div className="font-semibold">Event Type:</div>
-                            <div>{selectedEvent.eventType || 'N/A'}</div>
-                        </div>
-                         <div className="grid grid-cols-[100px_1fr] items-center gap-4">
-                            <div className="font-semibold">Vehicle Focus:</div>
-                            <div>{selectedEvent.vehicleFocus || 'N/A'}</div>
-                        </div>
-                         <div className="grid grid-cols-[100px_1fr] items-center gap-4">
-                            <div className="font-semibold">Attendance:</div>
-                            <div>{selectedEvent.expectedAttendance || 'N/A'}</div>
-                        </div>
-                        <div className="grid grid-cols-[100px_1fr] items-center gap-4">
-                            <div className="font-semibold">Entry Fee:</div>
-                            <div>{selectedEvent.entryFee !== undefined ? selectedEvent.entryFee : 'N/A'}</div>
-                        </div>
-                         <div className="grid grid-cols-[100px_1fr] items-center gap-4">
-                            <div className="font-semibold">Organizer:</div>
-                            <div>{selectedEvent.organizerName}</div>
-                        </div>
-                         <div className="grid grid-cols-[100px_1fr] items-center gap-4">
-                            <div className="font-semibold">Contact:</div>
-                            <div>{selectedEvent.organizerContact}</div>
-                        </div>
-                        <div className="grid grid-cols-[100px_1fr] items-center gap-4">
-                            <div className="font-semibold">Description:</div>
-                            <div>{selectedEvent.description}</div>
-                        </div>
-                        <div className="grid grid-cols-[100px_1fr] items-center gap-4">
-                            <div className="font-semibold">Schedule:</div>
-                            <div>{selectedEvent.scheduleHighlights || 'N/A'}</div>
-                        </div>
-                         <div className="grid grid-cols-[100px_1fr] items-center gap-4">
-                            <div className="font-semibold">Activities:</div>
-                            <div>{selectedEvent.activities || 'N/A'}</div>
-                        </div>
-                         <div className="grid grid-cols-[100px_1fr] items-center gap-4">
-                            <div className="font-semibold">Rules URL:</div>
-                            <div>{selectedEvent.rulesUrl ? <a href={selectedEvent.rulesUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">{selectedEvent.rulesUrl}</a> : 'N/A'}</div>
-                        </div>
-                         <div className="grid grid-cols-[100px_1fr] items-center gap-4">
-                            <div className="font-semibold">Website URL:</div>
-                            <div>{selectedEvent.websiteUrl ? <a href={selectedEvent.websiteUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">{selectedEvent.websiteUrl}</a> : 'N/A'}</div>
-                        </div>
-                         <div className="grid grid-cols-[100px_1fr] items-center gap-4">
-                            <div className="font-semibold">Sponsors:</div>
-                            <div>{selectedEvent.sponsors || 'N/A'}</div>
-                        </div>
-                    </div>
-                )}
-            </DialogContent>
-        </Dialog>
-      </>
+  return (
+    <>
+      <h1 className="text-2xl font-semibold mb-4">Event Requests</h1>
+      <Tabs value={tab} onValueChange={setTab} className="mb-6">
+        <TabsList>
+          <TabsTrigger value="pending">Pending</TabsTrigger>
+          <TabsTrigger value="approved">Approved</TabsTrigger>
+          <TabsTrigger value="denied">Denied</TabsTrigger>
+        </TabsList>
+      </Tabs>
+      {tab === "pending" && (
+        loading ? (
+          <p>Loading...</p>
+        ) : (
+          <div className="overflow-x-auto">
+            <Table className="min-w-full">
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Image</TableHead>
+                  <TableHead>Event Name</TableHead>
+                  <TableHead>Date</TableHead>
+                  <TableHead>Location</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {pendingRequests.map(request => (
+                  <TableRow key={request.id} onClick={() => handleRowClick(request)} className="cursor-pointer transition-colors hover:bg-muted hover:text-primary">
+                    <TableCell>
+                      {request.imageUrl && (
+                        <Image src={request.imageUrl} alt={request.eventName} width={50} height={30} className="rounded-md object-cover" />
+                      )}
+                    </TableCell>
+                    <TableCell>{request.eventName}</TableCell>
+                    <TableCell>{request.eventDate?.seconds ? new Date(request.eventDate.seconds * 1000).toLocaleDateString() : 'N/A'}</TableCell>
+                    <TableCell>{request.location}</TableCell>
+                    <TableCell>
+                      <Badge variant={request.status === 'pending' ? 'default' : request.status === 'approved' ? 'secondary' : 'destructive'}>{request.status}</Badge>
+                    </TableCell>
+                    <TableCell onClick={(e) => e.stopPropagation()}>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" className="h-8 w-8 p-0">
+                            <span className="sr-only">Open menu</span>
+                            <MoreHorizontal className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                          {request.status === 'pending' && (
+                            <>
+                              <DropdownMenuItem onClick={() => handleApprove(request)}>Approve</DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => handleReject(request.id)}>Reject</DropdownMenuItem>
+                            </>
+                          )}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        )
+      )}
+      {tab === "approved" && (
+        loading ? (
+          <p>Loading...</p>
+        ) : (
+          <div className="overflow-x-auto">
+            <Table className="min-w-full">
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Image</TableHead>
+                  <TableHead>Event Name</TableHead>
+                  <TableHead>Date</TableHead>
+                  <TableHead>Location</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {approvedRequests.map(request => (
+                  <TableRow key={request.id} onClick={() => handleRowClick(request)} className="cursor-pointer transition-colors hover:bg-muted hover:text-primary">
+                    <TableCell>
+                      {request.imageUrl && (
+                        <Image src={request.imageUrl} alt={request.eventName} width={50} height={30} className="rounded-md object-cover" />
+                      )}
+                    </TableCell>
+                    <TableCell>{request.eventName}</TableCell>
+                    <TableCell>{request.eventDate?.seconds ? new Date(request.eventDate.seconds * 1000).toLocaleDateString() : 'N/A'}</TableCell>
+                    <TableCell>{request.location}</TableCell>
+                    <TableCell>
+                      <Badge variant="secondary">Approved</Badge>
+                    </TableCell>
+                    <TableCell onClick={e => e.stopPropagation()}>
+                      <Button variant="destructive" size="sm" onClick={() => handleDeleteApproved(request.id)}>Delete</Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        )
+      )}
+      {tab === "denied" && (
+        <div className="p-8 text-center text-muted-foreground">
+          <h2 className="text-xl font-semibold mb-2">Denied Events</h2>
+          <p>Denied events are not stored. Once denied, an event is permanently removed from the system.</p>
+        </div>
+      )}
+      {/* Event Details Modal */}
+      <Dialog open={selectedEvent !== null} onOpenChange={() => setSelectedEvent(null)}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto p-0">
+          <button
+            className="absolute right-4 top-4 z-10 rounded-full bg-white/80 hover:bg-red-500 hover:text-white text-gray-700 p-2 shadow-md transition-colors"
+            onClick={() => setSelectedEvent(null)}
+            aria-label="Close"
+            type="button"
+          >
+            <X className="w-5 h-5" />
+          </button>
+          <DialogHeader className="px-6 pt-6">
+            <DialogTitle className="font-headline text-2xl">{selectedEvent?.eventName}</DialogTitle>
+            <DialogDescription>Details of the event submission.</DialogDescription>
+          </DialogHeader>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 py-4 px-6">
+            <div>
+              {selectedEvent?.imageUrl && (
+                <Image src={selectedEvent.imageUrl} alt={selectedEvent.eventName} width={800} height={400} className="rounded-lg object-cover w-full max-h-96 mb-6" />
+              )}
+              <h3 className="font-semibold text-lg mb-2">Description</h3>
+              <p className="text-muted-foreground mb-4">{selectedEvent?.description}</p>
+              <h3 className="font-semibold text-lg mb-2">Schedule</h3>
+              <p className="text-muted-foreground mb-4">{selectedEvent?.scheduleHighlights || 'N/A'}</p>
+              <h3 className="font-semibold text-lg mb-2">Activities</h3>
+              <p className="text-muted-foreground mb-4">{selectedEvent?.activities || 'N/A'}</p>
+              <h3 className="font-semibold text-lg mb-2">Sponsors</h3>
+              <p className="text-muted-foreground mb-4">{selectedEvent?.sponsors || 'N/A'}</p>
+            </div>
+            <div>
+              <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+                <div>
+                  <p className="text-sm font-semibold text-muted-foreground">Date</p>
+                  <p className="text-md">{selectedEvent?.eventDate?.seconds ? new Date(selectedEvent.eventDate.seconds * 1000).toLocaleDateString() : 'N/A'}</p>
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-muted-foreground">Location</p>
+                  <p className="text-md">{selectedEvent?.location}</p>
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-muted-foreground">Type</p>
+                  <p className="text-md">{selectedEvent?.eventType || 'N/A'}</p>
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-muted-foreground">Vehicle Focus</p>
+                  <p className="text-md">{selectedEvent?.vehicleFocus || 'N/A'}</p>
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-muted-foreground">Attendance</p>
+                  <p className="text-md">{selectedEvent?.expectedAttendance || 'N/A'}</p>
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-muted-foreground">Entry Fee</p>
+                  <p className="text-md">{selectedEvent?.entryFee !== undefined ? selectedEvent.entryFee : 'N/A'}</p>
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-muted-foreground">Organizer</p>
+                  <p className="text-md">{selectedEvent?.organizerName}</p>
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-muted-foreground">Contact</p>
+                  <p className="text-md">{selectedEvent?.organizerContact}</p>
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-muted-foreground">Rules URL</p>
+                  <p className="text-md">{selectedEvent?.rulesUrl ? <a href={selectedEvent.rulesUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline break-all">{selectedEvent.rulesUrl}</a> : 'N/A'}</p>
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-muted-foreground">Website</p>
+                  <p className="text-md">{selectedEvent?.websiteUrl ? <a href={selectedEvent.websiteUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline break-all">{selectedEvent.websiteUrl}</a> : 'N/A'}</p>
+                </div>
+              </div>
+              <h3 className="font-semibold text-lg mb-2">Status</h3>
+              <Badge variant={selectedEvent?.status === 'pending' ? 'default' : selectedEvent?.status === 'approved' ? 'secondary' : 'destructive'}>{selectedEvent?.status}</Badge>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }

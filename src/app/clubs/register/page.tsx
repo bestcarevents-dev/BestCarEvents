@@ -13,7 +13,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { UploadCloud } from "lucide-react";
+import { UploadCloud, X } from "lucide-react";
 
 const clubSchema = z.object({
   clubName: z.string().min(3, "Club name is required"),
@@ -41,13 +41,33 @@ type ClubFormData = z.infer<typeof clubSchema>;
 
 export default function RegisterClubPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const router = useRouter();
   const db = getFirestore(app);
   const storage = getStorage(app);
 
-  const { register, handleSubmit, control, formState: { errors } } = useForm<ClubFormData>({
+  const { register, handleSubmit, control, setValue, formState: { errors } } = useForm<ClubFormData>({
     resolver: zodResolver(clubSchema),
   });
+
+  // Handle logo preview
+  const handleLogoChange = (file: File | null) => {
+    setLogoFile(file);
+    setValue("logo", file as any); // update react-hook-form
+    if (file) {
+      const url = URL.createObjectURL(file);
+      setLogoPreview(url);
+    } else {
+      setLogoPreview(null);
+    }
+  };
+
+  const removeLogo = () => {
+    setLogoFile(null);
+    setLogoPreview(null);
+    setValue("logo", null as any);
+  };
 
   const onSubmit = async (data: ClubFormData) => {
     setIsSubmitting(true);
@@ -57,7 +77,16 @@ export default function RegisterClubPage() {
       const logoUrl = await getDownloadURL(logoRef);
 
       await addDoc(collection(db, "pendingClubs"), {
-        ...data,
+        clubName: data.clubName,
+        city: data.city,
+        country: data.country,
+        website: data.website,
+        socialMediaLink: data.socialMediaLink,
+        description: data.description,
+        membershipCriteria: data.membershipCriteria,
+        typicalActivities: data.typicalActivities,
+        contactName: data.contactName,
+        contactEmail: data.contactEmail,
         logoUrl,
         status: "pending",
         submittedAt: new Date(),
@@ -150,16 +179,41 @@ export default function RegisterClubPage() {
                 </div>
                 <div className="space-y-2">
                     <Label htmlFor="logo">Club Logo</Label>
-                     <div className="flex items-center justify-center w-full">
+                     <div className="flex flex-col items-center justify-center w-full">
                         <label htmlFor="logo" className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed rounded-lg cursor-pointer bg-card hover:bg-muted">
                             <div className="flex flex-col items-center justify-center pt-5 pb-6">
                                 <UploadCloud className="w-10 h-10 mb-3 text-muted-foreground" />
                                 <p className="mb-2 text-sm text-muted-foreground"><span className="font-semibold">Click to upload</span> or drag and drop</p>
                                 <p className="text-xs text-muted-foreground">High resolution PNG or SVG preferred</p>
                             </div>
-                            <Controller name="logo" control={control} render={({ field }) => <Input id="logo" type="file" className="hidden" onChange={(e) => field.onChange(e.target.files ? e.target.files[0] : null)} />} />
+                            <Controller name="logo" control={control} render={({ field }) => (
+                              <Input
+                                id="logo"
+                                type="file"
+                                className="hidden"
+                                accept="image/*"
+                                onChange={e => {
+                                  const file = e.target.files ? e.target.files[0] : null;
+                                  handleLogoChange(file);
+                                  field.onChange(file);
+                                }}
+                              />
+                            )} />
                         </label>
-                    </div>
+                        {logoPreview && (
+                          <div className="relative mt-4 w-40 h-40 flex items-center justify-center">
+                            <img src={logoPreview} alt="Logo Preview" className="object-contain w-full h-full rounded shadow border" />
+                            <button
+                              type="button"
+                              onClick={removeLogo}
+                              className="absolute top-1 right-1 bg-white/80 rounded-full p-1 text-destructive hover:text-red-600 shadow"
+                              aria-label="Remove logo"
+                            >
+                              <X className="w-5 h-5" />
+                            </button>
+                          </div>
+                        )}
+                     </div>
                     {errors.logo && <p className="text-red-500 text-sm">{errors.logo.message as string}</p>}
                 </div>
             </fieldset>

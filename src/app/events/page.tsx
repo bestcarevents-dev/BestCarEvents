@@ -1,3 +1,5 @@
+'use client'
+
 import EventCard from "@/components/event-card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,23 +9,39 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { List, Map, PlusCircle } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
-
+import { useEffect, useState } from "react";
+import { getFirestore, collection, getDocs } from "firebase/firestore";
+import { app } from "@/lib/firebase";
+import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from '@/components/ui/dialog';
+import { getAuth, onAuthStateChanged, User } from 'firebase/auth';
 
 export default function EventsPage() {
-    const events = [
-      { id: 1, name: "Pebble Beach Concours d'Elegance", date: "August 18, 2024", location: "Pebble Beach, CA", image: "https://images.unsplash.com/photo-1617531653332-bd46c24f2068?q=80&w=915&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", hint: "vintage cars" },
-      { id: 2, name: "The Quail, A Motorsports Gathering", date: "August 16, 2024", location: "Carmel, CA", image: "https://images.unsplash.com/photo-1617531653332-bd46c24f2068?q=80&w=915&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", hint: "sports cars grass" },
-      { id: 3, name: "Goodwood Festival of Speed", date: "July 11-14, 2024", location: "Goodwood, UK", image: "https://images.unsplash.com/photo-1617531653332-bd46c24f2068?q=80&w=915&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", hint: "race track cars" },
-      { id: 4, name: "Rolex Monterey Motorsports Reunion", date: "August 14-17, 2024", location: "Monterey, CA", image: "https://images.unsplash.com/photo-1617531653332-bd46c24f2068?q=80&w=915&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", hint: "vintage race car" },
-      { id: 5, name: "Concours of Elegance", date: "Aug 30 - Sep 1, 2024", location: "Hampton Court, UK", image: "https://images.unsplash.com/photo-1617531653332-bd46c24f2068?q=80&w=915&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", hint: "classic cars" },
-      { id: 6, name: "Supercar Owners Circle", date: "September 4-8, 2024", location: "Andermatt, CH", image: "https://images.unsplash.com/photo-1617531653332-bd46c24f2068?q=80&w=915&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", hint: "supercar lineup" },
-      { id: 7, name: "Cars & Coffee", date: "Every First Sunday", location: "Your Local Town", image: "https://images.unsplash.com/photo-1617531653332-bd46c24f2068?q=80&w=915&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", hint: "muscle cars" },
-      { id: 8, name: "Le Mans Classic", date: "July 3-6, 2025", location: "Le Mans, FR", image: "https://images.unsplash.com/photo-1617531653332-bd46c24f2068?q=80&w=915&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", hint: "classic racing" },
-      { id: 9, name: "SEMA Show", date: "November 5-8, 2024", location: "Las Vegas, NV", image: "https://images.unsplash.com/photo-1617531653332-bd46c24f2068?q=80&w=915&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", hint: "modified cars" },
-      { id: 10, name: "Tokyo Auto Salon", date: "January 10-12, 2025", location: "Chiba, JP", image: "https://images.unsplash.com/photo-1617531653332-bd46c24f2068?q=80&w=915&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", hint: "japanese cars" },
-      { id: 11, name: "Daytona 500", date: "February 16, 2025", location: "Daytona Beach, FL", image: "https://images.unsplash.com/photo-1617531653332-bd46c24f2068?q=80&w=915&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", hint: "nascar racing" },
-      { id: 12, name: "Indy 500", date: "May 25, 2025", location: "Indianapolis, IN", image: "https://images.unsplash.com/photo-1617531653332-bd46c24f2068?q=80&w=915&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", hint: "indy car" }
-    ];
+    const [events, setEvents] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [currentUser, setCurrentUser] = useState<User | null>(null);
+    const [showDialog, setShowDialog] = useState(false);
+
+    useEffect(() => {
+      const fetchEvents = async () => {
+        setLoading(true);
+        const db = getFirestore(app);
+        const snapshot = await getDocs(collection(db, "events"));
+        const data = snapshot.docs
+          .map(doc => ({ id: doc.id, ...doc.data() }))
+          .filter(event => event.status === "approved");
+        setEvents(data);
+        setLoading(false);
+      };
+      fetchEvents();
+    }, []);
+
+    useEffect(() => {
+      const auth = getAuth(app);
+      const unsubscribe = onAuthStateChanged(auth, (user) => {
+        setCurrentUser(user);
+      });
+      return () => unsubscribe();
+    }, []);
 
     return (
     <div className="container mx-auto px-4 py-8">
@@ -34,12 +52,39 @@ export default function EventsPage() {
                 From local meetups to international shows, find your next car adventure.
                 </p>
             </div>
-            <Button asChild>
+            {currentUser ? (
+              <Button asChild>
                 <Link href="/events/host" className="flex items-center">
                     <PlusCircle className="mr-2 h-5 w-5" />
                     Host an Event
                 </Link>
-            </Button>
+              </Button>
+            ) : (
+              <Dialog open={showDialog} onOpenChange={setShowDialog}>
+                <DialogTrigger asChild>
+                  <Button className="flex items-center">
+                    <PlusCircle className="mr-2 h-5 w-5" />
+                    Host an Event
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-md w-full">
+                  <DialogHeader>
+                    <DialogTitle>Login Required</DialogTitle>
+                  </DialogHeader>
+                  <div className="py-4 text-center">
+                    <p className="text-lg font-semibold mb-2 text-destructive">Please login to host an event.</p>
+                    <DialogFooter>
+                      <DialogClose asChild>
+                        <Button variant="outline">Close</Button>
+                      </DialogClose>
+                      <Button asChild variant="default">
+                        <a href="/login">Login</a>
+                      </Button>
+                    </DialogFooter>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            )}
         </div>
 
       <div className="bg-card p-6 rounded-lg border mb-8">
@@ -73,11 +118,17 @@ export default function EventsPage() {
             </TabsList>
         </div>
         <TabsContent value="list">
+             {loading ? (
+               <div className="py-12 text-center text-muted-foreground">Loading events...</div>
+             ) : events.length === 0 ? (
+               <div className="py-12 text-center text-muted-foreground">No events found.</div>
+             ) : (
              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {events.map((event, index) => (
-                    <EventCard key={index} {...event} name={`${event.name} #${index + 1}`} />
+                    <EventCard key={event.id} {...event} name={event.eventName || event.name || `Event #${index + 1}`} date={event.eventDate?.seconds ? new Date(event.eventDate.seconds * 1000).toLocaleDateString() : event.date} location={event.location} image={event.imageUrl || event.image} hint={event.eventType || event.hint} />
                 ))}
             </div>
+             )}
              <div className="mt-12">
                 <Pagination>
                 <PaginationContent>

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Car, Facebook, Twitter, Instagram } from "lucide-react";
+import NewsletterSubscribe from "@/components/NewsletterSubscribe";
 
 export default function Footer() {
   return (
@@ -53,6 +54,9 @@ export default function Footer() {
               </ul>
             </div>
           </div>
+        </div>
+        <div className="flex justify-center mt-8">
+          <NewsletterSubscribe />
         </div>
         <div className="mt-12 border-t pt-8 text-center text-sm">
           <p>&copy; {new Date().getFullYear()} BestCarEvents. All rights reserved.</p>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { getFirestore, collection, addDoc } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
@@ -13,7 +13,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { UploadCloud } from "lucide-react";
+import { UploadCloud, X } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 
 const hotelFeatures = ["Climate Controlled", "24/7 Security", "Detailing Services", "Member's Lounge", "Battery Tending", "Transportation", "24/7 Access", "Social Events", "Sales & Brokerage"] as const;
@@ -40,7 +40,7 @@ const hotelSchema = z.object({
   contactEmail: z.string().email("Invalid email address"),
   
   // Media
-  image: z.instanceof(File).refine(file => file.size > 0, "An image of the facility is required"),
+  images: z.array(z.instanceof(File)).refine(files => files.length > 0, "At least one image is required"),
 });
 
 type HotelFormData = z.infer<typeof hotelSchema>;
@@ -50,28 +50,82 @@ export default function ListHotelPage() {
   const router = useRouter();
   const db = getFirestore(app);
   const storage = getStorage(app);
+  const [images, setImages] = useState<File[]>([]);
+  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
+  const [customAmenity, setCustomAmenity] = useState("");
+  const [customAmenities, setCustomAmenities] = useState<string[]>([]);
+  const MAX_IMAGES = 10;
 
-  const { register, handleSubmit, control, formState: { errors } } = useForm<HotelFormData>({
+  const { register, handleSubmit, control, setValue, formState: { errors } } = useForm<HotelFormData>({
     resolver: zodResolver(hotelSchema),
     defaultValues: {
       features: [],
+      images: [],
     }
   });
+
+  // Sync images with react-hook-form
+  useEffect(() => {
+    setValue("images", images);
+  }, [images, setValue]);
+
+  // Handle image preview
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files ? Array.from(e.target.files) : [];
+    const newFiles = files.filter(f => !images.some(img => img.name === f.name && img.size === f.size));
+    setImages(prev => [...prev, ...newFiles].slice(0, MAX_IMAGES));
+    setImagePreviews(prev => [
+      ...prev,
+      ...newFiles.map(file => URL.createObjectURL(file))
+    ].slice(0, MAX_IMAGES));
+  };
+
+  const removeImage = (idx: number) => {
+    setImages(prev => prev.filter((_, i) => i !== idx));
+    setImagePreviews(prev => {
+      URL.revokeObjectURL(prev[idx]);
+      return prev.filter((_, i) => i !== idx);
+    });
+  };
+
+  // Handle custom amenities
+  const addCustomAmenity = () => {
+    if (customAmenity.trim() && !customAmenities.includes(customAmenity.trim())) {
+      setCustomAmenities(prev => [...prev, customAmenity.trim()]);
+      setCustomAmenity("");
+    }
+  };
+  const removeCustomAmenity = (amenity: string) => {
+    setCustomAmenities(prev => prev.filter(a => a !== amenity));
+  };
 
   const onSubmit = async (data: HotelFormData) => {
     setIsSubmitting(true);
     try {
-      const imageRef = ref(storage, `hotel_images/${Date.now()}_${data.image.name}`);
-      await uploadBytes(imageRef, data.image);
-      const imageUrl = await getDownloadURL(imageRef);
-
+      // Upload all images
+      const imageUrls = [];
+      for (const file of images) {
+        const imageRef = ref(storage, `hotel_images/${Date.now()}_${file.name}`);
+        await uploadBytes(imageRef, file);
+        const imageUrl = await getDownloadURL(imageRef);
+        imageUrls.push(imageUrl);
+      }
       await addDoc(collection(db, "pendingHotels"), {
-        ...data,
-        imageUrl,
+        hotelName: data.hotelName,
+        address: data.address,
+        city: data.city,
+        state: data.state,
+        country: data.country,
+        website: data.website,
+        description: data.description,
+        storageType: data.storageType,
+        features: [...(data.features || []), ...customAmenities],
+        contactName: data.contactName,
+        contactEmail: data.contactEmail,
+        imageUrls,
         status: "pending",
         submittedAt: new Date(),
       });
-
       router.push("/hotels/submission-success");
     } catch (error) {
       console.error("Error submitting hotel:", error);
@@ -100,7 +154,12 @@ export default function ListHotelPage() {
                      <div className="space-y-2">
                         <Label>Primary Storage Type</Label>
                         <Controller name="storageType" control={control} render={({ field }) => (
-                            <select {...field} className="w-full p-2 border rounded-md"><option value="Dedicated">Dedicated</option><option value="Collection">Collection</option><option value="Long-Term">Long-Term</option><option value="Short-Term">Short-Term</option></select>
+                            <select {...field} className="w-full p-2 border rounded-md bg-background text-foreground dark:bg-zinc-900 dark:text-white">
+                              <option value="Dedicated">Dedicated</option>
+                              <option value="Collection">Collection</option>
+                              <option value="Long-Term">Long-Term</option>
+                              <option value="Short-Term">Short-Term</option>
+                            </select>
                         )} />
                         {errors.storageType && <p className="text-red-500 text-sm">{errors.storageType.message}</p>}
                     </div>
@@ -137,7 +196,7 @@ export default function ListHotelPage() {
                     </div>
                 </div>
                  <div className="space-y-2">
-                    <Label htmlFor="website">Website URL</Label>
+                    <Label htmlFor="website">Website URL <span className="text-muted-foreground">(optional)</span></Label>
                     <Input id="website" {...register("website")} placeholder="https://example.com" />
                     {errors.website && <p className="text-red-500 text-sm">{errors.website.message}</p>}
                 </div>
@@ -149,7 +208,8 @@ export default function ListHotelPage() {
                     name="features"
                     control={control}
                     render={({ field }) => (
-                        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                        <>
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
                             {hotelFeatures.map(feature => (
                                 <div key={feature} className="flex items-center space-x-2">
                                     <Checkbox 
@@ -165,6 +225,34 @@ export default function ListHotelPage() {
                                 </div>
                             ))}
                         </div>
+                        <div className="flex flex-wrap gap-2 mb-2">
+                          {customAmenities.map(amenity => (
+                            <div key={amenity} className="flex items-center bg-muted px-3 py-1 rounded-full">
+                              <Checkbox
+                                id={amenity}
+                                checked={field.value?.includes(amenity)}
+                                onCheckedChange={(checked) => {
+                                  return checked
+                                    ? field.onChange([...(field.value || []), amenity])
+                                    : field.onChange(field.value?.filter(v => v !== amenity))
+                                }}
+                              />
+                              <Label htmlFor={amenity} className="font-normal ml-2 mr-1">{amenity}</Label>
+                              <button type="button" onClick={() => removeCustomAmenity(amenity)} className="ml-1 text-destructive hover:text-red-600"><X className="w-4 h-4" /></button>
+                            </div>
+                          ))}
+                        </div>
+                        <div className="flex gap-2 mb-2">
+                          <Input
+                            type="text"
+                            value={customAmenity}
+                            onChange={e => setCustomAmenity(e.target.value)}
+                            placeholder="Add custom amenity"
+                            className="w-64"
+                          />
+                          <Button type="button" onClick={addCustomAmenity} variant="secondary">Add</Button>
+                        </div>
+                        </>
                     )}
                  />
             </fieldset>
@@ -172,17 +260,25 @@ export default function ListHotelPage() {
              <fieldset className="space-y-6 border-t pt-6">
                  <legend className="text-xl font-semibold font-headline">Media & Contact</legend>
                  <div className="space-y-2">
-                    <Label htmlFor="image">Facility Image</Label>
-                     <div className="flex items-center justify-center w-full">
+                    <Label htmlFor="image">Facility Images</Label>
+                     <div className="flex flex-col items-center justify-center w-full">
                         <label htmlFor="image" className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed rounded-lg cursor-pointer bg-card hover:bg-muted">
                             <div className="flex flex-col items-center justify-center pt-5 pb-6">
                                 <UploadCloud className="w-10 h-10 mb-3 text-muted-foreground" />
                                 <p className="mb-2 text-sm text-muted-foreground"><span className="font-semibold">Click to upload</span> or drag and drop</p>
                             </div>
-                            <Controller name="image" control={control} render={({ field }) => <Input id="image" type="file" className="hidden" onChange={(e) => field.onChange(e.target.files ? e.target.files[0] : null)} />} />
+                            <Input id="image" type="file" className="hidden" multiple accept="image/*" onChange={handleImageChange} />
                         </label>
-                    </div>
-                    {errors.image && <p className="text-red-500 text-sm">{errors.image.message as string}</p>}
+                        <div className="flex flex-wrap gap-4 mt-4">
+                          {imagePreviews.map((src, idx) => (
+                            <div key={src} className="relative group">
+                              <img src={src} alt={`Preview ${idx + 1}`} className="w-32 h-24 object-cover rounded shadow" />
+                              <button type="button" onClick={() => removeImage(idx)} className="absolute top-1 right-1 bg-white/80 rounded-full p-1 text-destructive hover:text-red-600 shadow"><X className="w-4 h-4" /></button>
+                            </div>
+                          ))}
+                        </div>
+                     </div>
+                    {errors.images && <p className="text-red-500 text-sm">{errors.images.message as string}</p>}
                 </div>
                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                      <div className="space-y-2">

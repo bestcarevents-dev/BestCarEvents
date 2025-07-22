@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { getFirestore, collection, addDoc } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
@@ -13,7 +13,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { UploadCloud } from "lucide-react";
+import { UploadCloud, X } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 
@@ -61,20 +61,35 @@ export default function SellCarPage() {
   const router = useRouter();
   const db = getFirestore(app);
   const storage = getStorage(app);
+  const [images, setImages] = useState<File[]>([]);
+  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
+  const MAX_IMAGES = 10;
 
-  const { control, register, handleSubmit, formState: { errors } } = useForm<CarFormData>({
+  const { control, register, handleSubmit, formState: { errors }, setValue } = useForm<CarFormData>({
     resolver: zodResolver(carSchema),
     defaultValues: {
         features: [],
     }
   });
 
+  useEffect(() => {
+    // Cleanup previews on unmount
+    return () => {
+      imagePreviews.forEach(url => URL.revokeObjectURL(url));
+    };
+  }, [imagePreviews]);
+
+  // Sync images with react-hook-form
+  useEffect(() => {
+    setValue("images", images);
+  }, [images, setValue]);
+
   const onSubmit = async (data: CarFormData) => {
     setIsSubmitting(true);
     try {
       const imageUrls = [];
       // Access files from the form data
-      const files = data.images;
+      const files = images;
 
       // Validate files length
       if (files.length === 0) {
@@ -261,14 +276,51 @@ export default function SellCarPage() {
                 </div>
                  <div className="space-y-2">
                     <Label htmlFor="images">Car Images</Label>
-                     <div className="flex items-center justify-center w-full">
+                     <div className="flex flex-col items-center justify-center w-full">
+                        {imagePreviews.length > 0 && (
+                          <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 gap-2 mb-4 w-full">
+                            {imagePreviews.slice(0, MAX_IMAGES).map((src, idx) => (
+                              <div key={idx} className="relative group">
+                                <img src={src} alt={`Preview ${idx + 1}`} className="rounded-md object-cover w-20 h-20 sm:w-24 sm:h-24 border shadow-sm transition-transform group-hover:scale-105" />
+                                <button
+                                  type="button"
+                                  className="absolute top-1 right-1 bg-white/80 hover:bg-red-500 hover:text-white text-gray-700 rounded-full p-1 shadow-md transition-colors"
+                                  onClick={() => {
+                                    const newImages = images.filter((_, i) => i !== idx);
+                                    const newPreviews = imagePreviews.filter((_, i) => i !== idx);
+                                    setImages(newImages);
+                                    setImagePreviews(newPreviews);
+                                  }}
+                                  aria-label="Remove image"
+                                >
+                                  <X className="w-4 h-4" />
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        )}
                         <label htmlFor="images" className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed rounded-lg cursor-pointer bg-card hover:bg-muted">
                             <div className="flex flex-col items-center justify-center pt-5 pb-6">
                                 <UploadCloud className="w-10 h-10 mb-3 text-muted-foreground" />
                                 <p className="mb-2 text-sm text-muted-foreground"><span className="font-semibold">Click to upload</span> or drag and drop</p>
                                 <p className="text-xs text-muted-foreground">Upload up to 10 high-quality images</p>
                             </div>
-                            <Input id="images" type="file" className="hidden" {...register("images")} multiple />
+                            <Input
+                              id="images"
+                              type="file"
+                              className="hidden"
+                              multiple
+                              accept="image/*"
+                              onChange={e => {
+                                let files = e.target.files ? Array.from(e.target.files) : [];
+                                if (images.length + files.length > MAX_IMAGES) {
+                                  files = files.slice(0, MAX_IMAGES - images.length);
+                                }
+                                const newPreviews = files.map(file => URL.createObjectURL(file));
+                                setImages(prev => [...prev, ...files]);
+                                setImagePreviews(prev => [...prev, ...newPreviews]);
+                              }}
+                            />
                         </label>
                     </div>
                     {errors.images && <p className="text-red-500 text-sm">{errors.images.message as string}</p>}
