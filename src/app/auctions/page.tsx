@@ -110,23 +110,27 @@ export default function AuctionsPage() {
           <div className="text-center text-lg py-12 text-muted-foreground">No auctions found.</div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {auctions.map(auction => (
-              <div key={auction.documentId} className="relative group">
-                <CarCard
-                  id={auction.documentId}
-                  name={auction.auctionName}
-                  price={auction.auctionHouse}
-                  location={`Starts ${auction.city}, ${auction.state}`}
-                  image={auction.imageUrl || "https://via.placeholder.com/800x500?text=No+Image"}
-                  hint={auction.auctionType}
-                  type="auction"
-                />
-                <div className="absolute top-4 right-4 bg-background/80 backdrop-blur-sm text-foreground px-3 py-1 rounded-full flex items-center gap-2 text-sm">
-                  <Clock className="w-4 h-4 text-primary" />
-                  <span>{auction.startDate?.seconds ? new Date(auction.startDate.seconds * 1000).toLocaleDateString() : "-"}</span>
+            {auctions
+              .slice()
+              .sort((a, b) => (b.featured === true ? 1 : 0) - (a.featured === true ? 1 : 0))
+              .map(auction => (
+                <div key={auction.documentId} className="relative group">
+                  <CarCard
+                    id={auction.documentId}
+                    name={auction.auctionName}
+                    price={auction.auctionHouse}
+                    location={`Starts ${auction.city}, ${auction.state}`}
+                    image={auction.imageUrl || "https://via.placeholder.com/800x500?text=No+Image"}
+                    hint={auction.auctionType}
+                    type="auction"
+                    featured={!!auction.featured}
+                  />
+                  <div className="absolute top-4 right-4 bg-background/80 backdrop-blur-sm text-foreground px-3 py-1 rounded-full flex items-center gap-2 text-sm">
+                    <Clock className="w-4 h-4 text-primary" />
+                    <span>{auction.startDate?.seconds ? new Date(auction.startDate.seconds * 1000).toLocaleDateString() : "-"}</span>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
           </div>
         )}
       </div>

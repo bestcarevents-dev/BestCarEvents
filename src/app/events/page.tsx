@@ -123,8 +123,11 @@ export default function EventsPage() {
                   <PartnerAdRotator page="Events" maxVisible={2} />
                </div>
                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                  {events.map((event, index) => (
-                      <EventCard key={event.id} {...event} name={event.eventName || event.name || `Event #${index + 1}`} date={event.eventDate?.seconds ? new Date(event.eventDate.seconds * 1000).toLocaleDateString() : event.date} location={event.location} image={event.imageUrl || event.image} hint={event.eventType || event.hint} />
+                  {events
+                    .slice()
+                    .sort((a, b) => (b.featured === true ? 1 : 0) - (a.featured === true ? 1 : 0))
+                    .map((event, index) => (
+                      <EventCard key={event.id} {...event} featured={!!event.featured} name={event.eventName || event.name || `Event #${index + 1}`} date={event.eventDate?.seconds ? new Date(event.eventDate.seconds * 1000).toLocaleDateString() : event.date} location={event.location} image={event.imageUrl || event.image} hint={event.eventType || event.hint} />
                   ))}
               </div>
              </>

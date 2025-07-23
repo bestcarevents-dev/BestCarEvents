@@ -108,17 +108,21 @@ export default function CarsPage() {
         {loading ? (
           <div className="col-span-full text-center text-lg py-12">Loading...</div>
         ) : (
-          cars.map((car, index) => (
-            <CarCard
-              key={car.documentId || index}
-              id={car.documentId}
-              name={car.make && car.model ? `${car.year} ${car.make} ${car.model}` : car.name || "Car"}
-              price={car.price ? `$${car.price.toLocaleString()}` : "N/A"}
-              location={car.location || ""}
-              image={car.images && car.images[0] ? car.images[0] : "https://via.placeholder.com/600x400?text=No+Image"}
-              hint={car.hint || car.make || "car"}
-            />
-          ))
+          cars
+            .slice()
+            .sort((a, b) => (b.featured === true ? 1 : 0) - (a.featured === true ? 1 : 0))
+            .map((car, index) => (
+              <CarCard
+                key={car.documentId || index}
+                id={car.documentId}
+                name={car.make && car.model ? `${car.year} ${car.make} ${car.model}` : car.name || "Car"}
+                price={car.price ? `$${car.price.toLocaleString()}` : "N/A"}
+                location={car.location || ""}
+                image={car.images && car.images[0] ? car.images[0] : "https://via.placeholder.com/600x400?text=No+Image"}
+                hint={car.hint || car.make || "car"}
+                featured={!!car.featured}
+              />
+            ))
         )}
       </div>
 

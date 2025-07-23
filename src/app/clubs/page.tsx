@@ -80,44 +80,52 @@ export default function ClubsPage() {
                 <div className="col-span-full text-center text-lg py-12 animate-pulse">Loading clubs...</div>
               ) : clubs.length === 0 ? (
                 <div className="col-span-full text-center text-lg py-12 text-muted-foreground">No clubs found.</div>
-              ) : clubs.map((club, idx) => (
-                <Link
-                  key={club.documentId || idx}
-                  href={`/clubs/${club.documentId}`}
-                  className="group relative bg-card border rounded-2xl shadow-lg p-6 flex flex-col items-center transition-transform duration-300 hover:-translate-y-2 hover:shadow-2xl hover:border-primary/60 animate-fade-in cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary"
-                  tabIndex={0}
-                  aria-label={`View details for ${club.clubName}`}
-                >
-                  <div className="absolute -top-6 left-1/2 -translate-x-1/2 z-10">
-                    <div className="rounded-full border-4 border-background shadow-lg bg-white w-20 h-20 flex items-center justify-center overflow-hidden animate-fade-in">
-                      <Image src={club.logoUrl || "/placeholder.jpg"} alt={club.clubName} width={80} height={80} className="object-contain w-full h-full" />
+              ) : clubs
+                .slice()
+                .sort((a, b) => (b.featured === true ? 1 : 0) - (a.featured === true ? 1 : 0))
+                .map((club, idx) => (
+                  <Link
+                    key={club.documentId || idx}
+                    href={`/clubs/${club.documentId}`}
+                    className="group relative bg-card border rounded-2xl shadow-lg p-6 flex flex-col items-center transition-transform duration-300 hover:-translate-y-2 hover:shadow-2xl hover:border-primary/60 animate-fade-in cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary"
+                    tabIndex={0}
+                    aria-label={`View details for ${club.clubName}`}
+                  >
+                    <div className="absolute -top-6 left-1/2 -translate-x-1/2 z-10">
+                      <div className="rounded-full border-4 border-background shadow-lg bg-white w-20 h-20 flex items-center justify-center overflow-hidden animate-fade-in">
+                        <Image src={club.logoUrl || "/placeholder.jpg"} alt={club.clubName} width={80} height={80} className="object-contain w-full h-full" />
+                        {club.featured && (
+                          <div className="absolute top-0 left-0 z-10">
+                            <span className="inline-flex items-center rounded-full bg-yellow-400 text-black px-3 py-1 text-xs font-bold shadow-lg animate-pulse">Featured</span>
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                  <div className="mt-12 w-full flex flex-col items-center">
-                    <h3 className="text-xl font-bold font-headline text-primary mb-1 text-center group-hover:underline transition-all">{club.clubName}</h3>
-                    <div className="flex items-center gap-2 mb-2 text-muted-foreground">
-                      <Users className="w-4 h-4" />
-                      <span>{club.city}, {club.country}</span>
+                    <div className="mt-12 w-full flex flex-col items-center">
+                      <h3 className="text-xl font-bold font-headline text-primary mb-1 text-center group-hover:underline transition-all">{club.clubName}</h3>
+                      <div className="flex items-center gap-2 mb-2 text-muted-foreground">
+                        <Users className="w-4 h-4" />
+                        <span>{club.city}, {club.country}</span>
+                      </div>
+                      <p className="text-sm text-muted-foreground mb-4 text-center line-clamp-3">{club.description}</p>
+                      <div className="flex gap-3 mt-auto">
+                        {club.website && (
+                          <a href={club.website} target="_blank" rel="noopener noreferrer" className="text-primary hover:text-accent transition-colors" title="Website">
+                            <Globe className="w-5 h-5" />
+                          </a>
+                        )}
+                        {club.socialMediaLink && (
+                          <a href={club.socialMediaLink} target="_blank" rel="noopener noreferrer" className="text-primary hover:text-accent transition-colors" title="Social Media">
+                            <LinkIcon className="w-5 h-5" />
+                          </a>
+                        )}
+                      </div>
                     </div>
-                    <p className="text-sm text-muted-foreground mb-4 text-center line-clamp-3">{club.description}</p>
-                    <div className="flex gap-3 mt-auto">
-                      {club.website && (
-                        <a href={club.website} target="_blank" rel="noopener noreferrer" className="text-primary hover:text-accent transition-colors" title="Website">
-                          <Globe className="w-5 h-5" />
-                        </a>
-                      )}
-                      {club.socialMediaLink && (
-                        <a href={club.socialMediaLink} target="_blank" rel="noopener noreferrer" className="text-primary hover:text-accent transition-colors" title="Social Media">
-                          <LinkIcon className="w-5 h-5" />
-                        </a>
-                      )}
+                    <div className="absolute top-4 right-4">
+                      <span className="inline-block bg-gradient-to-r from-primary to-accent text-white text-xs font-bold px-3 py-1 rounded-full shadow">{club.createdAt?.seconds ? new Date(club.createdAt.seconds * 1000).toLocaleDateString() : "New"}</span>
                     </div>
-                  </div>
-                  <div className="absolute top-4 right-4">
-                    <span className="inline-block bg-gradient-to-r from-primary to-accent text-white text-xs font-bold px-3 py-1 rounded-full shadow">{club.createdAt?.seconds ? new Date(club.createdAt.seconds * 1000).toLocaleDateString() : "New"}</span>
-                  </div>
-                </Link>
-              ))}
+                  </Link>
+                ))}
             </div>
           </div>
         </div>

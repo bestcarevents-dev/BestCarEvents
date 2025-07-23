@@ -55,11 +55,19 @@ export default function CarHotelsPage() {
           <div className="col-span-full text-center text-lg py-12 animate-pulse">Loading hotels...</div>
         ) : hotels.length === 0 ? (
           <div className="col-span-full text-center text-lg py-12 text-muted-foreground">No hotels found.</div>
-        ) : hotels.map(hotel => (
+        ) : hotels
+          .slice()
+          .sort((a, b) => (b.featured === true ? 1 : 0) - (a.featured === true ? 1 : 0))
+          .map(hotel => (
           <Card key={hotel.documentId} className="flex flex-col">
-            <CardHeader className="p-0">
+            <CardHeader className="p-0 relative">
               <Link href={`/hotels/${hotel.documentId}`} className="block relative aspect-video">
                 <Image src={hotel.imageUrls?.[0] || hotel.imageUrl || "https://via.placeholder.com/800x500?text=No+Image"} alt={hotel.hotelName} layout="fill" objectFit="cover" data-ai-hint={hotel.hotelName}/>
+                {hotel.featured && (
+                  <div className="absolute top-3 left-3 z-10">
+                    <span className="inline-flex items-center rounded-full bg-yellow-400 text-black px-3 py-1 text-xs font-bold shadow-lg animate-pulse">Featured</span>
+                  </div>
+                )}
               </Link>
             </CardHeader>
             <CardContent className="p-6 flex-grow">

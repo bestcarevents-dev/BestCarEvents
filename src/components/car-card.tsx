@@ -12,14 +12,20 @@ type CarCardProps = {
   image: string;
   hint: string;
   type?: 'car' | 'auction';
+  featured?: boolean;
 };
 
-export default function CarCard({ id, name, price, location, image, hint, type = 'car' }: CarCardProps) {
+export default function CarCard({ id, name, price, location, image, hint, type = 'car', featured }: CarCardProps) {
   return (
     <Card className="overflow-hidden flex flex-col group bg-transparent border-0 shadow-none rounded-none">
       <div className="relative overflow-hidden rounded-2xl">
         <Image src={image} alt={name} width={600} height={400} className="object-cover aspect-video w-full group-hover:scale-105 transition-transform duration-500 ease-in-out" data-ai-hint={hint} />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-black/0" />
+        {featured && (
+          <div className="absolute top-3 left-3 z-10">
+            <span className="inline-flex items-center rounded-full bg-yellow-400 text-black px-3 py-1 text-xs font-bold shadow-lg animate-pulse">Featured</span>
+          </div>
+        )}
       </div>
       <CardContent className="p-0 pt-5 flex-grow flex flex-col">
         <h3 className="text-xl font-headline font-bold leading-tight text-foreground group-hover:text-primary transition-colors">{name}</h3>

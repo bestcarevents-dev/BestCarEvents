@@ -73,7 +73,12 @@ const AuthButtons = ({ inMobileNav = false, user }: { inMobileNav?: boolean, use
             <Link href="/dashboard">Dashboard</Link>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
+          <DropdownMenuItem asChild>
+            <Link href="/dashboard">Partner Dashboard</Link>
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
           <DropdownMenuItem onClick={handleLogout}>Logout</DropdownMenuItem>
+          
         </DropdownMenuContent>
       </DropdownMenu>
     );
