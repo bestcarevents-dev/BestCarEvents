@@ -14,6 +14,7 @@ import { getFirestore, collection, getDocs } from "firebase/firestore";
 import { app } from "@/lib/firebase";
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from '@/components/ui/dialog';
 import { getAuth, onAuthStateChanged, User } from 'firebase/auth';
+import PartnerAdRotator from '@/components/PartnerAdRotator';
 
 export default function EventsPage() {
     const [events, setEvents] = useState<any[]>([]);
@@ -111,23 +112,23 @@ export default function EventsPage() {
       </div>
 
       <Tabs defaultValue="list" className="w-full">
-        <div className="flex justify-end mb-4">
-            <TabsList>
-                <TabsTrigger value="list"><List className="mr-2 h-4 w-4"/>List View</TabsTrigger>
-                <TabsTrigger value="map"><Map className="mr-2 h-4 w-4"/>Map View</TabsTrigger>
-            </TabsList>
-        </div>
         <TabsContent value="list">
              {loading ? (
                <div className="py-12 text-center text-muted-foreground">Loading events...</div>
              ) : events.length === 0 ? (
                <div className="py-12 text-center text-muted-foreground">No events found.</div>
              ) : (
-             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {events.map((event, index) => (
-                    <EventCard key={event.id} {...event} name={event.eventName || event.name || `Event #${index + 1}`} date={event.eventDate?.seconds ? new Date(event.eventDate.seconds * 1000).toLocaleDateString() : event.date} location={event.location} image={event.imageUrl || event.image} hint={event.eventType || event.hint} />
-                ))}
-            </div>
+             <>
+               <div className="mb-4">
+                 <div className="text-xs text-muted-foreground font-semibold mb-2 pl-1">Partners</div>
+                 <PartnerAdRotator page="Events" maxVisible={2} />
+               </div>
+               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                  {events.map((event, index) => (
+                      <EventCard key={event.id} {...event} name={event.eventName || event.name || `Event #${index + 1}`} date={event.eventDate?.seconds ? new Date(event.eventDate.seconds * 1000).toLocaleDateString() : event.date} location={event.location} image={event.imageUrl || event.image} hint={event.eventType || event.hint} />
+                  ))}
+              </div>
+             </>
              )}
              <div className="mt-12">
                 <Pagination>
@@ -150,15 +151,6 @@ export default function EventsPage() {
                 </PaginationContent>
                 </Pagination>
             </div>
-        </TabsContent>
-        <TabsContent value="map">
-            <Card>
-                <CardContent className="p-0">
-                    <div className="aspect-video w-full bg-muted flex items-center justify-center">
-                        <p>Map view placeholder</p>
-                    </div>
-                </CardContent>
-            </Card>
         </TabsContent>
       </Tabs>
 

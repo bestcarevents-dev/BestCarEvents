@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { getFirestore, collection, addDoc } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { getAuth, onAuthStateChanged, User } from "firebase/auth";
 import { app } from "@/lib/firebase";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -47,6 +48,7 @@ type HotelFormData = z.infer<typeof hotelSchema>;
 
 export default function ListHotelPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
   const router = useRouter();
   const db = getFirestore(app);
   const storage = getStorage(app);
@@ -68,6 +70,15 @@ export default function ListHotelPage() {
   useEffect(() => {
     setValue("images", images);
   }, [images, setValue]);
+
+  // Get current user
+  useEffect(() => {
+    const auth = getAuth(app);
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setCurrentUser(user);
+    });
+    return () => unsubscribe();
+  }, []);
 
   // Handle image preview
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -125,6 +136,8 @@ export default function ListHotelPage() {
         imageUrls,
         status: "pending",
         submittedAt: new Date(),
+        uploadedByUserId: currentUser?.uid || null,
+        uploadedByUserEmail: currentUser?.email || null,
       });
       router.push("/hotels/submission-success");
     } catch (error) {

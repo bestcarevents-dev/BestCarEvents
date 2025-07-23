@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { getFirestore, collection, addDoc } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { getAuth, onAuthStateChanged, User } from "firebase/auth";
 import { app } from "@/lib/firebase";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -50,6 +51,7 @@ type AuctionFormData = z.infer<typeof auctionSchema>;
 
 export default function RegisterAuctionPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const router = useRouter();
   const db = getFirestore(app);
@@ -72,6 +74,15 @@ export default function RegisterAuctionPage() {
       setImagePreview(null);
     }
   }, [imageFile]);
+
+  // Get current user
+  useEffect(() => {
+    const auth = getAuth(app);
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setCurrentUser(user);
+    });
+    return () => unsubscribe();
+  }, []);
 
   const onSubmit = async (data: AuctionFormData) => {
     setIsSubmitting(true);
@@ -97,6 +108,8 @@ export default function RegisterAuctionPage() {
         imageUrl,
         status: "pending",
         submittedAt: new Date(),
+        uploadedByUserId: currentUser?.uid || null,
+        uploadedByUserEmail: currentUser?.email || null,
       });
 
       router.push("/auctions/submission-success");

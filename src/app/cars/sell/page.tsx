@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { getFirestore, collection, addDoc } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { getAuth, onAuthStateChanged, User } from "firebase/auth";
 import { app } from "@/lib/firebase";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -58,6 +59,7 @@ type CarFormData = z.infer<typeof carSchema>;
 
 export default function SellCarPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
   const router = useRouter();
   const db = getFirestore(app);
   const storage = getStorage(app);
@@ -78,6 +80,15 @@ export default function SellCarPage() {
       imagePreviews.forEach(url => URL.revokeObjectURL(url));
     };
   }, [imagePreviews]);
+
+  // Get current user
+  useEffect(() => {
+    const auth = getAuth(app);
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setCurrentUser(user);
+    });
+    return () => unsubscribe();
+  }, []);
 
   // Sync images with react-hook-form
   useEffect(() => {
@@ -110,6 +121,8 @@ export default function SellCarPage() {
         images: imageUrls,
         status: "pending",
         submittedAt: new Date(),
+        uploadedByUserId: currentUser?.uid || null,
+        uploadedByUserEmail: currentUser?.email || null,
       });
 
       router.push("/cars/submission-success");

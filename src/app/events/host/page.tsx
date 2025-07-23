@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { getFirestore, collection, addDoc } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { getAuth, onAuthStateChanged, User } from "firebase/auth";
 import { app } from "@/lib/firebase";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -46,6 +47,7 @@ type EventFormData = z.infer<typeof eventSchema>;
 
 export default function HostEventPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
   const router = useRouter();
   const db = getFirestore(app);
   const storage = getStorage(app);
@@ -61,6 +63,15 @@ export default function HostEventPage() {
       if (imagePreview) URL.revokeObjectURL(imagePreview);
     };
   }, [imagePreview]);
+
+  // Get current user
+  useEffect(() => {
+    const auth = getAuth(app);
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setCurrentUser(user);
+    });
+    return () => unsubscribe();
+  }, []);
 
   const onSubmit = async (data: EventFormData) => {
     setIsSubmitting(true);
@@ -88,6 +99,8 @@ export default function HostEventPage() {
         websiteUrl: data.websiteUrl,
         status: "pending",
         submittedAt: new Date(),
+        uploadedByUserId: currentUser?.uid || null,
+        uploadedByUserEmail: currentUser?.email || null,
       });
 
       router.push("/events/submission-success");
