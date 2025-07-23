@@ -71,8 +71,9 @@ export default function PartnersPage() {
             ) : filtered.length === 0 ? (
               <div className="col-span-full text-center text-lg py-12 text-muted-foreground">No partners found.</div>
             ) : filtered.map((partner, idx) => (
-              <div
+              <Link
                 key={partner.documentId || idx}
+                href={`/partners/${partner.documentId}`}
                 className="group relative bg-gradient-to-br from-card via-background to-primary/10 border rounded-2xl shadow-2xl p-6 flex flex-col items-center transition-transform duration-300 hover:-translate-y-2 hover:shadow-3xl hover:border-primary/60 animate-fade-in cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary"
                 tabIndex={0}
                 aria-label={`View details for ${partner.businessName}`}
@@ -103,7 +104,7 @@ export default function PartnersPage() {
                     )}
                   </div>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
