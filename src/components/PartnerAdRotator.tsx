@@ -42,21 +42,36 @@ export default function PartnerAdRotator({ page, maxVisible = 2, rotateIntervalM
 
   return (
     <div className="flex flex-row gap-4 my-6">
-      {visibleAds.map(ad => (
-        <Card key={ad.id} className="flex flex-row items-center gap-4 bg-muted/60 border-muted/40 shadow-none hover:shadow-md transition group w-full max-w-xs">
-          <div className="relative w-28 h-20 flex-shrink-0 rounded-lg overflow-hidden bg-white border">
-            <Image src={ad.imageUrls?.[0] || "/placeholder.jpg"} alt={ad.title || ad.shopName || "Ad"} fill className="object-contain" />
-            <Badge className="absolute top-1 left-1 text-xs bg-primary/80 text-white">Featured</Badge>
-          </div>
-          <CardContent className="p-0 flex flex-col flex-grow min-w-0">
-            <Link href={`/partners/ad/${ad.id}`} className="hover:underline text-base font-semibold text-foreground truncate block">
-              {ad.title || ad.shopName || ad.providerName || ad.experienceName || ad.serviceName}
-            </Link>
-            {ad.price && <div className="text-green-600 font-bold text-sm mt-1">{ad.price}</div>}
-            <div className="text-xs text-muted-foreground truncate max-w-xs">{ad.description}</div>
-          </CardContent>
-        </Card>
-      ))}
+      {visibleAds.map(ad => {
+        // Determine price info based on ad type
+        let priceInfo = null;
+        const truncate = (str: string, n: number) => str.length > n ? str.slice(0, n - 1) + '…' : str;
+        if (ad.price && ad.priceRange) {
+          priceInfo = <div className="flex flex-col gap-1 mt-1">
+            <span className="text-green-600 font-bold text-sm">{truncate(ad.price, 21)}</span>
+            <span className="text-green-600 font-semibold text-xs">{truncate(ad.priceRange, 21)}</span>
+          </div>;
+        } else if (ad.price) {
+          priceInfo = <div className="text-green-600 font-bold text-sm mt-1">{truncate(ad.price, 21)}</div>;
+        } else if (ad.priceRange) {
+          priceInfo = <div className="text-green-600 font-semibold text-sm mt-1">{truncate(ad.priceRange, 21)}</div>;
+        }
+        return (
+          <Card key={ad.id} className="flex flex-row items-center gap-4 bg-muted/60 border-muted/40 shadow-none hover:shadow-md transition group w-full max-w-xs">
+            <div className="relative w-28 h-20 flex-shrink-0 rounded-lg overflow-hidden bg-white border">
+              <Image src={ad.imageUrls?.[0] || "/placeholder.jpg"} alt={ad.title || ad.shopName || "Ad"} fill className="object-contain" />
+              <Badge className="absolute top-1 left-1 text-xs bg-primary/80 text-white">Featured</Badge>
+            </div>
+            <CardContent className="p-0 flex flex-col flex-grow min-w-0">
+              <Link href={`/partners/ad/${ad.id}`} className="hover:underline text-base font-semibold text-foreground truncate block">
+                {ad.title || ad.shopName || ad.providerName || ad.experienceName || ad.serviceName}
+              </Link>
+              {priceInfo}
+              <div className="text-xs text-muted-foreground truncate max-w-xs">{ad.description}</div>
+            </CardContent>
+          </Card>
+        );
+      })}
     </div>
   );
 } 

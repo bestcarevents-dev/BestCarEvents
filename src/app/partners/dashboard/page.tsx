@@ -28,33 +28,41 @@ const PAGE_OPTIONS = [
 export default function PartnerDashboard() {
   const [ads, setAds] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [currentUser, setCurrentUser] = useState<any>(null);
+  const [authChecked, setAuthChecked] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
+    const auth = getAuth();
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      setCurrentUser(user);
+      setAuthChecked(true);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    if (!authChecked) return;
     const fetchAds = async () => {
       setLoading(true);
-      const db = getFirestore(app);
-      const auth = getAuth();
-      const user = auth.currentUser;
-      if (!user) {
+      if (!currentUser) {
+        setAds([]);
         setLoading(false);
         return;
       }
-      const adsQuery = query(collection(db, "partnerAds"), where("uploadedByUserId", "==", user.uid));
+      const db = getFirestore(app);
+      const adsQuery = query(collection(db, "partnerAds"), where("uploadedByUserId", "==", currentUser.uid));
       const snapshot = await getDocs(adsQuery);
       setAds(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
       setLoading(false);
     };
     fetchAds();
-  }, []);
+  }, [currentUser, authChecked]);
 
   return (
     <div className="container mx-auto px-4 py-12">
       <div className="flex items-center justify-between mb-8">
         <h1 className="text-3xl font-bold font-headline text-primary">Partner Dashboard</h1>
-        <Button asChild>
-          <Link href="/partners/advertise">Advertise New Product</Link>
-        </Button>
       </div>
       <div className="bg-card p-6 rounded-lg border">
         <h2 className="text-xl font-semibold mb-4">Your Ads</h2>

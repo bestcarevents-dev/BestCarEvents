@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { Car, Facebook, Twitter, Instagram } from "lucide-react";
+import Image from "next/image";
+import { Facebook, Twitter, Instagram } from "lucide-react";
 import NewsletterSubscribe from "@/components/NewsletterSubscribe";
 
 export default function Footer() {
@@ -10,7 +11,7 @@ export default function Footer() {
           
           <div className="md:col-span-4">
             <Link href="/" className="flex items-center gap-2 mb-4">
-              <Car className="h-8 w-8 text-primary" />
+              <Image src="/logo.png" alt="BestCarEvents Logo" width={80} height={80} />
               <span className="text-xl font-bold font-headline tracking-tighter text-foreground">BestCarEvents</span>
             </Link>
             <p className="text-sm max-w-xs">The premier destination for automotive enthusiasts to discover events, buy and sell unique cars, and connect with a vibrant community.</p>

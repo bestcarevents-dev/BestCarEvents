@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { AlignJustify, Search, X } from "lucide-react";
+import { AlignJustify, Search, X, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   Sheet,
@@ -13,6 +13,13 @@ import {
   SheetTrigger,
   SheetClose
 } from "@/components/ui/sheet";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
 import { getAuth, onAuthStateChanged, signOut, User } from "firebase/auth";
 import { app } from "@/lib/firebase";
 import { useRouter } from "next/navigation";
@@ -38,18 +45,39 @@ const AuthButtons = ({ inMobileNav = false, user }: { inMobileNav?: boolean, use
   };
 
   if (user) {
+    if (inMobileNav) {
+      // Keep logout in mobile nav for accessibility
+      return (
+        <div className={cn("flex items-center", inMobileNav ? "flex-col w-full gap-4" : "flex-row gap-2")}> 
+          <span className="text-sm mr-4">Hi, {user.email}</span>
+          <Button onClick={handleLogout} variant={inMobileNav ? "outline" : "ghost"} className="w-full lg:w-auto justify-center">
+            Logout
+          </Button>
+        </div>
+      );
+    }
+    // Desktop: show dropdown
     return (
-      <div className={cn("flex items-center", inMobileNav ? "flex-col w-full gap-4" : "flex-row gap-2")}>
-         <span className="text-sm mr-4">Hi, {user.email}</span>
-        <Button onClick={handleLogout} variant={inMobileNav ? "outline" : "ghost"} className="w-full lg:w-auto justify-center">
-          Logout
-        </Button>
-      </div>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <button className="flex items-center gap-1 text-sm font-medium focus:outline-none">
+            Hi, {user.email}
+            <ChevronDown className="w-4 h-4 ml-1" />
+          </button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuItem asChild>
+            <Link href="/dashboard">Dashboard</Link>
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem onClick={handleLogout}>Logout</DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
     );
   }
 
   return (
-    <div className={cn("flex items-center", inMobileNav ? "flex-col w-full gap-4" : "flex-row gap-2")}>
+    <div className={cn("flex items-center", inMobileNav ? "flex-col w-full gap-4" : "flex-row gap-2")}> 
       <Button asChild variant={inMobileNav ? "outline" : "ghost"} className="w-full lg:w-auto justify-center">
         <Link href="/login">Login</Link>
       </Button>
@@ -106,8 +134,8 @@ export default function Header() {
       )}
     >
       <div className="container mx-auto flex items-center justify-between h-20">
-        <Link href="/" className="flex items-center gap-2 text-2xl font-bold font-headline tracking-tighter">
-            <Image src="/logo.png" alt="BestCarEvents Logo" width={40} height={40} />
+        <Link href="/" className="flex items-center gap-2 text-xl font-bold font-headline tracking-tighter">
+            <Image src="/logo.png" alt="BestCarEvents Logo" width={70} height={70} />
             BestCarEvents
         </Link>
 
@@ -134,7 +162,7 @@ export default function Header() {
               <div className="flex flex-col h-full">
                 <SheetHeader className="flex flex-row items-center justify-between p-4 border-b">
                     <div className="flex items-center gap-2">
-                         <Image src="/logo.png" alt="BestCarEvents Logo" width={40} height={40} />
+                         <Image src="/logo.png" alt="BestCarEvents Logo" width={80} height={80} />
                         <SheetTitle className="text-2xl font-bold text-left font-headline tracking-tighter">BestCarEvents</SheetTitle>
                     </div>
                    <SheetClose asChild>
