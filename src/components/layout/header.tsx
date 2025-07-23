@@ -35,6 +35,9 @@ const navLinks = [
   { href: "/advertise", label: "Advertise" },
 ];
 
+const FLAG_UK = "https://flagcdn.com/gb.svg";
+const FLAG_IT = "https://flagcdn.com/it.svg";
+
 const AuthButtons = ({ inMobileNav = false, user }: { inMobileNav?: boolean, user: User | null }) => {
   const router = useRouter();
   const auth = getAuth(app);
@@ -144,10 +147,22 @@ export default function Header() {
         </div>
 
         <div className="hidden lg:flex items-center gap-2">
-            <Button variant="ghost" size="icon">
-                <Search />
-                <span className="sr-only">Search</span>
-            </Button>
+            {/* Language Dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="flex items-center gap-1 px-2 py-1 rounded hover:bg-muted/20 focus:outline-none">
+                  <Image src={FLAG_UK} alt="English (UK)" width={24} height={16} className="rounded shadow" />
+                  <ChevronDown className="w-4 h-4 ml-1 text-white" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem className="flex items-center gap-2">
+                  <Image src={FLAG_IT} alt="Italiano" width={24} height={16} className="rounded shadow" />
+                  Italiano
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            {/* End Language Dropdown */}
             <AuthButtons user={user} />
         </div>
 
