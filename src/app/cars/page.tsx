@@ -11,6 +11,7 @@ import { Pagination, PaginationContent, PaginationItem, PaginationLink, Paginati
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { PlusCircle } from "lucide-react";
 import Link from "next/link";
+import PartnerAdRotator from '@/components/PartnerAdRotator';
 
 export default function CarsPage() {
     const [cars, setCars] = useState<any[]>([]);
@@ -97,6 +98,10 @@ export default function CarsPage() {
           </Select>
           <Button>Search</Button>
         </div>
+      </div>
+
+      <div className="mb-4">
+        <PartnerAdRotator page="Cars for sale" maxVisible={2} />
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">

@@ -120,8 +120,7 @@ export default function EventsPage() {
              ) : (
              <>
                <div className="mb-4">
-                 <div className="text-xs text-muted-foreground font-semibold mb-2 pl-1">Partners</div>
-                 <PartnerAdRotator page="Events" maxVisible={2} />
+                  <PartnerAdRotator page="Events" maxVisible={2} />
                </div>
                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                   {events.map((event, index) => (

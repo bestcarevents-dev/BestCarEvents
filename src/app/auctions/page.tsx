@@ -10,6 +10,7 @@ import { getFirestore, collection, getDocs, query, orderBy } from "firebase/fire
 import { app } from "@/lib/firebase";
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from '@/components/ui/dialog';
 import { getAuth, onAuthStateChanged, User } from 'firebase/auth';
+import PartnerAdRotator from '@/components/PartnerAdRotator';
 
 export default function AuctionsPage() {
   const [auctions, setAuctions] = useState<any[]>([]);
@@ -96,6 +97,11 @@ export default function AuctionsPage() {
           <Button>Search</Button>
         </div>
       </div>
+
+      <div className="mb-4">
+        <PartnerAdRotator page="Auctions" maxVisible={2} />
+      </div>
+
       <div>
         <h2 className="text-2xl font-bold font-headline mb-6">Live Auctions</h2>
         {loading ? (

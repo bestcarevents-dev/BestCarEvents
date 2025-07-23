@@ -12,7 +12,7 @@ interface PartnerAdRotatorProps {
   rotateIntervalMs?: number; // how often to rotate
 }
 
-export default function PartnerAdRotator({ page, maxVisible = 2, rotateIntervalMs = 7000 }: PartnerAdRotatorProps) {
+export default function PartnerAdRotator({ page, maxVisible = 2, rotateIntervalMs = 3000 }: PartnerAdRotatorProps) {
   const [ads, setAds] = useState<any[]>([]);
   const [startIdx, setStartIdx] = useState(0);
 
@@ -41,9 +41,9 @@ export default function PartnerAdRotator({ page, maxVisible = 2, rotateIntervalM
   ];
 
   return (
-    <div className="flex flex-col gap-4 my-6">
+    <div className="flex flex-row gap-4 my-6">
       {visibleAds.map(ad => (
-        <Card key={ad.id} className="flex flex-row items-center gap-4 bg-muted/60 border-muted/40 shadow-none hover:shadow-md transition group">
+        <Card key={ad.id} className="flex flex-row items-center gap-4 bg-muted/60 border-muted/40 shadow-none hover:shadow-md transition group w-full max-w-xs">
           <div className="relative w-28 h-20 flex-shrink-0 rounded-lg overflow-hidden bg-white border">
             <Image src={ad.imageUrls?.[0] || "/placeholder.jpg"} alt={ad.title || ad.shopName || "Ad"} fill className="object-contain" />
             <Badge className="absolute top-1 left-1 text-xs bg-primary/80 text-white">Featured</Badge>

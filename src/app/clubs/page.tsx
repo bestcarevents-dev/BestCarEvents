@@ -9,6 +9,7 @@ import { app } from "@/lib/firebase";
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { Globe, Users, Link as LinkIcon } from "lucide-react";
+import PartnerAdRotator from '@/components/PartnerAdRotator';
 
 export default function ClubsPage() {
   const [clubs, setClubs] = useState<any[]>([]);
@@ -69,6 +70,9 @@ export default function ClubsPage() {
           </div>
 
           {/* Club Listing Grid */}
+          <div className="mb-4">
+            <PartnerAdRotator page="Car clubs" maxVisible={2} />
+          </div>
           <div className="mt-16">
             <h2 className="text-3xl font-bold font-headline mb-8 text-center md:text-left">Discover the Community</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
