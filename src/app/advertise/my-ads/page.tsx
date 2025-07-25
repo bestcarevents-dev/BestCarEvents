@@ -1,7 +1,5 @@
 "use client";
 
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { getFirestore, collection, getDocs, query, where, doc, updateDoc } from "firebase/firestore";
 import { app } from "@/lib/firebase";
@@ -15,6 +13,7 @@ import {
   SelectItem,
   SelectValue,
 } from "@/components/ui/select";
+import { Card } from "@/components/ui/card";
 
 const PAGE_OPTIONS = [
   "Events",
@@ -25,9 +24,9 @@ const PAGE_OPTIONS = [
   "Home page"
 ];
 
-export default function PartnerDashboard() {
+export default function MyAdsPage() {
   const [ads, setAds] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [adsLoading, setAdsLoading] = useState(true);
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [authChecked, setAuthChecked] = useState(false);
   const router = useRouter();
@@ -42,31 +41,23 @@ export default function PartnerDashboard() {
   }, []);
 
   useEffect(() => {
-    if (!authChecked) return;
+    if (!authChecked || !currentUser) return;
     const fetchAds = async () => {
-      setLoading(true);
-      if (!currentUser) {
-        setAds([]);
-        setLoading(false);
-        return;
-      }
+      setAdsLoading(true);
       const db = getFirestore(app);
       const adsQuery = query(collection(db, "partnerAds"), where("uploadedByUserId", "==", currentUser.uid));
       const snapshot = await getDocs(adsQuery);
       setAds(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-      setLoading(false);
+      setAdsLoading(false);
     };
     fetchAds();
   }, [currentUser, authChecked]);
 
   return (
     <div className="container mx-auto px-4 py-12">
-      <div className="flex items-center justify-between mb-8">
-        <h1 className="text-3xl font-bold font-headline text-primary">Partner Dashboard</h1>
-      </div>
       <div className="bg-card p-6 rounded-lg border">
         <h2 className="text-xl font-semibold mb-4">Your Ads</h2>
-        {loading ? (
+        {adsLoading ? (
           <div className="text-center py-8 animate-pulse">Loading your ads...</div>
         ) : ads.length === 0 ? (
           <div className="text-center py-8 text-muted-foreground">You have not created any ads yet.</div>

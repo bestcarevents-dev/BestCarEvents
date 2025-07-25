@@ -37,7 +37,12 @@ const partnerSchema = z.object({
   socialMedia: z.string().url("Must be a valid URL").optional().or(z.literal("")),
   categories: z.array(z.string()).min(1, "Select at least one category"),
   description: z.string().min(20, "Description is required"),
-  logo: z.instanceof(File).refine(file => file.size > 0, "A logo is required"),
+  logo: z
+    .any()
+    .refine(
+      (file) => typeof window === "undefined" || (file instanceof File && file.size > 0),
+      "A logo is required"
+    ),
   paymentMethod: z.enum(["card", "paypal"]),
 });
 

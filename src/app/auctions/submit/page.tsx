@@ -44,7 +44,12 @@ const auctionSchema = z.object({
   organizerContact: z.string().email("Invalid email address"),
   
   // Media
-  image: z.instanceof(File).refine(file => file.size > 0, "An image of the venue or a poster is required"),
+  image: z
+    .any()
+    .refine(
+      (file) => typeof window === "undefined" || (file instanceof File && file.size > 0),
+      "An image of the venue or a poster is required"
+    ),
 });
 
 type AuctionFormData = z.infer<typeof auctionSchema>;

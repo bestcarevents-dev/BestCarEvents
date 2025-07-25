@@ -221,7 +221,7 @@ export default function DashboardPage() {
     <div className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-8">
         <div>
-            <h1 className="text-4xl font-extrabold font-headline">My Dashboard</h1>
+            <h1 className="text-4xl font-extrabold font-headline">My Listings</h1>
           <p className="mt-2 text-muted-foreground">Welcome back, {getUserName()}!</p>
         </div>
       </div>
@@ -237,7 +237,7 @@ export default function DashboardPage() {
         </Card>
         <Card className="w-full">
             <CardHeader>
-            <CardTitle>Active Ads</CardTitle>
+            <CardTitle>Featured Listings</CardTitle>
             <CardDescription>All your featured (advertised) listings.</CardDescription>
             </CardHeader>
             <CardContent>

@@ -52,7 +52,12 @@ const carSchema = z.object({
   sellerContact: z.string().email("Invalid email address"),
   
   // Media
-  images: z.array(z.instanceof(File)).refine(files => files.length > 0, "At least one image is required")
+  images: z
+    .array(z.any())
+    .refine(
+      files => typeof window === "undefined" || (Array.isArray(files) && files.length > 0 && files.every(file => file instanceof File)),
+      "At least one image is required"
+    ),
 });
 
 type CarFormData = z.infer<typeof carSchema>;

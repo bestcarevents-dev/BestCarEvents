@@ -29,7 +29,12 @@ const eventSchema = z.object({
   description: z.string().min(20, "Description must be at least 20 characters"),
   organizerName: z.string().min(3, "Organizer name is required"),
   organizerContact: z.string().email("Invalid email address"),
-  image: z.instanceof(File).refine(file => file.size > 0, "Image is required"),
+  image: z
+    .any()
+    .refine(
+      (file) => typeof window === "undefined" || (file instanceof File && file.size > 0),
+      "Image is required"
+    ),
   
   // New Fields for Comprehensive Event Details
   eventType: z.enum(["Car Show", "Race", "Meetup", "Rally", "Other"], { required_error: "Event type is required" }),

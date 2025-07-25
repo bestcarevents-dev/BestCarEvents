@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Home, PlusCircle, Menu, CircleUser, CreditCard } from "lucide-react";
+import { Home, PlusCircle, Menu, CircleUser, CreditCard, List } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -9,9 +9,12 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 
 const navLinks = [
-  { href: "/partners/dashboard", icon: Home, label: "Advertistments" },
-  { href: "/partners/advertise", icon: PlusCircle, label: "Advertise New Product" },
-  { href: "/partners/billing", icon: CreditCard, label: "Billing Management" },
+  { href: "/advertise/dashboard", icon: Home, label: "Advertistments" },
+  { href: "/advertise/my-ads", icon: List, label: "My Ads" },
+  { href: "/advertise/advertise", icon: PlusCircle, label: "Advertise New Product" },
+  { href: "/advertise/listings", icon: List, label: "Listings" },
+  { href: "/advertise/billing", icon: CreditCard, label: "Billing Management" },
+
 ];
 
 export default function PartnersLayout({ children }: { children: React.ReactNode }) {

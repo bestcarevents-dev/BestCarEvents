@@ -35,7 +35,12 @@ const clubSchema = z.object({
   contactEmail: z.string().email("Invalid email address"),
   
   // Media
-  logo: z.instanceof(File).refine(file => file.size > 0, "A club logo is required"),
+  logo: z
+    .any()
+    .refine(
+      (file) => typeof window === "undefined" || (file instanceof File && file.size > 0),
+      "A club logo is required"
+    ),
 });
 
 type ClubFormData = z.infer<typeof clubSchema>;
