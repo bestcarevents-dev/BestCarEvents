@@ -32,7 +32,7 @@ const navLinks = [
   { href: "/hotels", label: "Car Hotels" },
   { href: "/clubs", label: "Car Clubs" },
   { href: "/partners", label: "Partners" },
-  { href: "/advertise-with-us", label: "Advertise" },
+  { href: "/advertise-with-us", label: "Pricing" },
 ];
 
 const FLAG_UK = "https://flagcdn.com/gb.svg";

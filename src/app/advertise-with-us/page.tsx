@@ -256,19 +256,30 @@ export default function AdvertisePage() {
 
       {/* Pricing Plans Section */}
       <div className="mb-16">
-        <h2 className="text-3xl font-bold font-headline text-center mb-10">Advertising Plans</h2>
+        <h2 className="text-3xl font-bold font-headline text-center mb-10">Pricing Plans</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {pricingPlans.map((plan) => (
-            <Card key={plan.title} className="flex flex-col h-full">
-              <CardHeader>
+            <Card key={plan.title} className="flex flex-col h-full hover:shadow-lg transition-shadow">
+              <CardHeader className="text-center">
+                <div className="flex justify-center mb-2">
+                  <div className="p-2 bg-primary/10 rounded-full">
+                    {plan.title === "Banner Advertisement" ? (
+                      <Globe className="w-5 h-5" />
+                    ) : plan.title === "Event/Club/Hotel/Auction Listing" ? (
+                      <Calendar className="w-5 h-5" />
+                    ) : (
+                      <Mail className="w-5 h-5" />
+                    )}
+                  </div>
+                </div>
                 <CardTitle className="text-xl font-headline text-primary">{plan.title}</CardTitle>
               </CardHeader>
-              <CardContent className="flex-grow space-y-6">
+              <CardContent className="flex-grow space-y-4">
                 {plan.options.map((opt, idx) => (
-                  <div key={idx} className="bg-muted/40 rounded-lg p-4 mb-2">
-                    <div className="font-semibold text-lg text-foreground">{opt.name}</div>
-                    <div className="text-muted-foreground text-sm mb-1">{opt.details}</div>
-                    <div className="flex items-center gap-4 mt-2">
+                  <div key={idx} className="bg-muted/40 rounded-lg p-4">
+                    <div className="font-semibold text-lg text-foreground mb-2">{opt.name}</div>
+                    <div className="text-muted-foreground text-sm mb-3">{opt.details}</div>
+                    <div className="flex items-center justify-between">
                       <span className="inline-block bg-primary/10 text-primary font-bold px-3 py-1 rounded-full text-sm">{opt.duration}</span>
                       <span className="inline-block bg-accent/20 text-foreground font-bold px-3 py-1 rounded-full text-sm">{opt.price}</span>
                     </div>
