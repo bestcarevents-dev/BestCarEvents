@@ -90,7 +90,7 @@ const DASHBOARD_PACKAGES = [
     perMonth: "CHF/EUR 900",
     savings: "save over 10%",
     features: [
-      "Homepage banner for 1 year (worth CHF/EUR 2'500)",
+      "Category page banner for 1 year (worth CHF/EUR 2'500)",
       "Standard listing for 1 year (worth CHF/EUR 4'800)",
       "Standard mention in newsletter 4 times per month for 12 months (worth CHF/EUR 4'800)"
     ]
@@ -190,7 +190,7 @@ export default function PartnerDashboard() {
       const res = await fetch('/api/payment/stripe-checkout-session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ amount, description }),
+        body: JSON.stringify({ amount, description, email: currentUser?.email }),
       });
       const data = await res.json();
       if (data.url) {

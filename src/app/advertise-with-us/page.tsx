@@ -1,6 +1,9 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Star, Mail, Globe, Linkedin, Facebook, Users } from "lucide-react";
+import { Star, Mail, Globe, Linkedin, Facebook, Users, Calendar, Image, Video, TrendingUp, Award, ChevronDown, ChevronUp } from "lucide-react";
+import { useState } from "react";
 
 const whyJoin = [
   "Targeted Audience: Gain direct access to an exclusive community of high-standard car collectors who are always on the lookout for premium events, clubs, auctions, and hotels.",
@@ -137,11 +140,107 @@ const networks = [
   }
 ];
 
+const carSalePricing = [
+  {
+    title: "Car Sale Listing Pricing",
+    subtitle: "Introductory Offer: Free Listings until September 30th, 2025",
+    plans: [
+      {
+        name: "Basic Listing",
+        price: "CHF 39 / EUR 42",
+        duration: "per month",
+        features: [
+          "Basic listing with essential details",
+          "Car model and price information",
+          "Up to 5 images",
+          "Great visibility at an affordable price"
+        ],
+        icon: <Image className="w-5 h-5" />
+      },
+      {
+        name: "Enhanced Listing",
+        price: "CHF 69 / EUR 74",
+        duration: "per month",
+        features: [
+          "Everything in Basic Listing, plus:",
+          "Up to 10 images",
+          "Priority placement on the website",
+          "Visibility across social media platforms",
+          "Instagram, Facebook, LinkedIn exposure"
+        ],
+        icon: <TrendingUp className="w-5 h-5" />
+      },
+      {
+        name: "Premium Listing",
+        price: "CHF 99 / EUR 107",
+        duration: "per month",
+        features: [
+          "Everything in Enhanced Listing, plus:",
+          "Professional video or virtual tour",
+          "Priority placement on homepage",
+          "Featured across all social media platforms",
+          "Top-tier exposure and maximum visibility"
+        ],
+        icon: <Video className="w-5 h-5" />
+      },
+      {
+        name: "Exclusive Banner Placement",
+        price: "CHF 149 / EUR 161",
+        duration: "per month",
+        features: [
+          "Prominent homepage banner placement",
+          "Featured across key categories",
+          "Maximum exposure to potential buyers",
+          "Enhanced visibility for up to 30 days",
+          "Premium positioning for serious sellers"
+        ],
+        icon: <Award className="w-5 h-5" />
+      }
+    ]
+  }
+];
+
+const optionalAddons = [
+  {
+    name: "Featured in Newsletters",
+    options: [
+      {
+        name: "Weekly Feature",
+        price: "CHF 49 / EUR 53",
+        duration: "per week",
+        details: "Get featured in our weekly newsletter, reaching a curated list of luxury car enthusiasts and collectors."
+      },
+      {
+        name: "Monthly Package",
+        price: "CHF 179 / EUR 192",
+        duration: "per month",
+        details: "Special Offer: Save 10% when opting for the monthly package!",
+        savings: "Save 10%"
+      }
+    ]
+  },
+  {
+    name: "Car Auction Listing",
+    price: "CHF 149 / EUR 161",
+    duration: "for 1 month",
+    details: "Feature your car in a dedicated auction section on our platform, offering exposure to serious buyers."
+  }
+];
+
+const whyChooseBestCar = [
+  "Lower pricing than competitors like AutoScout24 and ClassicDriver",
+  "Exclusive promotional offers with free listings for the first 2-3 months",
+  "Greater visibility with social media integration and banner placement",
+  "Flexible pricing plans designed to meet the needs of all sellers"
+];
+
 export default function AdvertisePage() {
+  const [showWhyChoose, setShowWhyChoose] = useState(false);
+
   return (
     <div className="container mx-auto px-4 py-16">
       {/* Why Join Section */}
-      <Card className="mb-12 p-8 bg-gradient-to-br from-primary/10 via-background to-accent/10 shadow-xl animate-fade-in-up">
+      {/* <Card className="mb-12 p-8 bg-gradient-to-br from-primary/10 via-background to-accent/10 shadow-xl animate-fade-in-up">
         <CardHeader className="p-0 mb-4">
           <CardTitle className="text-3xl font-headline text-primary mb-2 animate-fade-in-up">Why Join BEST CAR EVENTS?</CardTitle>
         </CardHeader>
@@ -153,11 +252,11 @@ export default function AdvertisePage() {
             </div>
           ))}
         </CardContent>
-      </Card>
+      </Card> */}
 
       {/* Pricing Plans Section */}
       <div className="mb-16">
-        <h2 className="text-3xl font-bold font-headline text-center mb-10">Pricing Plans</h2>
+        <h2 className="text-3xl font-bold font-headline text-center mb-10">Advertising Plans</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {pricingPlans.map((plan) => (
             <Card key={plan.title} className="flex flex-col h-full">
@@ -179,6 +278,149 @@ export default function AdvertisePage() {
             </Card>
           ))}
         </div>
+      </div>
+
+      {/* Why Choose Section - Moved here */}
+      <div className="mb-16">
+        <div className="text-center mb-6">
+          <Button
+            variant="ghost"
+            onClick={() => setShowWhyChoose(!showWhyChoose)}
+            className="text-2xl font-bold font-headline hover:bg-transparent p-0"
+          >
+            Why choose these options?
+            {showWhyChoose ? (
+              <ChevronUp className="ml-2 h-6 w-6" />
+            ) : (
+              <ChevronDown className="ml-2 h-6 w-6" />
+            )}
+          </Button>
+        </div>
+        
+        {showWhyChoose && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto animate-in slide-in-from-top-2 duration-300">
+            {whyChoose.map((item, i) => (
+              <Card key={i} className="bg-muted/40">
+                <CardHeader>
+                  <CardTitle className="text-lg font-headline text-primary mb-1">{item.title}</CardTitle>
+                  <CardDescription>{item.desc}</CardDescription>
+                </CardHeader>
+              </Card>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Car Sale Listing Pricing Section */}
+      <div className="mb-16">
+        <h2 className="text-3xl font-bold font-headline text-center mb-4">Car Sale Listing Pricing on BestCarEvents.com</h2>
+        <div className="text-center mb-8">
+          <Card className="p-6 bg-gradient-to-br from-primary/10 via-background to-accent/10 border-primary/20">
+            <CardHeader className="p-0 mb-4">
+              <CardTitle className="text-xl font-bold text-primary mb-2">🎉 Introductory Offer</CardTitle>
+            </CardHeader>
+            <CardContent className="p-0">
+              <p className="font-semibold text-foreground">Free Listings: For the first two months (ending the 30th September 2025) car listings are free of charge as part of our promotional offer.</p>
+            </CardContent>
+          </Card>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          {carSalePricing[0].plans.map((plan, idx) => (
+            <Card key={idx} className="flex flex-col h-full hover:shadow-lg transition-shadow">
+              <CardHeader className="text-center">
+                <div className="flex justify-center mb-2">
+                  <div className="p-2 bg-primary/10 rounded-full">
+                    {plan.icon}
+                  </div>
+                </div>
+                <CardTitle className="text-lg font-headline text-primary">{plan.name}</CardTitle>
+                <CardDescription className="text-center">
+                  <span className="text-2xl font-bold text-foreground">{plan.price}</span>
+                  <span className="text-muted-foreground ml-1">{plan.duration}</span>
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="flex-grow space-y-3">
+                {plan.features.map((feature, featureIdx) => (
+                  <div key={featureIdx} className="flex items-start gap-2 text-sm">
+                    <Star className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                    <span className="text-foreground">{feature}</span>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
+        {/* Optional Add-ons */}
+        <div className="mb-8">
+          <h3 className="text-2xl font-bold font-headline text-center mb-6">Optional Add-ons</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <Card className="p-6">
+              <CardHeader>
+                <CardTitle className="text-xl font-headline text-primary">{optionalAddons[0].name}</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {optionalAddons[0].options?.map((option, idx) => (
+                  <div key={idx} className="bg-muted/40 rounded-lg p-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="font-semibold text-lg">{option.name}</span>
+                      {option.savings && (
+                        <span className="bg-primary/10 text-primary px-2 py-1 rounded-full text-sm font-semibold">
+                          {option.savings}
+                        </span>
+                      )}
+                    </div>
+                    <div className="text-muted-foreground text-sm mb-2">{option.details}</div>
+                    <div className="flex items-center gap-2">
+                      <span className="inline-block bg-primary/10 text-primary font-bold px-3 py-1 rounded-full text-sm">
+                        {option.price}
+                      </span>
+                      <span className="text-muted-foreground text-sm">{option.duration}</span>
+                    </div>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+
+            <Card className="p-6">
+              <CardHeader>
+                <CardTitle className="text-xl font-headline text-primary">{optionalAddons[1].name}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="bg-muted/40 rounded-lg p-4">
+                  <div className="text-muted-foreground text-sm mb-3">{optionalAddons[1].details}</div>
+                  <div className="flex items-center gap-2">
+                    <span className="inline-block bg-primary/10 text-primary font-bold px-3 py-1 rounded-full text-sm">
+                      {optionalAddons[1].price}
+                    </span>
+                    <span className="text-muted-foreground text-sm">{optionalAddons[1].duration}</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+
+        {/* Why Choose BestCarEvents.com */}
+        <Card className="p-6 bg-gradient-to-br from-primary/10 via-background to-accent/10 border-primary/20">
+          <CardHeader>
+            <CardTitle className="text-2xl font-bold font-headline text-center text-primary">Why Choose BestCarEvents.com?</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {whyChooseBestCar.map((item, i) => (
+                <div key={i} className="flex items-start gap-3">
+                  <Star className="w-5 h-5 text-primary mt-1" />
+                  <span className="font-medium text-base text-foreground">{item}</span>
+                </div>
+              ))}
+            </div>
+            <div className="mt-6 text-center">
+              <p className="text-sm text-muted-foreground">All prices are subject to VAT.</p>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Special Packages Section */}
@@ -209,21 +451,6 @@ export default function AdvertisePage() {
         </div>
       </div>
 
-      {/* Why Choose Section */}
-      <div className="mb-16">
-        <h2 className="text-2xl font-bold font-headline text-center mb-8">Why choose these options?</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-          {whyChoose.map((item, i) => (
-            <Card key={i} className="bg-muted/40">
-              <CardHeader>
-                <CardTitle className="text-lg font-headline text-primary mb-1">{item.title}</CardTitle>
-                <CardDescription>{item.desc}</CardDescription>
-              </CardHeader>
-            </Card>
-          ))}
-        </div>
-      </div>
-
       {/* Social Networks Section */}
       <div className="mb-16">
         <h2 className="text-2xl font-bold font-headline text-center mb-8">We also publicise your event, hotel, club or auction over these networks:</h2>
@@ -246,7 +473,7 @@ export default function AdvertisePage() {
           <CardTitle className="text-2xl font-bold font-headline">Not satisfied with the offers?</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-muted-foreground mb-4">Please feel free to make your own offer, for us it’s important to have you on board.</p>
+          <p className="text-muted-foreground mb-4">Please feel free to make your own offer, for us it's important to have you on board.</p>
           <p className="text-lg font-semibold mb-6">Join us today and connect with an elite audience of car collectors and enthusiasts. Promote your events, clubs, hotels, or auctions in a way that ensures high visibility and engagement.</p>
           <Button size="lg" asChild className="font-bold rounded-full" >
             <a href="mailto:info@bestcarevents.com"><Mail className="mr-2" />Contact Us: info@bestcarevents.com</a>

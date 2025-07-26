@@ -1,8 +1,100 @@
 import { NextRequest, NextResponse } from 'next/server';
+import Stripe from 'stripe';
+import { db } from '@/lib/firebase';
+import { collection, query, where, getDocs, updateDoc, increment } from 'firebase/firestore';
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+  apiVersion: '2022-11-15',
+});
 
 export async function POST(req: NextRequest) {
-  // TODO: Implement Stripe webhook handling
-  // Use process.env.STRIPE_WEBHOOK_SECRET
-  // On successful payment, update Firestore user quota
+  console.log('Received Stripe webhook request');
+  const sig = req.headers.get('stripe-signature');
+  const buf = await req.arrayBuffer();
+  let event;
+  try {
+    console.log('Constructing Stripe event');
+    event = stripe.webhooks.constructEvent(Buffer.from(buf), sig!, process.env.STRIPE_WEBHOOK_SECRET!);
+    console.log('Stripe event constructed:', event.type);
+  } catch (err: any) {
+    console.error('Webhook Error:', err.message);
+    return NextResponse.json({ error: `Webhook Error: ${err.message}` }, { status: 400 });
+  }
+
+  // Handle the event
+  if (event.type === 'checkout.session.completed') {
+    const session = event.data.object as Stripe.Checkout.Session;
+    console.log('Processing checkout.session.completed event:', session.id);
+    const email = session.customer_email || session.metadata?.email;
+    const description = session.metadata?.description || '';
+    console.log('Extracted email:', email, 'description:', description);
+    if (!email || !description) {
+      console.error('Missing email or description in session.', { email, description });
+      return NextResponse.json({ error: 'Missing email or description in session.' }, { status: 400 });
+    }
+    // Map description to Firestore field
+    let update: Record<string, any> = {};
+    switch (description) {
+      case 'Homepage Banner (All Pages + Category)':
+        update = { homepageBannerRemaining: increment(1) };
+        break;
+      case 'Category Page Banner':
+        update = { categoryBannerRemaining: increment(1) };
+        break;
+      case 'Featured Listing':
+        update = { featuredListingRemaining: increment(1) };
+        break;
+      case 'Standard Listing':
+        update = { standardListingRemaining: increment(1) };
+        break;
+      case 'Premium Mention':
+        update = { premiumNewsletterRemaining: increment(1) };
+        break;
+      case 'Standard Mention':
+        update = { standardNewsletterRemaining: increment(1) };
+        break;
+      case 'Gold Package':
+        update = {
+          goldPackage: increment(1),
+          homepageBannerRemaining: increment(1),
+          featuredListingRemaining: increment(1),
+          premiumNewsletterRemaining: increment(12),
+        };
+        break;
+      case 'Silver Package':
+        update = {
+          silverPackage: increment(1),
+          categoryBannerRemaining: increment(1),
+          featuredListingRemaining: increment(1),
+          standardNewsletterRemaining: increment(12),
+        };
+        break;
+      default:
+        console.error('Unknown product description:', description);
+        return NextResponse.json({ error: 'Unknown product description.' }, { status: 400 });
+    }
+    console.log('Firestore update object:', update);
+    // Update user by email
+    try {
+      const usersRef = collection(db, 'users');
+      const q = query(usersRef, where('email', '==', email));
+      console.log('Querying Firestore for user with email:', email);
+      const userSnap = await getDocs(q);
+      console.log('Firestore query result size:', userSnap.size);
+      if (userSnap.empty) {
+        console.error('User not found for email:', email);
+        return NextResponse.json({ error: 'User not found.' }, { status: 404 });
+      }
+      const userDoc = userSnap.docs[0];
+      console.log('Updating user doc ref:', userDoc.ref.path, 'with:', update);
+      await updateDoc(userDoc.ref, update);
+      console.log('Firestore update successful');
+      return NextResponse.json({ received: true, updated: update });
+    } catch (firestoreError) {
+      console.error('Firestore error:', firestoreError);
+      return NextResponse.json({ error: 'Firestore error', details: String(firestoreError) }, { status: 500 });
+    }
+  }
+  console.log('Unhandled event type:', event.type);
   return NextResponse.json({ received: true });
 } 
