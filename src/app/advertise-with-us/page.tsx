@@ -236,6 +236,7 @@ const whyChooseBestCar = [
 
 export default function AdvertisePage() {
   const [showWhyChoose, setShowWhyChoose] = useState(false);
+  const [showOptionalAddons, setShowOptionalAddons] = useState(false);
 
   return (
     <div className="container mx-auto px-4 py-16">
@@ -256,7 +257,7 @@ export default function AdvertisePage() {
 
       {/* Pricing Plans Section */}
       <div className="mb-16">
-        <h2 className="text-3xl font-bold font-headline text-center mb-10">Pricing Plans</h2>
+        <h2 className="text-3xl font-bold font-headline text-center mb-10">Advertisment Plans</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {pricingPlans.map((plan) => (
             <Card key={plan.title} className="flex flex-col h-full hover:shadow-lg transition-shadow">
@@ -324,7 +325,7 @@ export default function AdvertisePage() {
 
       {/* Car Sale Listing Pricing Section */}
       <div className="mb-16">
-        <h2 className="text-3xl font-bold font-headline text-center mb-4">Car Sale Listing Pricing on BestCarEvents.com</h2>
+        <h2 className="text-3xl font-bold font-headline text-center mb-4">Car Sale Listing Pricing</h2>
         <div className="text-center mb-8">
           <Card className="p-6 bg-gradient-to-br from-primary/10 via-background to-accent/10 border-primary/20">
             <CardHeader className="p-0 mb-4">
@@ -365,52 +366,68 @@ export default function AdvertisePage() {
 
         {/* Optional Add-ons */}
         <div className="mb-8">
-          <h3 className="text-2xl font-bold font-headline text-center mb-6">Optional Add-ons</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Card className="p-6">
-              <CardHeader>
-                <CardTitle className="text-xl font-headline text-primary">{optionalAddons[0].name}</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {optionalAddons[0].options?.map((option, idx) => (
-                  <div key={idx} className="bg-muted/40 rounded-lg p-4">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="font-semibold text-lg">{option.name}</span>
-                      {option.savings && (
-                        <span className="bg-primary/10 text-primary px-2 py-1 rounded-full text-sm font-semibold">
-                          {option.savings}
+          <div className="text-center mb-6">
+            <Button
+              variant="ghost"
+              onClick={() => setShowOptionalAddons(!showOptionalAddons)}
+              className="text-2xl font-bold font-headline hover:bg-transparent p-0"
+            >
+              Optional Add-ons
+              {showOptionalAddons ? (
+                <ChevronUp className="ml-2 h-6 w-6" />
+              ) : (
+                <ChevronDown className="ml-2 h-6 w-6" />
+              )}
+            </Button>
+          </div>
+          
+          {showOptionalAddons && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-in slide-in-from-top-2 duration-300">
+              <Card className="p-6">
+                <CardHeader>
+                  <CardTitle className="text-xl font-headline text-primary">{optionalAddons[0].name}</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {optionalAddons[0].options?.map((option, idx) => (
+                    <div key={idx} className="bg-muted/40 rounded-lg p-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="font-semibold text-lg">{option.name}</span>
+                        {option.savings && (
+                          <span className="bg-primary/10 text-primary px-2 py-1 rounded-full text-sm font-semibold">
+                            {option.savings}
+                          </span>
+                        )}
+                      </div>
+                      <div className="text-muted-foreground text-sm mb-2">{option.details}</div>
+                      <div className="flex items-center gap-2">
+                        <span className="inline-block bg-primary/10 text-primary font-bold px-3 py-1 rounded-full text-sm">
+                          {option.price}
                         </span>
-                      )}
+                        <span className="text-muted-foreground text-sm">{option.duration}</span>
+                      </div>
                     </div>
-                    <div className="text-muted-foreground text-sm mb-2">{option.details}</div>
+                  ))}
+                </CardContent>
+              </Card>
+
+              <Card className="p-6">
+                <CardHeader>
+                  <CardTitle className="text-xl font-headline text-primary">{optionalAddons[1].name}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="bg-muted/40 rounded-lg p-4">
+                    <div className="text-muted-foreground text-sm mb-3">{optionalAddons[1].details}</div>
                     <div className="flex items-center gap-2">
                       <span className="inline-block bg-primary/10 text-primary font-bold px-3 py-1 rounded-full text-sm">
-                        {option.price}
+                        {optionalAddons[1].price}
                       </span>
-                      <span className="text-muted-foreground text-sm">{option.duration}</span>
+                      <span className="text-muted-foreground text-sm">{optionalAddons[1].duration}</span>
                     </div>
                   </div>
-                ))}
-              </CardContent>
-            </Card>
-
-            <Card className="p-6">
-              <CardHeader>
-                <CardTitle className="text-xl font-headline text-primary">{optionalAddons[1].name}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="bg-muted/40 rounded-lg p-4">
-                  <div className="text-muted-foreground text-sm mb-3">{optionalAddons[1].details}</div>
-                  <div className="flex items-center gap-2">
-                    <span className="inline-block bg-primary/10 text-primary font-bold px-3 py-1 rounded-full text-sm">
-                      {optionalAddons[1].price}
-                    </span>
-                    <span className="text-muted-foreground text-sm">{optionalAddons[1].duration}</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+                </CardContent>
+              </Card>
+            </div>
+          )}
         </div>
 
         {/* Why Choose BestCarEvents.com */}
