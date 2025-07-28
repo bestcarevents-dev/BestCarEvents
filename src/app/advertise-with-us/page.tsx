@@ -266,7 +266,7 @@ export default function AdvertisePage() {
             Comprehensive Advertisement & Listing Dashboard
           </CardTitle>
           <CardDescription className="text-lg text-muted-foreground max-w-3xl mx-auto">
-            Access our powerful dashboard to buy ad quotas, manage listings, and feature your content across all categories
+            Access our powerful dashboard to buy ad Credits, manage listings, and feature your content across all categories
           </CardDescription>
         </CardHeader>
         <CardContent className="p-0">
@@ -277,14 +277,14 @@ export default function AdvertisePage() {
                 <div className="flex items-start gap-3">
                   <div className="w-6 h-6 bg-primary text-white rounded-full flex items-center justify-center text-sm font-bold mt-0.5">1</div>
                   <div>
-                    <p className="font-medium">Buy any ad quota (slot)</p>
+                    <p className="font-medium">Buy any ad Credit (slot)</p>
                     <p className="text-sm text-muted-foreground">Purchase credits for banners, listings, or newsletter features</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
                   <div className="w-6 h-6 bg-primary text-white rounded-full flex items-center justify-center text-sm font-bold mt-0.5">2</div>
                   <div>
-                    <p className="font-medium">Advertise using your quota</p>
+                    <p className="font-medium">Advertise using your Credit</p>
                     <p className="text-sm text-muted-foreground">Use your purchased credits to create and manage advertisements</p>
                   </div>
                 </div>

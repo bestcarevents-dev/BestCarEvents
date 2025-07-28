@@ -136,7 +136,7 @@ export default function NewsletterMentionsPage() {
 
     const quotaField = formData.type === "premium" ? "premiumNewsletterRemaining" : "standardNewsletterRemaining";
     if (!userDoc || (userDoc[quotaField] ?? 0) <= 0) {
-      alert(`You don't have enough ${formData.type === "premium" ? "Premium" : "Standard"} Newsletter quota remaining.`);
+      alert(`You don't have enough ${formData.type === "premium" ? "Premium" : "Standard"} Newsletter Credit remaining.`);
       return;
     }
 
@@ -216,12 +216,12 @@ export default function NewsletterMentionsPage() {
       <div className="flex items-center justify-between mb-8">
         <h1 className="text-3xl font-bold font-headline text-primary">Newsletter Mentions</h1>
         <Button onClick={() => router.push("/advertise/dashboard")} variant="outline">
-          Buy More Quota
+          Buy More Credit
         </Button>
       </div>
 
       <div className="mb-8">
-        <h2 className="text-2xl font-bold mb-4">Your Newsletter Quota</h2>
+        <h2 className="text-2xl font-bold mb-4">Your Newsletter Credit</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <Card>
             <CardHeader>
@@ -281,7 +281,7 @@ export default function NewsletterMentionsPage() {
           <Alert>
             <AlertTriangle className="h-4 w-4" />
             <AlertDescription>
-              You don't have any newsletter quota remaining. Please purchase more quota from the dashboard.
+              You don't have any newsletter Credit remaining. Please purchase more Credit from the dashboard.
             </AlertDescription>
           </Alert>
         ) : null}

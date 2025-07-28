@@ -348,9 +348,9 @@ export default function PartnerDashboard() {
           <h1 className="text-3xl font-bold font-headline text-primary">Advertise Dashboard</h1>
         </div>
         
-        {/* Quota Section */}
+        {/* Credit Section */}
         <div className="mb-10">
-          <h2 className="text-2xl font-bold mb-2">Your Advertisement Quotas</h2>
+          <h2 className="text-2xl font-bold mb-2">Your Advertisement Credits</h2>
           <p className="text-muted-foreground mb-6">
             See how many placements you have left in each category and buy more as needed.
           </p>

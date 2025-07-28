@@ -77,7 +77,7 @@ export default function HeroSlider() {
                         <p className="mt-6 text-xl text-neutral-200 text-shadow-md max-w-3xl mx-auto">
                             {slides[current].subheadline}
                         </p>
-                        <div className="mt-10 max-w-2xl mx-auto">
+                        <div className="mt-10 max-w-2xl mx-auto px-4 sm:px-0">
                             <HeroSearch />
                         </div>
                     </div>

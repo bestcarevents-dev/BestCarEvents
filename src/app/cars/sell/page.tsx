@@ -220,7 +220,7 @@ export default function SellCarPage() {
       const currentQuota = userDoc?.[quotaField] || 0;
       
       if (currentQuota < 1) {
-        alert(`You don't have enough quota for ${selectedTier?.name}. Please purchase more quota.`);
+        alert(`You don't have enough Credit for ${selectedTier?.name}. Please purchase more Credit.`);
         return;
       }
     }
@@ -333,9 +333,9 @@ export default function SellCarPage() {
             <Card className="mb-8">
               <CardContent className="pt-6">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-semibold">Your Current Car Listing Quota</h3>
+                  <h3 className="text-lg font-semibold">Your Current Car Listing Credit</h3>
                   <Button asChild variant="outline">
-                    <Link href="/advertise/cars">Buy More Quota</Link>
+                    <Link href="/advertise/cars">Buy More Credit</Link>
                   </Button>
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -386,7 +386,7 @@ export default function SellCarPage() {
                         </div>
                       </div>
                       {!hasQuota && (
-                        <p className="text-xs text-red-500">No quota available</p>
+                        <p className="text-xs text-red-500">No Credit available</p>
                       )}
                     </div>
                   );

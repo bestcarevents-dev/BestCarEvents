@@ -367,7 +367,7 @@ export default function CarsListingPage() {
         {userDoc && (
           <Card className="mb-8">
             <CardContent className="pt-6">
-              <h3 className="text-lg font-semibold mb-4">Your Current Car Listing Quota</h3>
+              <h3 className="text-lg font-semibold mb-4">Your Current Car Listing Credit</h3>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {CAR_LISTING_TIERS.map((tier) => (
                   <div key={tier.name} className="text-center p-3 bg-muted rounded">
@@ -387,10 +387,10 @@ export default function CarsListingPage() {
         <div className="mb-12">
           <h2 className="text-2xl font-bold mb-6">Buy Car Listings</h2>
           
-          {/* Already have quota section */}
+          {/* Already have Credit section */}
           <div className="mb-8 p-4 bg-muted border rounded-lg max-w-2xl mx-auto">
             <div className="flex items-center justify-between">
-              <p className="text-base text-foreground">Already have enough quota to post your car?</p>
+              <p className="text-base text-foreground">Already have enough Credit to post your car?</p>
               <Button asChild className="bg-primary hover:bg-primary/90 text-primary-foreground">
                 <Link href="/cars/sell" className="flex items-center">
                   <PlusCircle className="mr-2 h-4 w-4" />

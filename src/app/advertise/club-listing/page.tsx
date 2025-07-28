@@ -106,12 +106,12 @@ export default function ClubListingPage() {
     const db = getFirestore(app);
     
     if (selectedFeatureType === 'standard' && (!userDoc || userDoc.standardListingRemaining <= 0)) {
-      alert("You don't have enough Standard Listing quota remaining.");
+      alert("You don't have enough Standard Listing Credit remaining.");
       setAdvertiseLoading(false);
       return;
     }
     if (selectedFeatureType === 'featured' && (!userDoc || userDoc.featuredListingRemaining <= 0)) {
-      alert("You don't have enough Featured Listing quota remaining.");
+      alert("You don't have enough Featured Listing Credit remaining.");
       setAdvertiseLoading(false);
       return;
     }
@@ -208,7 +208,7 @@ export default function ClubListingPage() {
             </div>
             <div className="ml-3">
               <p className="text-sm font-medium text-green-800">
-                Listing featured successfully! Your quota has been updated.
+                Listing featured successfully! Your Credit has been updated.
               </p>
             </div>
           </div>
@@ -272,7 +272,7 @@ export default function ClubListingPage() {
           <CardContent>
             {userDoc && (
               <div className="mb-6">
-                <h3 className="text-lg font-semibold mb-4">Your Current Club Listing Quota</h3>
+                <h3 className="text-lg font-semibold mb-4">Your Current Club Listing Credit</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="flex items-center justify-between p-3 bg-muted rounded">
                     <div className="flex items-center gap-2">
@@ -383,7 +383,7 @@ export default function ClubListingPage() {
                             
                             {userDoc && (
                               <div className="mb-4">
-                                <h4 className="text-sm font-medium mb-2">Your Current Quota</h4>
+                                <h4 className="text-sm font-medium mb-2">Your Current Credit</h4>
                                 <div className="grid grid-cols-2 gap-3">
                                   <div className="p-3 bg-muted rounded text-center">
                                     <p className="text-sm font-medium">Standard</p>

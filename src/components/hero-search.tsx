@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Calendar as CalendarIcon, MapPin, Search, Car, Hotel, Users } from "lucide-react";
+import { Calendar as CalendarIcon, MapPin, Search, Car, Hotel, Users, Gavel } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { format } from "date-fns";
@@ -23,6 +23,8 @@ export default function HeroSearch() {
         return "Hotel name or location...";
       case "clubs":
         return "Club name or type...";
+      case "auctions":
+        return "Auction name or type...";
       default:
         return "Search...";
     }
@@ -30,50 +32,66 @@ export default function HeroSearch() {
 
   return (
     <div className="bg-black/30 backdrop-blur-md rounded-xl p-4 lg:p-6 border border-white/10 shadow-2xl">
-      <div className="flex items-center space-x-2 mx-auto mb-6 justify-center">
+      <div className="flex flex-wrap items-center gap-2 mx-auto mb-6 justify-center">
         <Button
           onClick={() => setActiveTab("events")}
           variant="ghost"
           className={cn(
-            "flex-1 justify-center rounded-full font-semibold py-3",
+            "flex-1 min-w-[100px] justify-center rounded-full font-semibold py-3 text-sm sm:text-base",
             activeTab === 'events' ? 'bg-primary text-primary-foreground hover:bg-primary/90' : 'bg-transparent text-white hover:bg-white/10'
             )}
         >
-          <CalendarIcon className="mr-2 h-4 w-4" />
-          Events
+          <CalendarIcon className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+          <span className="hidden sm:inline">Events</span>
+          <span className="sm:hidden">Events</span>
         </Button>
         <Button
           onClick={() => setActiveTab("cars")}
           variant="ghost"
           className={cn(
-            "flex-1 justify-center rounded-full font-semibold py-3",
+            "flex-1 min-w-[100px] justify-center rounded-full font-semibold py-3 text-sm sm:text-base",
             activeTab === 'cars' ? 'bg-primary text-primary-foreground hover:bg-primary/90' : 'bg-transparent text-white hover:bg-white/10'
           )}
         >
-          <Car className="mr-2 h-4 w-4" />
-          Cars
+          <Car className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+          <span className="hidden sm:inline">Cars</span>
+          <span className="sm:hidden">Cars</span>
         </Button>
          <Button
           onClick={() => setActiveTab("hotels")}
           variant="ghost"
           className={cn(
-            "flex-1 justify-center rounded-full font-semibold py-3",
+            "flex-1 min-w-[100px] justify-center rounded-full font-semibold py-3 text-sm sm:text-base",
             activeTab === 'hotels' ? 'bg-primary text-primary-foreground hover:bg-primary/90' : 'bg-transparent text-white hover:bg-white/10'
           )}
         >
-          <Hotel className="mr-2 h-4 w-4" />
-          Hotels
+          <Hotel className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+          <span className="hidden sm:inline">Hotels</span>
+          <span className="sm:hidden">Hotels</span>
         </Button>
         <Button
           onClick={() => setActiveTab("clubs")}
           variant="ghost"
           className={cn(
-            "flex-1 justify-center rounded-full font-semibold py-3",
+            "flex-1 min-w-[100px] justify-center rounded-full font-semibold py-3 text-sm sm:text-base",
             activeTab === 'clubs' ? 'bg-primary text-primary-foreground hover:bg-primary/90' : 'bg-transparent text-white hover:bg-white/10'
           )}
         >
-          <Users className="mr-2 h-4 w-4" />
-          Clubs
+          <Users className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+          <span className="hidden sm:inline">Clubs</span>
+          <span className="sm:hidden">Clubs</span>
+        </Button>
+        <Button
+          onClick={() => setActiveTab("auctions")}
+          variant="ghost"
+          className={cn(
+            "flex-1 min-w-[100px] justify-center rounded-full font-semibold py-3 text-sm sm:text-base",
+            activeTab === 'auctions' ? 'bg-primary text-primary-foreground hover:bg-primary/90' : 'bg-transparent text-white hover:bg-white/10'
+          )}
+        >
+          <Gavel className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+          <span className="hidden sm:inline">Auctions</span>
+          <span className="sm:hidden">Auctions</span>
         </Button>
       </div>
 

@@ -183,14 +183,14 @@ export default function DashboardPage() {
     setAdvertiseLoading(true);
     const db = getFirestore(app);
     
-    // Check if user has remaining quota for the selected feature type
+    // Check if user has remaining Credit for the selected feature type
     if (selectedFeatureType === 'standard' && (!userDoc || userDoc.standardListingRemaining <= 0)) {
-      alert("You don't have enough Standard Listing quota remaining.");
+      alert("You don't have enough Standard Listing Credit remaining.");
       setAdvertiseLoading(false);
       return;
     }
     if (selectedFeatureType === 'featured' && (!userDoc || userDoc.featuredListingRemaining <= 0)) {
-      alert("You don't have enough Featured Listing quota remaining.");
+      alert("You don't have enough Featured Listing Credit remaining.");
       setAdvertiseLoading(false);
       return;
     }
@@ -213,7 +213,7 @@ export default function DashboardPage() {
       feature_end: featureEnd
     });
     
-    // Decrement the user's quota
+    // Decrement the user's Credit
     if (selectedFeatureType === 'standard') {
       await updateDoc(doc(db, "users", currentUser!.uid), {
         standardListingRemaining: (userDoc?.standardListingRemaining || 0) - 1
@@ -367,7 +367,7 @@ export default function DashboardPage() {
             </div>
             <div className="ml-3">
               <p className="text-sm font-medium text-green-800">
-                Listing featured successfully! Your quota has been updated.
+                Listing featured successfully! Your Credit has been updated.
               </p>
             </div>
           </div>
@@ -497,7 +497,7 @@ export default function DashboardPage() {
               {/* Add current car listings cards for Cars Listing section */}
               {table.label === "Cars Listing" && userDoc && (
                 <div className="mb-6">
-                  <h3 className="text-lg font-semibold mb-4">Your Current Car Listing Quota</h3>
+                  <h3 className="text-lg font-semibold mb-4">Your Current Car Listing Credit</h3>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     {CAR_LISTING_TIERS.map((tier) => (
                       <div key={tier.name} className="text-center p-3 bg-muted rounded">
@@ -512,10 +512,10 @@ export default function DashboardPage() {
                 </div>
               )}
 
-              {/* Add quota cards for Events Listing section */}
+              {/* Add Credit cards for Events Listing section */}
               {table.label === "Events Listing" && userDoc && (
                 <div className="mb-6">
-                  <h3 className="text-lg font-semibold mb-4">Your Current Event Listing Quota</h3>
+                  <h3 className="text-lg font-semibold mb-4">Your Current Event Listing Credit</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="flex items-center justify-between p-3 bg-muted rounded">
                       <div className="flex items-center gap-2">
@@ -546,10 +546,10 @@ export default function DashboardPage() {
                 </div>
               )}
 
-              {/* Add quota cards for Auction Listing section */}
+              {/* Add Credit cards for Auction Listing section */}
               {table.label === "Auction Listing" && userDoc && (
                 <div className="mb-6">
-                  <h3 className="text-lg font-semibold mb-4">Your Current Auction Listing Quota</h3>
+                  <h3 className="text-lg font-semibold mb-4">Your Current Auction Listing Credit</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="flex items-center justify-between p-3 bg-muted rounded">
                       <div className="flex items-center gap-2">
@@ -580,10 +580,10 @@ export default function DashboardPage() {
                 </div>
               )}
 
-              {/* Add quota cards for Hotel Listing section */}
+              {/* Add Credit cards for Hotel Listing section */}
               {table.label === "Hotel Listing" && userDoc && (
                 <div className="mb-6">
-                  <h3 className="text-lg font-semibold mb-4">Your Current Hotel Listing Quota</h3>
+                  <h3 className="text-lg font-semibold mb-4">Your Current Hotel Listing Credit</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="flex items-center justify-between p-3 bg-muted rounded">
                       <div className="flex items-center gap-2">
@@ -614,10 +614,10 @@ export default function DashboardPage() {
                 </div>
               )}
 
-              {/* Add quota cards for Club Listing section */}
+              {/* Add Credit cards for Club Listing section */}
               {table.label === "Club Listing" && userDoc && (
                 <div className="mb-6">
-                  <h3 className="text-lg font-semibold mb-4">Your Current Club Listing Quota</h3>
+                  <h3 className="text-lg font-semibold mb-4">Your Current Club Listing Credit</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="flex items-center justify-between p-3 bg-muted rounded">
                       <div className="flex items-center gap-2">
@@ -727,10 +727,10 @@ export default function DashboardPage() {
                                     </DialogDescription>
                                   </DialogHeader>
                                   
-                                  {/* Quota Cards */}
+                                  {/* Credit Cards */}
                                   {userDoc && (
                                     <div className="mb-4">
-                                      <h4 className="text-sm font-medium mb-2">Your Current Quota</h4>
+                                      <h4 className="text-sm font-medium mb-2">Your Current Credit</h4>
                                       <div className="grid grid-cols-2 gap-3">
                                         <div className="p-3 bg-muted rounded text-center">
                                           <p className="text-sm font-medium">Standard</p>
