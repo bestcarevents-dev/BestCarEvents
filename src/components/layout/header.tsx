@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { AlignJustify, Search, X, ChevronDown } from "lucide-react";
+import { AlignJustify, Search, X, ChevronDown, User as UserIcon, Car, LogOut, LayoutDashboard } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   Sheet,
@@ -20,7 +20,7 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
-import { getAuth, onAuthStateChanged, signOut, User } from "firebase/auth";
+import { getAuth, onAuthStateChanged, signOut, type User } from "firebase/auth";
 import { app } from "@/lib/firebase";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
@@ -63,22 +63,41 @@ const AuthButtons = ({ inMobileNav = false, user }: { inMobileNav?: boolean, use
     return (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <button className="flex items-center gap-1 text-sm font-medium focus:outline-none">
-            Hi, {user.email}
-            <ChevronDown className="w-4 h-4 ml-1" />
+          <button className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-white hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/20 transition-all duration-200">
+            <UserIcon className="w-4 h-4" />
+            {user.email}
+            <ChevronDown className="w-4 h-4 ml-1 transition-transform duration-200" />
           </button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuItem asChild>
-            <Link href="/dashboard">Dashboard</Link>
+        <DropdownMenuContent align="end" className="w-56 mt-2 bg-white/95 backdrop-blur-sm border border-white/20 shadow-xl">
+          <DropdownMenuItem asChild className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-orange-50 hover:text-orange-700 transition-colors duration-200">
+            <Link href="/advertise/dashboard" className="flex items-center gap-3 w-full">
+              <LayoutDashboard className="w-4 h-4" />
+              Dashboard
+            </Link>
           </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem asChild>
-            <Link href="/dashboard">Partner Dashboard</Link>
+          <DropdownMenuSeparator className="bg-gray-200" />
+          <DropdownMenuItem asChild className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-orange-50 hover:text-orange-700 transition-colors duration-200">
+            <Link href="/advertise/listings" className="flex items-center gap-3 w-full">
+              <Car className="w-4 h-4" />
+              My Listings
+            </Link>
           </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={handleLogout}>Logout</DropdownMenuItem>
-          
+          <DropdownMenuSeparator className="bg-gray-200" />
+          <DropdownMenuItem asChild className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-orange-50 hover:text-orange-700 transition-colors duration-200">
+            <Link href="/advertise/cars" className="flex items-center gap-3 w-full">
+              <Car className="w-4 h-4" />
+              Sell your car
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuSeparator className="bg-gray-200" />
+          <DropdownMenuItem 
+            onClick={handleLogout}
+            className="flex items-center gap-3 px-4 py-3 text-red-600 hover:bg-red-50 hover:text-red-700 transition-colors duration-200"
+          >
+            <LogOut className="w-4 h-4" />
+            Logout
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     );
@@ -143,7 +162,12 @@ export default function Header() {
     >
       <div className="container mx-auto flex items-center justify-between h-20">
         <Link href="/" className="flex items-center gap-2 text-xl font-bold font-headline tracking-tighter">
-            <Image src="/logo.png" alt="BestCarEvents Logo" width={70} height={70} />
+            <div className="relative">
+                <div className="absolute inset-0 bg-gradient-to-br from-amber-50/50 via-white/30 to-orange-50/50 rounded-full p-1 shadow-lg"></div>
+                <div className="relative z-10 p-2">
+                    <Image src="/logo.png" alt="BestCarEvents Logo" width={70} height={70} />
+                </div>
+            </div>
             BestCarEvents
         </Link>
 
@@ -182,7 +206,12 @@ export default function Header() {
               <div className="flex flex-col h-full">
                 <SheetHeader className="flex flex-row items-center justify-between p-4 border-b">
                     <div className="flex items-center gap-2">
-                         <Image src="/logo.png" alt="BestCarEvents Logo" width={80} height={80} />
+                         <div className="relative">
+                             <div className="absolute inset-0 bg-gradient-to-br from-amber-50/50 via-white/30 to-orange-50/50 rounded-full p-1 shadow-lg"></div>
+                             <div className="relative z-10 p-2">
+                                 <Image src="/logo.png" alt="BestCarEvents Logo" width={80} height={80} />
+                             </div>
+                         </div>
                         <SheetTitle className="text-2xl font-bold text-left font-headline tracking-tighter">BestCarEvents</SheetTitle>
                     </div>
                    <SheetClose asChild>

@@ -158,6 +158,29 @@ export default function CarDetailsPage() {
               <div className="text-base text-foreground mt-4"><span className="font-semibold">Condition:</span> {car.conditionDetails}</div>
             </CardContent>
           </Card>
+
+          {/* Video Section */}
+          {car.videoUrl && (
+            <Card className="p-6 animate-fade-in-up">
+              <CardContent className="p-0">
+                <h2 className="text-2xl font-bold font-headline mb-4 text-primary">Professional Video</h2>
+                <div className="aspect-video w-full rounded-lg overflow-hidden bg-black">
+                  <video 
+                    src={car.videoUrl} 
+                    controls 
+                    className="w-full h-full object-contain"
+                    preload="metadata"
+                    poster={car.images?.[0] || undefined}
+                  >
+                    Your browser does not support the video tag.
+                  </video>
+                </div>
+                <p className="text-sm text-muted-foreground mt-2">
+                  Professional video or virtual tour of this vehicle
+                </p>
+              </CardContent>
+            </Card>
+          )}
         </div>
         {/* Seller Info */}
         <div className="space-y-8">

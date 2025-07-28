@@ -9,11 +9,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { getFirestore, collection, addDoc } from "firebase/firestore";
+import { getFirestore, collection, addDoc, doc, getDoc } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { getAuth, onAuthStateChanged, User } from "firebase/auth";
 import { app } from "@/lib/firebase";
-import { UploadCloud, X } from "lucide-react";
+import { UploadCloud, X, Info } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 const adTypes = [
@@ -127,6 +127,7 @@ export default function AdvertisePage() {
   const [selectedType, setSelectedType] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [userDoc, setUserDoc] = useState<any>(null);
   const [images, setImages] = useState<File[]>([]);
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const router = useRouter();
@@ -145,9 +146,17 @@ export default function AdvertisePage() {
 
   useEffect(() => {
     const auth = getAuth(app);
-    const unsubscribe = onAuthStateChanged(auth, (user) => setCurrentUser(user));
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      setCurrentUser(user);
+      if (user) {
+        // Fetch user document for banner remaining counts
+        const userRef = doc(db, "users", user.uid);
+        const userSnap = await getDoc(userRef);
+        setUserDoc(userSnap.exists() ? userSnap.data() : null);
+      }
+    });
     return () => unsubscribe();
-  }, []);
+  }, [db]);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files ? Array.from(e.target.files) : [];
@@ -211,6 +220,66 @@ export default function AdvertisePage() {
 
   return (
     <div className="container mx-auto px-4 py-12">
+      {/* Banner Remaining Cards */}
+      {userDoc && (
+        <div className="mb-8">
+          <h2 className="text-2xl font-bold mb-6">Your Banner Advertisement Quota</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <Card className="p-4">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <Info className="w-4 h-4 text-primary" />
+                  <h3 className="font-semibold">Category Page Banner</h3>
+                </div>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => router.push('/advertise/dashboard')}
+                >
+                  Buy More
+                </Button>
+              </div>
+              <div className="text-center mb-3">
+                <p className="text-2xl font-bold text-primary">
+                  {userDoc.categoryBannerRemaining || 0}
+                </p>
+                <p className="text-xs text-muted-foreground">Remaining</p>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Category page banners only allow your ad to be shown in a specific category page. 
+                This provides targeted exposure to users browsing that particular category.
+              </p>
+            </Card>
+            
+            <Card className="p-4">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <Info className="w-4 h-4 text-primary" />
+                  <h3 className="font-semibold">Homepage Banner</h3>
+                </div>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => router.push('/advertise/dashboard')}
+                >
+                  Buy More
+                </Button>
+              </div>
+              <div className="text-center mb-3">
+                <p className="text-2xl font-bold text-primary">
+                  {userDoc.homepageBannerRemaining || 0}
+                </p>
+                <p className="text-xs text-muted-foreground">Remaining</p>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Homepage banner remaining allows your ad to be seen on the homepage along with category pages. 
+                This provides maximum exposure across the entire website.
+              </p>
+            </Card>
+          </div>
+        </div>
+      )}
+
       <Card className="max-w-3xl mx-auto">
         <CardHeader>
           <CardTitle className="text-2xl font-bold font-headline text-primary">Advertise Your Product or Service</CardTitle>

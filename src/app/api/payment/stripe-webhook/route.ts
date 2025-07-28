@@ -69,6 +69,25 @@ export async function POST(req: NextRequest) {
           standardNewsletterRemaining: increment(12),
         };
         break;
+      // Car listing purchases
+      case 'Basic Listing':
+        update = { cars_basicListing: increment(1) };
+        break;
+      case 'Enhanced Listing':
+        update = { cars_enhancedListing: increment(1) };
+        break;
+      case 'Premium Listing':
+        update = { cars_premiumListing: increment(1) };
+        break;
+      case 'Exclusive Banner Placement':
+        update = { cars_exclusiveBanner: increment(1) };
+        break;
+      case 'Featured in Newsletters':
+        update = { cars_newsletterFeature: increment(1) };
+        break;
+      case 'Car Auction Listing':
+        update = { cars_auctionListing: increment(1) };
+        break;
       default:
         console.error('Unknown product description:', description);
         return NextResponse.json({ error: 'Unknown product description.' }, { status: 400 });
