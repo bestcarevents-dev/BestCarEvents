@@ -91,6 +91,13 @@ const AuthButtons = ({ inMobileNav = false, user }: { inMobileNav?: boolean, use
             </Link>
           </DropdownMenuItem>
           <DropdownMenuSeparator className="bg-gray-200" />
+          <DropdownMenuItem asChild className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-orange-50 hover:text-orange-700 transition-colors duration-200">
+            <Link href="/advertise/dashboard" className="flex items-center gap-3 w-full">
+              <LayoutDashboard className="w-4 h-4" />
+              Advertise
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuSeparator className="bg-gray-200" />
           <DropdownMenuItem 
             onClick={handleLogout}
             className="flex items-center gap-3 px-4 py-3 text-red-600 hover:bg-red-50 hover:text-red-700 transition-colors duration-200"

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Home, PlusCircle, Menu, CircleUser, CreditCard, List, Car, ChevronDown, ChevronRight } from "lucide-react";
+import { Home, PlusCircle, Menu, CircleUser, CreditCard, List, Car, ChevronDown, ChevronRight, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -14,6 +14,7 @@ const navLinks = [
   { href: "/advertise/cars", icon: Car, label: "Buy Car Listings" },
   { href: "/advertise/my-ads", icon: List, label: "My Ads" },
   { href: "/advertise/advertise", icon: PlusCircle, label: "Advertise New Product" },
+  { href: "/advertise/newsletter-mentions", icon: Mail, label: "Newsletter Mentions" },
   { href: "/advertise/billing", icon: CreditCard, label: "Billing Management" },
 ];
 

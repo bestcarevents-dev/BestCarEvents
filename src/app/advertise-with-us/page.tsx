@@ -2,8 +2,11 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Star, Mail, Globe, Linkedin, Facebook, Users, Calendar, Image, Video, TrendingUp, Award, ChevronDown, ChevronUp } from "lucide-react";
-import { useState } from "react";
+import { Star, Mail, Globe, Linkedin, Facebook, Users, Calendar, Image, Video, TrendingUp, Award, ChevronDown, ChevronUp, ArrowRight, LogIn, BarChart3, Car } from "lucide-react";
+import { useState, useEffect } from "react";
+import { getAuth, onAuthStateChanged, User } from "firebase/auth";
+import { app } from "@/lib/firebase";
+import Link from "next/link";
 
 const whyJoin = [
   "Targeted Audience: Gain direct access to an exclusive community of high-standard car collectors who are always on the lookout for premium events, clubs, auctions, and hotels.",
@@ -237,9 +240,131 @@ const whyChooseBestCar = [
 export default function AdvertisePage() {
   const [showWhyChoose, setShowWhyChoose] = useState(false);
   const [showOptionalAddons, setShowOptionalAddons] = useState(false);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [authChecked, setAuthChecked] = useState(false);
+
+  useEffect(() => {
+    const auth = getAuth(app);
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setCurrentUser(user);
+      setAuthChecked(true);
+    });
+    return () => unsubscribe();
+  }, []);
 
   return (
     <div className="container mx-auto px-4 py-16">
+      {/* Context Instructions Section */}
+      <Card className="mb-12 p-8 bg-gradient-to-br from-primary/10 via-background to-accent/10 shadow-xl border-primary/20">
+        <CardHeader className="text-center p-0 mb-6">
+          <div className="flex justify-center mb-4">
+            <div className="p-3 bg-primary/20 rounded-full">
+              <BarChart3 className="h-8 w-8 text-primary" />
+            </div>
+          </div>
+          <CardTitle className="text-3xl font-bold text-primary mb-2">
+            Comprehensive Advertisement & Listing Dashboard
+          </CardTitle>
+          <CardDescription className="text-lg text-muted-foreground max-w-3xl mx-auto">
+            Access our powerful dashboard to buy ad quotas, manage listings, and feature your content across all categories
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="p-0">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+            <div className="space-y-4">
+              <h3 className="text-xl font-semibold text-foreground">How It Works:</h3>
+              <div className="space-y-3">
+                <div className="flex items-start gap-3">
+                  <div className="w-6 h-6 bg-primary text-white rounded-full flex items-center justify-center text-sm font-bold mt-0.5">1</div>
+                  <div>
+                    <p className="font-medium">Buy any ad quota (slot)</p>
+                    <p className="text-sm text-muted-foreground">Purchase credits for banners, listings, or newsletter features</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="w-6 h-6 bg-primary text-white rounded-full flex items-center justify-center text-sm font-bold mt-0.5">2</div>
+                  <div>
+                    <p className="font-medium">Advertise using your quota</p>
+                    <p className="text-sm text-muted-foreground">Use your purchased credits to create and manage advertisements</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="w-6 h-6 bg-primary text-white rounded-full flex items-center justify-center text-sm font-bold mt-0.5">3</div>
+                  <div>
+                    <p className="font-medium">Feature across categories</p>
+                    <p className="text-sm text-muted-foreground">Feature cars, auctions, hotels, clubs with comprehensive options</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="space-y-4">
+              <h3 className="text-xl font-semibold text-foreground">Available Options:</h3>
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <Star className="h-4 w-4 text-primary" />
+                  <span className="text-sm">Banner advertisements</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Calendar className="h-4 w-4 text-primary" />
+                  <span className="text-sm">Event/Club/Hotel/Auction listings</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Mail className="h-4 w-4 text-primary" />
+                  <span className="text-sm">Newsletter mentions</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Image className="h-4 w-4 text-primary" />
+                  <span className="text-sm">Car listings with multiple tiers</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <TrendingUp className="h-4 w-4 text-primary" />
+                  <span className="text-sm">Featured placements</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          {!authChecked ? (
+            <div className="text-center">
+              <div className="animate-pulse">
+                <div className="h-4 bg-muted rounded w-48 mx-auto mb-4"></div>
+              </div>
+            </div>
+          ) : currentUser ? (
+            <div className="text-center">
+              <Button size="lg" asChild className="font-bold rounded-full bg-primary hover:bg-primary/90">
+                <Link href="/advertise/dashboard">
+                  <BarChart3 className="mr-2 h-5 w-5" />
+                  Go to Dashboard
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Link>
+              </Button>
+              <p className="text-sm text-muted-foreground mt-3">
+                Access your comprehensive dashboard to manage all advertisements and listings
+              </p>
+            </div>
+          ) : (
+            <div className="text-center">
+              <div className="mb-4">
+                <p className="text-muted-foreground mb-4">
+                  Please log in to access our comprehensive advertisement dashboard
+                </p>
+                <Button size="lg" asChild className="font-bold rounded-full bg-primary hover:bg-primary/90">
+                  <Link href="/login">
+                    <LogIn className="mr-2 h-5 w-5" />
+                    Login to Continue
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </Link>
+                </Button>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Don't have an account? <Link href="/register" className="text-primary hover:underline">Register here</Link>
+              </p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
       {/* Why Join Section */}
       {/* <Card className="mb-12 p-8 bg-gradient-to-br from-primary/10 via-background to-accent/10 shadow-xl animate-fade-in-up">
         <CardHeader className="p-0 mb-4">

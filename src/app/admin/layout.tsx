@@ -17,7 +17,8 @@ import {
   Hotel,
   Handshake,
   Mail,
-  Star
+  Star,
+  Settings
 } from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
@@ -55,6 +56,8 @@ const navLinks = [
     { href: "/admin/partners", icon: Handshake, label: "Partner Applications" },
     { href: "/admin/users", icon: Users, label: "Manage Users" },
     { href: "/admin/newsletter", icon: Mail, label: "Newsletter" },
+    { href: "/admin/newsletter-requests", icon: Mail, label: "Newsletter Requests" },
+    { href: "/admin/settings", icon: Settings, label: "Settings" },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -86,7 +89,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     key={link.href}
                     href={link.href}
                     className={cn("flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary", {
-                      "bg-muted text-primary": pathname.startsWith(link.href)
+                      "bg-muted text-primary": link.href === "/admin/newsletter" || link.href === "/admin/newsletter-requests" 
+                        ? pathname === link.href 
+                        : pathname.startsWith(link.href)
                     })}
                   >
                     <link.icon className="h-4 w-4" />
