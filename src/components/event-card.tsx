@@ -23,7 +23,7 @@ export default function EventCard({ id, name, date, location, image, hint, featu
              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-black/0" />
           </div>
           <CardContent className="p-0 pt-5 flex-grow flex flex-col">
-              <div className="flex items-center gap-4 text-sm text-muted-foreground mb-2">
+              <div className="flex items-center gap-4 text-sm text-gray-600 mb-2">
                   <div className="flex items-center gap-1.5">
                       <Calendar className="w-4 h-4" />
                       <span>{date}</span>
@@ -33,11 +33,11 @@ export default function EventCard({ id, name, date, location, image, hint, featu
                       <span>{location}</span>
                   </div>
               </div>
-              <h3 className="text-xl font-headline font-bold leading-tight text-foreground group-hover:text-primary transition-colors flex-grow">{name}</h3>
+              <h3 className="text-xl font-headline font-bold leading-tight text-gray-900 group-hover:text-yellow-600 transition-colors flex-grow">{name}</h3>
               <div className="flex justify-end items-center mt-auto pt-4">
                   {/* Arrow icon remains, but the whole card is now the link */}
                   <div className="p-2 -mr-2">
-                    <ArrowRight className="w-6 h-6 transform group-hover:translate-x-1 transition-transform"/>
+                    <ArrowRight className="w-6 h-6 transform group-hover:translate-x-1 transition-transform text-gray-600"/>
                     <span className="sr-only">View Details</span>
                   </div>
               </div>

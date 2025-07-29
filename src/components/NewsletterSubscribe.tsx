@@ -61,7 +61,7 @@ export default function NewsletterSubscribe() {
   }, [open, user]);
 
   return (
-    <div className="w-full flex justify-center mt-10 mb-0">
+    <div className="w-full flex justify-center mt-10 mb-0 bg-white py-16">
       {user ? (
         <>
           <Button

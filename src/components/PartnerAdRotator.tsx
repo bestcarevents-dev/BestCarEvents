@@ -57,17 +57,17 @@ export default function PartnerAdRotator({ page, maxVisible = 2, rotateIntervalM
           priceInfo = <div className="text-green-600 font-semibold text-sm mt-1">{truncate(ad.priceRange, 21)}</div>;
         }
         return (
-          <Card key={ad.id} className="flex flex-row items-center gap-4 bg-muted/60 border-muted/40 shadow-none hover:shadow-md transition group w-full max-w-xs">
-            <div className="relative w-28 h-20 flex-shrink-0 rounded-lg overflow-hidden bg-white border">
+          <Card key={ad.id} className="flex flex-row items-center gap-4 bg-white border border-gray-200 shadow-sm hover:shadow-md transition group w-full max-w-xs">
+            <div className="relative w-28 h-20 flex-shrink-0 rounded-lg overflow-hidden bg-white border border-gray-200">
               <Image src={ad.imageUrls?.[0] || "/placeholder.jpg"} alt={ad.title || ad.shopName || "Ad"} fill className="object-contain" />
-              <Badge className="absolute top-1 left-1 text-xs bg-primary/80 text-white">Featured</Badge>
+              <Badge className="absolute top-1 left-1 text-xs bg-yellow-600 text-white">Featured</Badge>
             </div>
             <CardContent className="p-0 flex flex-col flex-grow min-w-0">
-              <Link href={`/partners/ad/${ad.id}`} className="hover:underline text-base font-semibold text-foreground truncate block">
+              <Link href={`/partners/ad/${ad.id}`} className="hover:underline text-base font-semibold text-gray-900 truncate block">
                 {ad.title || ad.shopName || ad.providerName || ad.experienceName || ad.serviceName}
               </Link>
               {priceInfo}
-              <div className="text-xs text-muted-foreground truncate max-w-xs">{ad.description}</div>
+              <div className="text-xs text-gray-600 truncate max-w-xs">{ad.description}</div>
             </CardContent>
           </Card>
         );

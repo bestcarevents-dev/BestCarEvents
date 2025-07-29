@@ -9,33 +9,33 @@ import { Card } from '@/components/ui/card';
 import NewsletterSubscribe from '@/components/NewsletterSubscribe';
 
 const ValueProposition = () => (
-    <div className="bg-background">
+    <div className="bg-white">
         <div className="container mx-auto px-4 py-20">
              <div className="text-center max-w-3xl mx-auto mb-16">
-                <h2 className="text-4xl font-headline font-extrabold sm:text-5xl tracking-tight text-foreground">A Community Built for Car Lovers</h2>
-                <p className="mt-4 text-lg text-muted-foreground">We are more than a marketplace. We are a global community of enthusiasts, collectors, and connoisseurs.</p>
+                <h2 className="text-4xl font-headline font-extrabold sm:text-5xl tracking-tight text-gray-900">A Community Built for Car Lovers</h2>
+                <p className="mt-4 text-lg text-gray-600">We are more than a marketplace. We are a global community of enthusiasts, collectors, and connoisseurs.</p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-12 text-center">
                 <div className="flex flex-col items-center">
-                    <div className="flex items-center justify-center h-16 w-16 rounded-full bg-primary/10 mb-6">
-                        <BadgeCheck className="h-8 w-8 text-primary"/>
+                    <div className="flex items-center justify-center h-16 w-16 rounded-full bg-yellow-100 mb-6">
+                        <BadgeCheck className="h-8 w-8 text-yellow-600"/>
                     </div>
-                    <h3 className="text-xl font-headline font-semibold text-foreground">Curated Marketplace</h3>
-                    <p className="mt-2 text-muted-foreground">Access a curated marketplace of the world's most desirable vehicles.</p>
+                    <h3 className="text-xl font-headline font-semibold text-gray-900">Curated Marketplace</h3>
+                    <p className="mt-2 text-gray-600">Access a curated marketplace of the world's most desirable vehicles.</p>
                 </div>
                 <div className="flex flex-col items-center">
-                     <div className="flex items-center justify-center h-16 w-16 rounded-full bg-primary/10 mb-6">
-                        <Trophy className="h-8 w-8 text-primary"/>
+                     <div className="flex items-center justify-center h-16 w-16 rounded-full bg-yellow-100 mb-6">
+                        <Trophy className="h-8 w-8 text-yellow-600"/>
                     </div>
-                    <h3 className="text-xl font-headline font-semibold text-foreground">Verified & Trusted</h3>
-                    <p className="mt-2 text-muted-foreground">Connect with verified enthusiasts, collectors, and event organizers.</p>
+                    <h3 className="text-xl font-headline font-semibold text-gray-900">Verified & Trusted</h3>
+                    <p className="mt-2 text-gray-600">Connect with verified enthusiasts, collectors, and event organizers.</p>
                 </div>
                 <div className="flex flex-col items-center">
-                    <div className="flex items-center justify-center h-16 w-16 rounded-full bg-primary/10 mb-6">
-                        <Group className="h-8 w-8 text-primary"/>
+                    <div className="flex items-center justify-center h-16 w-16 rounded-full bg-yellow-100 mb-6">
+                        <Group className="h-8 w-8 text-yellow-600"/>
                     </div>
-                    <h3 className="text-xl font-headline font-semibold text-foreground">Premier Experiences</h3>
-                    <p className="mt-2 text-muted-foreground">Discover and attend the most prestigious automotive events.</p>
+                    <h3 className="text-xl font-headline font-semibold text-gray-900">Premier Experiences</h3>
+                    <p className="mt-2 text-gray-600">Discover and attend the most prestigious automotive events.</p>
                 </div>
             </div>
         </div>
@@ -73,7 +73,7 @@ const FeaturedCarsSection = () => {
     ];
 
     return (
-        <section className="py-20 sm:py-28 bg-muted/30">
+        <section className="py-20 sm:py-28 bg-background">
             <div className="container mx-auto px-4">
                 <div className="text-center max-w-3xl mx-auto mb-16">
                     <h2 className="text-4xl font-headline font-extrabold sm:text-5xl tracking-tight text-foreground">Featured Cars</h2>
@@ -100,11 +100,11 @@ const FeaturedEventsSection = () => {
     { id: 3, name: "American Muscle Car Festival", date: "October 20-22, 2024", location: "Detroit, USA", image: "https://images.msv.com/high-res/7ebccdb2-57a4-47c7-b987-4d063cafa425.jpg", hint: "american muscle car", description: "A celebration of pure American power, featuring classic and modern muscle cars, drag races, and live entertainment." },
   ];
   return (
-    <section className="py-20 sm:py-28 bg-background">
+    <section className="py-20 sm:py-28 bg-white">
         <div className="container mx-auto px-4">
             <div className="text-center max-w-3xl mx-auto mb-16">
-                <h2 className="text-4xl font-headline font-extrabold sm:text-5xl tracking-tight text-foreground">Upcoming Events</h2>
-                <p className="mt-4 text-lg text-muted-foreground">Discover the most exclusive automotive gatherings around the world.</p>
+                <h2 className="text-4xl font-headline font-extrabold sm:text-5xl tracking-tight text-gray-900">Upcoming Events</h2>
+                <p className="mt-4 text-lg text-gray-600">Discover the most exclusive automotive gatherings around the world.</p>
             </div>
             <div className="space-y-8 max-w-5xl mx-auto">
                 {featuredEvents.map((item) => (
@@ -132,7 +132,7 @@ const FeaturedAuctionsSection = () => {
   ];
 
   return (
-    <section className="py-20 sm:py-28 bg-muted/30">
+    <section className="py-20 sm:py-28 bg-background">
         <div className="container mx-auto px-4">
             <div className="text-center max-w-3xl mx-auto mb-16">
               <h2 className="text-4xl font-headline font-extrabold sm:text-5xl tracking-tight text-foreground">Live Auctions</h2>

@@ -16,7 +16,7 @@ export type EventListItemProps = {
 
 export default function EventListItem({ name, date, location, image, hint, description }: EventListItemProps) {
   return (
-    <Card className="w-full overflow-hidden shadow-lg transition-shadow duration-300 hover:shadow-2xl bg-card">
+    <Card className="w-full overflow-hidden shadow-lg transition-shadow duration-300 hover:shadow-2xl bg-white border-gray-200">
       <div className="flex flex-col md:flex-row">
         <div className="relative w-full md:w-1/3 aspect-video md:aspect-auto shrink-0">
           <Image
@@ -29,23 +29,23 @@ export default function EventListItem({ name, date, location, image, hint, descr
         </div>
         <div className="flex flex-col flex-grow p-6 md:p-8">
           <div className="flex-grow">
-            <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-muted-foreground mb-3">
+            <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-gray-600 mb-3">
               <div className="flex items-center gap-2">
-                <Calendar className="w-4 h-4 text-primary" />
+                <Calendar className="w-4 h-4 text-yellow-600" />
                 <span>{date}</span>
               </div>
               <div className="flex items-center gap-2">
-                <MapPin className="w-4 h-4 text-primary" />
+                <MapPin className="w-4 h-4 text-yellow-600" />
                 <span>{location}</span>
               </div>
             </div>
-            <h3 className="font-headline font-bold text-2xl text-foreground mb-3">
-              <Link href="/events" className="hover:text-primary transition-colors">{name}</Link>
+            <h3 className="font-headline font-bold text-2xl text-gray-900 mb-3">
+              <Link href="/events" className="hover:text-yellow-600 transition-colors">{name}</Link>
             </h3>
-            <p className="text-muted-foreground line-clamp-2 leading-relaxed">{description}</p>
+            <p className="text-gray-600 line-clamp-2 leading-relaxed">{description}</p>
           </div>
           <div className="mt-6 flex justify-end">
-            <Button asChild variant="outline">
+            <Button asChild variant="outline" className="border-gray-300 text-gray-700 hover:bg-gray-50">
               <Link href="/events">
                 View Event <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
