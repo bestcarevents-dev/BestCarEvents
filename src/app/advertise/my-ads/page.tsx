@@ -566,7 +566,15 @@ export default function MyAdsPage() {
         )}
 
         <div className="bg-card p-6 rounded-lg border">
-          <h2 className="text-xl font-semibold mb-4">Your Ads</h2>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-semibold">Your Ads</h2>
+            <Button 
+              onClick={() => router.push('/advertise/advertise')}
+              className="bg-yellow-500 hover:bg-yellow-600 text-white font-semibold px-4 py-2 rounded-lg transition-colors duration-200"
+            >
+              Create New Ad
+            </Button>
+          </div>
           {adsLoading ? (
             <div className="text-center py-8 animate-pulse">Loading your ads...</div>
           ) : ads.length === 0 ? (
