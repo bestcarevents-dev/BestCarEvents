@@ -54,7 +54,7 @@ const AuthButtons = ({ inMobileNav = false, user, onMobileMenuClose }: { inMobil
       return (
         <div className={cn("flex items-center", inMobileNav ? "flex-col w-full gap-6" : "flex-row gap-2")}> 
           <div className="w-full text-center">
-            <span className="text-lg font-semibold text-gray-900">Hi, {user.email}</span>
+            <span className="text-lg font-semibold text-white">Hi, {user.email}</span>
           </div>
           
           {/* Mobile My Listings Section */}
@@ -304,7 +304,7 @@ export default function Header() {
                 <span className="sr-only">Open Menu</span>
             </Button>
           </SheetTrigger>
-          <SheetContent side="left" className="w-full bg-background text-foreground p-0">
+          <SheetContent side="left" className="w-full bg-background text-foreground p-0 overflow-y-auto">
               <div className="flex flex-col h-full">
                 <SheetHeader className="flex flex-row items-center justify-between p-4 border-b">
                     <div className="flex items-center gap-2">

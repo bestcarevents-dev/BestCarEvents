@@ -40,60 +40,66 @@ const AD_CATEGORIES = [
   {
     title: "Banner Advertisement",
     subcategories: [
-      { name: "Homepage Banner (All Pages + Category)", key: "homepageBannerRemaining", price: "CHF/EUR 6'000" },
-      { name: "Category Page Banner", key: "categoryBannerRemaining", price: "CHF/EUR 2'500" },
+      { name: "Homepage Banner (All Pages + Category)", key: "homepageBannerRemaining", chfPrice: "CHF 5'600", eurPrice: "EUR 6'000" },
+      { name: "Category Page Banner", key: "categoryBannerRemaining", chfPrice: "CHF 2'300", eurPrice: "EUR 2'500" },
     ],
   },
   {
     title: "Featured Listing",
     subcategories: [
-      { name: "Featured Listing", key: "featuredListingRemaining", price: "CHF/EUR 4'800" },
-      { name: "Standard Listing", key: "standardListingRemaining", price: "CHF/EUR 400" },
+      { name: "Featured Listing", key: "featuredListingRemaining", chfPrice: "CHF 4'400", eurPrice: "EUR 4'800" },
+      { name: "Standard Listing", key: "standardListingRemaining", chfPrice: "CHF 370", eurPrice: "EUR 400" },
     ],
   },
   {
     title: "Newsletter Mentions",
     subcategories: [
-      { name: "Premium Mention", key: "premiumNewsletterRemaining", price: "CHF/EUR 600 per mention per month" },
-      { name: "Standard Mention", key: "standardNewsletterRemaining", price: "CHF/EUR 400 per mention per month" },
+      { name: "Premium Mention", key: "premiumNewsletterRemaining", chfPrice: "CHF 550", eurPrice: "EUR 600", suffix: " per mention per month" },
+      { name: "Standard Mention", key: "standardNewsletterRemaining", chfPrice: "CHF 370", eurPrice: "EUR 400", suffix: " per mention per month" },
     ],
   },
 ];
 
 // Add info content for each subcategory
 const SUBCATEGORY_INFO: Record<string, string> = {
-  "Homepage Banner (All Pages + Category)": `Homepage banner will be exposed on every side of the website plus in your category.\nDuration: 1 year\nPrice: CHF/EUR 6'000`,
-  "Category Page Banner": `Event/Club/Hotel/Auction page banner only on the page of your category.\nDuration: 1 year\nPrice: CHF/EUR 2'500`,
-  "Featured Listing": `Featured listing, only one or two per category. Photos will be exposed in the slideshow on the website, under their category and on the home site.\nDuration: 1 year\nPrice: CHF/EUR 4'800`,
-  "Standard Listing": `Standard listing.\nDuration: 1 month\nPrice: CHF/EUR 400`,
-  "Premium Mention": `Premium mention in newsletter (2 newsletters per month for 12 months a year). Includes a dedicated section with images (up to 4 images), description and a link to your website.\nPrice: CHF/EUR 600 per mention per month`,
-  "Standard Mention": `Standard mention in newsletter. Includes a brief mention with one image and a link to your website.\nPrice: CHF/EUR 400 per mention per month`,
+  "Homepage Banner (All Pages + Category)": `Homepage banner will be exposed on every side of the website plus in your category.\nDuration: 1 year\nPrice: CHF 5'600 / EUR 6'000`,
+  "Category Page Banner": `Event/Club/Hotel/Auction page banner only on the page of your category.\nDuration: 1 year\nPrice: CHF 2'300 / EUR 2'500`,
+  "Featured Listing": `Featured listing, only one or two per category. Photos will be exposed in the slideshow on the website, under their category and on the home site.\nDuration: 1 year\nPrice: CHF 4'400 / EUR 4'800`,
+  "Standard Listing": `Standard listing.\nDuration: 1 month\nPrice: CHF 370 / EUR 400`,
+  "Premium Mention": `Premium mention in newsletter (2 newsletters per month for 12 months a year). Includes a dedicated section with images (up to 4 images), description and a link to your website.\nPrice: CHF 550 / EUR 600 per mention per month`,
+  "Standard Mention": `Standard mention in newsletter. Includes a brief mention with one image and a link to your website.\nPrice: CHF 370 / EUR 400 per mention per month`,
 };
 
 // Add Gold and Silver packages
 const DASHBOARD_PACKAGES = [
   {
     name: "Gold Package",
-    price: "CHF/EUR 15'300",
-    oldPrice: "CHF/EUR 18'000",
-    perMonth: "CHF/EUR 1'275",
+    chfPrice: "CHF 14'000",
+    eurPrice: "EUR 15'300",
+    oldChfPrice: "CHF 16'500",
+    oldEurPrice: "EUR 18'000",
+    perMonthChf: "CHF 1'167",
+    perMonthEur: "EUR 1'275",
     savings: "save over 15%",
     features: [
-      "Homepage banner on every side, plus your category (worth CHF/EUR 6'000) and on the newsletter for 1 year",
-      "Featured listing for 1 year (worth CHF/EUR 4'800)",
-      "Premium mention in newsletter 4 times per month for 12 months (worth CHF/EUR 7'200)"
+      "Homepage banner on every side, plus your category (worth CHF 5'600 / EUR 6'000) and on the newsletter for 1 year",
+      "Featured listing for 1 year (worth CHF 4'400 / EUR 4'800)",
+      "Premium mention in newsletter 4 times per month for 12 months (worth CHF 6'600 / EUR 7'200)"
     ]
   },
   {
     name: "Silver Package",
-    price: "CHF/EUR 10'800",
-    oldPrice: "CHF/EUR 12'100",
-    perMonth: "CHF/EUR 900",
+    chfPrice: "CHF 9'900",
+    eurPrice: "EUR 10'800",
+    oldChfPrice: "CHF 11'100",
+    oldEurPrice: "EUR 12'100",
+    perMonthChf: "CHF 825",
+    perMonthEur: "EUR 900",
     savings: "save over 10%",
     features: [
-      "Category page banner for 1 year (worth CHF/EUR 2'500)",
-      "Standard listing for 1 year (worth CHF/EUR 4'800)",
-      "Standard mention in newsletter 4 times per month for 12 months (worth CHF/EUR 4'800)"
+      "Category page banner for 1 year (worth CHF 2'300 / EUR 2'500)",
+      "Standard listing for 1 year (worth CHF 4'400 / EUR 4'800)",
+      "Standard mention in newsletter 4 times per month for 12 months (worth CHF 4'400 / EUR 4'800)"
     ]
   }
 ];
@@ -103,6 +109,17 @@ const getPriceEUR = (price: string) => {
   const match = price.replace(/'/g, "'").match(/([\d']+)/);
   if (!match) return 0;
   return parseInt(match[1].replace(/'/g, ''));
+};
+
+// Helper to format price display
+const formatPriceDisplay = (chfPrice: string, eurPrice: string, suffix?: string) => {
+  return (
+    <div className="flex flex-col">
+      <span className="font-semibold text-primary">{chfPrice}</span>
+      <span className="text-sm text-muted-foreground">{eurPrice}</span>
+      {suffix && <span className="text-xs text-muted-foreground">{suffix}</span>}
+    </div>
+  );
 };
 
 // PayPal configuration
@@ -169,7 +186,7 @@ export default function PartnerDashboard() {
       for (const cat of AD_CATEGORIES) {
         const sub = cat.subcategories.find(s => s.key === paymentModal.key);
         if (sub) {
-          amount = getPriceEUR(sub.price);
+          amount = getPriceEUR(sub.eurPrice);
           description = sub.name;
           break;
         }
@@ -177,7 +194,7 @@ export default function PartnerDashboard() {
     } else if (paymentModal?.type === 'package' && paymentModal.name) {
       const pkg = DASHBOARD_PACKAGES.find(p => p.name === paymentModal.name);
       if (pkg) {
-        amount = getPriceEUR(pkg.price);
+        amount = getPriceEUR(pkg.eurPrice);
         description = pkg.name;
       }
     }
@@ -228,7 +245,7 @@ export default function PartnerDashboard() {
       for (const cat of AD_CATEGORIES) {
         const sub = cat.subcategories.find(s => s.key === paymentModal.key);
         if (sub) {
-          amount = getPriceEUR(sub.price);
+          amount = getPriceEUR(sub.eurPrice);
           description = sub.name;
           break;
         }
@@ -236,7 +253,7 @@ export default function PartnerDashboard() {
     } else if (paymentModal?.type === 'package' && paymentModal.name) {
       const pkg = DASHBOARD_PACKAGES.find(p => p.name === paymentModal.name);
       if (pkg) {
-        amount = getPriceEUR(pkg.price);
+        amount = getPriceEUR(pkg.eurPrice);
         description = pkg.name;
       }
     }
@@ -401,7 +418,7 @@ export default function PartnerDashboard() {
                       {SUBCATEGORY_INFO[sub.name]}
                     </div>
                     <div className="flex items-center justify-between mt-auto pt-2">
-                      <span className="font-semibold text-primary">{sub.price}</span>
+                      {formatPriceDisplay(sub.chfPrice, sub.eurPrice, 'suffix' in sub ? sub.suffix : undefined)}
                       <Dialog open={paymentModal?.open && paymentModal.key === sub.key} onOpenChange={open => !open && setPaymentModal(null)}>
                         <DialogTrigger asChild>
                           <Button className="font-bold" variant="default" onClick={() => setPaymentModal({ open: true, type: 'category', key: sub.key, name: sub.name })}>
@@ -478,13 +495,13 @@ export default function PartnerDashboard() {
                                         for (const cat of AD_CATEGORIES) {
                                           const sub = cat.subcategories.find(s => s.key === paymentModal.key);
                                           if (sub) {
-                                            return getPriceEUR(sub.price);
+                                            return getPriceEUR(sub.eurPrice);
                                           }
                                         }
                                       } else if (paymentModal?.type === 'package' && paymentModal.name) {
                                         const pkg = DASHBOARD_PACKAGES.find(p => p.name === paymentModal.name);
                                         if (pkg) {
-                                          return getPriceEUR(pkg.price);
+                                          return getPriceEUR(pkg.eurPrice);
                                         }
                                       }
                                       return 0;
@@ -534,10 +551,20 @@ export default function PartnerDashboard() {
                 <CardHeader>
                   <CardTitle className="text-2xl font-headline text-primary">{pkg.name}</CardTitle>
                   <CardDescription className="text-lg mt-2">
-                    <span className="line-through text-muted-foreground mr-2">{pkg.oldPrice}</span>
-                    <span className="text-foreground font-bold text-2xl">{pkg.price}</span>
-                    <span className="ml-2 text-primary font-semibold">({pkg.perMonth}/mo)</span>
-                    <span className="ml-2 text-green-600 font-semibold">{pkg.savings}</span>
+                    <div className="flex flex-col items-center">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="line-through text-muted-foreground text-sm">{pkg.oldChfPrice} / {pkg.oldEurPrice}</span>
+                      </div>
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-foreground font-bold text-2xl">{pkg.chfPrice}</span>
+                        <span className="text-foreground font-bold text-2xl">/</span>
+                        <span className="text-foreground font-bold text-2xl">{pkg.eurPrice}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-primary font-semibold text-sm">({pkg.perMonthChf} / {pkg.perMonthEur}/mo)</span>
+                        <span className="text-green-600 font-semibold text-sm">{pkg.savings}</span>
+                      </div>
+                    </div>
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-3 mt-4">
@@ -624,13 +651,13 @@ export default function PartnerDashboard() {
                                       for (const cat of AD_CATEGORIES) {
                                         const sub = cat.subcategories.find(s => s.key === paymentModal.key);
                                         if (sub) {
-                                          return getPriceEUR(sub.price);
+                                          return getPriceEUR(sub.eurPrice);
                                         }
                                       }
                                     } else if (paymentModal?.type === 'package' && paymentModal.name) {
                                       const pkg = DASHBOARD_PACKAGES.find(p => p.name === paymentModal.name);
                                       if (pkg) {
-                                        return getPriceEUR(pkg.price);
+                                        return getPriceEUR(pkg.eurPrice);
                                       }
                                     }
                                     return 0;

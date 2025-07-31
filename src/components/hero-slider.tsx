@@ -46,7 +46,7 @@ export default function HeroSlider() {
     }, [api])
 
     return (
-        <div className="relative w-full text-white -mt-24">
+        <div className="relative w-full text-white pt-1 lg:pt-0">
             <Carousel
                 className="w-full"
                 plugins={[Autoplay({ delay: 5000, stopOnInteraction: true })]}

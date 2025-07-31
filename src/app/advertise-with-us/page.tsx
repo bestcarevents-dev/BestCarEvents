@@ -8,6 +8,16 @@ import { getAuth, onAuthStateChanged, User } from "firebase/auth";
 import { app } from "@/lib/firebase";
 import Link from "next/link";
 
+// Helper function to format prices with both CHF and EUR
+const formatPrice = (chfPrice: string, eurPrice: string) => {
+  return (
+    <div className="flex flex-col items-center">
+      <span className="font-bold text-lg">{chfPrice}</span>
+      <span className="text-sm text-gray-600">{eurPrice}</span>
+    </div>
+  );
+};
+
 const whyJoin = [
   "Targeted Audience: Gain direct access to an exclusive community of high-standard car collectors who are always on the lookout for premium events, clubs, auctions, and hotels.",
   "Enhanced Visibility: Promote your offerings on a dedicated platform visited by car enthusiasts and collectors.",
@@ -23,13 +33,15 @@ const pricingPlans = [
       {
         name: "Homepage Banner (All Pages + Category)",
         duration: "1 year",
-        price: "CHF/EUR 6'000",
+        chfPrice: "CHF 5'600",
+        eurPrice: "EUR 6'000",
         details: "Homepage banner will be exposed on every side of the website plus in your category."
       },
       {
         name: "Category Page Banner",
         duration: "1 year",
-        price: "CHF/EUR 2'500",
+        chfPrice: "CHF 2'300",
+        eurPrice: "EUR 2'500",
         details: "Event/Club/Hotel/Auction page banner only on the page of your category."
       }
     ]
@@ -40,13 +52,15 @@ const pricingPlans = [
       {
         name: "Featured Listing",
         duration: "1 year",
-        price: "CHF/EUR 4'800",
+        chfPrice: "CHF 4'400",
+        eurPrice: "EUR 4'800",
         details: "Only one or two per category. Photos exposed in the slideshow on the website, under their category and on the home site."
       },
       {
         name: "Standard Listing",
         duration: "1 month",
-        price: "CHF/EUR 400",
+        chfPrice: "CHF 370",
+        eurPrice: "EUR 400",
         details: "Standard listing in your category."
       }
     ]
@@ -57,13 +71,15 @@ const pricingPlans = [
       {
         name: "Premium Mention",
         duration: "Per mention per month",
-        price: "CHF/EUR 600",
+        chfPrice: "CHF 550",
+        eurPrice: "EUR 600",
         details: "Dedicated section with up to 4 images, description, and a link to your website."
       },
       {
         name: "Standard Mention",
         duration: "Per mention per month",
-        price: "CHF/EUR 400",
+        chfPrice: "CHF 370",
+        eurPrice: "EUR 400",
         details: "Brief mention with one image and a link to your website."
       }
     ]
@@ -73,26 +89,32 @@ const pricingPlans = [
 const packages = [
   {
     name: "Gold Package",
-    price: "CHF/EUR 15'300",
-    oldPrice: "CHF/EUR 18'000",
-    perMonth: "CHF/EUR 1'275",
+    chfPrice: "CHF 14'000",
+    eurPrice: "EUR 15'300",
+    oldChfPrice: "CHF 16'500",
+    oldEurPrice: "EUR 18'000",
+    perMonthChf: "CHF 1'167",
+    perMonthEur: "EUR 1'275",
     savings: "save over 15%",
     features: [
-      "Homepage banner on every side, plus your category (worth CHF/EUR 6'000) and on the newsletter for 1 year",
-      "Featured listing for 1 year (worth CHF/EUR 4'800)",
-      "Premium mention in newsletter 4 times per month for 12 months (worth CHF/EUR 7'200)"
+      "Homepage banner on every side, plus your category (worth CHF 5'600 / EUR 6'000) and on the newsletter for 1 year",
+      "Featured listing for 1 year (worth CHF 4'400 / EUR 4'800)",
+      "Premium mention in newsletter 4 times per month for 12 months (worth CHF 6'600 / EUR 7'200)"
     ]
   },
   {
     name: "Silver Package",
-    price: "CHF/EUR 10'800",
-    oldPrice: "CHF/EUR 12'100",
-    perMonth: "CHF/EUR 900",
+    chfPrice: "CHF 9'900",
+    eurPrice: "EUR 10'800",
+    oldChfPrice: "CHF 11'100",
+    oldEurPrice: "EUR 12'100",
+    perMonthChf: "CHF 825",
+    perMonthEur: "EUR 900",
     savings: "save over 10%",
     features: [
-      "Homepage banner for 1 year (worth CHF/EUR 2'500)",
-      "Standard listing for 1 year (worth CHF/EUR 4'800)",
-      "Standard mention in newsletter 4 times per month for 12 months (worth CHF/EUR 4'800)"
+      "Homepage banner for 1 year (worth CHF 2'300 / EUR 2'500)",
+      "Standard listing for 1 year (worth CHF 4'400 / EUR 4'800)",
+      "Standard mention in newsletter 4 times per month for 12 months (worth CHF 4'400 / EUR 4'800)"
     ]
   }
 ];
@@ -393,7 +415,12 @@ export default function AdvertisePage() {
                       <div className="text-gray-600 text-sm mb-3">{opt.details}</div>
                       <div className="flex items-center justify-between">
                         <span className="inline-block bg-yellow-100 text-yellow-800 font-bold px-3 py-1 rounded-full text-sm">{opt.duration}</span>
-                        <span className="inline-block bg-yellow-600 text-white font-bold px-3 py-1 rounded-full text-sm">{opt.price}</span>
+                        <div className="inline-block bg-yellow-600 text-white font-bold px-3 py-1 rounded-full text-sm">
+                          <div className="flex flex-col items-center">
+                            <span className="text-sm">{opt.chfPrice}</span>
+                            <span className="text-xs opacity-90">{opt.eurPrice}</span>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   ))}
@@ -571,10 +598,20 @@ export default function AdvertisePage() {
                 <CardHeader>
                   <CardTitle className="text-2xl font-headline text-yellow-600">{pkg.name}</CardTitle>
                   <CardDescription className="text-lg mt-2">
-                    <span className="line-through text-gray-500 mr-2">{pkg.oldPrice}</span>
-                    <span className="text-gray-900 font-bold text-2xl">{pkg.price}</span>
-                    <span className="ml-2 text-yellow-600 font-semibold">({pkg.perMonth}/mo)</span>
-                    <span className="ml-2 text-green-600 font-semibold">{pkg.savings}</span>
+                    <div className="flex flex-col items-center">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="line-through text-gray-500 text-sm">{pkg.oldChfPrice} / {pkg.oldEurPrice}</span>
+                      </div>
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-gray-900 font-bold text-2xl">{pkg.chfPrice}</span>
+                        <span className="text-gray-900 font-bold text-2xl">/</span>
+                        <span className="text-gray-900 font-bold text-2xl">{pkg.eurPrice}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-yellow-600 font-semibold text-sm">({pkg.perMonthChf} / {pkg.perMonthEur}/mo)</span>
+                        <span className="text-green-600 font-semibold text-sm">{pkg.savings}</span>
+                      </div>
+                    </div>
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-3 mt-4">
