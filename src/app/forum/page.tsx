@@ -161,7 +161,7 @@ export default function ForumPage() {
           </div>
 
           <div className="mb-4">
-            <PartnerAdRotator page="Forum" maxVisible={2} />
+            <PartnerAdRotator page="Forum" maxVisible={4} />
           </div>
 
           {loading ? (

@@ -126,7 +126,7 @@ export default function CarHotelsPage() {
 
         {/* Added Text */}
         <div className="mb-4">
-          <PartnerAdRotator page="Car Hotels" maxVisible={2} />
+          <PartnerAdRotator page="Car Hotels" maxVisible={4} />
         </div>
 
         {loading ? (

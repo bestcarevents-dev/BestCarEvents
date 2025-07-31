@@ -211,15 +211,26 @@ export default function AdvertisePage() {
         body: JSON.stringify({ amount, description, email: currentUser?.email }),
       });
       const data = await res.json();
-      if (data.clientSecret) {
-        setBannerStripeClientSecret(data.clientSecret);
-        setBannerPaymentStep('pay');
+      if (data.url) {
+        window.location.href = data.url; // Redirect to Stripe Checkout
+        return;
       } else {
         setBannerPaymentError(data.error || 'Failed to create Stripe Checkout session.');
       }
       setBannerProcessing(false);
     } else if (bannerSelectedPayment === 'paypal') {
-      setBannerPaymentStep('pay');
+      // Call API to create PayPal order
+      const res = await fetch('/api/payment/paypal-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount, description }),
+      });
+      const data = await res.json();
+      if (data.orderId) {
+        setBannerPaymentStep('pay');
+      } else {
+        setBannerPaymentError(data.error || 'Failed to create PayPal order.');
+      }
       setBannerProcessing(false);
     }
   };

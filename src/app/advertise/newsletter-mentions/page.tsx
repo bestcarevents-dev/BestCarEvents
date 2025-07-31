@@ -19,8 +19,6 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Info, Plus, AlertTriangle, Upload, X } from "lucide-react";
 import { loadStripe } from "@stripe/stripe-js";
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
-import { Elements } from '@stripe/react-stripe-js';
-import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { useToast } from "@/hooks/use-toast";
 
 interface NewsletterRequest {
@@ -69,10 +67,8 @@ export default function NewsletterMentionsPage() {
   const [paymentStep, setPaymentStep] = useState<'selectType' | 'selectPayment' | 'pay'>('selectType');
   const [selectedPayment, setSelectedPayment] = useState<'stripe' | 'paypal' | null>(null);
   const [processing, setProcessing] = useState(false);
-  const [stripeClientSecret, setStripeClientSecret] = useState<string | null>(null);
   const [paymentError, setPaymentError] = useState<string | null>(null);
 
-  const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
   const paypalOptions = {
     clientId: process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || "AW2LLf5-BoTh1ZUKUhs8Ic7nmIfH49BV92y-960SIzcvrO4vlDpLtNKe--xYpNB9Yb3xn7XONXJbErNv",
     currency: "EUR",
@@ -251,15 +247,26 @@ export default function NewsletterMentionsPage() {
         body: JSON.stringify({ amount, description, email: currentUser?.email }),
       });
       const data = await res.json();
-      if (data.clientSecret) {
-        setStripeClientSecret(data.clientSecret);
-        setPaymentStep('pay');
+      if (data.url) {
+        window.location.href = data.url; // Redirect to Stripe Checkout
+        return;
       } else {
         setPaymentError(data.error || 'Failed to create Stripe Checkout session.');
       }
       setProcessing(false);
     } else if (selectedPayment === 'paypal') {
-      setPaymentStep('pay');
+      // Call API to create PayPal order
+      const res = await fetch('/api/payment/paypal-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount, description }),
+      });
+      const data = await res.json();
+      if (data.orderId) {
+        setPaymentStep('pay');
+      } else {
+        setPaymentError(data.error || 'Failed to create PayPal order.');
+      }
       setProcessing(false);
     }
   };
@@ -307,33 +314,6 @@ export default function NewsletterMentionsPage() {
   const onPayPalError = (err: any) => {
     setPaymentError('PayPal error: ' + (err?.message || 'Unknown error'));
   };
-  // Stripe CheckoutForm
-  function CheckoutForm({ onSuccess, onError, processing }: { onSuccess: () => void, onError: (msg: string) => void, processing: boolean }) {
-    const stripe = useStripe();
-    const elements = useElements();
-    const handleSubmit = async (e: React.FormEvent) => {
-      e.preventDefault();
-      if (!stripe || !elements) return;
-      const card = elements.getElement(CardElement);
-      if (!card) return;
-      const { error, paymentIntent } = await stripe.confirmCardPayment(stripeClientSecret!, {
-        payment_method: { card },
-      });
-      if (error) {
-        onError(error.message || 'Payment failed');
-      } else if (paymentIntent && paymentIntent.status === 'succeeded') {
-        onSuccess();
-      } else {
-        onError('Payment not successful');
-      }
-    };
-    return (
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <CardElement options={{ hidePostalCode: true }} className="p-2 border rounded" />
-        <Button type="submit" className="w-full" disabled={processing}>Pay</Button>
-      </form>
-    );
-  }
   // Post-payment handler
   const handlePostPayment = async () => {
     if (!selectedNewsletterType) return;
@@ -351,7 +331,6 @@ export default function NewsletterMentionsPage() {
     setSelectedNewsletterType(null);
     setPaymentStep('selectType');
     setSelectedPayment(null);
-    setStripeClientSecret(null);
     toast({
       title: "Payment Successful",
       description: `You have purchased 1 ${selectedNewsletterType === 'premium' ? 'Premium' : 'Standard'} Newsletter Credit!`,
@@ -382,7 +361,6 @@ export default function NewsletterMentionsPage() {
             setSelectedNewsletterType(null);
             setPaymentStep('selectType');
             setSelectedPayment(null);
-            setStripeClientSecret(null);
             setPaymentError(null);
           }
         }}>
@@ -392,7 +370,6 @@ export default function NewsletterMentionsPage() {
               setSelectedNewsletterType(null);
               setPaymentStep('selectType');
               setSelectedPayment(null);
-              setStripeClientSecret(null);
               setPaymentError(null);
             }}>
               Buy More Credit
@@ -500,27 +477,23 @@ export default function NewsletterMentionsPage() {
             {paymentStep === 'pay' && (
               <div className="flex flex-col gap-4 py-4">
                 {selectedPayment === 'stripe' ? (
-                  <Elements stripe={stripePromise} options={stripeClientSecret ? { clientSecret: stripeClientSecret } : {}}>
-                    <CheckoutForm
-                      onSuccess={handlePostPayment}
-                      onError={(msg) => setPaymentError(msg)}
-                      processing={processing}
-                    />
-                  </Elements>
+                  <div className="text-center">
+                    <p className="text-lg font-semibold">€{selectedNewsletterType ? NEWSLETTER_PRICES[selectedNewsletterType] : 0}</p>
+                    <p className="text-sm text-muted-foreground">{selectedNewsletterType === 'premium' ? 'Premium Newsletter Credit' : 'Standard Newsletter Credit'}</p>
+                    <p className="text-sm text-muted-foreground mt-2">Redirecting to Stripe Checkout...</p>
+                  </div>
                 ) : selectedPayment === 'paypal' ? (
                   <div className="space-y-4">
                     <div className="text-center">
                       <p className="text-lg font-semibold">€{selectedNewsletterType ? NEWSLETTER_PRICES[selectedNewsletterType] : 0}</p>
                       <p className="text-sm text-muted-foreground">{selectedNewsletterType === 'premium' ? 'Premium Newsletter Credit' : 'Standard Newsletter Credit'}</p>
                     </div>
-                    <PayPalScriptProvider options={paypalOptions}>
-                      <PayPalButtons
-                        createOrder={createPayPalOrder}
-                        onApprove={onPayPalApprove}
-                        onError={onPayPalError}
-                        style={{ layout: "vertical" }}
-                      />
-                    </PayPalScriptProvider>
+                    <PayPalButtons
+                      createOrder={createPayPalOrder}
+                      onApprove={onPayPalApprove}
+                      onError={onPayPalError}
+                      style={{ layout: "vertical" }}
+                    />
                   </div>
                 ) : null}
                 {paymentError && <div className="text-red-500 text-sm mt-2">{paymentError}</div>}

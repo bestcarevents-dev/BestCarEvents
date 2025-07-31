@@ -8,13 +8,25 @@ import { Badge } from "@/components/ui/badge";
 
 interface PartnerAdRotatorProps {
   page: string; // e.g. 'Events'
-  maxVisible?: number; // how many ads to show at once
+  maxVisible?: number; // how many ads to show at once (desktop)
   rotateIntervalMs?: number; // how often to rotate
 }
 
-export default function PartnerAdRotator({ page, maxVisible = 2, rotateIntervalMs = 3000 }: PartnerAdRotatorProps) {
+export default function PartnerAdRotator({ page, maxVisible = 4, rotateIntervalMs = 3000 }: PartnerAdRotatorProps) {
   const [ads, setAds] = useState<any[]>([]);
   const [startIdx, setStartIdx] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Detect mobile screen size
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768); // md breakpoint
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   useEffect(() => {
     const fetchAds = async () => {
@@ -27,21 +39,24 @@ export default function PartnerAdRotator({ page, maxVisible = 2, rotateIntervalM
   }, [page]);
 
   useEffect(() => {
-    if (ads.length <= maxVisible) return;
+    const currentMaxVisible = isMobile ? 2 : maxVisible;
+    if (ads.length <= currentMaxVisible) return;
     const interval = setInterval(() => {
-      setStartIdx((prev) => (prev + maxVisible) % ads.length);
+      setStartIdx((prev) => (prev + currentMaxVisible) % ads.length);
     }, rotateIntervalMs);
     return () => clearInterval(interval);
-  }, [ads, maxVisible, rotateIntervalMs]);
+  }, [ads, maxVisible, rotateIntervalMs, isMobile]);
 
   if (!ads.length) return null;
-  const visibleAds = ads.length <= maxVisible ? ads : [
-    ...ads.slice(startIdx, startIdx + maxVisible),
-    ...(startIdx + maxVisible > ads.length ? ads.slice(0, (startIdx + maxVisible) % ads.length) : [])
+  
+  const currentMaxVisible = isMobile ? 2 : maxVisible;
+  const visibleAds = ads.length <= currentMaxVisible ? ads : [
+    ...ads.slice(startIdx, startIdx + currentMaxVisible),
+    ...(startIdx + currentMaxVisible > ads.length ? ads.slice(0, (startIdx + currentMaxVisible) % ads.length) : [])
   ];
 
   return (
-    <div className="flex flex-row gap-4 my-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 my-6">
       {visibleAds.map(ad => {
         // Determine price info based on ad type
         let priceInfo = null;
@@ -57,17 +72,17 @@ export default function PartnerAdRotator({ page, maxVisible = 2, rotateIntervalM
           priceInfo = <div className="text-green-600 font-semibold text-sm mt-1">{truncate(ad.priceRange, 21)}</div>;
         }
         return (
-          <Card key={ad.id} className="flex flex-row items-center gap-4 bg-white border border-gray-200 shadow-sm hover:shadow-md transition group w-full max-w-xs">
-            <div className="relative w-28 h-20 flex-shrink-0 rounded-lg overflow-hidden bg-white border border-gray-200">
+          <Card key={ad.id} className="flex flex-col sm:flex-row items-start sm:items-center gap-3 bg-white border border-gray-200 shadow-sm hover:shadow-md transition group w-full">
+            <div className="relative w-full sm:w-28 h-32 sm:h-20 flex-shrink-0 rounded-lg overflow-hidden bg-white border border-gray-200">
               <Image src={ad.imageUrls?.[0] || "/placeholder.jpg"} alt={ad.title || ad.shopName || "Ad"} fill className="object-contain" />
               <Badge className="absolute top-1 left-1 text-xs bg-yellow-600 text-white">Featured</Badge>
             </div>
-            <CardContent className="p-0 flex flex-col flex-grow min-w-0">
+            <CardContent className="p-3 sm:p-0 flex flex-col flex-grow min-w-0">
               <Link href={`/partners/ad/${ad.id}`} className="hover:underline text-base font-semibold text-gray-900 truncate block">
                 {ad.title || ad.shopName || ad.providerName || ad.experienceName || ad.serviceName}
               </Link>
               {priceInfo}
-              <div className="text-xs text-gray-600 truncate max-w-xs">{ad.description}</div>
+              <div className="text-xs text-gray-600 truncate max-w-full sm:max-w-xs mt-1">{ad.description}</div>
             </CardContent>
           </Card>
         );

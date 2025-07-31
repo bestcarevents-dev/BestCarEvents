@@ -254,15 +254,26 @@ export default function AuctionListingPage() {
         body: JSON.stringify({ amount, description, email: currentUser?.email }),
       });
       const data = await res.json();
-      if (data.clientSecret) {
-        setStripeClientSecret(data.clientSecret);
-        setPaymentStep('pay');
+      if (data.url) {
+        window.location.href = data.url; // Redirect to Stripe Checkout
+        return;
       } else {
         setPaymentError(data.error || 'Failed to create Stripe Checkout session.');
       }
       setProcessing(false);
     } else if (selectedPayment === 'paypal') {
-      setPaymentStep('pay');
+      // Call API to create PayPal order
+      const res = await fetch('/api/payment/paypal-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount, description }),
+      });
+      const data = await res.json();
+      if (data.orderId) {
+        setPaymentStep('pay');
+      } else {
+        setPaymentError(data.error || 'Failed to create PayPal order.');
+      }
       setProcessing(false);
     }
   };

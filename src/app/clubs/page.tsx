@@ -149,7 +149,7 @@ export default function ClubsPage() {
 
           {/* Club Listing Grid */}
           <div className="mb-4">
-            <PartnerAdRotator page="Car clubs" maxVisible={2} />
+            <PartnerAdRotator page="Car clubs" maxVisible={4} />
           </div>
 
           {loading ? (

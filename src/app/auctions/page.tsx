@@ -139,7 +139,7 @@ export default function AuctionsPage() {
         </div>
 
         <div className="mb-4">
-          <PartnerAdRotator page="Auctions" maxVisible={2} />
+          <PartnerAdRotator page="Auctions" maxVisible={4} />
         </div>
 
         {loading ? (

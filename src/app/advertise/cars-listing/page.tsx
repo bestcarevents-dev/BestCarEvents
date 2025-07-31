@@ -29,8 +29,6 @@ import { useRouter } from "next/navigation";
 import { Label } from "@/components/ui/label";
 import { loadStripe } from "@stripe/stripe-js";
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
-import { Elements } from '@stripe/react-stripe-js';
-import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { useToast } from "@/hooks/use-toast";
 
 // Car listing pricing tiers
@@ -112,7 +110,6 @@ export default function CarsListingPage() {
   const [creditSelectedTier, setCreditSelectedTier] = useState<any>(null);
   const [creditSelectedPayment, setCreditSelectedPayment] = useState<'stripe' | 'paypal' | null>(null);
   const [creditProcessing, setCreditProcessing] = useState(false);
-  const [creditStripeClientSecret, setCreditStripeClientSecret] = useState<string | null>(null);
   const [creditPaymentError, setCreditPaymentError] = useState<string | null>(null);
 
   const { toast } = useToast();
@@ -557,7 +554,6 @@ export default function CarsListingPage() {
           setCreditPaymentStep('selectTier');
           setCreditSelectedTier(null);
           setCreditSelectedPayment(null);
-          setCreditStripeClientSecret(null);
           setCreditPaymentError(null);
         }
       }}>
@@ -655,9 +651,9 @@ export default function CarsListingPage() {
                       body: JSON.stringify({ amount, description, email: currentUser?.email }),
                     });
                     const data = await res.json();
-                    if (data.clientSecret) {
-                      setCreditStripeClientSecret(data.clientSecret);
-                      setCreditPaymentStep('pay');
+                    if (data.url) {
+                      window.location.href = data.url; // Redirect to Stripe Checkout
+                      return;
                     } else {
                       setCreditPaymentError(data.error || 'Failed to create Stripe Checkout session.');
                     }
@@ -678,43 +674,11 @@ export default function CarsListingPage() {
           {creditPaymentStep === 'pay' && creditSelectedTier && (
             <div className="flex flex-col gap-4 py-4">
               {creditSelectedPayment === 'stripe' ? (
-                <Elements stripe={stripePromise} options={creditStripeClientSecret ? { clientSecret: creditStripeClientSecret } : {}}>
-                  <CreditCheckoutForm
-                    onSuccess={async () => {
-                      // Update Firestore and local state
-                      const db = getFirestore(app);
-                      const quotaField = `cars_${creditSelectedTier.key}`;
-                      await updateDoc(doc(db, "users", currentUser!.uid), {
-                        [quotaField]: (userDoc?.[quotaField] || 0) + 1
-                      });
-                      setUserDoc((prev: any) => prev ? {
-                        ...prev,
-                        [quotaField]: (prev[quotaField] || 0) + 1
-                      } : null);
-                      setCreditPaymentModal({ open: false, tierKey: null });
-                      setCreditPaymentStep('selectTier');
-                      setCreditSelectedTier(null);
-                      setCreditSelectedPayment(null);
-                      setCreditStripeClientSecret(null);
-                      setCreditPaymentError(null);
-                      setShowSuccessMessage(true);
-                      toast({
-                        title: "Credit purchased!",
-                        description: `You have successfully purchased 1 credit for ${creditSelectedTier.name}.`,
-                      });
-                    }}
-                    onError={(msg) => {
-                      setCreditPaymentError(msg);
-                      toast({
-                        title: "Payment failed",
-                        description: msg,
-                        variant: "destructive",
-                      });
-                    }}
-                    processing={creditProcessing}
-                    clientSecret={creditStripeClientSecret!}
-                  />
-                </Elements>
+                <div className="text-center">
+                  <p className="text-lg font-semibold">€{creditSelectedTier.priceEUR}</p>
+                  <p className="text-sm text-muted-foreground">{creditSelectedTier.name}</p>
+                  <p className="text-sm text-muted-foreground mt-2">Redirecting to Stripe Checkout...</p>
+                </div>
               ) : creditSelectedPayment === 'paypal' ? (
                 <div className="space-y-4">
                   <div className="text-center">
@@ -760,7 +724,6 @@ export default function CarsListingPage() {
                             setCreditPaymentStep('selectTier');
                             setCreditSelectedTier(null);
                             setCreditSelectedPayment(null);
-                            setCreditStripeClientSecret(null);
                             setCreditPaymentError(null);
                             setShowSuccessMessage(true);
                             toast({
@@ -810,33 +773,5 @@ export default function CarsListingPage() {
         </DialogContent>
       </Dialog>
     </div>
-  );
-} 
-
-// Add CreditCheckoutForm component for Stripe
-function CreditCheckoutForm({ onSuccess, onError, processing, clientSecret }: { onSuccess: () => void, onError: (msg: string) => void, processing: boolean, clientSecret: string }) {
-  const stripe = useStripe();
-  const elements = useElements();
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!stripe || !elements) return;
-    const card = elements.getElement(CardElement);
-    if (!card) return;
-    const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
-      payment_method: { card },
-    });
-    if (error) {
-      onError(error.message || 'Payment failed');
-    } else if (paymentIntent && paymentIntent.status === 'succeeded') {
-      onSuccess();
-    } else {
-      onError('Payment not successful');
-    }
-  };
-  return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <CardElement options={{ hidePostalCode: true }} className="p-2 border rounded" />
-      <Button type="submit" className="w-full" disabled={processing}>Pay</Button>
-    </form>
   );
 } 

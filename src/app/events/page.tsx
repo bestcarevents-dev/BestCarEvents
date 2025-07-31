@@ -160,7 +160,7 @@ export default function EventsPage() {
                  ) : (
                  <>
                    <div className="mb-4">
-                      <PartnerAdRotator page="Events" maxVisible={2} />
+                      <PartnerAdRotator page="Events" maxVisible={4} />
                    </div>
 
                    {/* Featured Events Carousel */}
