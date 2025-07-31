@@ -58,31 +58,58 @@ export default function PartnerAdRotator({ page, maxVisible = 4, rotateIntervalM
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 my-6">
       {visibleAds.map(ad => {
-        // Determine price info based on ad type
-        let priceInfo = null;
+        // Determine what to display based on ad type
+        let displayInfo = null;
         const truncate = (str: string, n: number) => str.length > n ? str.slice(0, n - 1) + '…' : str;
-        if (ad.price && ad.priceRange) {
-          priceInfo = <div className="flex flex-col gap-1 mt-1">
-            <span className="text-green-600 font-bold text-sm">{truncate(ad.price, 21)}</span>
-            <span className="text-green-600 font-semibold text-xs">{truncate(ad.priceRange, 21)}</span>
-          </div>;
+        
+        // Check if it's a Website or General Business category
+        const isWebsiteOrGeneralBusiness = ad.adType === "Website" || ad.adType === "General Business";
+        
+        if (isWebsiteOrGeneralBusiness && ad.url) {
+          // Display website URL for Website category
+          displayInfo = (
+            <div className="text-blue-600 font-semibold text-sm mt-1 break-all">
+              <a href={ad.url} target="_blank" rel="noopener noreferrer" className="hover:underline">
+                {truncate(ad.url, isMobile ? 25 : 30)}
+              </a>
+            </div>
+          );
+        } else if (ad.price && ad.priceRange) {
+          // Display price and price range
+          displayInfo = (
+            <div className="flex flex-col gap-1 mt-1">
+              <span className="text-green-600 font-bold text-sm">{truncate(ad.price, isMobile ? 18 : 21)}</span>
+              <span className="text-green-600 font-semibold text-xs">{truncate(ad.priceRange, isMobile ? 18 : 21)}</span>
+            </div>
+          );
         } else if (ad.price) {
-          priceInfo = <div className="text-green-600 font-bold text-sm mt-1">{truncate(ad.price, 21)}</div>;
+          // Display price only
+          displayInfo = (
+            <div className="text-green-600 font-bold text-sm mt-1">{truncate(ad.price, isMobile ? 18 : 21)}</div>
+          );
         } else if (ad.priceRange) {
-          priceInfo = <div className="text-green-600 font-semibold text-sm mt-1">{truncate(ad.priceRange, 21)}</div>;
+          // Display price range only
+          displayInfo = (
+            <div className="text-green-600 font-semibold text-sm mt-1">{truncate(ad.priceRange, isMobile ? 18 : 21)}</div>
+          );
         }
+
         return (
-          <Card key={ad.id} className="flex flex-col sm:flex-row items-start sm:items-center gap-3 bg-white border border-gray-200 shadow-sm hover:shadow-md transition group w-full">
+          <Card key={ad.id} className="flex flex-col sm:flex-row items-start sm:items-center gap-3 bg-white border border-gray-200 shadow-sm hover:shadow-md transition group w-full overflow-hidden">
             <div className="relative w-full sm:w-28 h-32 sm:h-20 flex-shrink-0 rounded-lg overflow-hidden bg-white border border-gray-200">
               <Image src={ad.imageUrls?.[0] || "/placeholder.jpg"} alt={ad.title || ad.shopName || "Ad"} fill className="object-contain" />
               <Badge className="absolute top-1 left-1 text-xs bg-yellow-600 text-white">Featured</Badge>
             </div>
-            <CardContent className="p-3 sm:p-0 flex flex-col flex-grow min-w-0">
-              <Link href={`/partners/ad/${ad.id}`} className="hover:underline text-base font-semibold text-gray-900 truncate block">
-                {ad.title || ad.shopName || ad.providerName || ad.experienceName || ad.serviceName}
+            <CardContent className="p-3 sm:p-0 flex flex-col flex-grow min-w-0 w-full">
+              <Link href={`/partners/ad/${ad.id}`} className="hover:underline text-base font-semibold text-gray-900 truncate block w-full">
+                {ad.title || ad.shopName || ad.providerName || ad.experienceName || ad.serviceName || ad.websiteName || ad.businessName}
               </Link>
-              {priceInfo}
-              <div className="text-xs text-gray-600 truncate max-w-full sm:max-w-xs mt-1">{ad.description}</div>
+              {displayInfo}
+              <div className="text-xs text-gray-600 mt-1 w-full overflow-hidden">
+                <div className="line-clamp-2 break-words">
+                  {ad.description}
+                </div>
+              </div>
             </CardContent>
           </Card>
         );
