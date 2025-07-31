@@ -98,7 +98,7 @@ export default function PartnerAdRotator({ page, maxVisible = 4, rotateIntervalM
           <Card key={ad.id} className="flex flex-col sm:flex-row items-start sm:items-center gap-3 bg-white border border-gray-200 shadow-sm hover:shadow-md transition group w-full overflow-hidden">
             <div className="relative w-full sm:w-28 h-32 sm:h-20 flex-shrink-0 rounded-lg overflow-hidden bg-white border border-gray-200">
               <Image src={ad.imageUrls?.[0] || "/placeholder.jpg"} alt={ad.title || ad.shopName || "Ad"} fill className="object-contain" />
-              <Badge className="absolute top-1 left-1 text-xs bg-yellow-600 text-white">Featured</Badge>
+              <Badge className="absolute top-1 left-1 text-xs bg-yellow-600 text-white">Ad</Badge>
             </div>
             <CardContent className="p-3 sm:p-0 flex flex-col flex-grow min-w-0 w-full">
               <Link href={`/partners/ad/${ad.id}`} className="hover:underline text-base font-semibold text-gray-900 truncate block w-full">

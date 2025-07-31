@@ -118,130 +118,132 @@ export default function RegisterClubPage() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-12">
-      <Card className="max-w-4xl mx-auto">
-        <CardHeader>
-          <CardTitle className="text-3xl font-bold font-headline text-primary">Register Your Car Club</CardTitle>
-          <CardDescription>Provide detailed information about your club for our community to discover.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-            
-            <fieldset className="space-y-6 border-t pt-6">
-                <legend className="text-xl font-semibold font-headline">Club Information</legend>
-                 <div className="space-y-2">
-                    <Label htmlFor="clubName">Club Name</Label>
-                    <Input id="clubName" {...register("clubName")} />
-                    {errors.clubName && <p className="text-red-500 text-sm">{errors.clubName.message}</p>}
-                </div>
-                 <div className="space-y-2">
-                    <Label htmlFor="description">Detailed Description</Label>
-                    <Textarea id="description" {...register("description")} rows={5} placeholder="Tell us about the history, mission, and focus of your club."/>
-                    {errors.description && <p className="text-red-500 text-sm">{errors.description.message}</p>}
-                 </div>
-                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                     <div className="space-y-2">
-                        <Label htmlFor="membershipCriteria">Membership Criteria</Label>
-                        <Textarea id="membershipCriteria" {...register("membershipCriteria")} rows={3} placeholder="e.g., Owners of specific car makes, enthusiasts of a certain type of motorsport, etc."/>
-                        {errors.membershipCriteria && <p className="text-red-500 text-sm">{errors.membershipCriteria.message}</p>}
-                    </div>
-                     <div className="space-y-2">
-                        <Label htmlFor="typicalActivities">Typical Activities</Label>
-                        <Textarea id="typicalActivities" {...register("typicalActivities")} rows={3} placeholder="e.g., Monthly meetups, track days, scenic drives, social dinners, etc."/>
-                        {errors.typicalActivities && <p className="text-red-500 text-sm">{errors.typicalActivities.message}</p>}
-                    </div>
-                </div>
-            </fieldset>
+    <div className="bg-white">
+      <div className="container mx-auto px-4 py-12">
+        <Card className="max-w-4xl mx-auto bg-white border border-gray-200 shadow-sm">
+          <CardHeader className="bg-gray-50 border-b border-gray-200">
+            <CardTitle className="text-3xl font-bold font-headline text-gray-900">Register Your Car Club</CardTitle>
+            <CardDescription className="text-gray-600">Provide detailed information about your club for our community to discover.</CardDescription>
+          </CardHeader>
+          <CardContent className="p-6">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+              
+              <fieldset className="space-y-6 border-t border-gray-200 pt-6">
+                  <legend className="text-xl font-semibold font-headline text-gray-900">Club Information</legend>
+                   <div className="space-y-2">
+                      <Label htmlFor="clubName" className="text-gray-700 font-medium">Club Name</Label>
+                      <Input id="clubName" {...register("clubName")} className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400" />
+                      {errors.clubName && <p className="text-red-500 text-sm">{errors.clubName.message}</p>}
+                  </div>
+                   <div className="space-y-2">
+                      <Label htmlFor="description" className="text-gray-700 font-medium">Detailed Description</Label>
+                      <Textarea id="description" {...register("description")} rows={5} placeholder="Tell us about the history, mission, and focus of your club." className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400"/>
+                      {errors.description && <p className="text-red-500 text-sm">{errors.description.message}</p>}
+                   </div>
+                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                       <div className="space-y-2">
+                          <Label htmlFor="membershipCriteria" className="text-gray-700 font-medium">Membership Criteria</Label>
+                          <Textarea id="membershipCriteria" {...register("membershipCriteria")} rows={3} placeholder="e.g., Owners of specific car makes, enthusiasts of a certain type of motorsport, etc." className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400"/>
+                          {errors.membershipCriteria && <p className="text-red-500 text-sm">{errors.membershipCriteria.message}</p>}
+                      </div>
+                       <div className="space-y-2">
+                          <Label htmlFor="typicalActivities" className="text-gray-700 font-medium">Typical Activities</Label>
+                          <Textarea id="typicalActivities" {...register("typicalActivities")} rows={3} placeholder="e.g., Monthly meetups, track days, scenic drives, social dinners, etc." className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400"/>
+                          {errors.typicalActivities && <p className="text-red-500 text-sm">{errors.typicalActivities.message}</p>}
+                      </div>
+                  </div>
+              </fieldset>
 
-            <fieldset className="space-y-6 border-t pt-6">
-                <legend className="text-xl font-semibold font-headline">Location & Links</legend>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                        <Label htmlFor="city">City</Label>
-                        <Input id="city" {...register("city")} />
-                        {errors.city && <p className="text-red-500 text-sm">{errors.city.message}</p>}
-                    </div>
-                     <div className="space-y-2">
-                        <Label htmlFor="country">Country</Label>
-                        <Input id="country" {...register("country")} />
-                        {errors.country && <p className="text-red-500 text-sm">{errors.country.message}</p>}
-                    </div>
-                </div>
-                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                     <div className="space-y-2">
-                        <Label htmlFor="website">Website URL</Label>
-                        <Input id="website" {...register("website")} placeholder="https://example.com" />
-                        {errors.website && <p className="text-red-500 text-sm">{errors.website.message}</p>}
-                    </div>
-                     <div className="space-y-2">
-                        <Label htmlFor="socialMediaLink">Primary Social Media Link</Label>
-                        <Input id="socialMediaLink" {...register("socialMediaLink")} placeholder="https://instagram.com/yourclub" />
-                        {errors.socialMediaLink && <p className="text-red-500 text-sm">{errors.socialMediaLink.message}</p>}
-                    </div>
-                </div>
-            </fieldset>
+              <fieldset className="space-y-6 border-t border-gray-200 pt-6">
+                  <legend className="text-xl font-semibold font-headline text-gray-900">Location & Links</legend>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-2">
+                          <Label htmlFor="city" className="text-gray-700 font-medium">City</Label>
+                          <Input id="city" {...register("city")} className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400" />
+                          {errors.city && <p className="text-red-500 text-sm">{errors.city.message}</p>}
+                      </div>
+                       <div className="space-y-2">
+                          <Label htmlFor="country" className="text-gray-700 font-medium">Country</Label>
+                          <Input id="country" {...register("country")} className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400" />
+                          {errors.country && <p className="text-red-500 text-sm">{errors.country.message}</p>}
+                      </div>
+                  </div>
+                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                       <div className="space-y-2">
+                          <Label htmlFor="website" className="text-gray-700 font-medium">Website URL</Label>
+                          <Input id="website" {...register("website")} placeholder="https://example.com" className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400" />
+                          {errors.website && <p className="text-red-500 text-sm">{errors.website.message}</p>}
+                      </div>
+                       <div className="space-y-2">
+                          <Label htmlFor="socialMediaLink" className="text-gray-700 font-medium">Primary Social Media Link</Label>
+                          <Input id="socialMediaLink" {...register("socialMediaLink")} placeholder="https://instagram.com/yourclub" className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400" />
+                          {errors.socialMediaLink && <p className="text-red-500 text-sm">{errors.socialMediaLink.message}</p>}
+                      </div>
+                  </div>
+              </fieldset>
 
-            <fieldset className="space-y-6 border-t pt-6">
-                <legend className="text-xl font-semibold font-headline">Contact & Media</legend>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                     <div className="space-y-2">
-                        <Label htmlFor="contactName">Your Name (Club Representative)</Label>
-                        <Input id="contactName" {...register("contactName")} />
-                        {errors.contactName && <p className="text-red-500 text-sm">{errors.contactName.message}</p>}
-                    </div>
-                    <div className="space-y-2">
-                        <Label htmlFor="contactEmail">Your Contact Email</Label>
-                        <Input id="contactEmail" type="email" {...register("contactEmail")} />
-                        {errors.contactEmail && <p className="text-red-500 text-sm">{errors.contactEmail.message}</p>}
-                    </div>
-                </div>
-                <div className="space-y-2">
-                    <Label htmlFor="logo">Club Logo</Label>
-                     <div className="flex flex-col items-center justify-center w-full">
-                        <label htmlFor="logo" className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed rounded-lg cursor-pointer bg-card hover:bg-muted">
-                            <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                                <UploadCloud className="w-10 h-10 mb-3 text-muted-foreground" />
-                                <p className="mb-2 text-sm text-muted-foreground"><span className="font-semibold">Click to upload</span> or drag and drop</p>
-                                <p className="text-xs text-muted-foreground">High resolution PNG or SVG preferred</p>
+              <fieldset className="space-y-6 border-t border-gray-200 pt-6">
+                  <legend className="text-xl font-semibold font-headline text-gray-900">Contact & Media</legend>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                       <div className="space-y-2">
+                          <Label htmlFor="contactName" className="text-gray-700 font-medium">Your Name (Club Representative)</Label>
+                          <Input id="contactName" {...register("contactName")} className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400" />
+                          {errors.contactName && <p className="text-red-500 text-sm">{errors.contactName.message}</p>}
+                      </div>
+                      <div className="space-y-2">
+                          <Label htmlFor="contactEmail" className="text-gray-700 font-medium">Your Contact Email</Label>
+                          <Input id="contactEmail" type="email" {...register("contactEmail")} className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400" />
+                          {errors.contactEmail && <p className="text-red-500 text-sm">{errors.contactEmail.message}</p>}
+                      </div>
+                  </div>
+                  <div className="space-y-2">
+                      <Label htmlFor="logo" className="text-gray-700 font-medium">Club Logo</Label>
+                       <div className="flex flex-col items-center justify-center w-full">
+                          <label htmlFor="logo" className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors">
+                              <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                                  <UploadCloud className="w-10 h-10 mb-3 text-gray-400" />
+                                  <p className="mb-2 text-sm text-gray-600"><span className="font-semibold">Click to upload</span> or drag and drop</p>
+                                  <p className="text-xs text-gray-500">High resolution PNG or SVG preferred</p>
+                              </div>
+                              <Controller name="logo" control={control} render={({ field }) => (
+                                <Input
+                                  id="logo"
+                                  type="file"
+                                  className="hidden"
+                                  accept="image/*"
+                                  onChange={e => {
+                                    const file = e.target.files ? e.target.files[0] : null;
+                                    handleLogoChange(file);
+                                    field.onChange(file);
+                                  }}
+                                />
+                              )} />
+                          </label>
+                          {logoPreview && (
+                            <div className="relative mt-4 w-40 h-40 flex items-center justify-center">
+                              <img src={logoPreview} alt="Logo Preview" className="object-contain w-full h-full rounded shadow border border-gray-200" />
+                              <button
+                                type="button"
+                                onClick={removeLogo}
+                                className="absolute top-1 right-1 bg-white/80 rounded-full p-1 text-destructive hover:text-red-600 shadow"
+                                aria-label="Remove logo"
+                              >
+                                <X className="w-5 h-5" />
+                              </button>
                             </div>
-                            <Controller name="logo" control={control} render={({ field }) => (
-                              <Input
-                                id="logo"
-                                type="file"
-                                className="hidden"
-                                accept="image/*"
-                                onChange={e => {
-                                  const file = e.target.files ? e.target.files[0] : null;
-                                  handleLogoChange(file);
-                                  field.onChange(file);
-                                }}
-                              />
-                            )} />
-                        </label>
-                        {logoPreview && (
-                          <div className="relative mt-4 w-40 h-40 flex items-center justify-center">
-                            <img src={logoPreview} alt="Logo Preview" className="object-contain w-full h-full rounded shadow border" />
-                            <button
-                              type="button"
-                              onClick={removeLogo}
-                              className="absolute top-1 right-1 bg-white/80 rounded-full p-1 text-destructive hover:text-red-600 shadow"
-                              aria-label="Remove logo"
-                            >
-                              <X className="w-5 h-5" />
-                            </button>
-                          </div>
-                        )}
-                     </div>
-                    {errors.logo && <p className="text-red-500 text-sm">{errors.logo.message as string}</p>}
-                </div>
-            </fieldset>
+                          )}
+                       </div>
+                      {errors.logo && <p className="text-red-500 text-sm">{errors.logo.message as string}</p>}
+                  </div>
+              </fieldset>
 
-            <Button type="submit" className="w-full text-lg py-6" disabled={isSubmitting}>
-              {isSubmitting ? "Submitting..." : "Submit Club for Approval"}
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
+              <Button type="submit" className="w-full text-lg py-6 bg-yellow-600 hover:bg-yellow-700 text-white border-yellow-600 focus:ring-yellow-400" disabled={isSubmitting}>
+                {isSubmitting ? "Submitting..." : "Submit Club for Approval"}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }

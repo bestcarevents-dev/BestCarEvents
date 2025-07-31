@@ -35,7 +35,7 @@ export default function PartnerAdDetailPage() {
   }, [id]);
 
   if (loading) {
-    return <div className="flex items-center justify-center min-h-[60vh] text-lg animate-pulse">Loading ad details...</div>;
+    return <div className="flex items-center justify-center min-h-[60vh] text-lg text-gray-600 animate-pulse">Loading ad details...</div>;
   }
   if (!ad) {
     return <div className="flex flex-col items-center justify-center min-h-[60vh] text-lg text-destructive">Ad not found.</div>;
@@ -124,111 +124,113 @@ export default function PartnerAdDetailPage() {
   }
 
   return (
-    <div className="container mx-auto px-2 md:px-6 py-8 relative">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
-        {/* Images Section */}
-        <div className="flex flex-col items-center w-full max-w-md mx-auto">
-          {/* Main Image */}
-          <div className="relative w-full aspect-square rounded-lg overflow-hidden border shadow cursor-zoom-in" onClick={() => setZoomOpen(true)}>
-            <Image
-              src={images[carouselIdx] || "/placeholder.jpg"}
-              alt={`Ad image ${carouselIdx + 1}`}
-              fill
-              className="object-contain w-full h-full bg-white"
-              priority
-            />
-          </div>
-          {/* Thumbnails */}
-          <div className="flex gap-2 mt-4 w-full justify-center">
-            {images.map((img, idx) => (
-              <button
-                key={img}
-                className={`relative w-16 h-16 rounded border-2 ${carouselIdx === idx ? "border-primary" : "border-muted"} overflow-hidden bg-white`}
-                onClick={() => setCarouselIdx(idx)}
-                aria-label={`Show image ${idx + 1}`}
-                type="button"
-              >
-                <Image src={img} alt={`Thumbnail ${idx + 1}`} fill className="object-contain" />
-              </button>
-            ))}
-          </div>
-          {/* Zoom Modal */}
-          <Dialog open={zoomOpen} onOpenChange={setZoomOpen}>
-            <DialogContent className="max-w-3xl p-0 bg-black flex flex-col items-center">
-              <div className="relative w-full aspect-video max-h-[80vh]">
-                <Image
-                  src={images[carouselIdx] || "/placeholder.jpg"}
-                  alt={`Zoomed image ${carouselIdx + 1}`}
-                  fill
-                  className="object-contain w-full h-full bg-black"
-                  priority
-                />
-              </div>
-              <div className="flex gap-2 mt-4 w-full justify-center">
-                {images.map((img, idx) => (
-                  <button
-                    key={img}
-                    className={`relative w-16 h-16 rounded border-2 ${carouselIdx === idx ? "border-primary" : "border-muted"} overflow-hidden bg-white`}
-                    onClick={() => setCarouselIdx(idx)}
-                    aria-label={`Show image ${idx + 1}`}
-                    type="button"
-                  >
-                    <Image src={img} alt={`Thumbnail ${idx + 1}`} fill className="object-contain" />
-                  </button>
-                ))}
-              </div>
-            </DialogContent>
-          </Dialog>
-        </div>
-        {/* Product Info Section */}
-        <div className="flex flex-col gap-6">
-          <div>
-            <h1 className="text-3xl md:text-4xl font-extrabold font-headline text-primary mb-2">{ad.title || ad.shopName || ad.providerName || ad.experienceName || ad.serviceName}</h1>
-            <div className="flex flex-wrap items-center gap-2 mb-2">
-              <Badge variant="secondary" className="text-base px-3 py-1 font-semibold animate-pulse">{ad.adType}</Badge>
+    <div className="bg-white">
+      <div className="container mx-auto px-2 md:px-6 py-8 relative">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+          {/* Images Section */}
+          <div className="flex flex-col items-center w-full max-w-md mx-auto">
+            {/* Main Image */}
+            <div className="relative w-full aspect-square rounded-lg overflow-hidden border border-gray-200 shadow-sm cursor-zoom-in bg-white" onClick={() => setZoomOpen(true)}>
+              <Image
+                src={images[carouselIdx] || "/placeholder.jpg"}
+                alt={`Ad image ${carouselIdx + 1}`}
+                fill
+                className="object-contain w-full h-full bg-white"
+                priority
+              />
             </div>
-            {/* Show price if available */}
-            {ad.price && (
-              <div className="text-2xl font-bold text-green-600 mb-2">{ad.price}</div>
-            )}
-            {ad.priceRange && (
-              <div className="text-xl font-semibold text-green-600 mb-2">{ad.priceRange}</div>
-            )}
-            <p className="text-base text-muted-foreground mb-4 max-w-xl">{ad.description}</p>
-            <div className="flex flex-wrap gap-4 mb-4">
-              {renderAdFields(ad)}
+            {/* Thumbnails */}
+            <div className="flex gap-2 mt-4 w-full justify-center">
+              {images.map((img, idx) => (
+                <button
+                  key={img}
+                  className={`relative w-16 h-16 rounded border-2 ${carouselIdx === idx ? "border-primary" : "border-gray-200"} overflow-hidden bg-white`}
+                  onClick={() => setCarouselIdx(idx)}
+                  aria-label={`Show image ${idx + 1}`}
+                  type="button"
+                >
+                  <Image src={img} alt={`Thumbnail ${idx + 1}`} fill className="object-contain" />
+                </button>
+              ))}
             </div>
+            {/* Zoom Modal */}
+            <Dialog open={zoomOpen} onOpenChange={setZoomOpen}>
+              <DialogContent className="max-w-3xl p-0 bg-black flex flex-col items-center">
+                <div className="relative w-full aspect-video max-h-[80vh]">
+                  <Image
+                    src={images[carouselIdx] || "/placeholder.jpg"}
+                    alt={`Zoomed image ${carouselIdx + 1}`}
+                    fill
+                    className="object-contain w-full h-full bg-black"
+                    priority
+                  />
+                </div>
+                <div className="flex gap-2 mt-4 w-full justify-center">
+                  {images.map((img, idx) => (
+                    <button
+                      key={img}
+                      className={`relative w-16 h-16 rounded border-2 ${carouselIdx === idx ? "border-primary" : "border-muted"} overflow-hidden bg-white`}
+                      onClick={() => setCarouselIdx(idx)}
+                      aria-label={`Show image ${idx + 1}`}
+                      type="button"
+                    >
+                      <Image src={img} alt={`Thumbnail ${idx + 1}`} fill className="object-contain" />
+                    </button>
+                  ))}
+                </div>
+              </DialogContent>
+            </Dialog>
           </div>
-          {/* Sticky Contact Card */}
-          <div className="lg:sticky lg:top-28 h-fit">
-            <Card className="shadow-xl border-2 border-primary/30 animate-fade-in-up">
-              <CardHeader className="bg-primary/10 rounded-t-xl">
-                <CardTitle className="text-2xl font-headline text-primary">Contact</CardTitle>
-                <CardDescription>Get in touch with the advertiser</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center gap-2">
-                  <Mail className="w-5 h-5 text-muted-foreground" />
-                  <span className="text-base">{ad.contactEmail}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Star className="w-5 h-5 text-muted-foreground" />
-                  <span className="text-base">{ad.contactName}</span>
-                </div>
-                {ad.coverageArea && (
+          {/* Product Info Section */}
+          <div className="flex flex-col gap-6">
+            <div className="bg-gray-50 p-6 rounded-lg border border-gray-200">
+              <h1 className="text-3xl md:text-4xl font-extrabold font-headline text-primary mb-2">{ad.title || ad.shopName || ad.providerName || ad.experienceName || ad.serviceName}</h1>
+              <div className="flex flex-wrap items-center gap-2 mb-2">
+                <Badge variant="secondary" className="text-base px-3 py-1 font-semibold animate-pulse bg-gray-100 text-gray-700 border-gray-200">{ad.adType}</Badge>
+              </div>
+              {/* Show price if available */}
+              {ad.price && (
+                <div className="text-2xl font-bold text-green-600 mb-2">{ad.price}</div>
+              )}
+              {ad.priceRange && (
+                <div className="text-xl font-semibold text-green-600 mb-2">{ad.priceRange}</div>
+              )}
+              <p className="text-base text-gray-600 mb-4 max-w-xl">{ad.description}</p>
+              <div className="flex flex-wrap gap-4 mb-4">
+                {renderAdFields(ad)}
+              </div>
+            </div>
+            {/* Sticky Contact Card */}
+            <div className="lg:sticky lg:top-28 h-fit">
+              <Card className="shadow-xl border-2 border-primary/30 animate-fade-in-up">
+                <CardHeader className="bg-primary/10 rounded-t-xl">
+                  <CardTitle className="text-2xl font-headline text-primary">Contact</CardTitle>
+                  <CardDescription>Get in touch with the advertiser</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
                   <div className="flex items-center gap-2">
-                    <MapPin className="w-5 h-5 text-muted-foreground" />
-                    <span className="text-base">{ad.coverageArea}</span>
+                    <Mail className="w-5 h-5 text-muted-foreground" />
+                    <span className="text-base">{ad.contactEmail}</span>
                   </div>
-                )}
-                {ad.location && (
                   <div className="flex items-center gap-2">
-                    <MapPin className="w-5 h-5 text-muted-foreground" />
-                    <span className="text-base">{ad.location}</span>
+                    <Star className="w-5 h-5 text-muted-foreground" />
+                    <span className="text-base">{ad.contactName}</span>
                   </div>
-                )}
-              </CardContent>
-            </Card>
+                  {ad.coverageArea && (
+                    <div className="flex items-center gap-2">
+                      <MapPin className="w-5 h-5 text-muted-foreground" />
+                      <span className="text-base">{ad.coverageArea}</span>
+                    </div>
+                  )}
+                  {ad.location && (
+                    <div className="flex items-center gap-2">
+                      <MapPin className="w-5 h-5 text-muted-foreground" />
+                      <span className="text-base">{ad.location}</span>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </div>
       </div>
@@ -240,8 +242,8 @@ function Field({ label, value }: { label: string; value: any }) {
   if (!value) return null;
   return (
     <div className="flex flex-col min-w-[160px]">
-      <span className="text-xs text-muted-foreground font-semibold uppercase tracking-wider mb-1">{label}</span>
-      <span className="text-base font-medium text-foreground break-words">{value}</span>
+      <span className="text-xs text-gray-500 font-semibold uppercase tracking-wider mb-1">{label}</span>
+      <span className="text-base font-medium text-gray-900 break-words">{value}</span>
     </div>
   );
 } 

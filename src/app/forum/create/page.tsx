@@ -152,238 +152,243 @@ export default function CreatePostPage() {
 
     if (!currentUser) {
       return (
-        <div className="container mx-auto px-4 py-12">
-          <div className="py-12 text-center text-muted-foreground">
-            <p>Loading...</p>
+        <div className="bg-white">
+          <div className="container mx-auto px-4 py-12">
+            <div className="py-12 text-center text-gray-600">
+              <p>Loading...</p>
+            </div>
           </div>
         </div>
       );
     }
 
     return (
-    <div className="container mx-auto px-4 py-12">
-        <div className="mb-6">
-          <Button asChild variant="outline">
-            <Link href="/forum" className="flex items-center">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Back to Forum
-            </Link>
-          </Button>
-        </div>
-
-        <div className="max-w-4xl mx-auto">
-          <div className="mb-8">
-            <h1 className="text-3xl md:text-4xl font-headline font-bold text-primary mb-4">
-              Create a New Post
-            </h1>
-            <p className="text-lg text-muted-foreground">
-              Share your thoughts, questions, or experiences with the car community.
-            </p>
+      <div className="bg-white">
+        <div className="container mx-auto px-4 py-12">
+          <div className="mb-6">
+            <Button asChild variant="outline" className="border-gray-300 text-gray-700 hover:bg-gray-50">
+              <Link href="/forum" className="flex items-center">
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Back to Forum
+              </Link>
+            </Button>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-2 space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-xl">Post Title *</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <Input
-                    placeholder="Enter a descriptive title for your post..."
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    className="text-lg"
-                    maxLength={200}
-                  />
-                  <p className="text-sm text-muted-foreground mt-2">
-                    {title.length}/200 characters
-                  </p>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-xl">Category *</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <Select value={category} onValueChange={setCategory}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a category" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {categories.map(cat => (
-                        <SelectItem key={cat.value} value={cat.value}>
-                          {cat.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-xl">Post Content *</CardTitle>
-                    <Collapsible open={isMarkdownOpen} onOpenChange={setIsMarkdownOpen}>
-                      <CollapsibleTrigger asChild>
-                        <Button variant="outline" size="sm">
-                          {isMarkdownOpen ? (
-                            <>
-                              <ChevronDown className="w-4 h-4 mr-2" />
-                              Hide Formatting
-                            </>
-                          ) : (
-                            <>
-                              <ChevronRight className="w-4 h-4 mr-2" />
-                              Show Formatting
-                            </>
-                          )}
-                        </Button>
-                      </CollapsibleTrigger>
-                      <CollapsibleContent className="mt-4">
-                        <div className="bg-muted rounded-lg p-4 border">
-                          <h4 className="text-sm font-semibold mb-3">Markdown Formatting Guide</h4>
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
-                            {markdownFormats.map((format, index) => (
-                              <div key={index} className="bg-background rounded p-2 border">
-                                <div className="font-medium text-primary mb-1">{format.name}</div>
-                                <div className="text-foreground mb-1">Syntax: <code className="bg-muted px-1 rounded">{format.syntax}</code></div>
-                                <div className="text-muted-foreground">Example: {format.example}</div>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      </CollapsibleContent>
-                    </Collapsible>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <Textarea
-                    placeholder="Write your post content here... You can use markdown formatting like **bold**, *italic*, - lists, etc."
-                    value={content}
-                    onChange={(e) => setContent(e.target.value)}
-                    className="min-h-[300px] resize-none"
-                  />
-                  <p className="text-sm text-muted-foreground mt-2">
-                    {content.length} characters
-                  </p>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-xl">Image (Optional)</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {imagePreview && (
-                      <div className="relative">
-                        <img src={imagePreview} alt="Preview" className="mb-4 rounded-lg max-h-48 object-contain border" />
-                        <Button
-                          type="button"
-                          variant="destructive"
-                          size="sm"
-                          onClick={removeImage}
-                          className="absolute top-2 right-2"
-                        >
-                          <X className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    )}
-                    <div className="flex flex-col items-center justify-center w-full">
-                      <label htmlFor="image" className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed rounded-lg cursor-pointer bg-card hover:bg-muted">
-                        <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                          <UploadCloud className="w-10 h-10 mb-3 text-muted-foreground" />
-                          <p className="mb-2 text-sm text-muted-foreground">
-                            <span className="font-semibold">Click to upload</span> or drag and drop
-                          </p>
-                          <p className="text-xs text-muted-foreground">PNG, JPG or GIF (MAX. 5MB)</p>
-                        </div>
-                        <Input
-                          id="image"
-                          type="file"
-                          className="hidden"
-                          accept="image/*"
-                          onChange={(e) => {
-                            const file = e.target.files ? e.target.files[0] : null;
-                            if (file && file.size <= 5 * 1024 * 1024) {
-                              handleImageUpload(file);
-                            } else if (file) {
-                              alert('File size must be less than 5MB');
-                            }
-                          }}
-                        />
-                      </label>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+          <div className="max-w-4xl mx-auto">
+            <div className="mb-8">
+              <h1 className="text-3xl md:text-4xl font-headline font-bold text-gray-900 mb-4">
+                Create a New Post
+              </h1>
+              <p className="text-lg text-gray-600">
+                Share your thoughts, questions, or experiences with the car community.
+              </p>
             </div>
 
-            <div className="space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-xl">Tags (Optional)</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="flex gap-2">
-                      <Input
-                        placeholder="Add a tag..."
-                        value={newTag}
-                        onChange={(e) => setNewTag(e.target.value)}
-                        onKeyPress={(e) => e.key === 'Enter' && addTag()}
-                        maxLength={20}
-                      />
-                      <Button onClick={addTag} disabled={!newTag.trim() || tags.length >= 5}>
-                        Add
-                      </Button>
-                    </div>
-                    {tags.length > 0 && (
-                      <div className="flex flex-wrap gap-2">
-                        {tags.map((tag, index) => (
-                          <Badge key={index} variant="secondary" className="flex items-center gap-1">
-                            <Hash className="w-3 h-3" />
-                            {tag}
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => removeTag(tag)}
-                              className="h-4 w-4 p-0 hover:bg-transparent"
-                            >
-                              <X className="w-3 h-3" />
-                            </Button>
-                          </Badge>
-                        ))}
-                      </div>
-                    )}
-                    <p className="text-xs text-muted-foreground">
-                      {tags.length}/5 tags
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              <div className="lg:col-span-2 space-y-6">
+                <Card className="bg-white border border-gray-200 shadow-sm">
+                  <CardHeader className="bg-gray-50 border-b border-gray-200">
+                    <CardTitle className="text-xl text-gray-900">Post Title *</CardTitle>
+                  </CardHeader>
+                  <CardContent className="p-6">
+                    <Input
+                      placeholder="Enter a descriptive title for your post..."
+                      value={title}
+                      onChange={(e) => setTitle(e.target.value)}
+                      className="text-lg bg-white border-gray-300 text-gray-900 placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400"
+                      maxLength={200}
+                    />
+                    <p className="text-sm text-gray-500 mt-2">
+                      {title.length}/200 characters
                     </p>
-                  </div>
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
 
-              <Card>
-                <CardContent className="pt-6">
-                  <Button
-                    onClick={handleSubmit}
-                    disabled={loading || !title.trim() || !content.trim() || !category}
-                    className="w-full"
-                    size="lg"
-                  >
-                    {loading ? 'Creating Post...' : 'Publish Post'}
-                  </Button>
-                  <p className="text-xs text-muted-foreground mt-2 text-center">
-                    Your post will be visible to the entire community
-                  </p>
-                </CardContent>
-              </Card>
+                <Card className="bg-white border border-gray-200 shadow-sm">
+                  <CardHeader className="bg-gray-50 border-b border-gray-200">
+                    <CardTitle className="text-xl text-gray-900">Category *</CardTitle>
+                  </CardHeader>
+                  <CardContent className="p-6">
+                    <Select value={category} onValueChange={setCategory}>
+                      <SelectTrigger className="bg-white border-gray-300 text-gray-900 focus:border-yellow-400 focus:ring-yellow-400">
+                        <SelectValue placeholder="Select a category" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-white border border-gray-200">
+                        {categories.map(cat => (
+                          <SelectItem key={cat.value} value={cat.value}>
+                            {cat.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-white border border-gray-200 shadow-sm">
+                  <CardHeader className="bg-gray-50 border-b border-gray-200">
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-xl text-gray-900">Post Content *</CardTitle>
+                      <Collapsible open={isMarkdownOpen} onOpenChange={setIsMarkdownOpen}>
+                        <CollapsibleTrigger asChild>
+                          <Button variant="outline" size="sm" className="border-gray-300 text-gray-700 hover:bg-gray-50">
+                            {isMarkdownOpen ? (
+                              <>
+                                <ChevronDown className="w-4 h-4 mr-2" />
+                                Hide Formatting
+                              </>
+                            ) : (
+                              <>
+                                <ChevronRight className="w-4 h-4 mr-2" />
+                                Show Formatting
+                              </>
+                            )}
+                          </Button>
+                        </CollapsibleTrigger>
+                        <CollapsibleContent className="mt-4">
+                          <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                            <h4 className="text-sm font-semibold mb-3 text-gray-900">Markdown Formatting Guide</h4>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                              {markdownFormats.map((format, index) => (
+                                <div key={index} className="bg-white rounded p-2 border border-gray-200">
+                                  <div className="font-medium text-yellow-600 mb-1">{format.name}</div>
+                                  <div className="text-gray-900 mb-1">Syntax: <code className="bg-gray-100 px-1 rounded">{format.syntax}</code></div>
+                                  <div className="text-gray-600">Example: {format.example}</div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        </CollapsibleContent>
+                      </Collapsible>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="p-6">
+                    <Textarea
+                      placeholder="Write your post content here... You can use markdown formatting like **bold**, *italic*, - lists, etc."
+                      value={content}
+                      onChange={(e) => setContent(e.target.value)}
+                      className="min-h-[300px] resize-none bg-white border-gray-300 text-gray-900 placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400"
+                    />
+                    <p className="text-sm text-gray-500 mt-2">
+                      {content.length} characters
+                    </p>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-white border border-gray-200 shadow-sm">
+                  <CardHeader className="bg-gray-50 border-b border-gray-200">
+                    <CardTitle className="text-xl text-gray-900">Image (Optional)</CardTitle>
+                  </CardHeader>
+                  <CardContent className="p-6">
+                    <div className="space-y-4">
+                      {imagePreview && (
+                        <div className="relative">
+                          <img src={imagePreview} alt="Preview" className="mb-4 rounded-lg max-h-48 object-contain border border-gray-200" />
+                          <Button
+                            type="button"
+                            variant="destructive"
+                            size="sm"
+                            onClick={removeImage}
+                            className="absolute top-2 right-2"
+                          >
+                            <X className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      )}
+                      <div className="flex flex-col items-center justify-center w-full">
+                        <label htmlFor="image" className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors">
+                          <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                            <UploadCloud className="w-10 h-10 mb-3 text-gray-400" />
+                            <p className="mb-2 text-sm text-gray-600">
+                              <span className="font-semibold">Click to upload</span> or drag and drop
+                            </p>
+                            <p className="text-xs text-gray-500">PNG, JPG or GIF (MAX. 5MB)</p>
+                          </div>
+                          <Input
+                            id="image"
+                            type="file"
+                            className="hidden"
+                            accept="image/*"
+                            onChange={(e) => {
+                              const file = e.target.files ? e.target.files[0] : null;
+                              if (file && file.size <= 5 * 1024 * 1024) {
+                                handleImageUpload(file);
+                              } else if (file) {
+                                alert('File size must be less than 5MB');
+                              }
+                            }}
+                          />
+                        </label>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              <div className="space-y-6">
+                <Card className="bg-white border border-gray-200 shadow-sm">
+                  <CardHeader className="bg-gray-50 border-b border-gray-200">
+                    <CardTitle className="text-xl text-gray-900">Tags (Optional)</CardTitle>
+                  </CardHeader>
+                  <CardContent className="p-6">
+                    <div className="space-y-4">
+                      <div className="flex gap-2">
+                        <Input
+                          placeholder="Add a tag..."
+                          value={newTag}
+                          onChange={(e) => setNewTag(e.target.value)}
+                          onKeyPress={(e) => e.key === 'Enter' && addTag()}
+                          maxLength={20}
+                          className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400"
+                        />
+                        <Button onClick={addTag} disabled={!newTag.trim() || tags.length >= 5} className="bg-yellow-600 hover:bg-yellow-700 text-white border-yellow-600 focus:ring-yellow-400">
+                          Add
+                        </Button>
+                      </div>
+                      {tags.length > 0 && (
+                        <div className="flex flex-wrap gap-2">
+                          {tags.map((tag, index) => (
+                            <Badge key={index} variant="secondary" className="flex items-center gap-1 bg-gray-100 text-gray-700 border-gray-200">
+                              <Hash className="w-3 h-3" />
+                              {tag}
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => removeTag(tag)}
+                                className="h-4 w-4 p-0 hover:bg-transparent"
+                              >
+                                <X className="w-3 h-3" />
+                              </Button>
+                            </Badge>
+                          ))}
+                        </div>
+                      )}
+                      <p className="text-xs text-gray-500">
+                        {tags.length}/5 tags
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-white border border-gray-200 shadow-sm">
+                  <CardContent className="pt-6">
+                    <Button
+                      onClick={handleSubmit}
+                      disabled={loading || !title.trim() || !content.trim() || !category}
+                      className="w-full bg-yellow-600 hover:bg-yellow-700 text-white border-yellow-600 focus:ring-yellow-400"
+                      size="lg"
+                    >
+                      {loading ? 'Creating Post...' : 'Publish Post'}
+                    </Button>
+                    <p className="text-xs text-gray-500 mt-2 text-center">
+                      Your post will be visible to the entire community
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
             </div>
           </div>
         </div>
-    </div>
-  );
+      </div>
+    );
 } 
