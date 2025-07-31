@@ -103,8 +103,19 @@ const AuthButtons = ({ inMobileNav = false, user, onMobileMenuClose }: { inMobil
               onClick={onMobileMenuClose}
             >
               <Car className="w-5 h-5 text-orange-600" />
+              My Ads
+            </Link>
+
+
+            <Link 
+              href="/advertise/advertise" 
+              className="flex items-center gap-4 w-full px-4 py-3 text-base text-gray-900 hover:text-white hover:bg-orange-600 rounded-lg transition-all duration-200 border border-gray-300 bg-white shadow-sm font-medium"
+              onClick={onMobileMenuClose}
+            >
+              <Car className="w-5 h-5 text-orange-600" />
               Advertise
             </Link>
+            
             
             <Link 
               href="/advertise/dashboard" 

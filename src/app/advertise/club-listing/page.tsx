@@ -76,6 +76,7 @@ export default function ClubListingPage() {
     const db = getFirestore(app);
     const fetchAll = async () => {
       setLoading(true);
+      // Helper to fetch and filter by user
       const fetchByUser = async (col: string) => {
         const snap = await getDocs(collection(db, col));
         return snap.docs
@@ -87,6 +88,7 @@ export default function ClubListingPage() {
           );
       };
       
+      // Fetch user document for club listings
       const userRef = doc(db, "users", currentUser.uid);
       const userSnap = await getDoc(userRef);
       setUserDoc(userSnap.exists() ? userSnap.data() : null);
@@ -97,6 +99,30 @@ export default function ClubListingPage() {
     };
     fetchAll();
   }, [currentUser]);
+
+  // Handle success/cancel from Stripe checkout
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const success = urlParams.get('success');
+    const canceled = urlParams.get('canceled');
+    
+    if (success === '1') {
+      toast({
+        title: "Payment Successful!",
+        description: "Your club listing credit has been added to your account.",
+      });
+      // Clean up URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+    } else if (canceled === '1') {
+      toast({
+        title: "Payment Canceled",
+        description: "Your payment was canceled. You can try again anytime.",
+        variant: "destructive",
+      });
+      // Clean up URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }, [toast]);
 
   useEffect(() => {
     if (showSuccessMessage) {
@@ -240,7 +266,12 @@ export default function ClubListingPage() {
       const res = await fetch('/api/payment/stripe-checkout-session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ amount, description, email: currentUser?.email }),
+        body: JSON.stringify({ 
+          amount, 
+          description, 
+          email: currentUser?.email,
+          returnUrl: window.location.href
+        }),
       });
       const data = await res.json();
       if (data.url) {

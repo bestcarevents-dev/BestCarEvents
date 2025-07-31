@@ -115,6 +115,30 @@ export default function NewsletterMentionsPage() {
     fetchData();
   }, [currentUser, authChecked]);
 
+  // Handle success/cancel from Stripe checkout
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const success = urlParams.get('success');
+    const canceled = urlParams.get('canceled');
+    
+    if (success === '1') {
+      toast({
+        title: "Payment Successful!",
+        description: "Your newsletter credit has been added to your account.",
+      });
+      // Clean up URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+    } else if (canceled === '1') {
+      toast({
+        title: "Payment Canceled",
+        description: "Your payment was canceled. You can try again anytime.",
+        variant: "destructive",
+      });
+      // Clean up URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }, [toast]);
+
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     const maxImages = formData.type === "premium" ? 4 : 1;
@@ -244,7 +268,12 @@ export default function NewsletterMentionsPage() {
       const res = await fetch('/api/payment/stripe-checkout-session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ amount, description, email: currentUser?.email }),
+        body: JSON.stringify({ 
+          amount, 
+          description, 
+          email: currentUser?.email,
+          returnUrl: window.location.href
+        }),
       });
       const data = await res.json();
       if (data.url) {

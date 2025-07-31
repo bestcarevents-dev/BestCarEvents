@@ -165,6 +165,30 @@ export default function CarsListingPage() {
     }
   }, [paymentModal?.open]);
 
+  // Handle success/cancel from Stripe checkout
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const success = urlParams.get('success');
+    const canceled = urlParams.get('canceled');
+    
+    if (success === '1') {
+      toast({
+        title: "Payment Successful!",
+        description: "Your car listing credit has been added to your account.",
+      });
+      // Clean up URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+    } else if (canceled === '1') {
+      toast({
+        title: "Payment Canceled",
+        description: "Your payment was canceled. You can try again anytime.",
+        variant: "destructive",
+      });
+      // Clean up URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }, [toast]);
+
   // Payment handler (original working version)
   const handlePayment = async () => {
     setProcessing(true);
@@ -190,7 +214,12 @@ export default function CarsListingPage() {
       const res = await fetch('/api/payment/stripe-checkout-session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ amount, description, email: currentUser?.email }),
+        body: JSON.stringify({ 
+          amount, 
+          description, 
+          email: currentUser?.email,
+          returnUrl: window.location.href
+        }),
       });
       const data = await res.json();
       if (data.url) {
@@ -199,6 +228,7 @@ export default function CarsListingPage() {
       } else {
         setPaymentError(data.error || 'Failed to create Stripe Checkout session.');
       }
+      setProcessing(false);
     } else if (selectedPayment === 'paypal') {
       // Call API to create PayPal order
       const res = await fetch('/api/payment/paypal-order', {

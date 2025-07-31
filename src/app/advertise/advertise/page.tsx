@@ -205,10 +205,16 @@ export default function AdvertisePage() {
       return;
     }
     if (bannerSelectedPayment === 'stripe') {
+      // Call API to create Stripe Checkout session
       const res = await fetch('/api/payment/stripe-checkout-session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ amount, description, email: currentUser?.email }),
+        body: JSON.stringify({ 
+          amount, 
+          description, 
+          email: currentUser?.email,
+          returnUrl: window.location.href
+        }),
       });
       const data = await res.json();
       if (data.url) {
@@ -360,6 +366,30 @@ export default function AdvertisePage() {
     });
     return () => unsubscribe();
   }, [db]);
+
+  // Handle success/cancel from Stripe checkout
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const success = urlParams.get('success');
+    const canceled = urlParams.get('canceled');
+    
+    if (success === '1') {
+      toast({
+        title: "Payment Successful!",
+        description: "Your banner advertisement credit has been added to your account.",
+      });
+      // Clean up URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+    } else if (canceled === '1') {
+      toast({
+        title: "Payment Canceled",
+        description: "Your payment was canceled. You can try again anytime.",
+        variant: "destructive",
+      });
+      // Clean up URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }, [toast]);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files ? Array.from(e.target.files) : [];
