@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Facebook, Twitter, Instagram } from "lucide-react";
-import NewsletterSubscribe from "@/components/NewsletterSubscribe";
+import FooterNewsletter from "@/components/FooterNewsletter";
 
 export default function Footer() {
   return (
@@ -27,22 +27,27 @@ export default function Footer() {
               <h3 className="font-semibold font-headline text-foreground">Marketplace</h3>
               <ul className="mt-4 space-y-3">
                 <li><Link href="/cars" className="text-sm hover:text-primary transition-colors">Cars for Sale</Link></li>
-                 <li><Link href="/auctions" className="text-sm hover:text-primary transition-colors">Auctions</Link></li>
+                <li><Link href="/auctions" className="text-sm hover:text-primary transition-colors">Auctions</Link></li>
+                <li><Link href="/advertise/cars-listing" className="text-sm hover:text-primary transition-colors">My Car Listing</Link></li>
+                <li><Link href="/advertise/hotels-listing" className="text-sm hover:text-primary transition-colors">My Hotel Listings</Link></li>
+                <li><Link href="/advertise/clubs-listing" className="text-sm hover:text-primary transition-colors">My Club Listing</Link></li>
+                <li><Link href="/advertise/event-listing" className="text-sm hover:text-primary transition-colors">My Event Listing</Link></li>
+                <li><Link href="/advertise/dashboard" className="text-sm hover:text-primary transition-colors">My Listing/Advertise Dashboard</Link></li>
               </ul>
             </div>
              <div>
               <h3 className="font-semibold font-headline text-foreground">Events</h3>
               <ul className="mt-4 space-y-3">
                 <li><Link href="/events" className="text-sm hover:text-primary transition-colors">All Events</Link></li>
-                <li><Link href="#" className="text-sm hover:text-primary transition-colors">Submit an Event</Link></li>
+                <li><Link href="/events/host" className="text-sm hover:text-primary transition-colors">Submit an Event</Link></li>
               </ul>
             </div>
             <div>
               <h3 className="font-semibold font-headline text-foreground">Community</h3>
               <ul className="mt-4 space-y-3">
-                <li><Link href="/hotels" className="text-sm hover:text-primary transition-colors">Car Storage</Link></li>
-                <li><Link href="#" className="text-sm hover:text-primary transition-colors">Forums</Link></li>
-                <li><Link href="/advertise" className="text-sm hover:text-primary transition-colors">Advertise</Link></li>
+                <li><Link href="/forum" className="text-sm hover:text-primary transition-colors">Forum</Link></li>
+                <li><Link href="/clubs" className="text-sm hover:text-primary transition-colors">Car Clubs</Link></li>
+                <li><Link href="/advertise/my-ads" className="text-sm hover:text-primary transition-colors">Advertise</Link></li>
               </ul>
             </div>
              <div>
@@ -57,7 +62,7 @@ export default function Footer() {
           </div>
         </div>
         <div className="flex justify-center mt-8">
-          <NewsletterSubscribe />
+          <FooterNewsletter />
         </div>
         <div className="mt-12 border-t pt-8 text-center text-sm">
           <p>&copy; {new Date().getFullYear()} BestCarEvents. All rights reserved.</p>

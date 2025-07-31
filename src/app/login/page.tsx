@@ -23,7 +23,7 @@ export default function LoginPage() {
     setError(null);
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      router.push("/dashboard");
+      router.push("/");
     } catch (error: any) {
       let errorMessage = "Failed to log in. Please check your credentials.";
       if (error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {

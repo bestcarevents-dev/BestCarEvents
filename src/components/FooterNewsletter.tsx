@@ -11,7 +11,7 @@ import { getFirestore, doc, setDoc } from "firebase/firestore";
 import { app } from "@/lib/firebase";
 import { CheckCircle2, LogIn } from "lucide-react";
 
-export default function NewsletterSubscribe() {
+export default function FooterNewsletter() {
   const [user, setUser] = useState<User | null>(null);
   const [open, setOpen] = useState(false);
   const [email, setEmail] = useState("");
@@ -70,7 +70,7 @@ export default function NewsletterSubscribe() {
   }, [open, user]);
 
   return (
-    <div className="w-full flex justify-center mt-10 mb-0 bg-white py-16">
+    <div className="w-full flex justify-center py-4">
       {user ? (
         <>
           <Button

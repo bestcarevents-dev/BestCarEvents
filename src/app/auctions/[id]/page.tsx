@@ -53,7 +53,7 @@ export default function AuctionDetailsPage() {
   ];
 
   return (
-    <div className="container mx-auto px-4 py-10 animate-fade-in">
+    <div className="container mx-auto px-4 py-10 bg-white animate-fade-in">
       {/* Hero Section */}
       <div className="relative rounded-3xl overflow-hidden shadow-2xl mb-10 group">
         <div className="relative w-full aspect-video bg-black">
@@ -64,27 +64,27 @@ export default function AuctionDetailsPage() {
           <div>
             <h1 className="text-4xl md:text-5xl font-extrabold font-headline text-white drop-shadow-lg animate-pop-in">{auction.auctionName}</h1>
             <div className="flex flex-wrap gap-2 mt-2">
-              <Badge className="bg-gradient-to-r from-primary to-secondary text-white animate-bounce-in">{auction.auctionHouse}</Badge>
-              <Badge className="bg-gradient-to-r from-secondary to-primary text-white animate-bounce-in">{auction.auctionType}</Badge>
+              <Badge className="bg-yellow-600 text-white animate-bounce-in">{auction.auctionHouse}</Badge>
+              <Badge className="bg-yellow-500 text-white animate-bounce-in">{auction.auctionType}</Badge>
             </div>
           </div>
           <div className="flex flex-col md:items-end gap-2">
-            <span className="text-xl font-mono font-bold text-primary drop-shadow-lg">{auction.city}, {auction.state}, {auction.country}</span>
+            <span className="text-xl font-mono font-bold text-yellow-600 drop-shadow-lg">{auction.city}, {auction.state}, {auction.country}</span>
             <Button size="lg" className="mt-2 animate-pop" onClick={() => router.push('/auctions')}><ArrowLeft className="mr-2" />Back to Auctions</Button>
           </div>
         </div>
         <div className="absolute top-4 right-4 flex gap-2 z-10">
-          <Button variant="ghost" size="icon" className="hover:text-primary" onClick={() => window.scrollTo({top: window.innerHeight, behavior: 'smooth'})}><Star /></Button>
+          <Button variant="ghost" size="icon" className="hover:text-yellow-600" onClick={() => window.scrollTo({top: window.innerHeight, behavior: 'smooth'})}><Star /></Button>
         </div>
       </div>
 
       {/* Timeline Section */}
       <div className="flex flex-col md:flex-row gap-8 mb-10 items-center justify-center animate-fade-in-up">
         {timeline.map((item, idx) => (
-          <div key={idx} className="flex flex-col items-center bg-card/80 rounded-xl shadow-lg px-8 py-6 border border-primary/10 animate-pop-in" style={{ animationDelay: `${idx * 0.1}s` }}>
+          <div key={idx} className="flex flex-col items-center bg-white border border-gray-200 rounded-xl shadow-lg px-8 py-6 animate-pop-in" style={{ animationDelay: `${idx * 0.1}s` }}>
             <div className="mb-2">{item.icon}</div>
-            <div className="text-lg font-semibold text-primary mb-1">{item.label}</div>
-            <div className="text-xl font-bold text-foreground">{item.value}</div>
+            <div className="text-lg font-semibold text-yellow-600 mb-1">{item.label}</div>
+            <div className="text-xl font-bold text-gray-900">{item.value}</div>
           </div>
         ))}
       </div>
@@ -93,31 +93,31 @@ export default function AuctionDetailsPage() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         {/* Main Details */}
         <div className="md:col-span-2 space-y-8">
-          <Card className="p-6 animate-fade-in-up">
+          <Card className="p-6 animate-fade-in-up bg-white border border-gray-200">
             <CardContent className="p-0">
-              <h2 className="text-2xl font-bold font-headline mb-4 text-primary">Event Description</h2>
-              <div className="prose max-w-none text-lg text-muted-foreground mb-2 whitespace-pre-line">{auction.description}</div>
-              <div className="text-base text-foreground mt-4"><span className="font-semibold">Venue:</span> {auction.address}</div>
+              <h2 className="text-2xl font-bold font-headline mb-4 text-yellow-600">Event Description</h2>
+              <div className="prose max-w-none text-lg text-gray-600 mb-2 whitespace-pre-line">{auction.description}</div>
+              <div className="text-base text-gray-900 mt-4"><span className="font-semibold text-gray-900">Venue:</span> <span className="text-gray-900">{auction.address}</span></div>
             </CardContent>
           </Card>
-          <Card className="p-6 animate-fade-in-up">
+          <Card className="p-6 animate-fade-in-up bg-white border border-gray-200">
             <CardContent className="p-0">
-              <h2 className="text-2xl font-bold font-headline mb-4 text-primary">Organizer & Contact</h2>
-              <div className="mb-2"><span className="font-semibold">Organizer:</span> {auction.organizerName}</div>
-              <div className="mb-2"><span className="font-semibold">Contact:</span> <a href={`mailto:${auction.organizerContact}?subject=Inquiry about ${auction.auctionName}`} className="text-primary underline">{auction.organizerContact}</a></div>
+              <h2 className="text-2xl font-bold font-headline mb-4 text-yellow-600">Organizer & Contact</h2>
+              <div className="mb-2"><span className="font-semibold text-gray-900">Organizer:</span> <span className="text-gray-900">{auction.organizerName}</span></div>
+              <div className="mb-2"><span className="font-semibold text-gray-900">Contact:</span> <a href={`mailto:${auction.organizerContact}?subject=Inquiry about ${auction.auctionName}`} className="text-yellow-600 underline">{auction.organizerContact}</a></div>
             </CardContent>
           </Card>
         </div>
         {/* Quick Info */}
         <div className="space-y-8">
-          <Card className="p-6 animate-fade-in-up">
+          <Card className="p-6 animate-fade-in-up bg-white border border-gray-200">
             <CardContent className="p-0">
-              <h2 className="text-xl font-bold font-headline mb-4 text-primary">Quick Info</h2>
-              <div className="mb-2 flex items-center gap-2"><Calendar className="w-4 h-4 text-primary" /><span className="font-semibold">Start:</span> {formatDate(auction.startDate)}</div>
-              <div className="mb-2 flex items-center gap-2"><Calendar className="w-4 h-4 text-primary" /><span className="font-semibold">End:</span> {formatDate(auction.endDate)}</div>
-              <div className="mb-2 flex items-center gap-2"><MapPin className="w-4 h-4 text-primary" /><span className="font-semibold">Location:</span> {auction.city}, {auction.state}, {auction.country}</div>
-              <div className="mb-2 flex items-center gap-2"><Star className="w-4 h-4 text-yellow-500" /><span className="font-semibold">Type:</span> {auction.auctionType}</div>
-              <div className="mb-2 flex items-center gap-2"><Users className="w-4 h-4 text-primary" /><span className="font-semibold">Viewing:</span> {auction.viewingTimes || 'N/A'}</div>
+              <h2 className="text-xl font-bold font-headline mb-4 text-yellow-600">Quick Info</h2>
+              <div className="mb-2 flex items-center gap-2"><Calendar className="w-4 h-4 text-yellow-600" /><span className="font-semibold text-gray-900">Start:</span> <span className="text-gray-900">{formatDate(auction.startDate)}</span></div>
+              <div className="mb-2 flex items-center gap-2"><Calendar className="w-4 h-4 text-yellow-600" /><span className="font-semibold text-gray-900">End:</span> <span className="text-gray-900">{formatDate(auction.endDate)}</span></div>
+              <div className="mb-2 flex items-center gap-2"><MapPin className="w-4 h-4 text-yellow-600" /><span className="font-semibold text-gray-900">Location:</span> <span className="text-gray-900">{auction.city}, {auction.state}, {auction.country}</span></div>
+              <div className="mb-2 flex items-center gap-2"><Star className="w-4 h-4 text-yellow-500" /><span className="font-semibold text-gray-900">Type:</span> <span className="text-gray-900">{auction.auctionType}</span></div>
+              <div className="mb-2 flex items-center gap-2"><Users className="w-4 h-4 text-yellow-600" /><span className="font-semibold text-gray-900">Viewing:</span> <span className="text-gray-900">{auction.viewingTimes || 'N/A'}</span></div>
             </CardContent>
           </Card>
         </div>

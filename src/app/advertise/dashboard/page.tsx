@@ -23,6 +23,7 @@ import { loadStripe } from "@stripe/stripe-js";
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 import { Elements } from '@stripe/react-stripe-js';
 import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
+import { useToast } from "@/hooks/use-toast";
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
@@ -123,6 +124,7 @@ export default function PartnerDashboard() {
   const [stripeClientSecret, setStripeClientSecret] = useState<string | null>(null);
   const [paymentError, setPaymentError] = useState<string | null>(null);
   const [paymentStep, setPaymentStep] = useState<'select' | 'pay'>('select');
+  const { toast } = useToast();
 
   useEffect(() => {
     const auth = getAuth();
@@ -273,12 +275,21 @@ export default function PartnerDashboard() {
       if (captureData.success) {
         // Update Firestore
         await handlePostPayment();
+        toast({
+          title: "Payment Successful!",
+          description: `You have successfully purchased ${paymentModal?.name}.`,
+        });
         return Promise.resolve();
       } else {
         throw new Error(captureData.error || 'Payment capture failed');
       }
     } catch (error: any) {
       setPaymentError(error.message || 'Payment failed');
+      toast({
+        title: "Payment Failed",
+        description: error.message || "There was an error processing your payment.",
+        variant: "destructive",
+      });
       return Promise.reject(error);
     }
   };
@@ -286,6 +297,11 @@ export default function PartnerDashboard() {
   const onPayPalError = (err: any) => {
     console.error('PayPal error:', err);
     setPaymentError('PayPal payment failed. Please try again.');
+    toast({
+      title: "Payment Failed",
+      description: "PayPal payment failed. Please try again.",
+      variant: "destructive",
+    });
   };
 
   // Add CheckoutForm component for Stripe Elements
@@ -339,6 +355,10 @@ export default function PartnerDashboard() {
     setPaymentModal(null);
     setSelectedPayment(null);
     setStripeClientSecret(null);
+    toast({
+      title: "Payment Successful!",
+      description: `You have successfully purchased ${paymentModal?.name || 'credit'}.`,
+    });
   };
 
   return (
@@ -439,7 +459,14 @@ export default function PartnerDashboard() {
                                 <Elements stripe={stripePromise}>
                                   <CheckoutForm 
                                     onSuccess={handlePostPayment}
-                                    onError={(msg) => setPaymentError(msg)}
+                                    onError={(msg) => {
+                                      setPaymentError(msg);
+                                      toast({
+                                        title: "Payment Failed",
+                                        description: msg,
+                                        variant: "destructive",
+                                      });
+                                    }}
                                     processing={processing}
                                   />
                                 </Elements>
@@ -578,7 +605,14 @@ export default function PartnerDashboard() {
                               <Elements stripe={stripePromise}>
                                 <CheckoutForm 
                                   onSuccess={handlePostPayment}
-                                  onError={(msg) => setPaymentError(msg)}
+                                  onError={(msg) => {
+                                    setPaymentError(msg);
+                                    toast({
+                                      title: "Payment Failed",
+                                      description: msg,
+                                      variant: "destructive",
+                                    });
+                                  }}
                                   processing={processing}
                                 />
                               </Elements>

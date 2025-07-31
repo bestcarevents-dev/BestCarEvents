@@ -67,7 +67,7 @@ export default function CarDetailsPage() {
   if (car.features && car.features.includes("Sunroof/Moonroof")) highlightBadges.push("Rare Find");
 
   return (
-    <div className="container mx-auto px-4 py-10 animate-fade-in">
+    <div className="container mx-auto px-4 py-10 bg-white animate-fade-in">
       {/* Hero Section */}
       <div className="relative rounded-3xl overflow-hidden shadow-xl mb-10">
         <Carousel className="w-full" setApi={setEmblaApi}>
@@ -83,7 +83,7 @@ export default function CarDetailsPage() {
           {/* Custom Large Left/Right Buttons */}
           <button
             type="button"
-            className="absolute left-2 top-1/2 -translate-y-1/2 z-20 bg-white/80 hover:bg-primary text-black hover:text-white rounded-full p-3 shadow-lg text-3xl transition-colors"
+            className="absolute left-2 top-1/2 -translate-y-1/2 z-20 bg-white/80 hover:bg-yellow-600 text-black hover:text-white rounded-full p-3 shadow-lg text-3xl transition-colors"
             onClick={() => emblaApi && emblaApi.scrollPrev()}
             aria-label="Previous image"
             style={{ minWidth: 48, minHeight: 48 }}
@@ -92,7 +92,7 @@ export default function CarDetailsPage() {
           </button>
           <button
             type="button"
-            className="absolute right-2 top-1/2 -translate-y-1/2 z-20 bg-white/80 hover:bg-primary text-black hover:text-white rounded-full p-3 shadow-lg text-3xl transition-colors"
+            className="absolute right-2 top-1/2 -translate-y-1/2 z-20 bg-white/80 hover:bg-yellow-600 text-black hover:text-white rounded-full p-3 shadow-lg text-3xl transition-colors"
             onClick={() => emblaApi && emblaApi.scrollNext()}
             aria-label="Next image"
             style={{ minWidth: 48, minHeight: 48 }}
@@ -108,18 +108,18 @@ export default function CarDetailsPage() {
             <h1 className="text-4xl md:text-5xl font-extrabold font-headline text-white drop-shadow-lg">{car.year} {car.make} {car.model}</h1>
             <div className="flex flex-wrap gap-2 mt-2">
               {highlightBadges.map(badge => (
-                <Badge key={badge} className="bg-gradient-to-r from-primary to-secondary text-white animate-bounce-in">{badge}</Badge>
+                <Badge key={badge} className="bg-yellow-600 text-white animate-bounce-in">{badge}</Badge>
               ))}
             </div>
           </div>
           <div className="flex flex-col md:items-end gap-2">
-            <span className="text-3xl font-mono font-bold text-primary drop-shadow-lg">${car.price?.toLocaleString()}</span>
+            <span className="text-3xl font-mono font-bold text-yellow-600 drop-shadow-lg">${car.price?.toLocaleString()}</span>
             <Button size="lg" className="mt-2 animate-pop" onClick={() => setShowContact(true)}><Mail className="mr-2" />Contact Seller</Button>
           </div>
         </div>
         <div className="absolute top-4 right-4 flex gap-2 z-10">
-          <Button variant="ghost" size="icon" className="hover:text-primary"><Share2 /></Button>
-          <Button variant="ghost" size="icon" className="hover:text-destructive"><Heart /></Button>
+          <Button variant="ghost" size="icon" className="hover:text-yellow-600"><Share2 /></Button>
+          <Button variant="ghost" size="icon" className="hover:text-red-600"><Heart /></Button>
         </div>
       </div>
 
@@ -127,43 +127,43 @@ export default function CarDetailsPage() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         {/* Specs & Features */}
         <div className="md:col-span-2 space-y-8">
-          <Card className="p-6 animate-fade-in-up">
+          <Card className="p-6 animate-fade-in-up bg-white border border-gray-200">
             <CardContent className="p-0">
-              <h2 className="text-2xl font-bold font-headline mb-4 text-primary">Specifications</h2>
+              <h2 className="text-2xl font-bold font-headline mb-4 text-yellow-600">Specifications</h2>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
-                <div className="flex items-center gap-2"><span className="font-semibold">Body:</span> {car.bodyStyle}</div>
-                <div className="flex items-center gap-2"><span className="font-semibold">Engine:</span> {car.engine}</div>
-                <div className="flex items-center gap-2"><span className="font-semibold">Transmission:</span> {car.transmission}</div>
-                <div className="flex items-center gap-2"><span className="font-semibold">Drivetrain:</span> {car.drivetrain}</div>
-                <div className="flex items-center gap-2"><span className="font-semibold">Exterior:</span> {car.exteriorColor}</div>
-                <div className="flex items-center gap-2"><span className="font-semibold">Interior:</span> {car.interiorColor}</div>
-                <div className="flex items-center gap-2"><span className="font-semibold">Mileage:</span> {car.mileage?.toLocaleString()} mi</div>
-                {car.vin && <div className="flex items-center gap-2"><span className="font-semibold">VIN:</span> {car.vin}</div>}
-                <div className="flex items-center gap-2"><span className="font-semibold">Location:</span> <MapPin className="w-4 h-4 inline-block mr-1 text-primary" />{car.location}</div>
+                <div className="flex items-center gap-2"><span className="font-semibold text-gray-900">Body:</span> <span className="text-gray-900">{car.bodyStyle}</span></div>
+                <div className="flex items-center gap-2"><span className="font-semibold text-gray-900">Engine:</span> <span className="text-gray-900">{car.engine}</span></div>
+                <div className="flex items-center gap-2"><span className="font-semibold text-gray-900">Transmission:</span> <span className="text-gray-900">{car.transmission}</span></div>
+                <div className="flex items-center gap-2"><span className="font-semibold text-gray-900">Drivetrain:</span> <span className="text-gray-900">{car.drivetrain}</span></div>
+                <div className="flex items-center gap-2"><span className="font-semibold text-gray-900">Exterior:</span> <span className="text-gray-900">{car.exteriorColor}</span></div>
+                <div className="flex items-center gap-2"><span className="font-semibold text-gray-900">Interior:</span> <span className="text-gray-900">{car.interiorColor}</span></div>
+                <div className="flex items-center gap-2"><span className="font-semibold text-gray-900">Mileage:</span> <span className="text-gray-900">{car.mileage?.toLocaleString()} mi</span></div>
+                {car.vin && <div className="flex items-center gap-2"><span className="font-semibold text-gray-900">VIN:</span> <span className="text-gray-900">{car.vin}</span></div>}
+                <div className="flex items-center gap-2"><span className="font-semibold text-gray-900">Location:</span> <MapPin className="w-4 h-4 inline-block mr-1 text-yellow-600" /><span className="text-gray-900">{car.location}</span></div>
               </div>
-              <h3 className="text-xl font-bold font-headline mb-2">Features</h3>
+              <h3 className="text-xl font-bold font-headline mb-2 text-yellow-600">Features</h3>
               <div className="flex flex-wrap gap-2">
                 {(car.features || []).map((feature: string) => (
-                  <Badge key={feature} className="flex items-center gap-1 px-3 py-1 bg-muted text-foreground border border-primary/20 animate-fade-in-up">
-                    {featureIcons[feature] || <CheckCircle className="w-4 h-4 mr-1 text-primary" />} {feature}
+                  <Badge key={feature} className="flex items-center gap-1 px-3 py-1 bg-yellow-100 text-yellow-800 border border-gray-200 animate-fade-in-up">
+                    {featureIcons[feature] || <CheckCircle className="w-4 h-4 mr-1 text-yellow-600" />} {feature}
                   </Badge>
                 ))}
               </div>
             </CardContent>
           </Card>
-          <Card className="p-6 animate-fade-in-up">
+          <Card className="p-6 animate-fade-in-up bg-white border border-gray-200">
             <CardContent className="p-0">
-              <h2 className="text-2xl font-bold font-headline mb-4 text-primary">Condition & Description</h2>
-              <div className="prose max-w-none text-lg text-muted-foreground mb-2 whitespace-pre-line">{car.description}</div>
-              <div className="text-base text-foreground mt-4"><span className="font-semibold">Condition:</span> {car.conditionDetails}</div>
+              <h2 className="text-2xl font-bold font-headline mb-4 text-yellow-600">Condition & Description</h2>
+              <div className="prose max-w-none text-lg text-gray-600 mb-2 whitespace-pre-line">{car.description}</div>
+              <div className="text-base text-gray-900 mt-4"><span className="font-semibold text-gray-900">Condition:</span> <span className="text-gray-900">{car.conditionDetails}</span></div>
             </CardContent>
           </Card>
 
           {/* Video Section */}
           {car.videoUrl && (
-            <Card className="p-6 animate-fade-in-up">
+            <Card className="p-6 animate-fade-in-up bg-white border border-gray-200">
               <CardContent className="p-0">
-                <h2 className="text-2xl font-bold font-headline mb-4 text-primary">Professional Video</h2>
+                <h2 className="text-2xl font-bold font-headline mb-4 text-yellow-600">Professional Video</h2>
                 <div className="aspect-video w-full rounded-lg overflow-hidden bg-black">
                   <video 
                     src={car.videoUrl} 
@@ -175,7 +175,7 @@ export default function CarDetailsPage() {
                     Your browser does not support the video tag.
                   </video>
                 </div>
-                <p className="text-sm text-muted-foreground mt-2">
+                <p className="text-sm text-gray-600 mt-2">
                   Professional video or virtual tour of this vehicle
                 </p>
               </CardContent>
@@ -184,12 +184,12 @@ export default function CarDetailsPage() {
         </div>
         {/* Seller Info */}
         <div className="space-y-8">
-          <Card className="p-6 animate-fade-in-up">
+          <Card className="p-6 animate-fade-in-up bg-white border border-gray-200">
             <CardContent className="p-0">
-              <h2 className="text-xl font-bold font-headline mb-4 text-primary">Seller Information</h2>
-              <div className="mb-2"><span className="font-semibold">Name:</span> {car.sellerName}</div>
-              <div className="mb-2"><span className="font-semibold">Contact:</span> <a href={`mailto:${car.sellerContact}`} className="text-primary underline">{car.sellerContact}</a></div>
-              <div className="mb-2"><span className="font-semibold">Location:</span> <MapPin className="w-4 h-4 inline-block mr-1 text-primary" />{car.location}</div>
+              <h2 className="text-xl font-bold font-headline mb-4 text-yellow-600">Seller Information</h2>
+              <div className="mb-2"><span className="font-semibold text-gray-900">Name:</span> <span className="text-gray-900">{car.sellerName}</span></div>
+              <div className="mb-2"><span className="font-semibold text-gray-900">Contact:</span> <a href={`mailto:${car.sellerContact}`} className="text-yellow-600 underline">{car.sellerContact}</a></div>
+              <div className="mb-2"><span className="font-semibold text-gray-900">Location:</span> <MapPin className="w-4 h-4 inline-block mr-1 text-yellow-600" /><span className="text-gray-900">{car.location}</span></div>
             </CardContent>
           </Card>
         </div>
@@ -205,7 +205,7 @@ export default function CarDetailsPage() {
             <p className="text-lg font-semibold mb-2">Send an email to the seller to inquire about this car.</p>
             <DialogFooter>
               <DialogClose asChild>
-                <Button variant="outline">Close</Button>
+                <Button variant="outline" className="border-gray-300 text-gray-700 hover:bg-gray-50">Close</Button>
               </DialogClose>
               <Button asChild variant="default">
                 <a href={`mailto:${car.sellerContact}?subject=Inquiry about ${car.year} ${car.make} ${car.model}`}>Email Seller</a>

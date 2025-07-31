@@ -27,6 +27,11 @@ import {
 } from "@/components/ui/dialog";
 import { useRouter } from "next/navigation";
 import { Label } from "@/components/ui/label";
+import { loadStripe } from "@stripe/stripe-js";
+import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
+import { Elements } from '@stripe/react-stripe-js';
+import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
+import { useToast } from "@/hooks/use-toast";
 
 export default function HotelListingPage() {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
@@ -38,6 +43,25 @@ export default function HotelListingPage() {
   const [selectedFeatureType, setSelectedFeatureType] = useState<'standard' | 'featured' | null>(null);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const router = useRouter();
+  const { toast } = useToast();
+  // Payment modal state
+  const [paymentModal, setPaymentModal] = useState<{ open: boolean; col: string; id: string } | null>(null);
+  const [paymentStep, setPaymentStep] = useState<'selectType' | 'selectPayment' | 'pay'>('selectType');
+  const [selectedPayment, setSelectedPayment] = useState<'stripe' | 'paypal' | null>(null);
+  const [processing, setProcessing] = useState(false);
+  const [stripeClientSecret, setStripeClientSecret] = useState<string | null>(null);
+  const [paymentError, setPaymentError] = useState<string | null>(null);
+
+  const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
+  const paypalOptions = {
+    clientId: process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || "AW2LLf5-BoTh1ZUKUhs8Ic7nmIfH49BV92y-960SIzcvrO4vlDpLtNKe--xYpNB9Yb3xn7XONXJbErNv",
+    currency: "EUR",
+    intent: "capture",
+  };
+  const FEATURE_PRICES = {
+    featured: 4800, // EUR
+    standard: 400, // EUR
+  };
 
   useEffect(() => {
     const auth = getAuth(app);
@@ -196,6 +220,151 @@ export default function HotelListingPage() {
     viewPath: "/hotels/",
   };
 
+  // Payment handlers
+  const handlePayment = async () => {
+    setProcessing(true);
+    setPaymentError(null);
+    let amount = 0;
+    let description = '';
+    if (selectedFeatureType) {
+      amount = FEATURE_PRICES[selectedFeatureType];
+      description = selectedFeatureType === 'featured' ? 'Featured Listing' : 'Standard Listing';
+    }
+    if (!amount || !description) {
+      setPaymentError('Invalid payment details.');
+      setProcessing(false);
+      return;
+    }
+    if (selectedPayment === 'stripe') {
+      // Call API to create Stripe Checkout session
+      const res = await fetch('/api/payment/stripe-checkout-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount, description, email: currentUser?.email }),
+      });
+      const data = await res.json();
+      if (data.clientSecret) {
+        setStripeClientSecret(data.clientSecret);
+        setPaymentStep('pay');
+      } else {
+        setPaymentError(data.error || 'Failed to create Stripe Checkout session.');
+      }
+      setProcessing(false);
+    } else if (selectedPayment === 'paypal') {
+      setPaymentStep('pay');
+      setProcessing(false);
+    }
+  };
+  // PayPal handlers
+  const createPayPalOrder = async (data: any, actions: any) => {
+    let amount = 0;
+    let description = '';
+    if (selectedFeatureType) {
+      amount = FEATURE_PRICES[selectedFeatureType];
+      description = selectedFeatureType === 'featured' ? 'Featured Listing' : 'Standard Listing';
+    }
+    if (!amount || !description) {
+      throw new Error('Invalid payment details');
+    }
+    const res = await fetch('/api/payment/paypal-order', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ amount, description }),
+    });
+    const orderData = await res.json();
+    if (!orderData.orderId) {
+      throw new Error(orderData.error || 'Failed to create PayPal order');
+    }
+    return orderData.orderId;
+  };
+  const onPayPalApprove = async (data: any, actions: any) => {
+    try {
+      const res = await fetch('/api/payment/paypal-capture', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orderId: data.orderID }),
+      });
+      const captureData = await res.json();
+      if (captureData.success) {
+        await handlePostPayment();
+        return Promise.resolve();
+      } else {
+        throw new Error(captureData.error || 'Payment capture failed');
+      }
+    } catch (error: any) {
+      setPaymentError(error.message || 'Payment failed');
+      return Promise.reject(error);
+    }
+  };
+  const onPayPalError = (err: any) => {
+    setPaymentError('PayPal error: ' + (err?.message || 'Unknown error'));
+  };
+  // Stripe CheckoutForm
+  function CheckoutForm({ onSuccess, onError, processing }: { onSuccess: () => void, onError: (msg: string) => void, processing: boolean }) {
+    const stripe = useStripe();
+    const elements = useElements();
+    const handleSubmit = async (e: React.FormEvent) => {
+      e.preventDefault();
+      if (!stripe || !elements) return;
+      const card = elements.getElement(CardElement);
+      if (!card) return;
+      const { error, paymentIntent } = await stripe.confirmCardPayment(stripeClientSecret!, {
+        payment_method: { card },
+      });
+      if (error) {
+        onError(error.message || 'Payment failed');
+      } else if (paymentIntent && paymentIntent.status === 'succeeded') {
+        onSuccess();
+      } else {
+        onError('Payment not successful');
+      }
+    };
+    return (
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <CardElement options={{ hidePostalCode: true }} className="p-2 border rounded" />
+        <Button type="submit" className="w-full" disabled={processing}>Pay</Button>
+      </form>
+    );
+  }
+  // Post-payment handler
+  const handlePostPayment = async () => {
+    if (!paymentModal || !selectedFeatureType) return;
+    const db = getFirestore(app);
+    // Increment the user's Credit
+    if (selectedFeatureType === 'standard') {
+      await updateDoc(doc(db, "users", currentUser!.uid), {
+        standardListingRemaining: (userDoc?.standardListingRemaining || 0) + 1
+      });
+      setUserDoc((prev: any) => prev ? {
+        ...prev,
+        standardListingRemaining: (prev.standardListingRemaining || 0) + 1
+      } : null);
+    } else {
+      await updateDoc(doc(db, "users", currentUser!.uid), {
+        featuredListingRemaining: (userDoc?.featuredListingRemaining || 0) + 1
+      });
+      setUserDoc((prev: any) => prev ? {
+        ...prev,
+        featuredListingRemaining: (prev.featuredListingRemaining || 0) + 1
+      } : null);
+    }
+    setPaymentModal(null);
+    setSelectedFeatureType(null);
+    setPaymentStep('selectType');
+    setSelectedPayment(null);
+    setStripeClientSecret(null);
+    toast({
+      title: "Payment Successful",
+      description: `You have purchased 1 ${selectedFeatureType === 'featured' ? 'Featured' : 'Standard'} Listing Credit!`,
+    });
+    // Refresh user document
+    if (currentUser) {
+      const userRef = doc(db, "users", currentUser.uid);
+      const userSnap = await getDoc(userRef);
+      setUserDoc(userSnap.exists() ? userSnap.data() : null);
+    }
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
       {showSuccessMessage && (
@@ -254,15 +423,176 @@ export default function HotelListingPage() {
                 <CardDescription>Manage your {tableData.label.toLowerCase()} here.</CardDescription>
               </div>
               <div className="flex gap-2">
-                <Button 
-                  variant="default" 
-                  onClick={() => router.push('/advertise/dashboard')}
-                >
-                  Buy Featured
-                </Button>
+                <Dialog open={paymentModal?.open} onOpenChange={(open) => {
+                  if (!open) {
+                    setPaymentModal(null);
+                    setSelectedFeatureType(null);
+                    setPaymentStep('selectType');
+                    setSelectedPayment(null);
+                    setStripeClientSecret(null);
+                    setPaymentError(null);
+                  }
+                }}>
+                  <DialogTrigger asChild>
+                    <Button 
+                      variant="default"
+                      onClick={() => {
+                        setPaymentModal({ open: true, col: 'users', id: currentUser?.uid || '' });
+                        setSelectedFeatureType(null);
+                        setPaymentStep('selectType');
+                        setSelectedPayment(null);
+                        setStripeClientSecret(null);
+                        setPaymentError(null);
+                      }}
+                    >
+                      Buy Featured
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-md">
+                    <DialogHeader>
+                      <DialogTitle>Buy Listing Credit</DialogTitle>
+                      <DialogDescription>
+                        {paymentStep === 'selectType' && 'Choose which type of listing credit you want to buy.'}
+                        {paymentStep === 'selectPayment' && 'Choose a payment method to continue.'}
+                        {paymentStep === 'pay' && selectedPayment === 'stripe' && 'Pay securely with your card.'}
+                        {paymentStep === 'pay' && selectedPayment === 'paypal' && 'Pay securely with PayPal.'}
+                      </DialogDescription>
+                    </DialogHeader>
+                    {/* Step 1: Choose credit type */}
+                    {paymentStep === 'selectType' && (
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-3">
+                          <input
+                            type="radio"
+                            id="credit-standard"
+                            name="credit-type"
+                            value="standard"
+                            checked={selectedFeatureType === 'standard'}
+                            onChange={() => setSelectedFeatureType('standard')}
+                          />
+                          <Label htmlFor="credit-standard" className="flex-1">
+                            <div className="font-medium">Standard Listing Credit</div>
+                            <div className="text-sm text-muted-foreground">
+                              1 month, €400
+                            </div>
+                          </Label>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <input
+                            type="radio"
+                            id="credit-featured"
+                            name="credit-type"
+                            value="featured"
+                            checked={selectedFeatureType === 'featured'}
+                            onChange={() => setSelectedFeatureType('featured')}
+                          />
+                          <Label htmlFor="credit-featured" className="flex-1">
+                            <div className="font-medium">Featured Listing Credit</div>
+                            <div className="text-sm text-muted-foreground">
+                              1 year, €4800
+                            </div>
+                          </Label>
+                        </div>
+                        <Button
+                          className="w-full mt-4"
+                          onClick={() => {
+                            if (!selectedFeatureType) return;
+                            setPaymentStep('selectPayment');
+                          }}
+                          disabled={!selectedFeatureType}
+                        >
+                          Continue
+                        </Button>
+                      </div>
+                    )}
+                    {/* Step 2: Choose payment method */}
+                    {paymentStep === 'selectPayment' && (
+                      <div className="flex flex-col gap-4 py-4">
+                        <div className="flex items-center gap-4">
+                          <input
+                            type="radio"
+                            id="pay-stripe"
+                            name="payment-method"
+                            value="stripe"
+                            checked={selectedPayment === 'stripe'}
+                            onChange={() => setSelectedPayment('stripe')}
+                          />
+                          <Label htmlFor="pay-stripe">Pay with Card (Stripe)</Label>
+                        </div>
+                        <div className="flex items-center gap-4">
+                          <input
+                            type="radio"
+                            id="pay-paypal"
+                            name="payment-method"
+                            value="paypal"
+                            checked={selectedPayment === 'paypal'}
+                            onChange={() => setSelectedPayment('paypal')}
+                          />
+                          <Label htmlFor="pay-paypal">Pay with PayPal</Label>
+                        </div>
+                        <Button
+                          className="w-full mt-4"
+                          onClick={async () => {
+                            if (!selectedPayment) {
+                              setPaymentError('Please select a payment method.');
+                              return;
+                            }
+                            await handlePayment();
+                          }}
+                          disabled={processing}
+                        >
+                          Continue
+                        </Button>
+                        {paymentError && <div className="text-red-500 text-sm mt-2">{paymentError}</div>}
+                      </div>
+                    )}
+                    {/* Step 3: Payment form */}
+                    {paymentStep === 'pay' && (
+                      <div className="flex flex-col gap-4 py-4">
+                        {selectedPayment === 'stripe' ? (
+                          <Elements stripe={stripePromise} options={stripeClientSecret ? { clientSecret: stripeClientSecret } : {}}>
+                            <CheckoutForm
+                              onSuccess={handlePostPayment}
+                              onError={(msg) => setPaymentError(msg)}
+                              processing={processing}
+                            />
+                          </Elements>
+                        ) : selectedPayment === 'paypal' ? (
+                          <div className="space-y-4">
+                            <div className="text-center">
+                              <p className="text-lg font-semibold">€{selectedFeatureType ? FEATURE_PRICES[selectedFeatureType] : 0}</p>
+                              <p className="text-sm text-muted-foreground">{selectedFeatureType === 'featured' ? 'Featured Listing Credit' : 'Standard Listing Credit'}</p>
+                            </div>
+                            <PayPalScriptProvider options={paypalOptions}>
+                              <PayPalButtons
+                                createOrder={createPayPalOrder}
+                                onApprove={onPayPalApprove}
+                                onError={onPayPalError}
+                                style={{ layout: "vertical" }}
+                              />
+                            </PayPalScriptProvider>
+                          </div>
+                        ) : null}
+                        {paymentError && <div className="text-red-500 text-sm mt-2">{paymentError}</div>}
+                        <Button
+                          variant="outline"
+                          onClick={() => setPaymentStep('selectPayment')}
+                          className="w-full"
+                        >
+                          Back
+                        </Button>
+                      </div>
+                    )}
+                    <DialogFooter>
+                      <DialogClose asChild>
+                        <Button variant="outline">Cancel</Button>
+                      </DialogClose>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
                 <Button 
                   variant="outline" 
-                  onClick={() => router.push('/hotels/list')}
+                  onClick={() => router.push('/hotels/submit')}
                 >
                   List your hotel
                 </Button>

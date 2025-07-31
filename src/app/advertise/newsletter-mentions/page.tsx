@@ -14,9 +14,14 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Info, Plus, AlertTriangle, Upload, X } from "lucide-react";
+import { loadStripe } from "@stripe/stripe-js";
+import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
+import { Elements } from '@stripe/react-stripe-js';
+import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
+import { useToast } from "@/hooks/use-toast";
 
 interface NewsletterRequest {
   id: string;
@@ -57,6 +62,26 @@ export default function NewsletterMentionsPage() {
   const router = useRouter();
   const db = getFirestore(app);
   const storage = getStorage(app);
+  const { toast } = useToast();
+  // Payment modal state
+  const [paymentModal, setPaymentModal] = useState(false);
+  const [selectedNewsletterType, setSelectedNewsletterType] = useState<'standard' | 'premium' | null>(null);
+  const [paymentStep, setPaymentStep] = useState<'selectType' | 'selectPayment' | 'pay'>('selectType');
+  const [selectedPayment, setSelectedPayment] = useState<'stripe' | 'paypal' | null>(null);
+  const [processing, setProcessing] = useState(false);
+  const [stripeClientSecret, setStripeClientSecret] = useState<string | null>(null);
+  const [paymentError, setPaymentError] = useState<string | null>(null);
+
+  const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
+  const paypalOptions = {
+    clientId: process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || "AW2LLf5-BoTh1ZUKUhs8Ic7nmIfH49BV92y-960SIzcvrO4vlDpLtNKe--xYpNB9Yb3xn7XONXJbErNv",
+    currency: "EUR",
+    intent: "capture",
+  };
+  const NEWSLETTER_PRICES = {
+    premium: 600, // EUR
+    standard: 400, // EUR
+  };
 
   useEffect(() => {
     const auth = getAuth();
@@ -203,6 +228,142 @@ export default function NewsletterMentionsPage() {
     }
   };
 
+  // Payment handlers
+  const handlePayment = async () => {
+    setProcessing(true);
+    setPaymentError(null);
+    let amount = 0;
+    let description = '';
+    if (selectedNewsletterType) {
+      amount = NEWSLETTER_PRICES[selectedNewsletterType];
+      description = selectedNewsletterType === 'premium' ? 'Premium Newsletter Mention' : 'Standard Newsletter Mention';
+    }
+    if (!amount || !description) {
+      setPaymentError('Invalid payment details.');
+      setProcessing(false);
+      return;
+    }
+    if (selectedPayment === 'stripe') {
+      // Call API to create Stripe Checkout session
+      const res = await fetch('/api/payment/stripe-checkout-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount, description, email: currentUser?.email }),
+      });
+      const data = await res.json();
+      if (data.clientSecret) {
+        setStripeClientSecret(data.clientSecret);
+        setPaymentStep('pay');
+      } else {
+        setPaymentError(data.error || 'Failed to create Stripe Checkout session.');
+      }
+      setProcessing(false);
+    } else if (selectedPayment === 'paypal') {
+      setPaymentStep('pay');
+      setProcessing(false);
+    }
+  };
+  // PayPal handlers
+  const createPayPalOrder = async (data: any, actions: any) => {
+    let amount = 0;
+    let description = '';
+    if (selectedNewsletterType) {
+      amount = NEWSLETTER_PRICES[selectedNewsletterType];
+      description = selectedNewsletterType === 'premium' ? 'Premium Newsletter Mention' : 'Standard Newsletter Mention';
+    }
+    if (!amount || !description) {
+      throw new Error('Invalid payment details');
+    }
+    const res = await fetch('/api/payment/paypal-order', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ amount, description }),
+    });
+    const orderData = await res.json();
+    if (!orderData.orderId) {
+      throw new Error(orderData.error || 'Failed to create PayPal order');
+    }
+    return orderData.orderId;
+  };
+  const onPayPalApprove = async (data: any, actions: any) => {
+    try {
+      const res = await fetch('/api/payment/paypal-capture', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orderId: data.orderID }),
+      });
+      const captureData = await res.json();
+      if (captureData.success) {
+        await handlePostPayment();
+        return Promise.resolve();
+      } else {
+        throw new Error(captureData.error || 'Payment capture failed');
+      }
+    } catch (error: any) {
+      setPaymentError(error.message || 'Payment failed');
+      return Promise.reject(error);
+    }
+  };
+  const onPayPalError = (err: any) => {
+    setPaymentError('PayPal error: ' + (err?.message || 'Unknown error'));
+  };
+  // Stripe CheckoutForm
+  function CheckoutForm({ onSuccess, onError, processing }: { onSuccess: () => void, onError: (msg: string) => void, processing: boolean }) {
+    const stripe = useStripe();
+    const elements = useElements();
+    const handleSubmit = async (e: React.FormEvent) => {
+      e.preventDefault();
+      if (!stripe || !elements) return;
+      const card = elements.getElement(CardElement);
+      if (!card) return;
+      const { error, paymentIntent } = await stripe.confirmCardPayment(stripeClientSecret!, {
+        payment_method: { card },
+      });
+      if (error) {
+        onError(error.message || 'Payment failed');
+      } else if (paymentIntent && paymentIntent.status === 'succeeded') {
+        onSuccess();
+      } else {
+        onError('Payment not successful');
+      }
+    };
+    return (
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <CardElement options={{ hidePostalCode: true }} className="p-2 border rounded" />
+        <Button type="submit" className="w-full" disabled={processing}>Pay</Button>
+      </form>
+    );
+  }
+  // Post-payment handler
+  const handlePostPayment = async () => {
+    if (!selectedNewsletterType) return;
+    const db = getFirestore(app);
+    // Increment the user's Credit
+    const quotaField = selectedNewsletterType === 'premium' ? 'premiumNewsletterRemaining' : 'standardNewsletterRemaining';
+    await updateDoc(doc(db, "users", currentUser!.uid), {
+      [quotaField]: (userDoc?.[quotaField] || 0) + 1
+    });
+    setUserDoc((prev: UserDoc | null) => prev ? {
+      ...prev,
+      [quotaField]: (prev[quotaField] || 0) + 1
+    } : null);
+    setPaymentModal(false);
+    setSelectedNewsletterType(null);
+    setPaymentStep('selectType');
+    setSelectedPayment(null);
+    setStripeClientSecret(null);
+    toast({
+      title: "Payment Successful",
+      description: `You have purchased 1 ${selectedNewsletterType === 'premium' ? 'Premium' : 'Standard'} Newsletter Credit!`,
+    });
+    // Refresh user document
+    if (currentUser) {
+      const userRef = doc(db, "users", currentUser.uid);
+      const userSnap = await getDoc(userRef);
+      setUserDoc(userSnap.exists() ? userSnap.data() as UserDoc : null);
+    }
+  };
+
   if (loading) {
     return <div className="flex items-center justify-center h-64">Loading...</div>;
   }
@@ -215,9 +376,168 @@ export default function NewsletterMentionsPage() {
     <div className="container mx-auto px-4 py-8">
       <div className="flex items-center justify-between mb-8">
         <h1 className="text-3xl font-bold font-headline text-primary">Newsletter Mentions</h1>
-        <Button onClick={() => router.push("/advertise/dashboard")} variant="outline">
-          Buy More Credit
-        </Button>
+        <Dialog open={paymentModal} onOpenChange={(open) => {
+          if (!open) {
+            setPaymentModal(false);
+            setSelectedNewsletterType(null);
+            setPaymentStep('selectType');
+            setSelectedPayment(null);
+            setStripeClientSecret(null);
+            setPaymentError(null);
+          }
+        }}>
+          <DialogTrigger asChild>
+            <Button variant="outline" onClick={() => {
+              setPaymentModal(true);
+              setSelectedNewsletterType(null);
+              setPaymentStep('selectType');
+              setSelectedPayment(null);
+              setStripeClientSecret(null);
+              setPaymentError(null);
+            }}>
+              Buy More Credit
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>Buy Newsletter Credit</DialogTitle>
+              <DialogDescription>
+                {paymentStep === 'selectType' && 'Choose which type of newsletter credit you want to buy.'}
+                {paymentStep === 'selectPayment' && 'Choose a payment method to continue.'}
+                {paymentStep === 'pay' && selectedPayment === 'stripe' && 'Pay securely with your card.'}
+                {paymentStep === 'pay' && selectedPayment === 'paypal' && 'Pay securely with PayPal.'}
+              </DialogDescription>
+            </DialogHeader>
+            {/* Step 1: Choose credit type */}
+            {paymentStep === 'selectType' && (
+              <div className="space-y-3">
+                <div className="flex items-center gap-3">
+                  <input
+                    type="radio"
+                    id="newsletter-standard"
+                    name="newsletter-type"
+                    value="standard"
+                    checked={selectedNewsletterType === 'standard'}
+                    onChange={() => setSelectedNewsletterType('standard')}
+                  />
+                  <Label htmlFor="newsletter-standard" className="flex-1">
+                    <div className="font-medium">Standard Newsletter Credit</div>
+                    <div className="text-sm text-muted-foreground">
+                      €400 per mention per month
+                    </div>
+                  </Label>
+                </div>
+                <div className="flex items-center gap-3">
+                  <input
+                    type="radio"
+                    id="newsletter-premium"
+                    name="newsletter-type"
+                    value="premium"
+                    checked={selectedNewsletterType === 'premium'}
+                    onChange={() => setSelectedNewsletterType('premium')}
+                  />
+                  <Label htmlFor="newsletter-premium" className="flex-1">
+                    <div className="font-medium">Premium Newsletter Credit</div>
+                    <div className="text-sm text-muted-foreground">
+                      €600 per mention per month
+                    </div>
+                  </Label>
+                </div>
+                <Button
+                  className="w-full mt-4"
+                  onClick={() => {
+                    if (!selectedNewsletterType) return;
+                    setPaymentStep('selectPayment');
+                  }}
+                  disabled={!selectedNewsletterType}
+                >
+                  Continue
+                </Button>
+              </div>
+            )}
+            {/* Step 2: Choose payment method */}
+            {paymentStep === 'selectPayment' && (
+              <div className="flex flex-col gap-4 py-4">
+                <div className="flex items-center gap-4">
+                  <input
+                    type="radio"
+                    id="pay-stripe"
+                    name="payment-method"
+                    value="stripe"
+                    checked={selectedPayment === 'stripe'}
+                    onChange={() => setSelectedPayment('stripe')}
+                  />
+                  <Label htmlFor="pay-stripe">Pay with Card (Stripe)</Label>
+                </div>
+                <div className="flex items-center gap-4">
+                  <input
+                    type="radio"
+                    id="pay-paypal"
+                    name="payment-method"
+                    value="paypal"
+                    checked={selectedPayment === 'paypal'}
+                    onChange={() => setSelectedPayment('paypal')}
+                  />
+                  <Label htmlFor="pay-paypal">Pay with PayPal</Label>
+                </div>
+                <Button
+                  className="w-full mt-4"
+                  onClick={async () => {
+                    if (!selectedPayment) {
+                      setPaymentError('Please select a payment method.');
+                      return;
+                    }
+                    await handlePayment();
+                  }}
+                  disabled={processing}
+                >
+                  Continue
+                </Button>
+                {paymentError && <div className="text-red-500 text-sm mt-2">{paymentError}</div>}
+              </div>
+            )}
+            {/* Step 3: Payment form */}
+            {paymentStep === 'pay' && (
+              <div className="flex flex-col gap-4 py-4">
+                {selectedPayment === 'stripe' ? (
+                  <Elements stripe={stripePromise} options={stripeClientSecret ? { clientSecret: stripeClientSecret } : {}}>
+                    <CheckoutForm
+                      onSuccess={handlePostPayment}
+                      onError={(msg) => setPaymentError(msg)}
+                      processing={processing}
+                    />
+                  </Elements>
+                ) : selectedPayment === 'paypal' ? (
+                  <div className="space-y-4">
+                    <div className="text-center">
+                      <p className="text-lg font-semibold">€{selectedNewsletterType ? NEWSLETTER_PRICES[selectedNewsletterType] : 0}</p>
+                      <p className="text-sm text-muted-foreground">{selectedNewsletterType === 'premium' ? 'Premium Newsletter Credit' : 'Standard Newsletter Credit'}</p>
+                    </div>
+                    <PayPalScriptProvider options={paypalOptions}>
+                      <PayPalButtons
+                        createOrder={createPayPalOrder}
+                        onApprove={onPayPalApprove}
+                        onError={onPayPalError}
+                        style={{ layout: "vertical" }}
+                      />
+                    </PayPalScriptProvider>
+                  </div>
+                ) : null}
+                {paymentError && <div className="text-red-500 text-sm mt-2">{paymentError}</div>}
+                <Button
+                  variant="outline"
+                  onClick={() => setPaymentStep('selectPayment')}
+                  className="w-full"
+                >
+                  Back
+                </Button>
+              </div>
+            )}
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setPaymentModal(false)}>Cancel</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
 
       <div className="mb-8">

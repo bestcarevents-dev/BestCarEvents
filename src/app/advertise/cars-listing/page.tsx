@@ -27,8 +27,19 @@ import {
 } from "@/components/ui/dialog";
 import { useRouter } from "next/navigation";
 import { Label } from "@/components/ui/label";
+import { loadStripe } from "@stripe/stripe-js";
+import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
+import { Elements } from '@stripe/react-stripe-js';
+import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
+import { useToast } from "@/hooks/use-toast";
 
 // Car listing pricing tiers
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
+const paypalOptions = {
+  clientId: process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || "AW2LLf5-BoTh1ZUKUhs8Ic7nmIfH49BV92y-960SIzcvrO4vlDpLtNKe--xYpNB9Yb3xn7XONXJbErNv",
+  currency: "EUR",
+  intent: "capture",
+};
 const CAR_LISTING_TIERS = [
   {
     name: "Basic Listing",
@@ -94,6 +105,17 @@ export default function CarsListingPage() {
   const [selectedFeatureType, setSelectedFeatureType] = useState<'standard' | 'featured' | null>(null);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const router = useRouter();
+
+  // Add payment modal state
+  const [creditPaymentModal, setCreditPaymentModal] = useState<{ open: boolean; tierKey: string | null }>({ open: false, tierKey: null });
+  const [creditPaymentStep, setCreditPaymentStep] = useState<'selectTier' | 'selectPayment' | 'pay'>('selectTier');
+  const [creditSelectedTier, setCreditSelectedTier] = useState<any>(null);
+  const [creditSelectedPayment, setCreditSelectedPayment] = useState<'stripe' | 'paypal' | null>(null);
+  const [creditProcessing, setCreditProcessing] = useState(false);
+  const [creditStripeClientSecret, setCreditStripeClientSecret] = useState<string | null>(null);
+  const [creditPaymentError, setCreditPaymentError] = useState<string | null>(null);
+
+  const { toast } = useToast();
 
   useEffect(() => {
     const auth = getAuth(app);
@@ -324,13 +346,19 @@ export default function CarsListingPage() {
               <div className="flex gap-2">
                 <Button 
                   variant="default" 
+                  onClick={() => setCreditPaymentModal({ open: true, tierKey: null })}
+                >
+                  Buy More Credit
+                </Button>
+                <Button 
+                  variant="default" 
                   onClick={() => router.push('/advertise/cars')}
                 >
-                  Buy Car Listing
+                  View Plans
                 </Button>
                 <Button 
                   variant="outline" 
-                  onClick={() => router.push('/cars/add')}
+                  onClick={() => router.push('/cars/sell')}
                 >
                   List your car
                 </Button>
@@ -521,6 +549,294 @@ export default function CarsListingPage() {
           </CardContent>
         </Card>
       )}
+
+      {/* Payment Modal for Buying Credits */}
+      <Dialog open={creditPaymentModal.open} onOpenChange={(open) => {
+        if (!open) {
+          setCreditPaymentModal({ open: false, tierKey: null });
+          setCreditPaymentStep('selectTier');
+          setCreditSelectedTier(null);
+          setCreditSelectedPayment(null);
+          setCreditStripeClientSecret(null);
+          setCreditPaymentError(null);
+        }
+      }}>
+        <DialogTrigger asChild>
+          <span />
+        </DialogTrigger>
+        <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Buy Car Listing Credit</DialogTitle>
+            <DialogDescription>
+              {creditPaymentStep === 'selectTier' && 'Choose a listing plan to buy credit for.'}
+              {creditPaymentStep === 'selectPayment' && creditSelectedTier && `Buy 1 credit for ${creditSelectedTier.name} (${creditSelectedTier.price})`}
+              {creditPaymentStep === 'pay' && creditSelectedPayment === 'stripe' && 'Pay securely with your card.'}
+              {creditPaymentStep === 'pay' && creditSelectedPayment === 'paypal' && 'Pay securely with PayPal.'}
+            </DialogDescription>
+          </DialogHeader>
+          {/* Step 1: Choose plan */}
+          {creditPaymentStep === 'selectTier' && (
+            <div className="flex flex-col gap-3 py-4">
+              <div className="flex justify-end mb-2">
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => router.push('/advertise/cars')}
+                >
+                  View Listing Type Details
+                </Button>
+              </div>
+              <div className="grid grid-cols-1 gap-3">
+                {CAR_LISTING_TIERS.map((tier) => (
+                  <button
+                    key={tier.key}
+                    type="button"
+                    className={`w-full border rounded-lg p-3 text-left transition-all duration-150 ${creditSelectedTier?.key === tier.key ? 'border-primary bg-primary/5 shadow-lg' : 'border-muted bg-background hover:bg-muted'} focus:outline-none`}
+                    onClick={() => {
+                      setCreditSelectedTier(tier);
+                      setCreditPaymentStep('selectPayment');
+                    }}
+                  >
+                    <div className="flex items-center gap-2 mb-2">
+                      {tier.icon && <span className="text-primary"><tier.icon className="w-5 h-5" /></span>}
+                      <span className="font-semibold text-base">{tier.name}</span>
+                      <span className="ml-auto font-bold text-primary text-sm">{tier.price}</span>
+                    </div>
+                    <ul className="list-disc pl-4 text-xs text-muted-foreground space-y-1">
+                      {tier.features.map((f, i) => (
+                        <li key={i}>{f}</li>
+                      ))}
+                    </ul>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+          {/* Step 2: Choose payment method */}
+          {creditPaymentStep === 'selectPayment' && creditSelectedTier && (
+            <div className="flex flex-col gap-4 py-4">
+              <div className="flex items-center gap-4">
+                <input
+                  type="radio"
+                  id="pay-stripe-credit"
+                  name="payment-method-credit"
+                  value="stripe"
+                  checked={creditSelectedPayment === 'stripe'}
+                  onChange={() => setCreditSelectedPayment('stripe')}
+                />
+                <Label htmlFor="pay-stripe-credit">Pay with Card (Stripe)</Label>
+              </div>
+              <div className="flex items-center gap-4">
+                <input
+                  type="radio"
+                  id="pay-paypal-credit"
+                  name="payment-method-credit"
+                  value="paypal"
+                  checked={creditSelectedPayment === 'paypal'}
+                  onChange={() => setCreditSelectedPayment('paypal')}
+                />
+                <Label htmlFor="pay-paypal-credit">Pay with PayPal</Label>
+              </div>
+              <Button
+                className="w-full mt-4"
+                onClick={async () => {
+                  if (!creditSelectedPayment) {
+                    setCreditPaymentError('Please select a payment method.');
+                    return;
+                  }
+                  setCreditProcessing(true);
+                  setCreditPaymentError(null);
+                  const amount = creditSelectedTier.priceEUR;
+                  const description = creditSelectedTier.name;
+                  if (creditSelectedPayment === 'stripe') {
+                    const res = await fetch('/api/payment/stripe-checkout-session', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ amount, description, email: currentUser?.email }),
+                    });
+                    const data = await res.json();
+                    if (data.clientSecret) {
+                      setCreditStripeClientSecret(data.clientSecret);
+                      setCreditPaymentStep('pay');
+                    } else {
+                      setCreditPaymentError(data.error || 'Failed to create Stripe Checkout session.');
+                    }
+                    setCreditProcessing(false);
+                  } else if (creditSelectedPayment === 'paypal') {
+                    setCreditPaymentStep('pay');
+                    setCreditProcessing(false);
+                  }
+                }}
+                disabled={creditProcessing}
+              >
+                Continue
+              </Button>
+              {creditPaymentError && <div className="text-red-500 text-sm mt-2">{creditPaymentError}</div>}
+            </div>
+          )}
+          {/* Step 3: Payment form */}
+          {creditPaymentStep === 'pay' && creditSelectedTier && (
+            <div className="flex flex-col gap-4 py-4">
+              {creditSelectedPayment === 'stripe' ? (
+                <Elements stripe={stripePromise} options={creditStripeClientSecret ? { clientSecret: creditStripeClientSecret } : {}}>
+                  <CreditCheckoutForm
+                    onSuccess={async () => {
+                      // Update Firestore and local state
+                      const db = getFirestore(app);
+                      const quotaField = `cars_${creditSelectedTier.key}`;
+                      await updateDoc(doc(db, "users", currentUser!.uid), {
+                        [quotaField]: (userDoc?.[quotaField] || 0) + 1
+                      });
+                      setUserDoc((prev: any) => prev ? {
+                        ...prev,
+                        [quotaField]: (prev[quotaField] || 0) + 1
+                      } : null);
+                      setCreditPaymentModal({ open: false, tierKey: null });
+                      setCreditPaymentStep('selectTier');
+                      setCreditSelectedTier(null);
+                      setCreditSelectedPayment(null);
+                      setCreditStripeClientSecret(null);
+                      setCreditPaymentError(null);
+                      setShowSuccessMessage(true);
+                      toast({
+                        title: "Credit purchased!",
+                        description: `You have successfully purchased 1 credit for ${creditSelectedTier.name}.`,
+                      });
+                    }}
+                    onError={(msg) => {
+                      setCreditPaymentError(msg);
+                      toast({
+                        title: "Payment failed",
+                        description: msg,
+                        variant: "destructive",
+                      });
+                    }}
+                    processing={creditProcessing}
+                    clientSecret={creditStripeClientSecret!}
+                  />
+                </Elements>
+              ) : creditSelectedPayment === 'paypal' ? (
+                <div className="space-y-4">
+                  <div className="text-center">
+                    <p className="text-lg font-semibold">€{creditSelectedTier.priceEUR}</p>
+                    <p className="text-sm text-muted-foreground">{creditSelectedTier.name}</p>
+                  </div>
+                  <PayPalScriptProvider options={paypalOptions}>
+                    <PayPalButtons
+                      createOrder={async (data: any, actions: any) => {
+                        const amount = creditSelectedTier.priceEUR;
+                        const description = creditSelectedTier.name;
+                        const res = await fetch('/api/payment/paypal-order', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ amount, description }),
+                        });
+                        const orderData = await res.json();
+                        if (!orderData.orderId) {
+                          throw new Error(orderData.error || 'Failed to create PayPal order');
+                        }
+                        return orderData.orderId;
+                      }}
+                      onApprove={async (data: any, actions: any) => {
+                        try {
+                          const res = await fetch('/api/payment/paypal-capture', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ orderId: data.orderID }),
+                          });
+                          const captureData = await res.json();
+                          if (captureData.success) {
+                            // Update Firestore and local state
+                            const db = getFirestore(app);
+                            const quotaField = `cars_${creditSelectedTier.key}`;
+                            await updateDoc(doc(db, "users", currentUser!.uid), {
+                              [quotaField]: (userDoc?.[quotaField] || 0) + 1
+                            });
+                            setUserDoc((prev: any) => prev ? {
+                              ...prev,
+                              [quotaField]: (prev[quotaField] || 0) + 1
+                            } : null);
+                            setCreditPaymentModal({ open: false, tierKey: null });
+                            setCreditPaymentStep('selectTier');
+                            setCreditSelectedTier(null);
+                            setCreditSelectedPayment(null);
+                            setCreditStripeClientSecret(null);
+                            setCreditPaymentError(null);
+                            setShowSuccessMessage(true);
+                            toast({
+                              title: "Credit purchased!",
+                              description: `You have successfully purchased 1 credit for ${creditSelectedTier.name}.`,
+                            });
+                            return Promise.resolve();
+                          } else {
+                            throw new Error(captureData.error || 'Payment capture failed');
+                          }
+                        } catch (error: any) {
+                          setCreditPaymentError(error.message || 'Payment failed');
+                          toast({
+                            title: "Payment failed",
+                            description: error.message || 'Payment failed',
+                            variant: "destructive",
+                          });
+                          return Promise.reject(error);
+                        }
+                      }}
+                      onError={(err: any) => {
+                        setCreditPaymentError('PayPal error: ' + (err?.message || 'Unknown error'));
+                        toast({
+                          title: "Payment failed",
+                          description: 'PayPal error: ' + (err?.message || 'Unknown error'),
+                          variant: "destructive",
+                        });
+                      }}
+                      style={{ layout: "vertical" }}
+                    />
+                  </PayPalScriptProvider>
+                </div>
+              ) : null}
+              {creditPaymentError && <div className="text-red-500 text-sm mt-2">{creditPaymentError}</div>}
+              <Button
+                variant="outline"
+                onClick={() => setCreditPaymentStep('selectPayment')}
+                className="w-full"
+              >
+                Back
+              </Button>
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setCreditPaymentModal({ open: false, tierKey: null })}>Cancel</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
+  );
+} 
+
+// Add CreditCheckoutForm component for Stripe
+function CreditCheckoutForm({ onSuccess, onError, processing, clientSecret }: { onSuccess: () => void, onError: (msg: string) => void, processing: boolean, clientSecret: string }) {
+  const stripe = useStripe();
+  const elements = useElements();
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!stripe || !elements) return;
+    const card = elements.getElement(CardElement);
+    if (!card) return;
+    const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
+      payment_method: { card },
+    });
+    if (error) {
+      onError(error.message || 'Payment failed');
+    } else if (paymentIntent && paymentIntent.status === 'succeeded') {
+      onSuccess();
+    } else {
+      onError('Payment not successful');
+    }
+  };
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <CardElement options={{ hidePostalCode: true }} className="p-2 border rounded" />
+      <Button type="submit" className="w-full" disabled={processing}>Pay</Button>
+    </form>
   );
 } 

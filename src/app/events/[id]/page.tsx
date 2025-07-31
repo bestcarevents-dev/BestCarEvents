@@ -92,7 +92,7 @@ export default function EventDetailsPage({ params }: { params: { id: string } })
     const sponsorItems = splitString(event.sponsors);
 
     return (
-        <div className="container mx-auto px-4 py-10 animate-fade-in">
+        <div className="container mx-auto px-4 py-10 bg-white animate-fade-in">
             {/* Hero Section */}
             <div className="relative rounded-3xl overflow-hidden shadow-2xl mb-10 group">
                 <div className="relative w-full aspect-video bg-black">
@@ -103,45 +103,45 @@ export default function EventDetailsPage({ params }: { params: { id: string } })
                     <div>
                         <h1 className="text-4xl md:text-5xl font-extrabold font-headline text-white drop-shadow-lg animate-pop-in">{event.eventName}</h1>
                         <div className="flex flex-wrap gap-2 mt-2">
-                            <Badge className="bg-gradient-to-r from-primary to-secondary text-white animate-bounce-in">{event.eventType}</Badge>
-                            {event.vehicleFocus && <Badge className="bg-gradient-to-r from-secondary to-primary text-white animate-bounce-in">{event.vehicleFocus}</Badge>}
+                            <Badge className="bg-yellow-600 text-white animate-bounce-in">{event.eventType}</Badge>
+                            {event.vehicleFocus && <Badge className="bg-yellow-500 text-white animate-bounce-in">{event.vehicleFocus}</Badge>}
                         </div>
                     </div>
                     <div className="flex flex-col md:items-end gap-2">
-                        {event.location && <span className="text-xl font-mono font-bold text-primary drop-shadow-lg">{event.location}</span>}
+                        {event.location && <span className="text-xl font-mono font-bold text-yellow-600 drop-shadow-lg">{event.location}</span>}
                         <Button size="lg" className="mt-2 animate-pop" onClick={() => router.push('/events')}><ArrowLeft className="mr-2" />Back to Events</Button>
                     </div>
                 </div>
             </div>
             {/* Timeline/Quick Info Section */}
             <div className="flex flex-col md:flex-row gap-8 mb-10 items-center justify-center animate-fade-in-up">
-                <div className="flex flex-col items-center bg-card/80 rounded-xl shadow-lg px-8 py-6 border border-primary/10 animate-pop-in">
-                    <Calendar className="w-5 h-5 text-primary mb-2" />
-                    <div className="text-lg font-semibold text-primary mb-1">Date</div>
-                    <div className="text-xl font-bold text-foreground">{event.eventDate?.seconds ? new Date(event.eventDate.seconds * 1000).toLocaleDateString() : event.eventDate || event.date}</div>
+                <div className="flex flex-col items-center bg-white border border-gray-200 rounded-xl shadow-lg px-8 py-6 animate-pop-in">
+                    <Calendar className="w-5 h-5 text-yellow-600 mb-2" />
+                    <div className="text-lg font-semibold text-yellow-600 mb-1">Date</div>
+                    <div className="text-xl font-bold text-gray-900">{event.eventDate?.seconds ? new Date(event.eventDate.seconds * 1000).toLocaleDateString() : event.eventDate || event.date}</div>
                 </div>
-                <div className="flex flex-col items-center bg-card/80 rounded-xl shadow-lg px-8 py-6 border border-primary/10 animate-pop-in">
-                    <MapPin className="w-5 h-5 text-primary mb-2" />
-                    <div className="text-lg font-semibold text-primary mb-1">Location</div>
-                    <div className="text-xl font-bold text-foreground">{event.location}</div>
+                <div className="flex flex-col items-center bg-white border border-gray-200 rounded-xl shadow-lg px-8 py-6 animate-pop-in">
+                    <MapPin className="w-5 h-5 text-yellow-600 mb-2" />
+                    <div className="text-lg font-semibold text-yellow-600 mb-1">Location</div>
+                    <div className="text-xl font-bold text-gray-900">{event.location}</div>
                 </div>
-                <div className="flex flex-col items-center bg-card/80 rounded-xl shadow-lg px-8 py-6 border border-primary/10 animate-pop-in">
-                    <Tag className="w-5 h-5 text-primary mb-2" />
-                    <div className="text-lg font-semibold text-primary mb-1">Type</div>
-                    <div className="text-xl font-bold text-foreground">{event.eventType}</div>
+                <div className="flex flex-col items-center bg-white border border-gray-200 rounded-xl shadow-lg px-8 py-6 animate-pop-in">
+                    <Tag className="w-5 h-5 text-yellow-600 mb-2" />
+                    <div className="text-lg font-semibold text-yellow-600 mb-1">Type</div>
+                    <div className="text-xl font-bold text-gray-900">{event.eventType}</div>
                 </div>
                 {event.expectedAttendance && (
-                    <div className="flex flex-col items-center bg-card/80 rounded-xl shadow-lg px-8 py-6 border border-primary/10 animate-pop-in">
-                        <Users className="w-5 h-5 text-primary mb-2" />
-                        <div className="text-lg font-semibold text-primary mb-1">Expected Attendance</div>
-                        <div className="text-xl font-bold text-foreground">{event.expectedAttendance}</div>
+                    <div className="flex flex-col items-center bg-white border border-gray-200 rounded-xl shadow-lg px-8 py-6 animate-pop-in">
+                        <Users className="w-5 h-5 text-yellow-600 mb-2" />
+                        <div className="text-lg font-semibold text-yellow-600 mb-1">Expected Attendance</div>
+                        <div className="text-xl font-bold text-gray-900">{event.expectedAttendance}</div>
                     </div>
                 )}
                 {event.entryFee !== undefined && (
-                    <div className="flex flex-col items-center bg-card/80 rounded-xl shadow-lg px-8 py-6 border border-primary/10 animate-pop-in">
-                        <DollarSign className="w-5 h-5 text-primary mb-2" />
-                        <div className="text-lg font-semibold text-primary mb-1">Entry Fee</div>
-                        <div className="text-xl font-bold text-foreground">{event.entryFee === 0 ? 'Free' : `$${event.entryFee}`}</div>
+                    <div className="flex flex-col items-center bg-white border border-gray-200 rounded-xl shadow-lg px-8 py-6 animate-pop-in">
+                        <DollarSign className="w-5 h-5 text-yellow-600 mb-2" />
+                        <div className="text-lg font-semibold text-yellow-600 mb-1">Entry Fee</div>
+                        <div className="text-xl font-bold text-gray-900">{event.entryFee === 0 ? 'Free' : `$${event.entryFee}`}</div>
                     </div>
                 )}
             </div>
@@ -149,21 +149,21 @@ export default function EventDetailsPage({ params }: { params: { id: string } })
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 {/* Main Details */}
                 <div className="md:col-span-2 space-y-8">
-                    <Card className="p-6 animate-fade-in-up">
+                    <Card className="p-6 animate-fade-in-up bg-white border border-gray-200">
                         <CardContent className="p-0">
-                            <h2 className="text-2xl font-bold font-headline mb-4 text-primary">Event Description</h2>
-                            <div className="prose max-w-none text-lg text-muted-foreground mb-2 whitespace-pre-line">{event.description}</div>
+                            <h2 className="text-2xl font-bold font-headline mb-4 text-yellow-600">Event Description</h2>
+                            <div className="prose max-w-none text-lg text-gray-600 mb-2 whitespace-pre-line">{event.description}</div>
                         </CardContent>
                     </Card>
                     {scheduleItems.length > 0 && (
-                        <Card className="p-6 animate-fade-in-up">
+                        <Card className="p-6 animate-fade-in-up bg-white border border-gray-200">
                             <CardContent className="p-0">
-                                <h2 className="text-2xl font-bold font-headline mb-4 text-primary">Schedule Highlights</h2>
+                                <h2 className="text-2xl font-bold font-headline mb-4 text-yellow-600">Schedule Highlights</h2>
                                 <div className="space-y-4">
                                     {scheduleItems.map((item: string, index: number) => (
                                         <div key={index} className="flex items-start text-lg">
-                                            <Clock className="mr-3 h-6 w-6 text-blue-500 flex-shrink-0" />
-                                            <p className="text-muted-foreground">{item}</p>
+                                            <Clock className="mr-3 h-6 w-6 text-yellow-600 flex-shrink-0" />
+                                            <p className="text-gray-600">{item}</p>
                                         </div>
                                     ))}
                                 </div>
@@ -171,24 +171,24 @@ export default function EventDetailsPage({ params }: { params: { id: string } })
                         </Card>
                     )}
                     {activityItems.length > 0 && (
-                        <Card className="p-6 animate-fade-in-up">
+                        <Card className="p-6 animate-fade-in-up bg-white border border-gray-200">
                             <CardContent className="p-0">
-                                <h2 className="text-2xl font-bold font-headline mb-4 text-primary">Activities</h2>
+                                <h2 className="text-2xl font-bold font-headline mb-4 text-yellow-600">Activities</h2>
                                 <div className="flex flex-wrap gap-4">
                                     {activityItems.map((activity: string, index: number) => (
-                                        <span key={index} className="bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full">{activity}</span>
+                                        <span key={index} className="bg-yellow-100 text-yellow-800 text-sm font-medium px-3 py-1 rounded-full">{activity}</span>
                                     ))}
                                 </div>
                             </CardContent>
                         </Card>
                     )}
                     {sponsorItems.length > 0 && (
-                        <Card className="p-6 animate-fade-in-up">
+                        <Card className="p-6 animate-fade-in-up bg-white border border-gray-200">
                             <CardContent className="p-0">
-                                <h2 className="text-2xl font-bold font-headline mb-4 text-primary">Sponsors</h2>
+                                <h2 className="text-2xl font-bold font-headline mb-4 text-yellow-600">Sponsors</h2>
                                 <div className="flex flex-wrap gap-4">
                                     {sponsorItems.map((sponsor: string, index: number) => (
-                                        <span key={index} className="bg-gray-200 text-gray-800 text-sm font-medium px-3 py-1 rounded">{sponsor}</span>
+                                        <span key={index} className="bg-gray-100 text-gray-700 text-sm font-medium px-3 py-1 rounded">{sponsor}</span>
                                     ))}
                                 </div>
                             </CardContent>
@@ -197,27 +197,27 @@ export default function EventDetailsPage({ params }: { params: { id: string } })
                 </div>
                 {/* Quick Info */}
                 <div className="space-y-8">
-                    <Card className="p-6 animate-fade-in-up">
+                    <Card className="p-6 animate-fade-in-up bg-white border border-gray-200">
                         <CardContent className="p-0">
-                            <h2 className="text-xl font-bold font-headline mb-4 text-primary">Organizer & Contact</h2>
-                            <div className="mb-2"><span className="font-semibold">Organizer:</span> {event.organizerName}</div>
-                            <div className="mb-2"><span className="font-semibold">Contact:</span> <a href={`mailto:${event.organizerContact}?subject=Inquiry about ${event.eventName}`} className="text-primary underline">{event.organizerContact}</a></div>
+                            <h2 className="text-xl font-bold font-headline mb-4 text-yellow-600">Organizer & Contact</h2>
+                            <div className="mb-2"><span className="font-semibold text-gray-900 !text-gray-900">Organizer:</span> <span className="text-gray-900">{event.organizerName}</span></div>
+                            <div className="mb-2"><span className="font-semibold text-gray-900 !text-gray-900">Contact:</span> <a href={`mailto:${event.organizerContact}?subject=Inquiry about ${event.eventName}`} className="text-yellow-600 underline">{event.organizerContact}</a></div>
                         </CardContent>
                     </Card>
                     {(event.rulesUrl || event.websiteUrl) && (
-                        <Card className="p-6 animate-fade-in-up">
+                        <Card className="p-6 animate-fade-in-up bg-white border border-gray-200">
                             <CardContent className="p-0">
-                                <h2 className="text-xl font-bold font-headline mb-4 text-primary">More Information</h2>
+                                <h2 className="text-xl font-bold font-headline mb-4 text-yellow-600">More Information</h2>
                                 <div className="flex flex-wrap gap-4">
                                     {event.rulesUrl && (
-                                        <Button asChild variant="outline" size="lg">
+                                        <Button asChild variant="outline" size="lg" className="border-gray-300 text-gray-700 hover:bg-gray-50">
                                             <a href={event.rulesUrl} target="_blank" rel="noopener noreferrer" className="flex items-center">
                                                 <LinkIcon className="mr-2 h-5 w-5"/> Rules and Regulations
                                             </a>
                                         </Button>
                                     )}
                                     {event.websiteUrl && (
-                                        <Button asChild variant="outline" size="lg">
+                                        <Button asChild variant="outline" size="lg" className="border-gray-300 text-gray-700 hover:bg-gray-50">
                                             <a href={event.websiteUrl} target="_blank" rel="noopener noreferrer" className="flex items-center">
                                                 <Building2 className="mr-2 h-5 w-5"/> Event Website
                                             </a>
@@ -253,10 +253,10 @@ export default function EventDetailsPage({ params }: { params: { id: string } })
                                 ) : (
                                     <>
                                         <p className="text-lg font-semibold mb-2">Are you sure you want to register for this event?</p>
-                                        <p className="text-muted-foreground mb-4">Event: <span className="font-bold">{event.eventName}</span></p>
+                                        <p className="text-gray-600 mb-4">Event: <span className="font-bold">{event.eventName}</span></p>
                                         <DialogFooter>
                                             <DialogClose asChild>
-                                                <Button variant="outline">Cancel</Button>
+                                                <Button variant="outline" className="border-gray-300 text-gray-700 hover:bg-gray-50">Cancel</Button>
                                             </DialogClose>
                                             <Button onClick={handleRegister} disabled={registering}>
                                                 {registering ? 'Registering...' : 'Confirm Registration'}
@@ -267,10 +267,10 @@ export default function EventDetailsPage({ params }: { params: { id: string } })
                             </div>
                         ) : (
                             <div className="py-4 text-center">
-                                <p className="text-lg font-semibold mb-2 text-destructive">Please login to register for this event.</p>
+                                <p className="text-lg font-semibold mb-2 text-red-600">Please login to register for this event.</p>
                                 <DialogFooter>
                                     <DialogClose asChild>
-                                        <Button variant="outline">Close</Button>
+                                        <Button variant="outline" className="border-gray-300 text-gray-700 hover:bg-gray-50">Close</Button>
                                     </DialogClose>
                                     <Button asChild variant="default">
                                         <a href="/login">Login</a>

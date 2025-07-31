@@ -9,14 +9,22 @@ import { Textarea } from "@/components/ui/textarea";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { getFirestore, collection, addDoc, doc, getDoc } from "firebase/firestore";
+import { getFirestore, collection, addDoc, doc, getDoc, updateDoc } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { getAuth, onAuthStateChanged, User } from "firebase/auth";
 import { app } from "@/lib/firebase";
 import { UploadCloud, X, Info } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { loadStripe } from "@stripe/stripe-js";
+import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
+import { Elements } from '@stripe/react-stripe-js';
+import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
+import { useToast } from "@/hooks/use-toast";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
 
 const adTypes = [
+  "Website",
+  "General Business",
   "Tires & Wheels",
   "Car Parts & Accessories",
   "Car Transport & Logistics",
@@ -25,6 +33,7 @@ const adTypes = [
   "Classic Car Insurance",
   "Driving Experiences",
   "Finance / Leasing / Storage"
+  
 ];
 
 const tiresWheelsSchema = z.object({
@@ -123,6 +132,41 @@ const financeSchema = z.object({
 });
 type FinanceFormData = z.infer<typeof financeSchema>;
 
+// Add Webshite schema and type
+const webshiteSchema = z.object({
+  websiteName: z.string().min(3, "Website name is required"),
+  url: z.string().url("Valid URL is required"),
+  category: z.string().min(2, "Category is required"),
+  description: z.string().min(10, "Description is required"),
+  contactName: z.string().min(2, "Contact name is required"),
+  contactEmail: z.string().email("Invalid email address"),
+  images: z.any(),
+});
+type WebshiteFormData = z.infer<typeof webshiteSchema>;
+
+// Add General Business schema and type
+const generalBusinessSchema = z.object({
+  businessName: z.string().min(3, "Business name is required"),
+  industry: z.string().min(2, "Industry is required"),
+  location: z.string().min(2, "Location is required"),
+  description: z.string().min(10, "Description is required"),
+  contactName: z.string().min(2, "Contact name is required"),
+  contactEmail: z.string().email("Invalid email address"),
+  images: z.any(),
+});
+type GeneralBusinessFormData = z.infer<typeof generalBusinessSchema>;
+
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
+const paypalOptions = {
+  clientId: process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || "AW2LLf5-BoTh1ZUKUhs8Ic7nmIfH49BV92y-960SIzcvrO4vlDpLtNKe--xYpNB9Yb3xn7XONXJbErNv",
+  currency: "EUR",
+  intent: "capture",
+};
+const BANNER_PRICES = {
+  homepage: 6000, // EUR
+  category: 2500, // EUR
+};
+
 export default function AdvertisePage() {
   const [selectedType, setSelectedType] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -134,6 +178,154 @@ export default function AdvertisePage() {
   const db = getFirestore(app);
   const storage = getStorage(app);
   const MAX_IMAGES = 8;
+  const { toast } = useToast();
+  // Payment modal state
+  const [bannerPaymentModal, setBannerPaymentModal] = useState<{ open: boolean; type: 'homepage' | 'category' | null }>({ open: false, type: null });
+  const [bannerPaymentStep, setBannerPaymentStep] = useState<'selectPayment' | 'pay'>('selectPayment');
+  const [bannerSelectedPayment, setBannerSelectedPayment] = useState<'stripe' | 'paypal' | null>(null);
+  const [bannerProcessing, setBannerProcessing] = useState(false);
+  const [bannerStripeClientSecret, setBannerStripeClientSecret] = useState<string | null>(null);
+  const [bannerPaymentError, setBannerPaymentError] = useState<string | null>(null);
+  // Payment handlers
+  const handleBannerPayment = async () => {
+    setBannerProcessing(true);
+    setBannerPaymentError(null);
+    let amount = 0;
+    let description = '';
+    if (bannerPaymentModal.type === 'homepage') {
+      amount = BANNER_PRICES.homepage;
+      description = 'Homepage Banner Advertisement';
+    } else if (bannerPaymentModal.type === 'category') {
+      amount = BANNER_PRICES.category;
+      description = 'Category Page Banner Advertisement';
+    }
+    if (!amount || !description) {
+      setBannerPaymentError('Invalid payment details.');
+      setBannerProcessing(false);
+      return;
+    }
+    if (bannerSelectedPayment === 'stripe') {
+      const res = await fetch('/api/payment/stripe-checkout-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount, description, email: currentUser?.email }),
+      });
+      const data = await res.json();
+      if (data.clientSecret) {
+        setBannerStripeClientSecret(data.clientSecret);
+        setBannerPaymentStep('pay');
+      } else {
+        setBannerPaymentError(data.error || 'Failed to create Stripe Checkout session.');
+      }
+      setBannerProcessing(false);
+    } else if (bannerSelectedPayment === 'paypal') {
+      setBannerPaymentStep('pay');
+      setBannerProcessing(false);
+    }
+  };
+  // PayPal handlers
+  const createBannerPayPalOrder = async (data: any, actions: any) => {
+    let amount = 0;
+    let description = '';
+    if (bannerPaymentModal.type === 'homepage') {
+      amount = BANNER_PRICES.homepage;
+      description = 'Homepage Banner Advertisement';
+    } else if (bannerPaymentModal.type === 'category') {
+      amount = BANNER_PRICES.category;
+      description = 'Category Page Banner Advertisement';
+    }
+    if (!amount || !description) {
+      throw new Error('Invalid payment details');
+    }
+    const res = await fetch('/api/payment/paypal-order', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ amount, description }),
+    });
+    const orderData = await res.json();
+    if (!orderData.orderId) {
+      throw new Error(orderData.error || 'Failed to create PayPal order');
+    }
+    return orderData.orderId;
+  };
+  const onBannerPayPalApprove = async (data: any, actions: any) => {
+    try {
+      const res = await fetch('/api/payment/paypal-capture', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orderId: data.orderID }),
+      });
+      const captureData = await res.json();
+      if (captureData.success) {
+        await handleBannerPostPayment();
+        return Promise.resolve();
+      } else {
+        throw new Error(captureData.error || 'Payment capture failed');
+      }
+    } catch (error: any) {
+      setBannerPaymentError(error.message || 'Payment failed');
+      return Promise.reject(error);
+    }
+  };
+  const onBannerPayPalError = (err: any) => {
+    setBannerPaymentError('PayPal error: ' + (err?.message || 'Unknown error'));
+  };
+  // Stripe CheckoutForm
+  function BannerCheckoutForm({ onSuccess, onError, processing }: { onSuccess: () => void, onError: (msg: string) => void, processing: boolean }) {
+    const stripe = useStripe();
+    const elements = useElements();
+    const handleSubmit = async (e: React.FormEvent) => {
+      e.preventDefault();
+      if (!stripe || !elements) return;
+      const card = elements.getElement(CardElement);
+      if (!card) return;
+      const { error, paymentIntent } = await stripe.confirmCardPayment(bannerStripeClientSecret!, {
+        payment_method: { card },
+      });
+      if (error) {
+        onError(error.message || 'Payment failed');
+      } else if (paymentIntent && paymentIntent.status === 'succeeded') {
+        onSuccess();
+      } else {
+        onError('Payment not successful');
+      }
+    };
+    return (
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <CardElement options={{ hidePostalCode: true }} className="p-2 border rounded" />
+        <Button type="submit" className="w-full" disabled={processing}>Pay</Button>
+      </form>
+    );
+  }
+  // Post-payment handler
+  const handleBannerPostPayment = async () => {
+    if (!bannerPaymentModal.type) return;
+    const db = getFirestore(app);
+    let quotaField = '';
+    if (bannerPaymentModal.type === 'homepage') quotaField = 'homepageBannerRemaining';
+    if (bannerPaymentModal.type === 'category') quotaField = 'categoryBannerRemaining';
+    await updateDoc(doc(db, "users", currentUser!.uid), {
+      [quotaField]: (userDoc?.[quotaField] || 0) + 1
+    });
+    setUserDoc((prev: any) => prev ? {
+      ...prev,
+      [quotaField]: (prev[quotaField] || 0) + 1
+    } : null);
+    setBannerPaymentModal({ open: false, type: null });
+    setBannerPaymentStep('selectPayment');
+    setBannerSelectedPayment(null);
+    setBannerStripeClientSecret(null);
+    toast({
+      title: "Payment Successful",
+      description: `You have purchased 1 ${bannerPaymentModal.type === 'homepage' ? 'Homepage Banner' : 'Category Page Banner'} Credit!`,
+    });
+    // Refresh user document
+    if (currentUser) {
+      const userRef = doc(db, "users", currentUser.uid);
+      const userSnap = await getDoc(userRef);
+      setUserDoc(userSnap.exists() ? userSnap.data() : null);
+    }
+  };
 
   const { register, handleSubmit, control, setValue, formState: { errors } } = useForm<TiresWheelsFormData>({
     resolver: zodResolver(tiresWheelsSchema),
@@ -234,7 +426,7 @@ export default function AdvertisePage() {
                 <Button 
                   variant="outline" 
                   size="sm"
-                  onClick={() => router.push('/advertise/dashboard')}
+                  onClick={() => setBannerPaymentModal({ open: true, type: 'category' })}
                 >
                   Buy More
                 </Button>
@@ -260,7 +452,7 @@ export default function AdvertisePage() {
                 <Button 
                   variant="outline" 
                   size="sm"
-                  onClick={() => router.push('/advertise/dashboard')}
+                  onClick={() => setBannerPaymentModal({ open: true, type: 'homepage' })}
                 >
                   Buy More
                 </Button>
@@ -472,6 +664,34 @@ export default function AdvertisePage() {
               storage={storage}
               MAX_IMAGES={MAX_IMAGES}
             />
+          ) : selectedType === "Website" ? (
+            <WebshiteForm
+              isSubmitting={isSubmitting}
+              setIsSubmitting={setIsSubmitting}
+              images={images}
+              setImages={setImages}
+              imagePreviews={imagePreviews}
+              setImagePreviews={setImagePreviews}
+              currentUser={currentUser}
+              router={router}
+              db={db}
+              storage={storage}
+              MAX_IMAGES={MAX_IMAGES}
+            />
+          ) : selectedType === "General Business" ? (
+            <GeneralBusinessForm
+              isSubmitting={isSubmitting}
+              setIsSubmitting={setIsSubmitting}
+              images={images}
+              setImages={setImages}
+              imagePreviews={imagePreviews}
+              setImagePreviews={setImagePreviews}
+              currentUser={currentUser}
+              router={router}
+              db={db}
+              storage={storage}
+              MAX_IMAGES={MAX_IMAGES}
+            />
           ) : (
             <div>
               <h2 className="text-lg font-semibold mb-4">{selectedType} Advertisement</h2>
@@ -486,6 +706,112 @@ export default function AdvertisePage() {
           )}
         </CardContent>
       </Card>
+      <Dialog open={bannerPaymentModal.open} onOpenChange={(open) => {
+        if (!open) {
+          setBannerPaymentModal({ open: false, type: null });
+          setBannerPaymentStep('selectPayment');
+          setBannerSelectedPayment(null);
+          setBannerStripeClientSecret(null);
+          setBannerPaymentError(null);
+        }
+      }}>
+        <DialogTrigger asChild>
+          <span />
+        </DialogTrigger>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Buy {bannerPaymentModal.type === 'homepage' ? 'Homepage Banner' : bannerPaymentModal.type === 'category' ? 'Category Page Banner' : ''} Credit</DialogTitle>
+            <DialogDescription>
+              {bannerPaymentModal.type === 'homepage' && 'Homepage banner will be exposed on every side of the website plus in your category. Duration: 1 year. Price: €6000'}
+              {bannerPaymentModal.type === 'category' && 'Category page banner only on the page of your category. Duration: 1 year. Price: €2500'}
+              {bannerPaymentStep === 'selectPayment' && ' Choose a payment method to continue.'}
+              {bannerPaymentStep === 'pay' && bannerSelectedPayment === 'stripe' && 'Pay securely with your card.'}
+              {bannerPaymentStep === 'pay' && bannerSelectedPayment === 'paypal' && 'Pay securely with PayPal.'}
+            </DialogDescription>
+          </DialogHeader>
+          {/* Step 1: Choose payment method */}
+          {bannerPaymentStep === 'selectPayment' && (
+            <div className="flex flex-col gap-4 py-4">
+              <div className="flex items-center gap-4">
+                <input
+                  type="radio"
+                  id="pay-stripe-banner"
+                  name="payment-method-banner"
+                  value="stripe"
+                  checked={bannerSelectedPayment === 'stripe'}
+                  onChange={() => setBannerSelectedPayment('stripe')}
+                />
+                <Label htmlFor="pay-stripe-banner">Pay with Card (Stripe)</Label>
+              </div>
+              <div className="flex items-center gap-4">
+                <input
+                  type="radio"
+                  id="pay-paypal-banner"
+                  name="payment-method-banner"
+                  value="paypal"
+                  checked={bannerSelectedPayment === 'paypal'}
+                  onChange={() => setBannerSelectedPayment('paypal')}
+                />
+                <Label htmlFor="pay-paypal-banner">Pay with PayPal</Label>
+              </div>
+              <Button
+                className="w-full mt-4"
+                onClick={async () => {
+                  if (!bannerSelectedPayment) {
+                    setBannerPaymentError('Please select a payment method.');
+                    return;
+                  }
+                  await handleBannerPayment();
+                }}
+                disabled={bannerProcessing}
+              >
+                Continue
+              </Button>
+              {bannerPaymentError && <div className="text-red-500 text-sm mt-2">{bannerPaymentError}</div>}
+            </div>
+          )}
+          {/* Step 2: Payment form */}
+          {bannerPaymentStep === 'pay' && (
+            <div className="flex flex-col gap-4 py-4">
+              {bannerSelectedPayment === 'stripe' ? (
+                <Elements stripe={stripePromise} options={bannerStripeClientSecret ? { clientSecret: bannerStripeClientSecret } : {}}>
+                  <BannerCheckoutForm
+                    onSuccess={handleBannerPostPayment}
+                    onError={(msg) => setBannerPaymentError(msg)}
+                    processing={bannerProcessing}
+                  />
+                </Elements>
+              ) : bannerSelectedPayment === 'paypal' ? (
+                <div className="space-y-4">
+                  <div className="text-center">
+                    <p className="text-lg font-semibold">€{bannerPaymentModal.type === 'homepage' ? BANNER_PRICES.homepage : bannerPaymentModal.type === 'category' ? BANNER_PRICES.category : 0}</p>
+                    <p className="text-sm text-muted-foreground">{bannerPaymentModal.type === 'homepage' ? 'Homepage Banner Credit' : bannerPaymentModal.type === 'category' ? 'Category Page Banner Credit' : ''}</p>
+                  </div>
+                  <PayPalScriptProvider options={paypalOptions}>
+                    <PayPalButtons
+                      createOrder={createBannerPayPalOrder}
+                      onApprove={onBannerPayPalApprove}
+                      onError={onBannerPayPalError}
+                      style={{ layout: "vertical" }}
+                    />
+                  </PayPalScriptProvider>
+                </div>
+              ) : null}
+              {bannerPaymentError && <div className="text-red-500 text-sm mt-2">{bannerPaymentError}</div>}
+              <Button
+                variant="outline"
+                onClick={() => setBannerPaymentStep('selectPayment')}
+                className="w-full"
+              >
+                Back
+              </Button>
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setBannerPaymentModal({ open: false, type: null })}>Cancel</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
@@ -1431,6 +1757,286 @@ function FinanceLeasingStorageForm({ isSubmitting, setIsSubmitting, images, setI
       </fieldset>
       <fieldset className="space-y-6 border-t pt-6">
         <legend className="text-xl font-semibold font-headline">Service Images</legend>
+        <div className="space-y-2">
+          <Label htmlFor="images">Upload Images</Label>
+          <div className="flex flex-col items-center justify-center w-full">
+            <label htmlFor="images" className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed rounded-lg cursor-pointer bg-card hover:bg-muted">
+              <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                <UploadCloud className="w-10 h-10 mb-3 text-muted-foreground" />
+                <p className="mb-2 text-sm text-muted-foreground"><span className="font-semibold">Click to upload</span> or drag and drop</p>
+              </div>
+              <Input id="images" type="file" className="hidden" multiple accept="image/*" onChange={handleImageChange} />
+            </label>
+            <div className="flex flex-wrap gap-4 mt-4">
+              {imagePreviews.map((src: string, idx: number) => (
+                <div key={src} className="relative group">
+                  <img src={src} alt={`Preview ${idx + 1}`} className="w-32 h-24 object-cover rounded shadow" />
+                  <button type="button" onClick={() => removeImage(idx)} className="absolute top-1 right-1 bg-white/80 rounded-full p-1 text-destructive hover:text-red-600 shadow"><X className="w-4 h-4" /></button>
+                </div>
+              ))}
+            </div>
+          </div>
+          {errors.images && <p className="text-red-500 text-sm">{errors.images.message as string}</p>}
+        </div>
+      </fieldset>
+      <Button type="submit" className="w-full text-lg py-6" disabled={isSubmitting}>
+        {isSubmitting ? "Submitting..." : "Submit Ad for Review"}
+      </Button>
+      <Button className="mt-4 w-full" variant="secondary" type="button" onClick={() => window.location.reload()}>
+        Back to Ad Type Selection
+      </Button>
+    </form>
+  );
+} 
+
+// Add Webshite form component
+function WebshiteForm({ isSubmitting, setIsSubmitting, images, setImages, imagePreviews, setImagePreviews, currentUser, router, db, storage, MAX_IMAGES }: any) {
+  const { register, handleSubmit, formState: { errors }, setValue } = useForm<WebshiteFormData>({
+    resolver: zodResolver(webshiteSchema),
+    defaultValues: { images: [] }
+  });
+  useEffect(() => { setValue("images", images); }, [images, setValue]);
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files ? Array.from(e.target.files) : [];
+    const newFiles = files.filter(f => !images.some(img => img.name === f.name && img.size === f.size));
+    setImages((prev: File[]) => [...prev, ...newFiles].slice(0, MAX_IMAGES));
+    setImagePreviews((prev: string[]) => [
+      ...prev,
+      ...newFiles.map(file => URL.createObjectURL(file))
+    ].slice(0, MAX_IMAGES));
+  };
+  const removeImage = (idx: number) => {
+    setImages((prev: File[]) => prev.filter((_: any, i: number) => i !== idx));
+    setImagePreviews((prev: string[]) => {
+      URL.revokeObjectURL(prev[idx]);
+      return prev.filter((_: any, i: number) => i !== idx);
+    });
+  };
+  const onSubmit = async (data: WebshiteFormData) => {
+    setIsSubmitting(true);
+    try {
+      if (!currentUser) {
+        alert("You must be logged in to submit an ad.");
+        setIsSubmitting(false);
+        return;
+      }
+      if (!images || !Array.isArray(images) || images.length === 0 || !images.every(img => img instanceof File)) {
+        alert("Please upload at least one valid image.");
+        setIsSubmitting(false);
+        return;
+      }
+      const imageUrls = [];
+      for (const file of images) {
+        const imageRef = ref(storage, `partner_ads/${Date.now()}_${file.name}`);
+        await uploadBytes(imageRef, file);
+        const imageUrl = await getDownloadURL(imageRef);
+        imageUrls.push(imageUrl);
+      }
+      await addDoc(collection(db, "partnerAds"), {
+        adType: "Website",
+        websiteName: data.websiteName,
+        url: data.url,
+        category: data.category,
+        description: data.description,
+        contactName: data.contactName,
+        contactEmail: data.contactEmail,
+        imageUrls,
+        status: "pending",
+        submittedAt: new Date(),
+        uploadedByUserId: currentUser?.uid || null,
+        uploadedByUserEmail: currentUser?.email || null,
+      });
+      router.push("/partners/dashboard");
+    } catch (error) {
+      console.error("Error submitting ad:", error);
+      alert("Error submitting ad. Please check your connection and try again.");
+      setIsSubmitting(false);
+    }
+  };
+  return (
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+      <fieldset className="space-y-6 border-t pt-6">
+        <legend className="text-xl font-semibold font-headline">Website Information</legend>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-2">
+            <Label htmlFor="websiteName">Website Name</Label>
+            <Input id="websiteName" {...register("websiteName")} />
+            {errors.websiteName && <p className="text-red-500 text-sm">{errors.websiteName.message}</p>}
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="url">Website URL</Label>
+            <Input id="url" {...register("url")} placeholder="https://example.com" />
+            {errors.url && <p className="text-red-500 text-sm">{errors.url.message}</p>}
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="category">Category</Label>
+            <Input id="category" {...register("category")} placeholder="e.g. E-commerce, Blog, Portfolio" />
+            {errors.category && <p className="text-red-500 text-sm">{errors.category.message}</p>}
+          </div>
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="description">Description</Label>
+          <Textarea id="description" {...register("description")} rows={4} />
+          {errors.description && <p className="text-red-500 text-sm">{errors.description.message}</p>}
+        </div>
+      </fieldset>
+      <fieldset className="space-y-6 border-t pt-6">
+        <legend className="text-xl font-semibold font-headline">Contact Information</legend>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-2">
+            <Label htmlFor="contactName">Contact Name</Label>
+            <Input id="contactName" {...register("contactName")} />
+            {errors.contactName && <p className="text-red-500 text-sm">{errors.contactName.message}</p>}
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="contactEmail">Contact Email</Label>
+            <Input id="contactEmail" type="email" {...register("contactEmail")} />
+            {errors.contactEmail && <p className="text-red-500 text-sm">{errors.contactEmail.message}</p>}
+          </div>
+        </div>
+      </fieldset>
+      <fieldset className="space-y-6 border-t pt-6">
+        <legend className="text-xl font-semibold font-headline">Website Images</legend>
+        <div className="space-y-2">
+          <Label htmlFor="images">Upload Images</Label>
+          <div className="flex flex-col items-center justify-center w-full">
+            <label htmlFor="images" className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed rounded-lg cursor-pointer bg-card hover:bg-muted">
+              <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                <UploadCloud className="w-10 h-10 mb-3 text-muted-foreground" />
+                <p className="mb-2 text-sm text-muted-foreground"><span className="font-semibold">Click to upload</span> or drag and drop</p>
+              </div>
+              <Input id="images" type="file" className="hidden" multiple accept="image/*" onChange={handleImageChange} />
+            </label>
+            <div className="flex flex-wrap gap-4 mt-4">
+              {imagePreviews.map((src: string, idx: number) => (
+                <div key={src} className="relative group">
+                  <img src={src} alt={`Preview ${idx + 1}`} className="w-32 h-24 object-cover rounded shadow" />
+                  <button type="button" onClick={() => removeImage(idx)} className="absolute top-1 right-1 bg-white/80 rounded-full p-1 text-destructive hover:text-red-600 shadow"><X className="w-4 h-4" /></button>
+                </div>
+              ))}
+            </div>
+          </div>
+          {errors.images && <p className="text-red-500 text-sm">{errors.images.message as string}</p>}
+        </div>
+      </fieldset>
+      <Button type="submit" className="w-full text-lg py-6" disabled={isSubmitting}>
+        {isSubmitting ? "Submitting..." : "Submit Ad for Review"}
+      </Button>
+      <Button className="mt-4 w-full" variant="secondary" type="button" onClick={() => window.location.reload()}>
+        Back to Ad Type Selection
+      </Button>
+    </form>
+  );
+}
+
+// Add General Business form component
+function GeneralBusinessForm({ isSubmitting, setIsSubmitting, images, setImages, imagePreviews, setImagePreviews, currentUser, router, db, storage, MAX_IMAGES }: any) {
+  const { register, handleSubmit, formState: { errors }, setValue } = useForm<GeneralBusinessFormData>({
+    resolver: zodResolver(generalBusinessSchema),
+    defaultValues: { images: [] }
+  });
+  useEffect(() => { setValue("images", images); }, [images, setValue]);
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files ? Array.from(e.target.files) : [];
+    const newFiles = files.filter(f => !images.some(img => img.name === f.name && img.size === f.size));
+    setImages((prev: File[]) => [...prev, ...newFiles].slice(0, MAX_IMAGES));
+    setImagePreviews((prev: string[]) => [
+      ...prev,
+      ...newFiles.map(file => URL.createObjectURL(file))
+    ].slice(0, MAX_IMAGES));
+  };
+  const removeImage = (idx: number) => {
+    setImages((prev: File[]) => prev.filter((_: any, i: number) => i !== idx));
+    setImagePreviews((prev: string[]) => {
+      URL.revokeObjectURL(prev[idx]);
+      return prev.filter((_: any, i: number) => i !== idx);
+    });
+  };
+  const onSubmit = async (data: GeneralBusinessFormData) => {
+    setIsSubmitting(true);
+    try {
+      if (!currentUser) {
+        alert("You must be logged in to submit an ad.");
+        setIsSubmitting(false);
+        return;
+      }
+      if (!images || !Array.isArray(images) || images.length === 0 || !images.every(img => img instanceof File)) {
+        alert("Please upload at least one valid image.");
+        setIsSubmitting(false);
+        return;
+      }
+      const imageUrls = [];
+      for (const file of images) {
+        const imageRef = ref(storage, `partner_ads/${Date.now()}_${file.name}`);
+        await uploadBytes(imageRef, file);
+        const imageUrl = await getDownloadURL(imageRef);
+        imageUrls.push(imageUrl);
+      }
+      await addDoc(collection(db, "partnerAds"), {
+        adType: "General Business",
+        businessName: data.businessName,
+        industry: data.industry,
+        location: data.location,
+        description: data.description,
+        contactName: data.contactName,
+        contactEmail: data.contactEmail,
+        imageUrls,
+        status: "pending",
+        submittedAt: new Date(),
+        uploadedByUserId: currentUser?.uid || null,
+        uploadedByUserEmail: currentUser?.email || null,
+      });
+      router.push("/partners/dashboard");
+    } catch (error) {
+      console.error("Error submitting ad:", error);
+      alert("Error submitting ad. Please check your connection and try again.");
+      setIsSubmitting(false);
+    }
+  };
+  return (
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+      <fieldset className="space-y-6 border-t pt-6">
+        <legend className="text-xl font-semibold font-headline">Business Information</legend>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-2">
+            <Label htmlFor="businessName">Business Name</Label>
+            <Input id="businessName" {...register("businessName")} />
+            {errors.businessName && <p className="text-red-500 text-sm">{errors.businessName.message}</p>}
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="industry">Industry</Label>
+            <Input id="industry" {...register("industry")} placeholder="e.g. Retail, Consulting, Services" />
+            {errors.industry && <p className="text-red-500 text-sm">{errors.industry.message}</p>}
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="location">Location</Label>
+            <Input id="location" {...register("location")} placeholder="e.g. New York, London" />
+            {errors.location && <p className="text-red-500 text-sm">{errors.location.message}</p>}
+          </div>
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="description">Description</Label>
+          <Textarea id="description" {...register("description")} rows={4} />
+          {errors.description && <p className="text-red-500 text-sm">{errors.description.message}</p>}
+        </div>
+      </fieldset>
+      <fieldset className="space-y-6 border-t pt-6">
+        <legend className="text-xl font-semibold font-headline">Contact Information</legend>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-2">
+            <Label htmlFor="contactName">Contact Name</Label>
+            <Input id="contactName" {...register("contactName")} />
+            {errors.contactName && <p className="text-red-500 text-sm">{errors.contactName.message}</p>}
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="contactEmail">Contact Email</Label>
+            <Input id="contactEmail" type="email" {...register("contactEmail")} />
+            {errors.contactEmail && <p className="text-red-500 text-sm">{errors.contactEmail.message}</p>}
+          </div>
+        </div>
+      </fieldset>
+      <fieldset className="space-y-6 border-t pt-6">
+        <legend className="text-xl font-semibold font-headline">Business Images</legend>
         <div className="space-y-2">
           <Label htmlFor="images">Upload Images</Label>
           <div className="flex flex-col items-center justify-center w-full">

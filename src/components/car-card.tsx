@@ -28,10 +28,10 @@ export default function CarCard({ id, name, price, location, image, hint, type =
         )}
       </div>
       <CardContent className="p-0 pt-5 flex-grow flex flex-col">
-        <h3 className="text-xl font-headline font-bold leading-tight text-foreground group-hover:text-primary transition-colors">{name}</h3>
+        <h3 className="text-xl font-headline font-bold leading-tight text-gray-900 group-hover:text-yellow-600 transition-colors">{name}</h3>
         <div className="flex justify-between items-center mt-auto pt-4">
-            <p className="text-2xl font-mono font-bold text-primary">{price}</p>
-            <Button variant="ghost" size="icon" asChild>
+            <p className="text-2xl font-mono font-bold text-yellow-600">{price}</p>
+            <Button variant="ghost" size="icon" asChild className="text-gray-600 hover:text-gray-900 hover:bg-gray-50">
                 <Link href={`/${type === 'auction' ? 'auctions' : 'cars'}/${id}`}>
                     <ArrowRight className="w-6 h-6 transform group-hover:translate-x-1 transition-transform"/>
                     <span className="sr-only">View Details</span>
