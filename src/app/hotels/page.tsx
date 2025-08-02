@@ -1,9 +1,12 @@
 'use client';
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { getFirestore, collection, getDocs } from "firebase/firestore";
 import { app } from "@/lib/firebase";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import Image from "next/image";
 import Link from "next/link";
 import { PlusCircle, Star } from "lucide-react";
@@ -17,6 +20,19 @@ export default function CarHotelsPage() {
   const [loading, setLoading] = useState(true);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [showDialog, setShowDialog] = useState(false);
+  
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const hotelsPerPage = 12;
+  
+  // Search and filter state
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCity, setSelectedCity] = useState("all");
+  const [selectedState, setSelectedState] = useState("all");
+  const [selectedStorageType, setSelectedStorageType] = useState("all");
+  const [selectedFeature, setSelectedFeature] = useState("all");
+  const [sortBy, setSortBy] = useState("newest");
+  const [showFilters, setShowFilters] = useState(false);
 
   useEffect(() => {
     const fetchHotels = async () => {
@@ -38,9 +54,123 @@ export default function CarHotelsPage() {
     return () => unsubscribe();
   }, []);
 
+  // Filter and sort hotels
+  const filteredAndSortedHotels = useMemo(() => {
+    let filtered = hotels.filter(hotel => {
+      const matchesSearch = searchQuery === "" || 
+        hotel.hotelName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        hotel.city?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        hotel.state?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        hotel.description?.toLowerCase().includes(searchQuery.toLowerCase());
+      
+      const matchesCity = selectedCity === "all" || 
+        hotel.city?.toLowerCase() === selectedCity.toLowerCase();
+      
+      const matchesState = selectedState === "all" || 
+        hotel.state?.toLowerCase() === selectedState.toLowerCase();
+      
+      const matchesStorageType = selectedStorageType === "all" || 
+        hotel.storageType?.toLowerCase() === selectedStorageType.toLowerCase();
+      
+      const matchesFeature = selectedFeature === "all" || 
+        hotel.features?.some((feature: string) => 
+          feature.toLowerCase().includes(selectedFeature.toLowerCase())
+        );
+      
+      return matchesSearch && matchesCity && matchesState && matchesStorageType && matchesFeature;
+    });
+
+    // Sort hotels
+    filtered.sort((a, b) => {
+      switch (sortBy) {
+        case "newest":
+          const dateA = a.createdAt?.seconds ? new Date(a.createdAt.seconds * 1000) : new Date(a.createdAt || 0);
+          const dateB = b.createdAt?.seconds ? new Date(b.createdAt.seconds * 1000) : new Date(b.createdAt || 0);
+          return dateB.getTime() - dateA.getTime();
+        case "oldest":
+          const dateAOld = a.createdAt?.seconds ? new Date(a.createdAt.seconds * 1000) : new Date(a.createdAt || 0);
+          const dateBOld = b.createdAt?.seconds ? new Date(b.createdAt.seconds * 1000) : new Date(b.createdAt || 0);
+          return dateAOld.getTime() - dateBOld.getTime();
+        case "name-asc":
+          return (a.hotelName || "").localeCompare(b.hotelName || "");
+        case "name-desc":
+          return (b.hotelName || "").localeCompare(a.hotelName || "");
+        case "city-asc":
+          return (a.city || "").localeCompare(b.city || "");
+        case "city-desc":
+          return (b.city || "").localeCompare(a.city || "");
+        default:
+          return 0;
+      }
+    });
+
+    return filtered;
+  }, [hotels, searchQuery, selectedCity, selectedState, selectedStorageType, selectedFeature, sortBy]);
+
   // Separate featured and regular hotels
-  const featuredHotels = hotels.filter(hotel => hotel.featured === true);
-  const regularHotels = hotels.filter(hotel => hotel.featured !== true);
+  const featuredHotels = filteredAndSortedHotels.filter(hotel => hotel.featured === true);
+  const regularHotels = filteredAndSortedHotels.filter(hotel => hotel.featured !== true);
+
+  // Pagination logic
+  const totalPages = Math.ceil(regularHotels.length / hotelsPerPage);
+  const startIndex = (currentPage - 1) * hotelsPerPage;
+  const endIndex = startIndex + hotelsPerPage;
+  const paginatedHotels = regularHotels.slice(startIndex, endIndex);
+
+  // Get unique filter options from hotels
+  const cities = useMemo(() => {
+    const hotelCities = hotels
+      .map(hotel => hotel.city)
+      .filter(Boolean)
+      .filter((value, index, self) => self.indexOf(value) === index);
+    return hotelCities;
+  }, [hotels]);
+
+  const states = useMemo(() => {
+    const hotelStates = hotels
+      .map(hotel => hotel.state)
+      .filter(Boolean)
+      .filter((value, index, self) => self.indexOf(value) === index);
+    return hotelStates;
+  }, [hotels]);
+
+  const storageTypes = useMemo(() => {
+    const types = hotels
+      .map(hotel => hotel.storageType)
+      .filter(Boolean)
+      .filter((value, index, self) => self.indexOf(value) === index);
+    return types;
+  }, [hotels]);
+
+  const allFeatures = useMemo(() => {
+    const features = new Set<string>();
+    hotels.forEach(hotel => {
+      if (hotel.features && Array.isArray(hotel.features)) {
+        hotel.features.forEach((feature: string) => features.add(feature));
+      }
+    });
+    return Array.from(features).sort();
+  }, [hotels]);
+
+  const handleSearch = () => {
+    setCurrentPage(1);
+  };
+
+  const handleResetFilters = () => {
+    setSearchQuery("");
+    setSelectedCity("all");
+    setSelectedState("all");
+    setSelectedStorageType("all");
+    setSelectedFeature("all");
+    setSortBy("newest");
+    setCurrentPage(1);
+    setShowFilters(false);
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   return (
     <div className="bg-white">
@@ -124,15 +254,116 @@ export default function CarHotelsPage() {
           )}
         </div>
 
+        <div className="bg-gray-50 p-6 rounded-lg border border-gray-200 mb-8">
+          {/* Search Bar - Always Visible */}
+          <div className="flex flex-col md:flex-row gap-4 mb-4">
+            <Input 
+              placeholder="Search by hotel name, city, state..." 
+              className="flex-1 bg-white border-gray-300 text-gray-900 placeholder:text-gray-500"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+            />
+            <div className="flex gap-2 md:flex-shrink-0">
+              <Button onClick={handleSearch} className="bg-yellow-600 hover:bg-yellow-700">Search</Button>
+              <Button onClick={handleResetFilters} variant="outline" className="border-gray-300 text-gray-700 hover:bg-gray-50">Reset</Button>
+            </div>
+          </div>
+          
+          {/* Mobile Filter Toggle */}
+          <div className="md:hidden mb-4">
+            <Button 
+              onClick={() => setShowFilters(!showFilters)} 
+              variant="outline" 
+              className="w-full border-gray-300 text-gray-700 hover:bg-gray-50"
+            >
+              {showFilters ? "Hide Filters" : "Show Filters"}
+            </Button>
+          </div>
+          
+          {/* Filters Section - Hidden on mobile by default */}
+          <div className={`${showFilters ? 'block' : 'hidden'} md:block`}>
+            <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
+              <Select value={selectedCity} onValueChange={setSelectedCity}>
+                <SelectTrigger className="bg-white border-gray-300 text-gray-900">
+                  <SelectValue placeholder="City: Any" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Any City</SelectItem>
+                  {cities.map((city) => (
+                    <SelectItem key={city} value={city}>
+                      {city}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Select value={selectedState} onValueChange={setSelectedState}>
+                <SelectTrigger className="bg-white border-gray-300 text-gray-900">
+                  <SelectValue placeholder="State: Any" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Any State</SelectItem>
+                  {states.map((state) => (
+                    <SelectItem key={state} value={state}>
+                      {state}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Select value={selectedStorageType} onValueChange={setSelectedStorageType}>
+                <SelectTrigger className="bg-white border-gray-300 text-gray-900">
+                  <SelectValue placeholder="Storage: Any" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Any Storage Type</SelectItem>
+                  {storageTypes.map((type) => (
+                    <SelectItem key={type} value={type}>
+                      {type}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Select value={selectedFeature} onValueChange={setSelectedFeature}>
+                <SelectTrigger className="bg-white border-gray-300 text-gray-900">
+                  <SelectValue placeholder="Feature: Any" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Any Feature</SelectItem>
+                  {allFeatures.map((feature) => (
+                    <SelectItem key={feature} value={feature}>
+                      {feature}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Select value={sortBy} onValueChange={setSortBy}>
+                <SelectTrigger className="bg-white border-gray-300 text-gray-900">
+                  <SelectValue placeholder="Sort by: Newest" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="newest">Newest First</SelectItem>
+                  <SelectItem value="oldest">Oldest First</SelectItem>
+                  <SelectItem value="name-asc">Name: A to Z</SelectItem>
+                  <SelectItem value="name-desc">Name: Z to A</SelectItem>
+                  <SelectItem value="city-asc">City: A to Z</SelectItem>
+                  <SelectItem value="city-desc">City: Z to A</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        </div>
+
         {/* Added Text */}
         <div className="mb-4">
           <PartnerAdRotator page="Car Hotels" maxVisible={4} />
         </div>
 
         {loading ? (
-          <div className="col-span-full text-center text-lg py-12 animate-pulse text-gray-600">Loading hotels...</div>
-        ) : hotels.length === 0 ? (
-          <div className="col-span-full text-center text-lg py-12 text-gray-600">No hotels found.</div>
+          <div className="text-center text-lg py-12 text-gray-600">Loading hotels...</div>
+        ) : filteredAndSortedHotels.length === 0 ? (
+          <div className="text-center py-12 text-gray-600">
+            {searchQuery || selectedCity !== "all" || selectedState !== "all" || selectedStorageType !== "all" || selectedFeature !== "all" ? "No hotels found matching your criteria." : "No hotels found."}
+          </div>
         ) : (
           <>
             {/* Featured Hotels Carousel */}
@@ -214,7 +445,7 @@ export default function CarHotelsPage() {
                 <div className="flex-1 h-px bg-gradient-to-r from-yellow-600/50 to-transparent"></div>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {regularHotels.map(hotel => (
+                {paginatedHotels.map(hotel => (
                   <Card key={hotel.documentId} className="flex flex-col bg-white border border-gray-200">
                     <CardHeader className="p-0 relative">
                       <Link href={`/hotels/${hotel.documentId}`} className="block relative aspect-video">
@@ -243,14 +474,63 @@ export default function CarHotelsPage() {
                   </Card>
                 ))}
               </div>
-              {regularHotels.length === 0 && (
+              {paginatedHotels.length === 0 && (
                 <div className="text-center py-12 text-gray-600">
-                  <p className="text-lg">No hotels found.</p>
-                  <p className="text-sm mt-2">Be the first to list your hotel!</p>
+                  <p className="text-lg">No hotels found on this page.</p>
+                  <p className="text-sm mt-2">Try adjusting your search criteria or check other pages.</p>
                 </div>
               )}
             </div>
           </>
+        )}
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="mt-12">
+            <Pagination>
+              <PaginationContent className="bg-white border border-gray-300 rounded-lg p-1">
+                <PaginationItem>
+                  <PaginationPrevious 
+                    href="#" 
+                    className="text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (currentPage > 1) handlePageChange(currentPage - 1);
+                    }}
+                  />
+                </PaginationItem>
+                
+                {/* Generate page numbers */}
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                  <PaginationItem key={page}>
+                    <PaginationLink 
+                      href="#" 
+                      className={`text-gray-700 hover:text-gray-900 hover:bg-gray-50 ${
+                        currentPage === page ? 'bg-yellow-600 text-white hover:bg-yellow-700' : ''
+                      }`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handlePageChange(page);
+                      }}
+                    >
+                      {page}
+                    </PaginationLink>
+                  </PaginationItem>
+                ))}
+                
+                <PaginationItem>
+                  <PaginationNext 
+                    href="#" 
+                    className="text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (currentPage < totalPages) handlePageChange(currentPage + 1);
+                    }}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          </div>
         )}
       </div>
     </div>

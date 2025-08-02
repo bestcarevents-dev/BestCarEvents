@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Calendar as CalendarIcon, MapPin, Search, Car, Hotel, Users, Gavel } from "lucide-react";
+import { Calendar as CalendarIcon, MapPin, Search, Car, Hotel, Users, Gavel, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { format } from "date-fns";
@@ -25,6 +25,8 @@ export default function HeroSearch() {
         return "Club name or type...";
       case "auctions":
         return "Auction name or type...";
+      case "others":
+        return "Service type or name...";
       default:
         return "Search...";
     }
@@ -92,6 +94,18 @@ export default function HeroSearch() {
           <Gavel className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
           <span className="hidden sm:inline">Auctions</span>
           <span className="sm:hidden">Auctions</span>
+        </Button>
+        <Button
+          onClick={() => setActiveTab("others")}
+          variant="ghost"
+          className={cn(
+            "flex-1 min-w-[100px] justify-center rounded-full font-semibold py-3 text-sm sm:text-base",
+            activeTab === 'others' ? 'bg-primary text-primary-foreground hover:bg-primary/90' : 'bg-transparent text-white hover:bg-white/10'
+          )}
+        >
+          <Settings className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+          <span className="hidden sm:inline">Others</span>
+          <span className="sm:hidden">Others</span>
         </Button>
       </div>
 

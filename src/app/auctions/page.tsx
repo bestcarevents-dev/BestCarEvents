@@ -2,10 +2,11 @@
 import CarCard from "@/components/car-card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Clock, PlusCircle, Star } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { getFirestore, collection, getDocs, query, orderBy } from "firebase/firestore";
 import { app } from "@/lib/firebase";
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from '@/components/ui/dialog';
@@ -18,6 +19,19 @@ export default function AuctionsPage() {
   const [loading, setLoading] = useState(true);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [showDialog, setShowDialog] = useState(false);
+  
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const auctionsPerPage = 12;
+  
+  // Search and filter state
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCity, setSelectedCity] = useState("all");
+  const [selectedState, setSelectedState] = useState("all");
+  const [selectedCountry, setSelectedCountry] = useState("all");
+  const [selectedAuctionType, setSelectedAuctionType] = useState("all");
+  const [sortBy, setSortBy] = useState("ending-soon");
+  const [showFilters, setShowFilters] = useState(false);
 
   useEffect(() => {
     const fetchAuctions = async () => {
@@ -40,9 +54,125 @@ export default function AuctionsPage() {
     return () => unsubscribe();
   }, []);
 
+  // Filter and sort auctions
+  const filteredAndSortedAuctions = useMemo(() => {
+    let filtered = auctions.filter(auction => {
+      const matchesSearch = searchQuery === "" || 
+        auction.auctionName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        auction.auctionHouse?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        auction.city?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        auction.state?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        auction.country?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        auction.description?.toLowerCase().includes(searchQuery.toLowerCase());
+      
+      const matchesCity = selectedCity === "all" || 
+        auction.city?.toLowerCase() === selectedCity.toLowerCase();
+      
+      const matchesState = selectedState === "all" || 
+        auction.state?.toLowerCase() === selectedState.toLowerCase();
+      
+      const matchesCountry = selectedCountry === "all" || 
+        auction.country?.toLowerCase() === selectedCountry.toLowerCase();
+      
+      const matchesAuctionType = selectedAuctionType === "all" || 
+        auction.auctionType?.toLowerCase() === selectedAuctionType.toLowerCase();
+      
+      return matchesSearch && matchesCity && matchesState && matchesCountry && matchesAuctionType;
+    });
+
+    // Sort auctions
+    filtered.sort((a, b) => {
+      switch (sortBy) {
+        case "ending-soon":
+          const endDateA = a.endDate?.seconds ? new Date(a.endDate.seconds * 1000) : new Date(a.endDate || 0);
+          const endDateB = b.endDate?.seconds ? new Date(b.endDate.seconds * 1000) : new Date(b.endDate || 0);
+          return endDateA.getTime() - endDateB.getTime();
+        case "newly-listed":
+          const startDateA = a.startDate?.seconds ? new Date(a.startDate.seconds * 1000) : new Date(a.startDate || 0);
+          const startDateB = b.startDate?.seconds ? new Date(b.startDate.seconds * 1000) : new Date(b.startDate || 0);
+          return startDateB.getTime() - startDateA.getTime();
+        case "name-asc":
+          return (a.auctionName || "").localeCompare(b.auctionName || "");
+        case "name-desc":
+          return (b.auctionName || "").localeCompare(a.auctionName || "");
+        case "house-asc":
+          return (a.auctionHouse || "").localeCompare(b.auctionHouse || "");
+        case "house-desc":
+          return (b.auctionHouse || "").localeCompare(a.auctionHouse || "");
+        case "city-asc":
+          return (a.city || "").localeCompare(b.city || "");
+        case "city-desc":
+          return (b.city || "").localeCompare(a.city || "");
+        default:
+          return 0;
+      }
+    });
+
+    return filtered;
+  }, [auctions, searchQuery, selectedCity, selectedState, selectedCountry, selectedAuctionType, sortBy]);
+
   // Separate featured and regular auctions
-  const featuredAuctions = auctions.filter(auction => auction.featured === true);
-  const regularAuctions = auctions.filter(auction => auction.featured !== true);
+  const featuredAuctions = filteredAndSortedAuctions.filter(auction => auction.featured === true);
+  const regularAuctions = filteredAndSortedAuctions.filter(auction => auction.featured !== true);
+
+  // Pagination logic
+  const totalPages = Math.ceil(regularAuctions.length / auctionsPerPage);
+  const startIndex = (currentPage - 1) * auctionsPerPage;
+  const endIndex = startIndex + auctionsPerPage;
+  const paginatedAuctions = regularAuctions.slice(startIndex, endIndex);
+
+  // Get unique filter options from auctions
+  const cities = useMemo(() => {
+    const auctionCities = auctions
+      .map(auction => auction.city)
+      .filter(Boolean)
+      .filter((value, index, self) => self.indexOf(value) === index);
+    return auctionCities;
+  }, [auctions]);
+
+  const states = useMemo(() => {
+    const auctionStates = auctions
+      .map(auction => auction.state)
+      .filter(Boolean)
+      .filter((value, index, self) => self.indexOf(value) === index);
+    return auctionStates;
+  }, [auctions]);
+
+  const countries = useMemo(() => {
+    const auctionCountries = auctions
+      .map(auction => auction.country)
+      .filter(Boolean)
+      .filter((value, index, self) => self.indexOf(value) === index);
+    return auctionCountries;
+  }, [auctions]);
+
+  const auctionTypes = useMemo(() => {
+    const types = auctions
+      .map(auction => auction.auctionType)
+      .filter(Boolean)
+      .filter((value, index, self) => self.indexOf(value) === index);
+    return types;
+  }, [auctions]);
+
+  const handleSearch = () => {
+    setCurrentPage(1);
+  };
+
+  const handleResetFilters = () => {
+    setSearchQuery("");
+    setSelectedCity("all");
+    setSelectedState("all");
+    setSelectedCountry("all");
+    setSelectedAuctionType("all");
+    setSortBy("ending-soon");
+    setCurrentPage(1);
+    setShowFilters(false);
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   return (
     <div className="bg-white">
@@ -124,17 +254,103 @@ export default function AuctionsPage() {
         </div>
 
         <div className="bg-gray-50 p-6 rounded-lg border border-gray-200 mb-8">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <Input placeholder="Search auctions..." className="md:col-span-2 bg-white border-gray-300 text-gray-900 placeholder:text-gray-500" />
-            <Select>
-              <SelectTrigger className="bg-white border-gray-300 text-gray-900"><SelectValue placeholder="Sort by: Ending Soon" /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="ending-soon">Ending Soon</SelectItem>
-                <SelectItem value="newly-listed">Newly Listed</SelectItem>
-                <SelectItem value="highest-bid">Highest Bid</SelectItem>
-              </SelectContent>
-            </Select>
-            <Button>Search</Button>
+          {/* Search Bar - Always Visible */}
+          <div className="flex flex-col md:flex-row gap-4 mb-4">
+            <Input 
+              placeholder="Search by auction name, house, city, state..." 
+              className="flex-1 bg-white border-gray-300 text-gray-900 placeholder:text-gray-500"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+            />
+            <div className="flex gap-2 md:flex-shrink-0">
+              <Button onClick={handleSearch} className="bg-yellow-600 hover:bg-yellow-700">Search</Button>
+              <Button onClick={handleResetFilters} variant="outline" className="border-gray-300 text-gray-700 hover:bg-gray-50">Reset</Button>
+            </div>
+          </div>
+          
+          {/* Mobile Filter Toggle */}
+          <div className="md:hidden mb-4">
+            <Button 
+              onClick={() => setShowFilters(!showFilters)} 
+              variant="outline" 
+              className="w-full border-gray-300 text-gray-700 hover:bg-gray-50"
+            >
+              {showFilters ? "Hide Filters" : "Show Filters"}
+            </Button>
+          </div>
+          
+          {/* Filters Section - Hidden on mobile by default */}
+          <div className={`${showFilters ? 'block' : 'hidden'} md:block`}>
+            <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
+              <Select value={selectedCity} onValueChange={setSelectedCity}>
+                <SelectTrigger className="bg-white border-gray-300 text-gray-900">
+                  <SelectValue placeholder="City: Any" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Any City</SelectItem>
+                  {cities.map((city) => (
+                    <SelectItem key={city} value={city}>
+                      {city}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Select value={selectedState} onValueChange={setSelectedState}>
+                <SelectTrigger className="bg-white border-gray-300 text-gray-900">
+                  <SelectValue placeholder="State: Any" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Any State</SelectItem>
+                  {states.map((state) => (
+                    <SelectItem key={state} value={state}>
+                      {state}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Select value={selectedCountry} onValueChange={setSelectedCountry}>
+                <SelectTrigger className="bg-white border-gray-300 text-gray-900">
+                  <SelectValue placeholder="Country: Any" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Any Country</SelectItem>
+                  {countries.map((country) => (
+                    <SelectItem key={country} value={country}>
+                      {country}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Select value={selectedAuctionType} onValueChange={setSelectedAuctionType}>
+                <SelectTrigger className="bg-white border-gray-300 text-gray-900">
+                  <SelectValue placeholder="Type: Any" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Any Type</SelectItem>
+                  {auctionTypes.map((type) => (
+                    <SelectItem key={type} value={type}>
+                      {type}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Select value={sortBy} onValueChange={setSortBy}>
+                <SelectTrigger className="bg-white border-gray-300 text-gray-900">
+                  <SelectValue placeholder="Sort by: Ending Soon" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="ending-soon">Ending Soon</SelectItem>
+                  <SelectItem value="newly-listed">Newly Listed</SelectItem>
+                  <SelectItem value="name-asc">Name: A to Z</SelectItem>
+                  <SelectItem value="name-desc">Name: Z to A</SelectItem>
+                  <SelectItem value="house-asc">Auction House: A to Z</SelectItem>
+                  <SelectItem value="house-desc">Auction House: Z to A</SelectItem>
+                  <SelectItem value="city-asc">City: A to Z</SelectItem>
+                  <SelectItem value="city-desc">City: Z to A</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
         </div>
 
@@ -143,9 +359,11 @@ export default function AuctionsPage() {
         </div>
 
         {loading ? (
-          <div className="text-center text-lg py-12 animate-pulse text-gray-600">Loading auctions...</div>
-        ) : auctions.length === 0 ? (
-          <div className="text-center text-lg py-12 text-gray-600">No auctions found.</div>
+          <div className="text-center text-lg py-12 text-gray-600">Loading auctions...</div>
+        ) : filteredAndSortedAuctions.length === 0 ? (
+          <div className="text-center py-12 text-gray-600">
+            {searchQuery || selectedCity !== "all" || selectedState !== "all" || selectedCountry !== "all" || selectedAuctionType !== "all" ? "No auctions found matching your criteria." : "No auctions found."}
+          </div>
         ) : (
           <>
             {/* Featured Auctions Carousel */}
@@ -217,7 +435,7 @@ export default function AuctionsPage() {
                 <div className="flex-1 h-px bg-gradient-to-r from-yellow-600/50 to-transparent"></div>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                {regularAuctions.map(auction => (
+                {paginatedAuctions.map(auction => (
                   <div key={auction.documentId} className="relative group">
                     <CarCard
                       id={auction.documentId}
@@ -236,14 +454,63 @@ export default function AuctionsPage() {
                   </div>
                 ))}
               </div>
-              {regularAuctions.length === 0 && (
+              {paginatedAuctions.length === 0 && (
                 <div className="text-center py-12 text-gray-600">
-                  <p className="text-lg">No auctions found.</p>
-                  <p className="text-sm mt-2">Be the first to register an auction!</p>
+                  <p className="text-lg">No auctions found on this page.</p>
+                  <p className="text-sm mt-2">Try adjusting your search criteria or check other pages.</p>
                 </div>
               )}
             </div>
           </>
+        )}
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="mt-12">
+            <Pagination>
+              <PaginationContent className="bg-white border border-gray-300 rounded-lg p-1">
+                <PaginationItem>
+                  <PaginationPrevious 
+                    href="#" 
+                    className="text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (currentPage > 1) handlePageChange(currentPage - 1);
+                    }}
+                  />
+                </PaginationItem>
+                
+                {/* Generate page numbers */}
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                  <PaginationItem key={page}>
+                    <PaginationLink 
+                      href="#" 
+                      className={`text-gray-700 hover:text-gray-900 hover:bg-gray-50 ${
+                        currentPage === page ? 'bg-yellow-600 text-white hover:bg-yellow-700' : ''
+                      }`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handlePageChange(page);
+                      }}
+                    >
+                      {page}
+                    </PaginationLink>
+                  </PaginationItem>
+                ))}
+                
+                <PaginationItem>
+                  <PaginationNext 
+                    href="#" 
+                    className="text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (currentPage < totalPages) handlePageChange(currentPage + 1);
+                    }}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          </div>
         )}
       </div>
     </div>

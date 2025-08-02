@@ -53,6 +53,7 @@ const navLinks = [
     { href: "/admin/auctions", icon: Gavel, label: "Auction Requests" },
     { href: "/admin/hotels", icon: Hotel, label: "Hotel Submissions" },
     { href: "/admin/clubs", icon: Users, label: "Club Registrations" },
+    { href: "/admin/others", icon: Settings, label: "Service Requests" },
     { href: "/admin/partners", icon: Handshake, label: "Partner Applications" },
     { href: "/admin/users", icon: Users, label: "Manage Users" },
     { href: "/admin/newsletter", icon: Mail, label: "Newsletter" },

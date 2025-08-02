@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { AlignJustify, Search, X, ChevronDown, User as UserIcon, Car, LogOut, LayoutDashboard, Calendar, Users, Gavel } from "lucide-react";
+import { AlignJustify, Search, X, ChevronDown, User as UserIcon, Car, LogOut, LayoutDashboard, Calendar, Users, Gavel, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   Sheet,
@@ -28,12 +28,16 @@ import Image from "next/image";
 const navLinks = [
   { href: "/events", label: "Events" },
   { href: "/forum", label: "Forum" },
-  { href: "/cars", label: "Cars for Sale" },
   { href: "/auctions", label: "Auctions" },
-  { href: "/hotels", label: "Car Hotels" },
-  { href: "/clubs", label: "Car Clubs" },
+  { href: "/others", label: "Others" },
   { href: "/partners", label: "Partners" },
   { href: "/advertise-with-us", label: "Pricing" },
+];
+
+const automotiveLinks = [
+  { href: "/cars", label: "Cars for Sale" },
+  { href: "/hotels", label: "Car Hotels" },
+  { href: "/clubs", label: "Car Clubs" },
 ];
 
 const FLAG_UK = "https://flagcdn.com/gb.svg";
@@ -92,6 +96,14 @@ const AuthButtons = ({ inMobileNav = false, user, onMobileMenuClose }: { inMobil
               >
                 <Users className="w-5 h-5 text-orange-600" />
                 <span className="font-medium">Club Listing</span>
+              </Link>
+              <Link 
+                href="/advertise/others-listing" 
+                className="flex items-center gap-4 px-4 py-3 text-base text-gray-900 hover:text-white hover:bg-orange-600 rounded-lg transition-all duration-200 border border-gray-300 bg-white shadow-sm"
+                onClick={onMobileMenuClose}
+              >
+                <Settings className="w-5 h-5 text-orange-600" />
+                <span className="font-medium">Others Listing</span>
               </Link>
             </div>
           </div>
@@ -196,6 +208,12 @@ const AuthButtons = ({ inMobileNav = false, user, onMobileMenuClose }: { inMobil
                   Club Listing
             </Link>
           </DropdownMenuItem>
+          <DropdownMenuItem asChild className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-orange-50 hover:text-orange-700 transition-colors duration-200">
+                <Link href="/advertise/others-listing" className="flex items-center gap-3 w-full">
+                  <Settings className="w-4 h-4" />
+                  Others Listing
+            </Link>
+          </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
 
@@ -259,7 +277,40 @@ const AuthButtons = ({ inMobileNav = false, user, onMobileMenuClose }: { inMobil
 
 const NavMenu = ({ onLinkClick }: { onLinkClick?: () => void }) => (
     <nav className="flex flex-col lg:flex-row items-center gap-6 lg:gap-8 text-lg lg:text-sm font-medium">
-        {navLinks.map((link) => (
+        {/* Events Link */}
+        <Link
+            href="/events"
+            className="transition-colors hover:text-primary w-full lg:w-auto text-center lg:text-left"
+            onClick={onLinkClick}
+        >
+            Events
+        </Link>
+        
+        {/* Automotive Dropdown */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button className="flex items-center gap-1 transition-colors hover:text-primary w-full lg:w-auto text-center lg:text-left">
+              <span>Cars</span>
+              <ChevronDown className="w-4 h-4" />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="center" className="w-48">
+            {automotiveLinks.map((link) => (
+              <DropdownMenuItem key={link.href} asChild>
+                <Link
+                  href={link.href}
+                  className="w-full"
+                  onClick={onLinkClick}
+                >
+                  {link.label}
+                </Link>
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+        
+        {/* Remaining Links */}
+        {navLinks.slice(1).map((link) => (
         <Link
             key={link.href}
             href={link.href}

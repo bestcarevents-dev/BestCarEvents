@@ -27,6 +27,7 @@ const featureListingLinks = [
   { href: "/advertise/auction-listing", label: "Auction Listing" },
   { href: "/advertise/hotel-listing", label: "Hotel Listing" },
   { href: "/advertise/club-listing", label: "Club Listing" },
+  { href: "/advertise/others-listing", label: "Others Listing" },
 ];
 
 export default function PartnersLayout({ children }: { children: React.ReactNode }) {

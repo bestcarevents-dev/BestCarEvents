@@ -1,9 +1,12 @@
 'use client';
 
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import Link from "next/link";
 import { PlusCircle, Star } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { getFirestore, collection, getDocs, query, orderBy } from "firebase/firestore";
 import { app } from "@/lib/firebase";
 import Image from "next/image";
@@ -19,6 +22,18 @@ export default function ClubsPage() {
   const [loading, setLoading] = useState(true);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [showDialog, setShowDialog] = useState(false);
+  
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const clubsPerPage = 12;
+  
+  // Search and filter state
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCity, setSelectedCity] = useState("all");
+  const [selectedCountry, setSelectedCountry] = useState("all");
+  const [selectedActivity, setSelectedActivity] = useState("all");
+  const [sortBy, setSortBy] = useState("newest");
+  const [showFilters, setShowFilters] = useState(false);
 
   useEffect(() => {
     const fetchClubs = async () => {
@@ -41,9 +56,128 @@ export default function ClubsPage() {
     return () => unsubscribe();
   }, []);
 
+  // Filter and sort clubs
+  const filteredAndSortedClubs = useMemo(() => {
+    let filtered = clubs.filter(club => {
+      const matchesSearch = searchQuery === "" || 
+        club.clubName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        club.city?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        club.country?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        club.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        club.membershipCriteria?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        club.typicalActivities?.toLowerCase().includes(searchQuery.toLowerCase());
+      
+      const matchesCity = selectedCity === "all" || 
+        club.city?.toLowerCase() === selectedCity.toLowerCase();
+      
+      const matchesCountry = selectedCountry === "all" || 
+        club.country?.toLowerCase() === selectedCountry.toLowerCase();
+      
+      const matchesActivity = selectedActivity === "all" || 
+        club.typicalActivities?.toLowerCase().includes(selectedActivity.toLowerCase()) ||
+        club.membershipCriteria?.toLowerCase().includes(selectedActivity.toLowerCase());
+      
+      return matchesSearch && matchesCity && matchesCountry && matchesActivity;
+    });
+
+    // Sort clubs
+    filtered.sort((a, b) => {
+      switch (sortBy) {
+        case "newest":
+          const dateA = a.createdAt?.seconds ? new Date(a.createdAt.seconds * 1000) : new Date(a.createdAt || 0);
+          const dateB = b.createdAt?.seconds ? new Date(b.createdAt.seconds * 1000) : new Date(b.createdAt || 0);
+          return dateB.getTime() - dateA.getTime();
+        case "oldest":
+          const dateAOld = a.createdAt?.seconds ? new Date(a.createdAt.seconds * 1000) : new Date(a.createdAt || 0);
+          const dateBOld = b.createdAt?.seconds ? new Date(b.createdAt.seconds * 1000) : new Date(b.createdAt || 0);
+          return dateAOld.getTime() - dateBOld.getTime();
+        case "name-asc":
+          return (a.clubName || "").localeCompare(b.clubName || "");
+        case "name-desc":
+          return (b.clubName || "").localeCompare(a.clubName || "");
+        case "city-asc":
+          return (a.city || "").localeCompare(b.city || "");
+        case "city-desc":
+          return (b.city || "").localeCompare(a.city || "");
+        default:
+          return 0;
+      }
+    });
+
+    return filtered;
+  }, [clubs, searchQuery, selectedCity, selectedCountry, selectedActivity, sortBy]);
+
   // Separate featured and regular clubs
-  const featuredClubs = clubs.filter(club => club.featured === true);
-  const regularClubs = clubs.filter(club => club.featured !== true);
+  const featuredClubs = filteredAndSortedClubs.filter(club => club.featured === true);
+  const regularClubs = filteredAndSortedClubs.filter(club => club.featured !== true);
+
+  // Pagination logic
+  const totalPages = Math.ceil(regularClubs.length / clubsPerPage);
+  const startIndex = (currentPage - 1) * clubsPerPage;
+  const endIndex = startIndex + clubsPerPage;
+  const paginatedClubs = regularClubs.slice(startIndex, endIndex);
+
+  // Get unique filter options from clubs
+  const cities = useMemo(() => {
+    const clubCities = clubs
+      .map(club => club.city)
+      .filter(Boolean)
+      .filter((value, index, self) => self.indexOf(value) === index);
+    return clubCities;
+  }, [clubs]);
+
+  const countries = useMemo(() => {
+    const clubCountries = clubs
+      .map(club => club.country)
+      .filter(Boolean)
+      .filter((value, index, self) => self.indexOf(value) === index);
+    return clubCountries;
+  }, [clubs]);
+
+  const allActivities = useMemo(() => {
+    const activities = new Set<string>();
+    clubs.forEach(club => {
+      if (club.typicalActivities) {
+        // Extract common activities from typicalActivities text
+        const activityText = club.typicalActivities.toLowerCase();
+        if (activityText.includes('meetup')) activities.add('Meetups');
+        if (activityText.includes('track')) activities.add('Track Days');
+        if (activityText.includes('drive') || activityText.includes('cruise')) activities.add('Scenic Drives');
+        if (activityText.includes('social') || activityText.includes('dinner')) activities.add('Social Events');
+        if (activityText.includes('race') || activityText.includes('racing')) activities.add('Racing');
+        if (activityText.includes('show') || activityText.includes('display')) activities.add('Car Shows');
+        if (activityText.includes('charity') || activityText.includes('fundraiser')) activities.add('Charity Events');
+      }
+      if (club.membershipCriteria) {
+        const criteriaText = club.membershipCriteria.toLowerCase();
+        if (criteriaText.includes('specific') || criteriaText.includes('make')) activities.add('Specific Car Makes');
+        if (criteriaText.includes('vintage') || criteriaText.includes('classic')) activities.add('Vintage/Classic');
+        if (criteriaText.includes('jdm') || criteriaText.includes('japanese')) activities.add('JDM');
+        if (criteriaText.includes('muscle') || criteriaText.includes('american')) activities.add('Muscle Cars');
+        if (criteriaText.includes('european') || criteriaText.includes('exotic')) activities.add('European/Exotic');
+      }
+    });
+    return Array.from(activities).sort();
+  }, [clubs]);
+
+  const handleSearch = () => {
+    setCurrentPage(1);
+  };
+
+  const handleResetFilters = () => {
+    setSearchQuery("");
+    setSelectedCity("all");
+    setSelectedCountry("all");
+    setSelectedActivity("all");
+    setSortBy("newest");
+    setCurrentPage(1);
+    setShowFilters(false);
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   return (
     <div className="bg-white">
@@ -127,23 +261,88 @@ export default function ClubsPage() {
 
           {/* Club Search Bar */}
           <div className="bg-gray-50 p-6 rounded-lg border border-gray-200 mb-8">
-            <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-              <input
-                type="text"
-                placeholder="Search by club name or description..."
-                className="md:col-span-2 px-4 py-2 rounded border bg-white border-gray-300 text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-yellow-600"
+            {/* Search Bar - Always Visible */}
+            <div className="flex flex-col md:flex-row gap-4 mb-4">
+              <Input 
+                placeholder="Search by club name, city, country, activities..." 
+                className="flex-1 bg-white border-gray-300 text-gray-900 placeholder:text-gray-500"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
               />
-              <input
-                type="text"
-                placeholder="Location (e.g. city, country)"
-                className="px-4 py-2 rounded border bg-white border-gray-300 text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-yellow-600"
-              />
-              <select className="px-4 py-2 rounded border bg-white border-gray-300 text-gray-900 focus:outline-none focus:ring-2 focus:ring-yellow-600">
-                <option value="newest">Sort by: Newest</option>
-                <option value="name-asc">Name: A-Z</option>
-                <option value="name-desc">Name: Z-A</option>
-              </select>
-              <Button>Search</Button>
+              <div className="flex gap-2 md:flex-shrink-0">
+                <Button onClick={handleSearch} className="bg-yellow-600 hover:bg-yellow-700">Search</Button>
+                <Button onClick={handleResetFilters} variant="outline" className="border-gray-300 text-gray-700 hover:bg-gray-50">Reset</Button>
+              </div>
+            </div>
+            
+            {/* Mobile Filter Toggle */}
+            <div className="md:hidden mb-4">
+              <Button 
+                onClick={() => setShowFilters(!showFilters)} 
+                variant="outline" 
+                className="w-full border-gray-300 text-gray-700 hover:bg-gray-50"
+              >
+                {showFilters ? "Hide Filters" : "Show Filters"}
+              </Button>
+            </div>
+            
+            {/* Filters Section - Hidden on mobile by default */}
+            <div className={`${showFilters ? 'block' : 'hidden'} md:block`}>
+              <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+                <Select value={selectedCity} onValueChange={setSelectedCity}>
+                  <SelectTrigger className="bg-white border-gray-300 text-gray-900">
+                    <SelectValue placeholder="City: Any" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Any City</SelectItem>
+                    {cities.map((city) => (
+                      <SelectItem key={city} value={city}>
+                        {city}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Select value={selectedCountry} onValueChange={setSelectedCountry}>
+                  <SelectTrigger className="bg-white border-gray-300 text-gray-900">
+                    <SelectValue placeholder="Country: Any" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Any Country</SelectItem>
+                    {countries.map((country) => (
+                      <SelectItem key={country} value={country}>
+                        {country}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Select value={selectedActivity} onValueChange={setSelectedActivity}>
+                  <SelectTrigger className="bg-white border-gray-300 text-gray-900">
+                    <SelectValue placeholder="Activity: Any" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Any Activity</SelectItem>
+                    {allActivities.map((activity) => (
+                      <SelectItem key={activity} value={activity}>
+                        {activity}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Select value={sortBy} onValueChange={setSortBy}>
+                  <SelectTrigger className="bg-white border-gray-300 text-gray-900">
+                    <SelectValue placeholder="Sort by: Newest" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="newest">Newest First</SelectItem>
+                    <SelectItem value="oldest">Oldest First</SelectItem>
+                    <SelectItem value="name-asc">Name: A to Z</SelectItem>
+                    <SelectItem value="name-desc">Name: Z to A</SelectItem>
+                    <SelectItem value="city-asc">City: A to Z</SelectItem>
+                    <SelectItem value="city-desc">City: Z to A</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
           </div>
 
@@ -153,9 +352,11 @@ export default function ClubsPage() {
           </div>
 
           {loading ? (
-            <div className="col-span-full text-center text-lg py-12 animate-pulse text-gray-600">Loading clubs...</div>
-          ) : clubs.length === 0 ? (
-            <div className="col-span-full text-center text-lg py-12 text-gray-600">No clubs found.</div>
+            <div className="text-center text-lg py-12 text-gray-600">Loading clubs...</div>
+          ) : filteredAndSortedClubs.length === 0 ? (
+            <div className="text-center py-12 text-gray-600">
+              {searchQuery || selectedCity !== "all" || selectedCountry !== "all" || selectedActivity !== "all" ? "No clubs found matching your criteria." : "No clubs found."}
+            </div>
           ) : (
             <>
               {/* Featured Clubs Carousel */}
@@ -246,7 +447,7 @@ export default function ClubsPage() {
                   <div className="flex-1 h-px bg-gradient-to-r from-yellow-600/50 to-transparent"></div>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-                  {regularClubs.map((club, idx) => (
+                  {paginatedClubs.map((club, idx) => (
                     <Link
                       key={club.documentId || idx}
                       href={`/clubs/${club.documentId}`}
@@ -285,14 +486,63 @@ export default function ClubsPage() {
                     </Link>
                   ))}
                 </div>
-                {regularClubs.length === 0 && (
+                {paginatedClubs.length === 0 && (
                   <div className="text-center py-12 text-gray-600">
-                    <p className="text-lg">No clubs found.</p>
-                    <p className="text-sm mt-2">Be the first to register your club!</p>
+                    <p className="text-lg">No clubs found on this page.</p>
+                    <p className="text-sm mt-2">Try adjusting your search criteria or check other pages.</p>
                   </div>
                 )}
               </div>
             </>
+          )}
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="mt-12">
+              <Pagination>
+                <PaginationContent className="bg-white border border-gray-300 rounded-lg p-1">
+                  <PaginationItem>
+                    <PaginationPrevious 
+                      href="#" 
+                      className="text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        if (currentPage > 1) handlePageChange(currentPage - 1);
+                      }}
+                    />
+                  </PaginationItem>
+                  
+                  {/* Generate page numbers */}
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                    <PaginationItem key={page}>
+                      <PaginationLink 
+                        href="#" 
+                        className={`text-gray-700 hover:text-gray-900 hover:bg-gray-50 ${
+                          currentPage === page ? 'bg-yellow-600 text-white hover:bg-yellow-700' : ''
+                        }`}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handlePageChange(page);
+                        }}
+                      >
+                        {page}
+                      </PaginationLink>
+                    </PaginationItem>
+                  ))}
+                  
+                  <PaginationItem>
+                    <PaginationNext 
+                      href="#" 
+                      className="text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        if (currentPage < totalPages) handlePageChange(currentPage + 1);
+                      }}
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            </div>
           )}
         </div>
       </main>

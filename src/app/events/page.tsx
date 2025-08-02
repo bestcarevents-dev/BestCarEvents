@@ -9,7 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { List, Map, PlusCircle, Star } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { getFirestore, collection, getDocs } from "firebase/firestore";
 import { app } from "@/lib/firebase";
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from '@/components/ui/dialog';
@@ -22,6 +22,18 @@ export default function EventsPage() {
     const [loading, setLoading] = useState(true);
     const [currentUser, setCurrentUser] = useState<User | null>(null);
     const [showDialog, setShowDialog] = useState(false);
+    
+    // Pagination state
+    const [currentPage, setCurrentPage] = useState(1);
+    const eventsPerPage = 12;
+    
+    // Search and filter state
+    const [searchQuery, setSearchQuery] = useState("");
+    const [selectedCategory, setSelectedCategory] = useState("all");
+    const [selectedVehicleFocus, setSelectedVehicleFocus] = useState("all");
+    const [selectedEntryFee, setSelectedEntryFee] = useState("all");
+    const [sortBy, setSortBy] = useState("date");
+    const [showFilters, setShowFilters] = useState(false);
 
     useEffect(() => {
       const fetchEvents = async () => {
@@ -45,9 +57,104 @@ export default function EventsPage() {
       return () => unsubscribe();
     }, []);
 
+    // Filter and sort events
+    const filteredAndSortedEvents = useMemo(() => {
+      let filtered = events.filter(event => {
+        const matchesSearch = searchQuery === "" || 
+          event.eventName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          event.location?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          event.description?.toLowerCase().includes(searchQuery.toLowerCase());
+        
+        const matchesCategory = selectedCategory === "all" || 
+          event.eventType?.toLowerCase() === selectedCategory.toLowerCase();
+        
+        const matchesVehicleFocus = selectedVehicleFocus === "all" || 
+          event.vehicleFocus?.toLowerCase().includes(selectedVehicleFocus.toLowerCase());
+        
+        const matchesEntryFee = selectedEntryFee === "all" || 
+          (selectedEntryFee === "free" && (!event.entryFee || event.entryFee === 0)) ||
+          (selectedEntryFee === "paid" && event.entryFee && event.entryFee > 0);
+        
+        return matchesSearch && matchesCategory && matchesVehicleFocus && matchesEntryFee;
+      });
+
+      // Sort events
+      filtered.sort((a, b) => {
+        switch (sortBy) {
+          case "date":
+            const dateA = a.eventDate?.seconds ? new Date(a.eventDate.seconds * 1000) : new Date(a.eventDate || 0);
+            const dateB = b.eventDate?.seconds ? new Date(b.eventDate.seconds * 1000) : new Date(b.eventDate || 0);
+            return dateA.getTime() - dateB.getTime();
+          case "popular":
+            // Sort by featured first, then by name
+            if (a.featured && !b.featured) return -1;
+            if (!a.featured && b.featured) return 1;
+            return (a.eventName || "").localeCompare(b.eventName || "");
+          case "distance":
+            // For now, sort by name as distance would require location services
+            return (a.eventName || "").localeCompare(b.eventName || "");
+          case "fee":
+            // Sort by entry fee (free first, then by amount)
+            const feeA = a.entryFee || 0;
+            const feeB = b.entryFee || 0;
+            if (feeA === 0 && feeB > 0) return -1;
+            if (feeA > 0 && feeB === 0) return 1;
+            return feeA - feeB;
+          default:
+            return 0;
+        }
+      });
+
+      return filtered;
+    }, [events, searchQuery, selectedCategory, selectedVehicleFocus, selectedEntryFee, sortBy]);
+
     // Separate featured and regular events
-    const featuredEvents = events.filter(event => event.featured === true);
-    const regularEvents = events.filter(event => event.featured !== true);
+    const featuredEvents = filteredAndSortedEvents.filter(event => event.featured === true);
+    const regularEvents = filteredAndSortedEvents.filter(event => event.featured !== true);
+
+    // Pagination logic
+    const totalPages = Math.ceil(regularEvents.length / eventsPerPage);
+    const startIndex = (currentPage - 1) * eventsPerPage;
+    const endIndex = startIndex + eventsPerPage;
+    const paginatedEvents = regularEvents.slice(startIndex, endIndex);
+
+    // Get unique categories from events
+    const categories = useMemo(() => {
+      const cats = events
+        .map(event => event.eventType)
+        .filter(Boolean)
+        .filter((value, index, self) => self.indexOf(value) === index);
+      return cats;
+    }, [events]);
+
+    // Get unique vehicle focus options from events
+    const vehicleFocusOptions = useMemo(() => {
+      const focuses = events
+        .map(event => event.vehicleFocus)
+        .filter(Boolean)
+        .filter((value, index, self) => self.indexOf(value) === index);
+      return focuses;
+    }, [events]);
+
+    const handleSearch = () => {
+      // Search is handled by the useMemo above, this is just for the button
+      setCurrentPage(1); // Reset to first page when searching
+    };
+
+    const handleResetFilters = () => {
+      setSearchQuery("");
+      setSelectedCategory("all");
+      setSelectedVehicleFocus("all");
+      setSelectedEntryFee("all");
+      setSortBy("date");
+      setCurrentPage(1);
+      setShowFilters(false); // Hide filters on mobile after reset
+    };
+
+    const handlePageChange = (page: number) => {
+      setCurrentPage(page);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
 
     return (
     <div className="bg-white">
@@ -129,25 +236,83 @@ export default function EventsPage() {
             </div>
 
           <div className="bg-gray-50 p-6 rounded-lg border border-gray-200 mb-8">
-            <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-              <Input placeholder="Search by name, city..." className="md:col-span-2 bg-white border-gray-300 text-gray-900 placeholder:text-gray-500" />
-              <Select>
-                 <SelectTrigger className="bg-white border-gray-300 text-gray-900"><SelectValue placeholder="Category: Any" /></SelectTrigger>
+            {/* Search Bar - Always Visible */}
+            <div className="flex flex-col md:flex-row gap-4 mb-4">
+              <Input 
+                placeholder="Search by name, city..." 
+                className="flex-1 bg-white border-gray-300 text-gray-900 placeholder:text-gray-500"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+              />
+              <div className="flex gap-2 md:flex-shrink-0">
+                <Button onClick={handleSearch} className="bg-yellow-600 hover:bg-yellow-700">Search</Button>
+                <Button onClick={handleResetFilters} variant="outline" className="border-gray-300 text-gray-700 hover:bg-gray-50">Reset</Button>
+              </div>
+            </div>
+            
+            {/* Mobile Filter Toggle */}
+            <div className="md:hidden mb-4">
+              <Button 
+                onClick={() => setShowFilters(!showFilters)} 
+                variant="outline" 
+                className="w-full border-gray-300 text-gray-700 hover:bg-gray-50"
+              >
+                {showFilters ? "Hide Filters" : "Show Filters"}
+              </Button>
+            </div>
+            
+            {/* Filters Section - Hidden on mobile by default */}
+            <div className={`${showFilters ? 'block' : 'hidden'} md:block`}>
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                   <SelectTrigger className="bg-white border-gray-300 text-gray-900">
+                     <SelectValue placeholder="Category: Any" />
+                   </SelectTrigger>
+                   <SelectContent>
+                      <SelectItem value="all">Any Category</SelectItem>
+                      {categories.map((category) => (
+                        <SelectItem key={category} value={category}>
+                          {category}
+                        </SelectItem>
+                      ))}
+                   </SelectContent>
+                </Select>
+                <Select value={selectedVehicleFocus} onValueChange={setSelectedVehicleFocus}>
+                   <SelectTrigger className="bg-white border-gray-300 text-gray-900">
+                     <SelectValue placeholder="Vehicle: Any" />
+                   </SelectTrigger>
+                   <SelectContent>
+                      <SelectItem value="all">Any Vehicle Type</SelectItem>
+                      {vehicleFocusOptions.map((focus) => (
+                        <SelectItem key={focus} value={focus}>
+                          {focus}
+                        </SelectItem>
+                      ))}
+                   </SelectContent>
+                </Select>
+                <Select value={selectedEntryFee} onValueChange={setSelectedEntryFee}>
+                   <SelectTrigger className="bg-white border-gray-300 text-gray-900">
+                     <SelectValue placeholder="Fee: Any" />
+                   </SelectTrigger>
                  <SelectContent>
-                    <SelectItem value="show">Car Show</SelectItem>
-                    <SelectItem value="meetup">Meetup</SelectItem>
-                    <SelectItem value="track">Track Day</SelectItem>
+                      <SelectItem value="all">Any Entry Fee</SelectItem>
+                      <SelectItem value="free">Free Events</SelectItem>
+                      <SelectItem value="paid">Paid Events</SelectItem>
                  </SelectContent>
               </Select>
-              <Select>
-                <SelectTrigger className="bg-white border-gray-300 text-gray-900"><SelectValue placeholder="Sort by: Date" /></SelectTrigger>
+                <Select value={sortBy} onValueChange={setSortBy}>
+                  <SelectTrigger className="bg-white border-gray-300 text-gray-900">
+                    <SelectValue placeholder="Sort by: Date" />
+                  </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="date">Date</SelectItem>
-                  <SelectItem value="distance">Distance</SelectItem>
                   <SelectItem value="popular">Popular</SelectItem>
+                    <SelectItem value="fee">Entry Fee</SelectItem>
+                    <SelectItem value="distance">Name</SelectItem>
                 </SelectContent>
               </Select>
-              <Button>Search</Button>
+              </div>
             </div>
           </div>
 
@@ -155,8 +320,10 @@ export default function EventsPage() {
             <TabsContent value="list">
                  {loading ? (
                    <div className="py-12 text-center text-gray-600">Loading events...</div>
-                 ) : events.length === 0 ? (
-                   <div className="py-12 text-center text-gray-600">No events found.</div>
+                 ) : filteredAndSortedEvents.length === 0 ? (
+                   <div className="py-12 text-center text-gray-600">
+                     {searchQuery || selectedCategory !== "all" || selectedVehicleFocus !== "all" || selectedEntryFee !== "all" ? "No events found matching your criteria." : "No events found."}
+                   </div>
                  ) : (
                  <>
                    <div className="mb-4">
@@ -225,7 +392,7 @@ export default function EventsPage() {
                        <div className="flex-1 h-px bg-gradient-to-r from-yellow-600/50 to-transparent"></div>
                      </div>
                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                        {regularEvents.map((event, index) => (
+                        {paginatedEvents.map((event, index) => (
                           <EventCard 
                             key={event.id} 
                             {...event} 
@@ -238,36 +405,64 @@ export default function EventsPage() {
                           />
                         ))}
                      </div>
-                     {regularEvents.length === 0 && (
+                     {paginatedEvents.length === 0 && (
                        <div className="text-center py-12 text-gray-600">
-                         <p className="text-lg">No events found.</p>
-                         <p className="text-sm mt-2">Be the first to host an event in your area!</p>
+                         <p className="text-lg">No events found on this page.</p>
+                         <p className="text-sm mt-2">Try adjusting your search criteria or check other pages.</p>
                        </div>
                      )}
                    </div>
                  </>
                  )}
+                 
+                 {/* Pagination */}
+                 {totalPages > 1 && (
                  <div className="mt-12">
                     <Pagination>
                     <PaginationContent className="bg-white border border-gray-300 rounded-lg p-1">
                         <PaginationItem>
-                        <PaginationPrevious href="#" className="text-gray-700 hover:text-gray-900 hover:bg-gray-50" />
+                           <PaginationPrevious 
+                             href="#" 
+                             className="text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+                             onClick={(e) => {
+                               e.preventDefault();
+                               if (currentPage > 1) handlePageChange(currentPage - 1);
+                             }}
+                           />
                         </PaginationItem>
-                        <PaginationItem>
-                        <PaginationLink href="#" className="text-gray-700 hover:text-gray-900 hover:bg-gray-50">1</PaginationLink>
+                         
+                         {/* Generate page numbers */}
+                         {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                           <PaginationItem key={page}>
+                             <PaginationLink 
+                               href="#" 
+                               className={`text-gray-700 hover:text-gray-900 hover:bg-gray-50 ${
+                                 currentPage === page ? 'bg-yellow-600 text-white hover:bg-yellow-700' : ''
+                               }`}
+                               onClick={(e) => {
+                                 e.preventDefault();
+                                 handlePageChange(page);
+                               }}
+                             >
+                               {page}
+                             </PaginationLink>
                         </PaginationItem>
+                         ))}
+                         
                         <PaginationItem>
-                        <PaginationLink href="#" isActive className="bg-yellow-600 text-white hover:bg-yellow-700">2</PaginationLink>
-                        </PaginationItem>
-                        <PaginationItem>
-                        <PaginationLink href="#" className="text-gray-700 hover:text-gray-900 hover:bg-gray-50">3</PaginationLink>
-                        </PaginationItem>
-                        <PaginationItem>
-                        <PaginationNext href="#" className="text-gray-700 hover:text-gray-900 hover:bg-gray-50" />
+                           <PaginationNext 
+                             href="#" 
+                             className="text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+                             onClick={(e) => {
+                               e.preventDefault();
+                               if (currentPage < totalPages) handlePageChange(currentPage + 1);
+                             }}
+                           />
                         </PaginationItem>
                     </PaginationContent>
                     </Pagination>
                 </div>
+                 )}
             </TabsContent>
           </Tabs>
 
