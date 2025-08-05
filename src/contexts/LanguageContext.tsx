@@ -16,133 +16,198 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   const [language, setLanguageState] = useState<Language>('en');
   const [isLoading, setIsLoading] = useState(false);
 
+  // Global error handler to catch and suppress removeChild errors
+  useEffect(() => {
+    const originalErrorHandler = window.onerror;
+    
+    window.onerror = function(message, source, lineno, colno, error) {
+      // Check if this is a removeChild error
+      if (typeof message === 'string' && message.includes('removeChild')) {
+        console.warn('Suppressed removeChild error during navigation:', message);
+        return true; // Prevent the error from being thrown
+      }
+      
+      // For all other errors, use the original handler
+      if (originalErrorHandler) {
+        return originalErrorHandler(message, source, lineno, colno, error);
+      }
+      return false;
+    };
+
+    // Also catch unhandled promise rejections
+    const originalUnhandledRejectionHandler = window.onunhandledrejection;
+    
+    window.onunhandledrejection = function(event) {
+      if (event.reason && typeof event.reason === 'string' && event.reason.includes('removeChild')) {
+        console.warn('Suppressed removeChild promise rejection during navigation:', event.reason);
+        event.preventDefault(); // Prevent the error from being thrown
+        return;
+      }
+      
+      if (originalUnhandledRejectionHandler) {
+        originalUnhandledRejectionHandler(event);
+      }
+    };
+
+    return () => {
+      window.onerror = originalErrorHandler;
+      window.onunhandledrejection = originalUnhandledRejectionHandler;
+    };
+  }, []);
+
   // Load language preference from localStorage on mount
   useEffect(() => {
-    const savedLanguage = localStorage.getItem('language') as Language;
-    if (savedLanguage && (savedLanguage === 'en' || savedLanguage === 'it')) {
-      setLanguageState(savedLanguage);
+    try {
+      const savedLanguage = localStorage.getItem('language') as Language;
+      if (savedLanguage && (savedLanguage === 'en' || savedLanguage === 'it')) {
+        setLanguageState(savedLanguage);
+      }
+    } catch (error) {
+      console.warn('Error loading language preference:', error);
     }
   }, []);
 
   // Static CSS injection to hide Google Translate banner - NO DOM MANIPULATION
   useEffect(() => {
-    // Only inject CSS if it doesn't already exist
-    if (!document.getElementById('google-translate-hide')) {
-      const style = document.createElement('style');
-      style.id = 'google-translate-hide';
-      style.textContent = `
-        /* Hide Google Translate Banner - CSS ONLY */
-        .goog-te-banner-frame,
-        .goog-te-banner-frame.skiptranslate,
-        .goog-te-gadget,
-        .goog-te-gadget .goog-te-combo,
-        .goog-te-menu-value,
-        .VIpgJd-ZVi9od-ORHb,
-        .VIpgJd-ZVi9od-ORHb-KE6vqe,
-        .goog-te-spinner-pos,
-        .goog-te-spinner-animation,
-        .goog-te-spinner,
-        .goog-te-spinner-img,
-        iframe[src*="translate.google.com"],
-        iframe[src*="translate.googleapis.com"],
-        div[class*="goog-te"],
-        div[class*="VIpgJd"],
-        div[id*="goog-te"],
-        table[class*="goog-te"],
-        table[class*="VIpgJd"],
-        [class*="goog-te"],
-        [id*="goog-te"],
-        [class*="VIpgJd"] {
-          display: none !important;
-          visibility: hidden !important;
-          height: 0 !important;
-          width: 0 !important;
-          overflow: hidden !important;
-          position: absolute !important;
-          top: -9999px !important;
-          left: -9999px !important;
-          z-index: -9999 !important;
-          opacity: 0 !important;
-          pointer-events: none !important;
-          clip: rect(0, 0, 0, 0) !important;
-          margin: 0 !important;
-          padding: 0 !important;
-          border: none !important;
-        }
+    try {
+      // Only inject CSS if it doesn't already exist
+      if (!document.getElementById('google-translate-hide')) {
+        const style = document.createElement('style');
+        style.id = 'google-translate-hide';
+        style.textContent = `
+          /* Hide Google Translate Banner - CSS ONLY */
+          .goog-te-banner-frame,
+          .goog-te-banner-frame.skiptranslate,
+          .goog-te-gadget,
+          .goog-te-gadget .goog-te-combo,
+          .goog-te-menu-value,
+          .VIpgJd-ZVi9od-ORHb,
+          .VIpgJd-ZVi9od-ORHb-KE6vqe,
+          .goog-te-spinner-pos,
+          .goog-te-spinner-animation,
+          .goog-te-spinner,
+          .goog-te-spinner-img,
+          iframe[src*="translate.google.com"],
+          iframe[src*="translate.googleapis.com"],
+          div[class*="goog-te"],
+          div[class*="VIpgJd"],
+          div[id*="goog-te"],
+          table[class*="goog-te"],
+          table[class*="VIpgJd"],
+          [class*="goog-te"],
+          [id*="goog-te"],
+          [class*="VIpgJd"] {
+            display: none !important;
+            visibility: hidden !important;
+            height: 0 !important;
+            width: 0 !important;
+            overflow: hidden !important;
+            position: absolute !important;
+            top: -9999px !important;
+            left: -9999px !important;
+            z-index: -9999 !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
+            clip: rect(0, 0, 0, 0) !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            border: none !important;
+          }
 
-        /* Prevent body shift */
-        body {
-          top: 0px !important;
-          position: static !important;
+          /* Prevent body shift */
+          body {
+            top: 0px !important;
+            position: static !important;
+          }
+        `;
+        
+        // Safe DOM insertion
+        try {
+          document.head.appendChild(style);
+        } catch (error) {
+          console.warn('Error injecting CSS:', error);
         }
-      `;
-      document.head.appendChild(style);
+      }
+    } catch (error) {
+      console.warn('Error setting up Google Translate CSS:', error);
     }
     // NO CLEANUP FUNCTION - let the style stay in the DOM
   }, []);
 
   const setLanguage = (lang: Language) => {
-    setLanguageState(lang);
-    localStorage.setItem('language', lang);
-    
-    // Update HTML lang attribute
-    if (typeof document !== 'undefined') {
-      document.documentElement.lang = lang;
+    try {
+      setLanguageState(lang);
+      localStorage.setItem('language', lang);
       
-      // Use browser translation for Italian
-      if (lang === 'it') {
-        // Initialize Google Translate if not already done
-        if (!window.google?.translate?.TranslateElement) {
-          const script = document.createElement('script');
-          script.src = '//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
-          script.async = true;
-          document.head.appendChild(script);
-        }
+      // Update HTML lang attribute
+      if (typeof document !== 'undefined') {
+        document.documentElement.lang = lang;
         
-        // Initialize Google Translate
-        window.googleTranslateElementInit = () => {
-          try {
-            new window.google.translate.TranslateElement({
-              pageLanguage: 'en',
-              includedLanguages: 'it',
-              autoDisplay: false,
-              layout: window.google.translate.TranslateElement.InlineLayout.SIMPLE,
-            }, 'google_translate_element');
-            
-            // Trigger translation to Italian after a short delay
-            setTimeout(() => {
-              const select = document.querySelector('.goog-te-combo') as HTMLSelectElement;
-              if (select) {
-                select.value = 'it';
-                select.dispatchEvent(new Event('change'));
-              }
-            }, 1500);
-          } catch (error) {
-            console.error('Google Translate initialization error:', error);
+        // Use browser translation for Italian
+        if (lang === 'it') {
+          // Initialize Google Translate if not already done
+          if (!window.google?.translate?.TranslateElement) {
+            try {
+              const script = document.createElement('script');
+              script.src = '//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
+              script.async = true;
+              document.head.appendChild(script);
+            } catch (error) {
+              console.warn('Error loading Google Translate script:', error);
+            }
           }
-        };
-      } else {
-        // Reset to English - CSS ONLY APPROACH
-        try {
-          // Clear the translate element
-          const translateElement = document.getElementById('google_translate_element');
-          if (translateElement) {
-            translateElement.innerHTML = '';
-          }
-
-          // Reset body styles that Google Translate might have added
-          if (document.body) {
-            document.body.style.top = '';
-            document.body.style.position = '';
-          }
-
-          // Reset HTML lang attribute
-          document.documentElement.lang = 'en';
           
-        } catch (error) {
-          console.error('Error resetting Google Translate:', error);
+          // Initialize Google Translate
+          window.googleTranslateElementInit = () => {
+            try {
+              new window.google.translate.TranslateElement({
+                pageLanguage: 'en',
+                includedLanguages: 'it',
+                autoDisplay: false,
+                layout: window.google.translate.TranslateElement.InlineLayout.SIMPLE,
+              }, 'google_translate_element');
+              
+              // Trigger translation to Italian after a short delay
+              setTimeout(() => {
+                try {
+                  const select = document.querySelector('.goog-te-combo') as HTMLSelectElement;
+                  if (select) {
+                    select.value = 'it';
+                    select.dispatchEvent(new Event('change'));
+                  }
+                } catch (error) {
+                  console.warn('Error triggering translation:', error);
+                }
+              }, 1500);
+            } catch (error) {
+              console.warn('Google Translate initialization error:', error);
+            }
+          };
+        } else {
+          // Reset to English - CSS ONLY APPROACH
+          try {
+            // Clear the translate element
+            const translateElement = document.getElementById('google_translate_element');
+            if (translateElement) {
+              translateElement.innerHTML = '';
+            }
+
+            // Reset body styles that Google Translate might have added
+            if (document.body) {
+              document.body.style.top = '';
+              document.body.style.position = '';
+            }
+
+            // Reset HTML lang attribute
+            document.documentElement.lang = 'en';
+            
+          } catch (error) {
+            console.warn('Error resetting Google Translate:', error);
+          }
         }
       }
+    } catch (error) {
+      console.warn('Error in setLanguage:', error);
     }
   };
 
