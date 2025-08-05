@@ -144,7 +144,7 @@ const FeaturedAuctionsSection = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {auctionItems.map(car => (
                  <div key={car.id} className="relative group">
-                    <CarCard {...car} />
+                    <CarCard {...car} id={String(car.id)} />
                     <div className="absolute top-4 right-4 bg-background/80 backdrop-blur-sm text-foreground px-3 py-1.5 rounded-full flex items-center gap-2 text-sm font-semibold">
                         <Clock className="w-4 h-4 text-primary" />
                         <span>{car.location}</span>
