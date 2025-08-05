@@ -438,12 +438,12 @@ export default function AdvertisePage() {
         contactName: data.contactName,
         contactEmail: data.contactEmail,
         imageUrls,
-        status: "pending",
+        status: "approved",
         submittedAt: new Date(),
         uploadedByUserId: currentUser?.uid || null,
         uploadedByUserEmail: currentUser?.email || null,
       });
-      router.push("/partners/dashboard");
+      router.push("/advertise/my-ads");
     } catch (error) {
       console.error("Error submitting ad:", error);
       alert("Error submitting ad. Please check your connection and try again.");
@@ -904,12 +904,12 @@ function CarPartsAccessoriesForm({ isSubmitting, setIsSubmitting, images, setIma
         contactName: data.contactName,
         contactEmail: data.contactEmail,
         imageUrls,
-        status: "pending",
+        status: "approved",
         submittedAt: new Date(),
         uploadedByUserId: currentUser?.uid || null,
         uploadedByUserEmail: currentUser?.email || null,
       });
-      router.push("/partners/dashboard");
+      router.push("/advertise/my-ads");
     } catch (error) {
       console.error("Error submitting ad:", error);
       alert("Error submitting ad. Please check your connection and try again.");
@@ -1048,12 +1048,12 @@ function CarTransportLogisticsForm({ isSubmitting, setIsSubmitting, images, setI
         contactName: data.contactName,
         contactEmail: data.contactEmail,
         imageUrls,
-        status: "pending",
+        status: "approved",
         submittedAt: new Date(),
         uploadedByUserId: currentUser?.uid || null,
         uploadedByUserEmail: currentUser?.email || null,
       });
-      router.push("/partners/dashboard");
+      router.push("/advertise/my-ads");
     } catch (error) {
       console.error("Error submitting ad:", error);
       alert("Error submitting ad. Please check your connection and try again.");
@@ -1186,12 +1186,12 @@ function CarDetailingWrappingForm({ isSubmitting, setIsSubmitting, images, setIm
         contactName: data.contactName,
         contactEmail: data.contactEmail,
         imageUrls,
-        status: "pending",
+        status: "approved",
         submittedAt: new Date(),
         uploadedByUserId: currentUser?.uid || null,
         uploadedByUserEmail: currentUser?.email || null,
       });
-      router.push("/partners/dashboard");
+      router.push("/advertise/my-ads");
     } catch (error) {
       console.error("Error submitting ad:", error);
       alert("Error submitting ad. Please check your connection and try again.");
@@ -1320,12 +1320,12 @@ function RestorationCustomShopsForm({ isSubmitting, setIsSubmitting, images, set
         contactName: data.contactName,
         contactEmail: data.contactEmail,
         imageUrls,
-        status: "pending",
+        status: "approved",
         submittedAt: new Date(),
         uploadedByUserId: currentUser?.uid || null,
         uploadedByUserEmail: currentUser?.email || null,
       });
-      router.push("/partners/dashboard");
+      router.push("/advertise/my-ads");
     } catch (error) {
       console.error("Error submitting ad:", error);
       alert("Error submitting ad. Please check your connection and try again.");
@@ -1459,12 +1459,12 @@ function ClassicCarInsuranceForm({ isSubmitting, setIsSubmitting, images, setIma
         contactName: data.contactName,
         contactEmail: data.contactEmail,
         imageUrls,
-        status: "pending",
+        status: "approved",
         submittedAt: new Date(),
         uploadedByUserId: currentUser?.uid || null,
         uploadedByUserEmail: currentUser?.email || null,
       });
-      router.push("/partners/dashboard");
+      router.push("/advertise/my-ads");
     } catch (error) {
       console.error("Error submitting ad:", error);
       alert("Error submitting ad. Please check your connection and try again.");
@@ -1598,12 +1598,12 @@ function DrivingExperiencesForm({ isSubmitting, setIsSubmitting, images, setImag
         contactName: data.contactName,
         contactEmail: data.contactEmail,
         imageUrls,
-        status: "pending",
+        status: "approved",
         submittedAt: new Date(),
         uploadedByUserId: currentUser?.uid || null,
         uploadedByUserEmail: currentUser?.email || null,
       });
-      router.push("/partners/dashboard");
+      router.push("/advertise/my-ads");
     } catch (error) {
       console.error("Error submitting ad:", error);
       alert("Error submitting ad. Please check your connection and try again.");
@@ -1737,12 +1737,12 @@ function FinanceLeasingStorageForm({ isSubmitting, setIsSubmitting, images, setI
         contactName: data.contactName,
         contactEmail: data.contactEmail,
         imageUrls,
-        status: "pending",
+        status: "approved",
         submittedAt: new Date(),
         uploadedByUserId: currentUser?.uid || null,
         uploadedByUserEmail: currentUser?.email || null,
       });
-      router.push("/partners/dashboard");
+      router.push("/advertise/my-ads");
     } catch (error) {
       console.error("Error submitting ad:", error);
       alert("Error submitting ad. Please check your connection and try again.");
@@ -1882,12 +1882,12 @@ function WebshiteForm({ isSubmitting, setIsSubmitting, images, setImages, imageP
         contactName: data.contactName,
         contactEmail: data.contactEmail,
         imageUrls,
-        status: "pending",
+        status: "approved",
         submittedAt: new Date(),
         uploadedByUserId: currentUser?.uid || null,
         uploadedByUserEmail: currentUser?.email || null,
       });
-      router.push("/partners/dashboard");
+      router.push("/advertise/my-ads");
     } catch (error) {
       console.error("Error submitting ad:", error);
       alert("Error submitting ad. Please check your connection and try again.");
@@ -2022,12 +2022,12 @@ function GeneralBusinessForm({ isSubmitting, setIsSubmitting, images, setImages,
         contactName: data.contactName,
         contactEmail: data.contactEmail,
         imageUrls,
-        status: "pending",
+        status: "approved",
         submittedAt: new Date(),
         uploadedByUserId: currentUser?.uid || null,
         uploadedByUserEmail: currentUser?.email || null,
       });
-      router.push("/partners/dashboard");
+      router.push("/advertise/my-ads");
     } catch (error) {
       console.error("Error submitting ad:", error);
       alert("Error submitting ad. Please check your connection and try again.");

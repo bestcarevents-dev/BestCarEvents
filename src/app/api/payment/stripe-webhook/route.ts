@@ -69,6 +69,30 @@ export async function POST(req: NextRequest) {
           standardNewsletterRemaining: increment(12),
         };
         break;
+      case 'Gold Partner':
+        update = {
+          partnerGoldPackage: increment(1),
+          categoryBannerRemaining: increment(2),
+          homepageBannerRemaining: increment(1),
+          featuredListingRemaining: increment(1),
+          premiumNewsletterRemaining: increment(12),
+          goldPartner: true,
+          partnerStart: new Date(),
+          partnerEnd: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000), // 1 year from now
+        };
+        break;
+      // Partner packages
+      case 'Silver Partner':
+        update = {
+          partnerSilverPackage: increment(1),
+          categoryBannerRemaining: increment(2),
+          featuredListingRemaining: increment(1),
+          standardNewsletterRemaining: increment(12),
+          silverPartner: true,
+          partnerStart: new Date(),
+          partnerEnd: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000), // 1 year from now
+        };
+        break;
       // Car listing purchases
       case 'Basic Listing':
         update = { cars_basicListing: increment(1) };

@@ -4,6 +4,7 @@ import { Toaster } from "@/components/ui/toaster";
 import Header from '@/components/layout/header';
 import Footer from '@/components/layout/footer';
 import GlobalNewsletterProvider from '@/components/GlobalNewsletterProvider';
+import { LanguageProvider } from '@/contexts/LanguageContext';
 import { cn } from '@/lib/utils';
 import { Poppins, PT_Sans } from 'next/font/google';
 
@@ -37,12 +38,14 @@ export default function RootLayout({
         fontHeadline.variable,
         fontBody.variable
       )}>
-        <GlobalNewsletterProvider>
-          <Header />
-          <main className="flex-1 pt-24">{children}</main>
-          <Footer />
-          <Toaster />
-        </GlobalNewsletterProvider>
+        <LanguageProvider>
+          <GlobalNewsletterProvider>
+            <Header />
+            <main className="flex-1 pt-24">{children}</main>
+            <Footer />
+            <Toaster />
+          </GlobalNewsletterProvider>
+        </LanguageProvider>
       </body>
     </html>
   );

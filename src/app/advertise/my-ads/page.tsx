@@ -5,7 +5,7 @@ import { getFirestore, collection, getDocs, query, where, doc, updateDoc, getDoc
 import { app } from "@/lib/firebase";
 import { useRouter } from "next/navigation";
 import { getAuth } from "firebase/auth";
-import { AlertTriangle, Info } from "lucide-react";
+import { AlertTriangle, Info, CheckCircle } from "lucide-react";
 import {
   Select,
   SelectTrigger,
@@ -30,8 +30,7 @@ const PAGE_OPTIONS = [
   "Cars for sale",
   "Auctions",
   "Car Hotels",
-  "Car clubs",
-  "Home page"
+  "Car clubs"
 ];
 
 const BANNER_PRICES = {
@@ -114,6 +113,94 @@ export default function MyAdsPage() {
       window.history.replaceState({}, document.title, window.location.pathname);
     }
   }, [toast]);
+
+  // Credit validation function
+  const validateCredits = (adType: 'homepage' | 'category') => {
+    if (!userDoc) return false;
+    
+    if (adType === 'homepage') {
+      return (userDoc.homepageBannerRemaining || 0) > 0;
+    } else {
+      return (userDoc.categoryBannerRemaining || 0) > 0;
+    }
+  };
+
+  // Ad validation function
+  const validateAd = (ad: any) => {
+    if (!ad.title && !ad.productName && !ad.type) return false;
+    if (!ad.description) return false;
+    if (!ad.imageUrls || ad.imageUrls.length === 0) return false;
+    return true;
+  };
+
+  // Handle ad type selection
+  const handleAdTypeSelection = async (ad: any, adType: 'homepage' | 'category') => {
+    if (!validateAd(ad)) {
+      toast({
+        title: "Ad Validation Failed",
+        description: "Please ensure your ad has a title, description, and at least one image.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    if (!validateCredits(adType)) {
+      toast({
+        title: "Insufficient Credits",
+        description: `You don't have enough ${adType === 'homepage' ? 'homepage' : 'category'} banner credits. Please purchase more credits.`,
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    try {
+      const db = getFirestore(app);
+      
+      // Update the ad with banner type and isHomepage
+      await updateDoc(doc(db, "partnerAds", ad.id), { 
+        bannerType: adType,
+        isHomepage: adType === 'homepage'
+      });
+      
+      // Decrease the user's credits
+      if (adType === 'homepage') {
+        await updateDoc(doc(db, "users", currentUser!.uid), {
+          homepageBannerRemaining: (userDoc?.homepageBannerRemaining || 0) - 1
+        });
+        setUserDoc((prev: any) => prev ? {
+          ...prev,
+          homepageBannerRemaining: (prev.homepageBannerRemaining || 0) - 1
+        } : null);
+      } else {
+        await updateDoc(doc(db, "users", currentUser!.uid), {
+          categoryBannerRemaining: (userDoc?.categoryBannerRemaining || 0) - 1
+        });
+        setUserDoc((prev: any) => prev ? {
+          ...prev,
+          categoryBannerRemaining: (prev.categoryBannerRemaining || 0) - 1
+        } : null);
+      }
+      
+      // Update local state
+      setAds(prev => prev.map(a => a.id === ad.id ? { 
+        ...a, 
+        bannerType: adType,
+        isHomepage: adType === 'homepage'
+      } : a));
+      
+      toast({
+        title: "Ad Type Selected",
+        description: `${adType === 'homepage' ? 'Homepage' : 'Category'} Banner Ad type has been set for this ad.`,
+      });
+    } catch (error) {
+      console.error('Error updating ad type:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update ad type. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
 
   // Payment handlers
   const handleBannerPayment = async () => {
@@ -591,31 +678,92 @@ export default function MyAdsPage() {
                       <img src={ad.imageUrls[0]} alt="Ad" className="w-full h-32 object-cover rounded mt-2" />
                     )}
                   </div>
+                  
+                  {/* Ad Type Selection */}
                   <div className="mt-2">
-                    <label className="block text-xs font-semibold mb-1">Show this ad on:</label>
-                    <Select
-                      value={ad.page || ""}
-                      onValueChange={async (newPage) => {
-                        const db = getFirestore(app);
-                        await updateDoc(doc(db, "partnerAds", ad.id), { page: newPage });
-                        setAds(prev => prev.map(a => a.id === ad.id ? { ...a, page: newPage } : a));
-                      }}
-                    >
-                      <SelectTrigger className="w-full bg-background border-muted">
-                        <SelectValue placeholder="-- Select Page --" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {PAGE_OPTIONS.map(opt => (
-                          <SelectItem key={opt} value={opt}>{opt}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    {!ad.page && (
-                      <div className="flex items-center gap-2 text-xs text-destructive mt-2 bg-destructive/10 rounded px-2 py-1">
-                        <AlertTriangle className="w-4 h-4" /> No page selected
+                    <label className="block text-xs font-semibold mb-1">Ad Type:</label>
+                    {!ad.bannerType ? (
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="radio"
+                            id={`category-${ad.id}`}
+                            name={`banner-type-${ad.id}`}
+                            value="category"
+                            disabled={!validateAd(ad) || !validateCredits('category')}
+                            onChange={async () => {
+                              await handleAdTypeSelection(ad, 'category');
+                            }}
+                          />
+                          <Label htmlFor={`category-${ad.id}`} className="text-sm">Category Banner Ad</Label>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="radio"
+                            id={`homepage-${ad.id}`}
+                            name={`banner-type-${ad.id}`}
+                            value="homepage"
+                            disabled={!validateAd(ad) || !validateCredits('homepage')}
+                            onChange={async () => {
+                              await handleAdTypeSelection(ad, 'homepage');
+                            }}
+                          />
+                          <Label htmlFor={`homepage-${ad.id}`} className="text-sm">Homepage Banner Ad</Label>
+                        </div>
+                        {!validateAd(ad) && (
+                          <div className="flex items-center gap-2 text-xs text-destructive mt-2 bg-destructive/10 rounded px-2 py-1">
+                            <AlertTriangle className="w-4 h-4" /> Ad validation failed - missing required fields
+                          </div>
+                        )}
+                        {validateAd(ad) && !validateCredits('category') && !validateCredits('homepage') && (
+                          <div className="flex items-center gap-2 text-xs text-destructive mt-2 bg-destructive/10 rounded px-2 py-1">
+                            <AlertTriangle className="w-4 h-4" /> Insufficient credits - please purchase more banner credits
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-2 text-sm">
+                        <CheckCircle className="w-4 h-4 text-green-500" />
+                        <span className="font-medium">
+                          {ad.bannerType === 'homepage' ? 'Homepage Banner Ad' : 'Category Banner Ad'}
+                        </span>
+                        {ad.bannerType === 'homepage' && (
+                          <span className="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded">
+                            Also showing on homepage
+                          </span>
+                        )}
                       </div>
                     )}
                   </div>
+                  
+                  {/* Show this ad on - only show if ad type is selected */}
+                  {ad.bannerType && (
+                    <div className="mt-2">
+                      <label className="block text-xs font-semibold mb-1">Show this ad on category:</label>
+                      <Select
+                        value={ad.page || ""}
+                        onValueChange={async (newPage) => {
+                          const db = getFirestore(app);
+                          await updateDoc(doc(db, "partnerAds", ad.id), { page: newPage });
+                          setAds(prev => prev.map(a => a.id === ad.id ? { ...a, page: newPage } : a));
+                        }}
+                      >
+                        <SelectTrigger className="w-full bg-background border-muted">
+                          <SelectValue placeholder="-- Select Page --" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {PAGE_OPTIONS.map(opt => (
+                            <SelectItem key={opt} value={opt}>{opt}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      {!ad.page && (
+                        <div className="flex items-center gap-2 text-xs text-destructive mt-2 bg-destructive/10 rounded px-2 py-1">
+                          <AlertTriangle className="w-4 h-4" /> No page selected
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               ))}
             </div>

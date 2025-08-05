@@ -24,6 +24,7 @@ import { getAuth, onAuthStateChanged, signOut, type User } from "firebase/auth";
 import { app } from "@/lib/firebase";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const navLinks = [
   { href: "/events", label: "Events" },
@@ -108,59 +109,49 @@ const AuthButtons = ({ inMobileNav = false, user, onMobileMenuClose }: { inMobil
             </div>
           </div>
           
-          <div className="w-full space-y-3">
-            <Link 
-              href="/advertise/my-ads" 
-              className="flex items-center gap-4 w-full px-4 py-3 text-base text-gray-900 hover:text-white hover:bg-orange-600 rounded-lg transition-all duration-200 border border-gray-300 bg-white shadow-sm font-medium"
-              onClick={onMobileMenuClose}
-            >
-              <Car className="w-5 h-5 text-orange-600" />
-              My Ads
-            </Link>
-
-
-            <Link 
-              href="/advertise/advertise" 
-              className="flex items-center gap-4 w-full px-4 py-3 text-base text-gray-900 hover:text-white hover:bg-orange-600 rounded-lg transition-all duration-200 border border-gray-300 bg-white shadow-sm font-medium"
-              onClick={onMobileMenuClose}
-            >
-              <Car className="w-5 h-5 text-orange-600" />
-              Advertise
-            </Link>
-
-            <Link 
-              href="/advertise/newsletter-mentions" 
-              className="flex items-center gap-4 w-full px-4 py-3 text-base text-gray-900 hover:text-white hover:bg-orange-600 rounded-lg transition-all duration-200 border border-gray-300 bg-white shadow-sm font-medium"
-              onClick={onMobileMenuClose}
-            >
-              <Car className="w-5 h-5 text-orange-600" />
-              Newsletter Mentions
-            </Link>
-            
-            
-            <Link 
-              href="/advertise/dashboard" 
-              className="flex items-center gap-4 w-full px-4 py-3 text-base text-gray-900 hover:text-white hover:bg-orange-600 rounded-lg transition-all duration-200 border border-gray-300 bg-white shadow-sm font-medium"
-              onClick={onMobileMenuClose}
-            >
-              <LayoutDashboard className="w-5 h-5 text-orange-600" />
-              Dashboard
-            </Link>
+          {/* Mobile Account Section */}
+          <div className="w-full">
+            <div className="text-lg font-bold text-gray-900 mb-4 pb-2 border-b-2 border-orange-500">Account</div>
+            <div className="space-y-3 pl-2">
+              <Link 
+                href="/advertise/dashboard" 
+                className="flex items-center gap-4 w-full px-4 py-3 text-base text-gray-900 hover:text-white hover:bg-orange-600 rounded-lg transition-all duration-200 border border-gray-300 bg-white shadow-sm font-medium"
+                onClick={onMobileMenuClose}
+              >
+                <LayoutDashboard className="w-5 h-5 text-orange-600" />
+                <span className="font-medium">Dashboard</span>
+              </Link>
+              <Link 
+                href="/advertise/my-ads" 
+                className="flex items-center gap-4 w-full px-4 py-3 text-base text-gray-900 hover:text-white hover:bg-orange-600 rounded-lg transition-all duration-200 border border-gray-300 bg-white shadow-sm font-medium"
+                onClick={onMobileMenuClose}
+              >
+                <UserIcon className="w-5 h-5 text-orange-600" />
+                <span className="font-medium">My Ads</span>
+              </Link>
+              <Link 
+                href="/advertise/settings" 
+                className="flex items-center gap-4 w-full px-4 py-3 text-base text-gray-900 hover:text-white hover:bg-orange-600 rounded-lg transition-all duration-200 border border-gray-300 bg-white shadow-sm font-medium"
+                onClick={onMobileMenuClose}
+              >
+                <Settings className="w-5 h-5 text-orange-600" />
+                <span className="font-medium">Settings</span>
+              </Link>
+            </div>
           </div>
           
-          <div className="w-full pt-4 border-t-2 border-gray-300">
-            <Button 
-              onClick={handleLogout} 
-              variant="outline" 
-              className="w-full justify-center py-3 text-base font-medium border-red-500 text-red-700 hover:bg-red-600 hover:text-white hover:border-red-600 bg-white"
-            >
-              <LogOut className="w-5 h-5 mr-2" />
+          {/* Logout Button */}
+          <button 
+            onClick={handleLogout}
+            className="w-full justify-center py-3 text-base font-medium border-red-500 text-red-700 hover:bg-red-600 hover:text-white hover:border-red-600 bg-white"
+          >
+            <LogOut className="w-5 h-5 mr-2" />
             Logout
-          </Button>
-          </div>
+          </button>
         </div>
       );
     }
+
     // Desktop: show dropdown with nested submenu
     return (
       <DropdownMenu>
@@ -172,100 +163,92 @@ const AuthButtons = ({ inMobileNav = false, user, onMobileMenuClose }: { inMobil
           </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-56 mt-2 bg-white/95 backdrop-blur-sm border border-white/20 shadow-xl">
-        
-          
-          {/* My Listings Submenu */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <DropdownMenuItem className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-orange-50 hover:text-orange-700 transition-colors duration-200 cursor-pointer">
-              <Car className="w-4 h-4" />
-              My Listings
-                <ChevronDown className="w-4 h-4 ml-auto" />
-              </DropdownMenuItem>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="bg-white/95 backdrop-blur-sm border border-white/20 shadow-xl min-w-[200px] ml-2">
-              <DropdownMenuItem asChild className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-orange-50 hover:text-orange-700 transition-colors duration-200">
-                <Link href="/advertise/cars-listing" className="flex items-center gap-3 w-full">
-                  <Car className="w-4 h-4" />
-                  Cars Listing
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-orange-50 hover:text-orange-700 transition-colors duration-200">
-                <Link href="/advertise/events-listing" className="flex items-center gap-3 w-full">
-                  <Calendar className="w-4 h-4" />
-                  Events Listing
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-orange-50 hover:text-orange-700 transition-colors duration-200">
-                <Link href="/advertise/auctions-listing" className="flex items-center gap-3 w-full">
-                  <Gavel className="w-4 h-4" />
-                  Auction Listing
-            </Link>
+          <DropdownMenuItem className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-orange-50 hover:text-orange-700 transition-colors duration-200 cursor-pointer">
+            <span className="text-sm font-medium">My Listings</span>
           </DropdownMenuItem>
-          <DropdownMenuItem asChild className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-orange-50 hover:text-orange-700 transition-colors duration-200">
-                <Link href="/advertise/club-listing" className="flex items-center gap-3 w-full">
-                  <Users className="w-4 h-4" />
-                  Club Listing
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem asChild className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-orange-50 hover:text-orange-700 transition-colors duration-200">
-                <Link href="/advertise/others-listing" className="flex items-center gap-3 w-full">
-                  <Settings className="w-4 h-4" />
-                  Others Listing
-            </Link>
-          </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-
-          <DropdownMenuSeparator className="bg-gray-200" />
+          <DropdownMenuSeparator />
+          <DropdownMenuContent className="bg-white/95 backdrop-blur-sm border border-white/20 shadow-xl min-w-[200px] ml-2">
+            <DropdownMenuItem asChild className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-orange-50 hover:text-orange-700 transition-colors duration-200">
+              <Link href="/advertise/cars-listing" className="flex items-center gap-3 w-full">
+                <Car className="w-4 h-4" />
+                <span>Cars Listing</span>
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-orange-50 hover:text-orange-700 transition-colors duration-200">
+              <Link href="/advertise/events-listing" className="flex items-center gap-3 w-full">
+                <Calendar className="w-4 h-4" />
+                <span>Events Listing</span>
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-orange-50 hover:text-orange-700 transition-colors duration-200">
+              <Link href="/advertise/auctions-listing" className="flex items-center gap-3 w-full">
+                <Gavel className="w-4 h-4" />
+                <span>Auction Listing</span>
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-orange-50 hover:text-orange-700 transition-colors duration-200">
+              <Link href="/advertise/club-listing" className="flex items-center gap-3 w-full">
+                <Users className="w-4 h-4" />
+                <span>Club Listing</span>
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-orange-50 hover:text-orange-700 transition-colors duration-200">
+              <Link href="/advertise/others-listing" className="flex items-center gap-3 w-full">
+                <Settings className="w-4 h-4" />
+                <span>Others Listing</span>
+              </Link>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+          <DropdownMenuSeparator />
           <DropdownMenuItem asChild className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-orange-50 hover:text-orange-700 transition-colors duration-200">
             <Link href="/advertise/advertise" className="flex items-center gap-3 w-full">
-              <Car className="w-4 h-4" />
-              Advertise
+              <UserIcon className="w-4 h-4" />
+              <span>Advertise</span>
             </Link>
           </DropdownMenuItem>
-
-          <DropdownMenuSeparator className="bg-gray-200" />
           <DropdownMenuItem asChild className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-orange-50 hover:text-orange-700 transition-colors duration-200">
             <Link href="/advertise/my-ads" className="flex items-center gap-3 w-full">
-              <Car className="w-4 h-4" />
-              My Ads
+              <UserIcon className="w-4 h-4" />
+              <span>My Ads</span>
             </Link>
           </DropdownMenuItem>
-        
-
-
-          <DropdownMenuSeparator className="bg-gray-200" />
+          <DropdownMenuSeparator />
           <DropdownMenuItem asChild className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-orange-50 hover:text-orange-700 transition-colors duration-200">
-            <Link href="/advertise/newsletter-mentions" className="flex items-center gap-3 w-full">
-              <LayoutDashboard className="w-4 h-4" />
-              Newsletter Mentions
+            <Link href="/advertise/settings" className="flex items-center gap-3 w-full">
+              <Settings className="w-4 h-4" />
+              <span>Settings</span>
             </Link>
           </DropdownMenuItem>
-          
-          <DropdownMenuSeparator className="bg-gray-200" />
-          <DropdownMenuItem asChild className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-orange-50 hover:text-orange-700 transition-colors duration-200">
-            <Link href="/advertise/dashboard" className="flex items-center gap-3 w-full">
-              <LayoutDashboard className="w-4 h-4" />
-              Dashboard
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuSeparator className="bg-gray-200" />
+          <DropdownMenuSeparator />
           <DropdownMenuItem 
             onClick={handleLogout}
-            className="flex items-center gap-3 px-4 py-3 text-red-600 hover:bg-red-50 hover:text-red-700 transition-colors duration-200"
+            className="flex items-center gap-3 px-4 py-3 text-red-600 hover:bg-red-50 hover:text-red-700 transition-colors duration-200 cursor-pointer"
           >
             <LogOut className="w-4 h-4" />
-            Logout
+            <span>Logout</span>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     );
   }
 
+  // Not logged in
+  if (inMobileNav) {
+    return (
+      <div className="flex flex-col gap-4 w-full">
+        <Button asChild className="w-full">
+          <Link href="/login">Login</Link>
+        </Button>
+        <Button asChild className="w-full lg:w-auto">
+          <Link href="/register">Register</Link>
+        </Button>
+      </div>
+    );
+  }
+
   return (
-    <div className={cn("flex items-center", inMobileNav ? "flex-col w-full gap-4" : "flex-row gap-2")}> 
-      <Button asChild variant={inMobileNav ? "outline" : "ghost"} className="w-full lg:w-auto justify-center">
+    <div className="flex items-center gap-2">
+      <Button asChild variant="ghost" className="text-white hover:text-orange-300 hover:bg-white/10">
         <Link href="/login">Login</Link>
       </Button>
       <Button asChild className="w-full lg:w-auto">
@@ -275,59 +258,46 @@ const AuthButtons = ({ inMobileNav = false, user, onMobileMenuClose }: { inMobil
   );
 };
 
-const NavMenu = ({ onLinkClick }: { onLinkClick?: () => void }) => (
-    <nav className="flex flex-col lg:flex-row items-center gap-6 lg:gap-8 text-lg lg:text-sm font-medium">
-        {/* Events Link */}
+const NavMenu = ({ onLinkClick }: { onLinkClick?: () => void }) => {
+  return (
+    <nav className="flex items-center gap-6">
+      {navLinks.map((link) => (
         <Link
-            href="/events"
-            className="transition-colors hover:text-primary w-full lg:w-auto text-center lg:text-left"
-            onClick={onLinkClick}
+          key={link.href}
+          href={link.href}
+          className="text-white hover:text-orange-300 transition-colors duration-200 font-medium"
+          onClick={onLinkClick}
         >
-            Events
+          {link.label}
         </Link>
-        
-        {/* Automotive Dropdown */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <button className="flex items-center gap-1 transition-colors hover:text-primary w-full lg:w-auto text-center lg:text-left">
-              <span>Cars</span>
-              <ChevronDown className="w-4 h-4" />
-            </button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="center" className="w-48">
-            {automotiveLinks.map((link) => (
-              <DropdownMenuItem key={link.href} asChild>
-                <Link
-                  href={link.href}
-                  className="w-full"
-                  onClick={onLinkClick}
-                >
-                  {link.label}
-                </Link>
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
-        
-        {/* Remaining Links */}
-        {navLinks.slice(1).map((link) => (
-        <Link
-            key={link.href}
-            href={link.href}
-            className="transition-colors hover:text-primary w-full lg:w-auto text-center lg:text-left"
-            onClick={onLinkClick}
-        >
-            {link.label}
-        </Link>
-        ))}
-  </nav>
-);
-
+      ))}
+      
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <button className="flex items-center gap-1 text-white hover:text-orange-300 transition-colors duration-200 font-medium">
+            Automotive
+            <ChevronDown className="w-4 h-4" />
+          </button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-48">
+          {automotiveLinks.map((link) => (
+            <DropdownMenuItem key={link.href} asChild>
+              <Link href={link.href} onClick={onLinkClick}>
+                {link.label}
+              </Link>
+            </DropdownMenuItem>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </nav>
+  );
+};
 
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null);
+  const { language, setLanguage } = useLanguage();
   const auth = getAuth(app);
 
   useEffect(() => {
@@ -373,12 +343,28 @@ export default function Header() {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button className="flex items-center gap-1 px-2 py-1 rounded hover:bg-muted/20 focus:outline-none">
-                  <Image src={FLAG_UK} alt="English (UK)" width={24} height={16} className="rounded shadow" />
+                  <Image 
+                    src={language === 'it' ? FLAG_IT : FLAG_UK} 
+                    alt={language === 'it' ? "Italiano" : "English (UK)"} 
+                    width={24} 
+                    height={16} 
+                    className="rounded shadow" 
+                  />
                   <ChevronDown className="w-4 h-4 ml-1 text-white" />
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem className="flex items-center gap-2">
+                <DropdownMenuItem 
+                  className="flex items-center gap-2"
+                  onClick={() => setLanguage('en')}
+                >
+                  <Image src={FLAG_UK} alt="English (UK)" width={24} height={16} className="rounded shadow" />
+                  English
+                </DropdownMenuItem>
+                <DropdownMenuItem 
+                  className="flex items-center gap-2"
+                  onClick={() => setLanguage('it')}
+                >
                   <Image src={FLAG_IT} alt="Italiano" width={24} height={16} className="rounded shadow" />
                   Italiano
                 </DropdownMenuItem>

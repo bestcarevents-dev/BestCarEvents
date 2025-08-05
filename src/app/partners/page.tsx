@@ -47,7 +47,7 @@ export default function PartnersPage() {
               </p>
             </div>
             <Button size="lg" asChild>
-              <Link href="/partners/submit">Become a Partner</Link>
+              <Link href="/partners/become-a-partner">Become a Partner</Link>
             </Button>
           </div>
 

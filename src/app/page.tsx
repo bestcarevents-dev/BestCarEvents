@@ -1,3 +1,5 @@
+"use client";
+
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, BadgeCheck, Trophy, Group, Clock } from 'lucide-react';
@@ -8,7 +10,8 @@ import CarCard from '@/components/car-card';
 import { Card } from '@/components/ui/card';
 import NewsletterSubscribe from '@/components/NewsletterSubscribe';
 
-const ValueProposition = () => (
+const ValueProposition = () => {
+  return (
     <div className="bg-white">
         <div className="container mx-auto px-4 py-20">
              <div className="text-center max-w-3xl mx-auto mb-16">
@@ -40,7 +43,8 @@ const ValueProposition = () => (
             </div>
         </div>
     </div>
-);
+  );
+};
 
 const FeaturedCarsSection = () => {
     const featuredCars = [
@@ -91,7 +95,6 @@ const FeaturedCarsSection = () => {
         </section>
     );
 };
-
 
 const FeaturedEventsSection = () => {
   const featuredEvents = [
@@ -160,7 +163,6 @@ const FeaturedAuctionsSection = () => {
     </section>
   );
 };
-
 
 export default function Home() {
   return (

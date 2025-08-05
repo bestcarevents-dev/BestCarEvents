@@ -113,12 +113,12 @@ export default function PartnerSubmitPage() {
         description: data.description,
         logoUrl,
         paymentMethod: data.paymentMethod,
-        status: "pending",
+        status: "approved",
         submittedAt: new Date(),
         uploadedByUserId: currentUser?.uid || null,
         uploadedByUserEmail: currentUser?.email || null,
       });
-      router.push("/partners/submission-success");
+      router.push("/advertise/my-ads");
     } catch (error) {
       console.error("Error submitting partner:", error);
       setIsSubmitting(false);
