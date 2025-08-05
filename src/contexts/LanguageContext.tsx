@@ -16,7 +16,61 @@ const LanguageContext = createContext<TranslationContextType | undefined>(undefi
 export function LanguageProvider({ children }: { children: ReactNode }) {
   const [language, setLanguageState] = useState<Language>('en');
   const [isLoading, setIsLoading] = useState(false);
+  const [isNavigating, setIsNavigating] = useState(false);
   const pathname = usePathname();
+
+  // Global error handler to catch and suppress removeChild errors from Google Translate
+  useEffect(() => {
+    const originalErrorHandler = window.onerror;
+    
+    window.onerror = function(message, source, lineno, colno, error) {
+      // Check if this is a removeChild error (likely from Google Translate)
+      if (typeof message === 'string' && message.includes('removeChild')) {
+        console.warn('Suppressed removeChild error (likely from Google Translate):', message);
+        return true; // Prevent the error from being thrown
+      }
+      
+      // For all other errors, use the original handler
+      if (originalErrorHandler) {
+        return originalErrorHandler(message, source, lineno, colno, error);
+      }
+      return false;
+    };
+
+    // Also catch unhandled promise rejections
+    const originalUnhandledRejectionHandler = window.onunhandledrejection;
+    
+    window.onunhandledrejection = function(event) {
+      if (event.reason && typeof event.reason === 'string' && event.reason.includes('removeChild')) {
+        console.warn('Suppressed removeChild promise rejection:', event.reason);
+        event.preventDefault(); // Prevent the error from being thrown
+        return;
+      }
+      
+      if (originalUnhandledRejectionHandler) {
+        originalUnhandledRejectionHandler(event);
+      }
+    };
+
+    return () => {
+      window.onerror = originalErrorHandler;
+      window.onunhandledrejection = originalUnhandledRejectionHandler;
+    };
+  }, []);
+
+  // Handle navigation - prevent Google Translate from loading during navigation
+  useEffect(() => {
+    setIsNavigating(true);
+    
+    // Reset navigation flag after a short delay
+    const timeoutId = setTimeout(() => {
+      setIsNavigating(false);
+    }, 1000);
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, [pathname]);
 
   // Load language preference from localStorage on mount
   useEffect(() => {
@@ -91,62 +145,14 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  // Handle navigation - clean up Google Translate when pathname changes
-  useEffect(() => {
-    if (language === 'it') {
-      // When navigating, ensure Google Translate elements are properly hidden
-      const hideGoogleElements = () => {
-        try {
-          // Hide any Google Translate elements that might appear during navigation
-          const selectors = [
-            '.goog-te-banner-frame',
-            '.goog-te-banner-frame.skiptranslate',
-            '.goog-te-gadget',
-            '.VIpgJd-ZVi9od-ORHb',
-            'iframe[src*="translate.google.com"]',
-            'iframe[src*="translate.googleapis.com"]'
-          ];
-
-          selectors.forEach(selector => {
-            const elements = document.querySelectorAll(selector);
-            elements.forEach(el => {
-              if (el instanceof HTMLElement) {
-                el.style.setProperty('display', 'none', 'important');
-                el.style.setProperty('visibility', 'hidden', 'important');
-                el.style.setProperty('height', '0', 'important');
-                el.style.setProperty('width', '0', 'important');
-                el.style.setProperty('position', 'absolute', 'important');
-                el.style.setProperty('top', '-9999px', 'important');
-                el.style.setProperty('left', '-9999px', 'important');
-                el.style.setProperty('z-index', '-9999', 'important');
-              }
-            });
-          });
-
-          // Reset body styles
-          if (document.body) {
-            document.body.style.top = '';
-            document.body.style.position = '';
-          }
-        } catch (error) {
-          // Silently ignore any errors during cleanup
-        }
-      };
-
-      // Hide elements immediately when navigation occurs
-      hideGoogleElements();
-
-      // Also hide elements after a short delay to catch any late-appearing elements
-      const timeoutId = setTimeout(hideGoogleElements, 100);
-
-      return () => {
-        clearTimeout(timeoutId);
-      };
-    }
-  }, [pathname, language]);
-
   const setLanguage = (lang: Language) => {
     try {
+      // Don't change language during navigation to prevent errors
+      if (isNavigating) {
+        console.warn('Language change blocked during navigation');
+        return;
+      }
+
       setLanguageState(lang);
       localStorage.setItem('language', lang);
       
