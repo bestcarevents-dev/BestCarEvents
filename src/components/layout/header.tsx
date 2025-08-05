@@ -276,7 +276,40 @@ const AuthButtons = ({ inMobileNav = false, user, onMobileMenuClose }: { inMobil
   );
 };
 
-const NavMenu = ({ onLinkClick }: { onLinkClick?: () => void }) => {
+const NavMenu = ({ onLinkClick, isMobile = false }: { onLinkClick?: () => void, isMobile?: boolean }) => {
+  if (isMobile) {
+    return (
+      <nav className="flex flex-col gap-4">
+        {navLinks.map((link) => (
+          <Link
+            key={link.href}
+            href={link.href}
+            className="text-white hover:text-orange-300 transition-colors duration-200 font-medium text-lg py-2"
+            onClick={onLinkClick}
+          >
+            {link.label}
+          </Link>
+        ))}
+        
+        <div className="space-y-2">
+          <div className="text-white font-medium text-lg py-2">Automotive</div>
+          <div className="pl-4 space-y-2">
+            {automotiveLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="block text-white hover:text-orange-300 transition-colors duration-200 font-medium py-1"
+                onClick={onLinkClick}
+              >
+                {link.label}
+              </Link>
+            ))}
+          </div>
+        </div>
+      </nav>
+    );
+  }
+
   return (
     <nav className="flex items-center gap-6">
       {navLinks.map((link) => (
@@ -414,7 +447,7 @@ export default function Header() {
                    </SheetClose>
                 </SheetHeader>
                 <div className="p-6 flex-grow flex flex-col gap-8">
-                  <NavMenu onLinkClick={() => setMobileMenuOpen(false)} />
+                  <NavMenu onLinkClick={() => setMobileMenuOpen(false)} isMobile={true} />
                 </div>
                 <div className="p-6 border-t">
                     <AuthButtons inMobileNav user={user} onMobileMenuClose={() => setMobileMenuOpen(false)} />

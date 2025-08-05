@@ -212,7 +212,50 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
         element.style.setProperty('top', '-9999px', 'important');
         element.style.setProperty('left', '-9999px', 'important');
         element.style.setProperty('z-index', '-9999', 'important');
+        element.style.setProperty('opacity', '0', 'important');
+        element.style.setProperty('pointer-events', 'none', 'important');
       }
+    }
+  };
+
+  // Enhanced function to safely remove all Google Translate elements
+  const safeRemoveAllGoogleTranslateElements = () => {
+    try {
+      // Remove all Google Translate scripts
+      const scripts = document.querySelectorAll('script[src*="translate.google.com"], script[src*="translate.googleapis.com"]');
+      scripts.forEach(script => safeRemoveElement(script));
+
+      // Remove all Google Translate iframes
+      const iframes = document.querySelectorAll('iframe[src*="translate.google.com"], iframe[src*="translate.googleapis.com"]');
+      iframes.forEach(iframe => safeRemoveElement(iframe));
+
+      // Remove all Google Translate banners and elements
+      const googleElements = document.querySelectorAll('.goog-te-banner-frame, .goog-te-gadget, .VIpgJd-ZVi9od-ORHb, [class*="goog-te"], [id*="goog-te"], [class*="VIpgJd"]');
+      googleElements.forEach(el => safeRemoveElement(el));
+
+      // Remove Google Translate styles
+      const styles = document.querySelectorAll('style[data-google-translate], link[href*="translate.googleapis.com"]');
+      styles.forEach(style => safeRemoveElement(style));
+
+      // Clear the translate element
+      const translateElement = document.getElementById('google_translate_element');
+      if (translateElement) {
+        translateElement.innerHTML = '';
+      }
+
+      // Reset body styles that Google Translate might have added
+      if (document.body) {
+        document.body.style.top = '';
+        document.body.style.position = '';
+      }
+
+      // Reset HTML lang attribute
+      document.documentElement.lang = 'en';
+
+    } catch (error) {
+      console.error('Error removing Google Translate elements:', error);
+      // If removal fails, just hide everything aggressively
+      hideGoogleTranslateElements();
     }
   };
 
@@ -286,41 +329,20 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
           }
         };
       } else {
-        // Reset to English - safely remove Google Translate
+        // Reset to English - safely remove Google Translate without page reload
         try {
-          // Clear the translate element
-          const translateElement = document.getElementById('google_translate_element');
-          if (translateElement) {
-            translateElement.innerHTML = '';
-          }
+          // Use the enhanced removal function
+          safeRemoveAllGoogleTranslateElements();
           
-          // Safely remove Google Translate iframes
-          const iframes = document.querySelectorAll('iframe[src*="translate.google.com"]');
-          iframes.forEach(iframe => {
-            safeRemoveElement(iframe);
-          });
+          // Additional cleanup after a short delay
+          setTimeout(() => {
+            hideGoogleTranslateElements();
+          }, 100);
           
-          // Safely remove Google Translate banners
-          const banners = document.querySelectorAll('.goog-te-banner-frame');
-          banners.forEach(banner => {
-            safeRemoveElement(banner);
-          });
-          
-          // Safely remove Google Translate styles
-          const styles = document.querySelectorAll('style[data-google-translate]');
-          styles.forEach(style => {
-            safeRemoveElement(style);
-          });
-          
-          // Reset page language
-          document.documentElement.lang = 'en';
-          
-          // Reload page to completely reset translation
-          window.location.reload();
         } catch (error) {
           console.error('Error removing Google Translate:', error);
-          // Fallback: reload page to reset everything
-          window.location.reload();
+          // If all else fails, just hide everything
+          hideGoogleTranslateElements();
         }
       }
     }
