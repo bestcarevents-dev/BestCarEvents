@@ -24,14 +24,14 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  // Static CSS injection to hide Google Translate banner - NO DYNAMIC MANIPULATION
+  // Static CSS injection to hide Google Translate banner - NO DOM MANIPULATION
   useEffect(() => {
     // Only inject CSS if it doesn't already exist
     if (!document.getElementById('google-translate-hide')) {
       const style = document.createElement('style');
       style.id = 'google-translate-hide';
       style.textContent = `
-        /* Hide Google Translate Banner - STATIC CSS ONLY */
+        /* Hide Google Translate Banner - CSS ONLY */
         .goog-te-banner-frame,
         .goog-te-banner-frame.skiptranslate,
         .goog-te-gadget,
@@ -78,6 +78,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
       `;
       document.head.appendChild(style);
     }
+    // NO CLEANUP FUNCTION - let the style stay in the DOM
   }, []);
 
   const setLanguage = (lang: Language) => {
