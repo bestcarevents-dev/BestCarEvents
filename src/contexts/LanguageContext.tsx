@@ -224,20 +224,55 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
                 layout: window.google.translate.TranslateElement.InlineLayout.SIMPLE,
               }, 'google_translate_element');
               
-              // Trigger translation
-              setTimeout(() => {
+              // Trigger translation with multiple attempts for mobile compatibility
+              const triggerTranslation = () => {
                 try {
                   const select = document.querySelector('.goog-te-combo') as HTMLSelectElement;
                   if (select) {
                     select.value = 'it';
                     select.dispatchEvent(new Event('change'));
+                    return true;
                   }
+                  
+                  // Alternative: try clicking the translate button
+                  const translateButton = document.querySelector('.goog-te-banner-frame button') as HTMLButtonElement;
+                  if (translateButton) {
+                    translateButton.click();
+                    return true;
+                  }
+                  
+                  return false;
                 } catch (error) {
-                  console.warn('Error triggering translation:', error);
+                  return false;
                 }
-              }, 1500);
+              };
+              
+              // Try multiple times with delays for mobile
+              setTimeout(() => triggerTranslation(), 1000);
+              setTimeout(() => triggerTranslation(), 2000);
+              setTimeout(() => triggerTranslation(), 3000);
+              
             } catch (error) {
-              console.warn('Error initializing Google Translate:', error);
+              // If all else fails, reload page to force translation
+              window.location.reload();
+            }
+          } else {
+            // Try to load Google Translate if not loaded
+            if (!window.google?.translate?.TranslateElement) {
+              try {
+                const script = document.createElement('script');
+                script.src = '//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
+                script.async = true;
+                script.onload = () => {
+                  setGoogleTranslateLoaded(true);
+                  // Retry setting language after script loads
+                  setTimeout(() => setLanguage(lang), 1000);
+                };
+                document.head.appendChild(script);
+              } catch (error) {
+                // If script loading fails, reload page
+                window.location.reload();
+              }
             }
           }
         } else {
@@ -278,25 +313,25 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
                       select.dispatchEvent(new Event('change'));
                     }
                   } catch (error) {
-                    console.warn('Error triggering English translation:', error);
+                    // If English reset fails, reload page
+                    window.location.reload();
                   }
                 }, 500);
               } catch (error) {
-                console.warn('Error resetting to English:', error);
                 // Fallback: reload page to completely reset
                 window.location.reload();
               }
             }
             
           } catch (error) {
-            console.warn('Error resetting Google Translate:', error);
             // Fallback: reload page to completely reset
             window.location.reload();
           }
         }
       }
     } catch (error) {
-      console.warn('Error in setLanguage:', error);
+      // If anything fails, reload the page
+      window.location.reload();
     }
   };
 
