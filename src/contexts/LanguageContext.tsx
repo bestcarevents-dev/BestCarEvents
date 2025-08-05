@@ -16,61 +16,7 @@ const LanguageContext = createContext<TranslationContextType | undefined>(undefi
 export function LanguageProvider({ children }: { children: ReactNode }) {
   const [language, setLanguageState] = useState<Language>('en');
   const [isLoading, setIsLoading] = useState(false);
-  const [isNavigating, setIsNavigating] = useState(false);
   const pathname = usePathname();
-
-  // Global error handler to catch and suppress removeChild errors from Google Translate
-  useEffect(() => {
-    const originalErrorHandler = window.onerror;
-    
-    window.onerror = function(message, source, lineno, colno, error) {
-      // Check if this is a removeChild error (likely from Google Translate)
-      if (typeof message === 'string' && message.includes('removeChild')) {
-        console.warn('Suppressed removeChild error (likely from Google Translate):', message);
-        return true; // Prevent the error from being thrown
-      }
-      
-      // For all other errors, use the original handler
-      if (originalErrorHandler) {
-        return originalErrorHandler(message, source, lineno, colno, error);
-      }
-      return false;
-    };
-
-    // Also catch unhandled promise rejections
-    const originalUnhandledRejectionHandler = window.onunhandledrejection;
-    
-    window.onunhandledrejection = function(event) {
-      if (event.reason && typeof event.reason === 'string' && event.reason.includes('removeChild')) {
-        console.warn('Suppressed removeChild promise rejection:', event.reason);
-        event.preventDefault(); // Prevent the error from being thrown
-        return;
-      }
-      
-      if (originalUnhandledRejectionHandler) {
-        originalUnhandledRejectionHandler(event);
-      }
-    };
-
-    return () => {
-      window.onerror = originalErrorHandler;
-      window.onunhandledrejection = originalUnhandledRejectionHandler;
-    };
-  }, []);
-
-  // Handle navigation - prevent Google Translate from loading during navigation
-  useEffect(() => {
-    setIsNavigating(true);
-    
-    // Reset navigation flag after a short delay
-    const timeoutId = setTimeout(() => {
-      setIsNavigating(false);
-    }, 1000);
-
-    return () => {
-      clearTimeout(timeoutId);
-    };
-  }, [pathname]);
 
   // Load language preference from localStorage on mount
   useEffect(() => {
@@ -147,12 +93,6 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
 
   const setLanguage = (lang: Language) => {
     try {
-      // Don't change language during navigation to prevent errors
-      if (isNavigating) {
-        console.warn('Language change blocked during navigation');
-        return;
-      }
-
       setLanguageState(lang);
       localStorage.setItem('language', lang);
       
@@ -160,46 +100,35 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
       if (typeof document !== 'undefined') {
         document.documentElement.lang = lang;
         
-        // Use browser translation for Italian
+        // TEMPORARILY DISABLED: Google Translate to test if error still occurs
         if (lang === 'it') {
-          // Initialize Google Translate if not already done
+          console.log('Italian selected - Google Translate temporarily disabled for testing');
+          // Google Translate code commented out for testing
+          /*
           if (!window.google?.translate?.TranslateElement) {
-            try {
-              const script = document.createElement('script');
-              script.src = '//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
-              script.async = true;
-              document.head.appendChild(script);
-            } catch (error) {
-              console.warn('Error loading Google Translate script:', error);
-            }
+            const script = document.createElement('script');
+            script.src = '//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
+            script.async = true;
+            document.head.appendChild(script);
           }
           
-          // Initialize Google Translate
           window.googleTranslateElementInit = () => {
-            try {
-              new window.google.translate.TranslateElement({
-                pageLanguage: 'en',
-                includedLanguages: 'it',
-                autoDisplay: false,
-                layout: window.google.translate.TranslateElement.InlineLayout.SIMPLE,
-              }, 'google_translate_element');
-              
-              // Trigger translation to Italian after a short delay
-              setTimeout(() => {
-                try {
-                  const select = document.querySelector('.goog-te-combo') as HTMLSelectElement;
-                  if (select) {
-                    select.value = 'it';
-                    select.dispatchEvent(new Event('change'));
-                  }
-                } catch (error) {
-                  console.warn('Error triggering translation:', error);
-                }
-              }, 1500);
-            } catch (error) {
-              console.warn('Google Translate initialization error:', error);
-            }
+            new window.google.translate.TranslateElement({
+              pageLanguage: 'en',
+              includedLanguages: 'it',
+              autoDisplay: false,
+              layout: window.google.translate.TranslateElement.InlineLayout.SIMPLE,
+            }, 'google_translate_element');
+            
+            setTimeout(() => {
+              const select = document.querySelector('.goog-te-combo') as HTMLSelectElement;
+              if (select) {
+                select.value = 'it';
+                select.dispatchEvent(new Event('change'));
+              }
+            }, 1500);
           };
+          */
         } else {
           // Reset to English
           try {
