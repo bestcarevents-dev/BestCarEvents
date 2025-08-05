@@ -258,8 +258,40 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
             // Reset HTML lang attribute
             document.documentElement.lang = 'en';
             
+            // Force Google Translate to restore original text
+            if (googleTranslateLoaded && window.google?.translate?.TranslateElement) {
+              try {
+                // Reinitialize Google Translate with English
+                new window.google.translate.TranslateElement({
+                  pageLanguage: 'en',
+                  includedLanguages: 'en',
+                  autoDisplay: false,
+                  layout: window.google.translate.TranslateElement.InlineLayout.SIMPLE,
+                }, 'google_translate_element');
+                
+                // Trigger translation back to English
+                setTimeout(() => {
+                  try {
+                    const select = document.querySelector('.goog-te-combo') as HTMLSelectElement;
+                    if (select) {
+                      select.value = 'en';
+                      select.dispatchEvent(new Event('change'));
+                    }
+                  } catch (error) {
+                    console.warn('Error triggering English translation:', error);
+                  }
+                }, 500);
+              } catch (error) {
+                console.warn('Error resetting to English:', error);
+                // Fallback: reload page to completely reset
+                window.location.reload();
+              }
+            }
+            
           } catch (error) {
             console.warn('Error resetting Google Translate:', error);
+            // Fallback: reload page to completely reset
+            window.location.reload();
           }
         }
       }

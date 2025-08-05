@@ -448,6 +448,41 @@ export default function Header() {
                 </SheetHeader>
                 <div className="p-6 flex-grow flex flex-col gap-8">
                   <NavMenu onLinkClick={() => setMobileMenuOpen(false)} isMobile={true} />
+                  
+                  {/* Mobile Language Dropdown */}
+                  <div className="space-y-4">
+                    <div className="text-lg font-bold text-gray-900 pb-2 border-b-2 border-orange-500">Language</div>
+                    <div className="space-y-3 pl-2">
+                      <button 
+                        onClick={() => {
+                          setLanguage('en');
+                          setMobileMenuOpen(false);
+                        }}
+                        className={`flex items-center gap-4 w-full px-4 py-3 text-base rounded-lg transition-all duration-200 border ${
+                          language === 'en' 
+                            ? 'text-white bg-orange-600 border-orange-600' 
+                            : 'text-gray-900 hover:text-white hover:bg-orange-600 border-gray-300 bg-white shadow-sm'
+                        }`}
+                      >
+                        <Image src={FLAG_UK} alt="English (UK)" width={24} height={16} className="rounded shadow" />
+                        <span className="font-medium">English</span>
+                      </button>
+                      <button 
+                        onClick={() => {
+                          setLanguage('it');
+                          setMobileMenuOpen(false);
+                        }}
+                        className={`flex items-center gap-4 w-full px-4 py-3 text-base rounded-lg transition-all duration-200 border ${
+                          language === 'it' 
+                            ? 'text-white bg-orange-600 border-orange-600' 
+                            : 'text-gray-900 hover:text-white hover:bg-orange-600 border-gray-300 bg-white shadow-sm'
+                        }`}
+                      >
+                        <Image src={FLAG_IT} alt="Italiano" width={24} height={16} className="rounded shadow" />
+                        <span className="font-medium">Italiano</span>
+                      </button>
+                    </div>
+                  </div>
                 </div>
                 <div className="p-6 border-t">
                     <AuthButtons inMobileNav user={user} onMobileMenuClose={() => setMobileMenuOpen(false)} />
