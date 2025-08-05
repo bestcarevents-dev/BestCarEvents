@@ -17,7 +17,21 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   const [language, setLanguageState] = useState<Language>('en');
   const [isLoading, setIsLoading] = useState(false);
   const [googleTranslateLoaded, setGoogleTranslateLoaded] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const pathname = usePathname();
+
+  // Detect mobile browser
+  useEffect(() => {
+    const checkMobile = () => {
+      const userAgent = navigator.userAgent || navigator.vendor || (window as any).opera;
+      const mobileRegex = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i;
+      setIsMobile(mobileRegex.test(userAgent));
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // NUCLEAR OPTION: Override removeChild globally to prevent Google Translate errors
   useEffect(() => {
@@ -72,6 +86,13 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
       const savedLanguage = localStorage.getItem('language') as Language;
       if (savedLanguage && (savedLanguage === 'en' || savedLanguage === 'it')) {
         setLanguageState(savedLanguage);
+        
+        // If Italian is loaded from localStorage, trigger translation after a delay
+        if (savedLanguage === 'it') {
+          setTimeout(() => {
+            setLanguage('it');
+          }, 1000);
+        }
       }
     } catch (error) {
       console.warn('Error loading language preference:', error);
@@ -207,7 +228,16 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
         document.documentElement.lang = lang;
         
         if (lang === 'it') {
-          // For Italian, trigger translation if Google Translate is loaded
+          // MOBILE-SPECIFIC HANDLING
+          if (isMobile) {
+            // For mobile, use a different approach - redirect to Google Translate
+            const currentUrl = window.location.href;
+            const googleTranslateUrl = `https://translate.google.com/translate?sl=en&tl=it&u=${encodeURIComponent(currentUrl)}`;
+            window.location.href = googleTranslateUrl;
+            return;
+          }
+          
+          // For desktop, use normal Google Translate Element
           if (googleTranslateLoaded && window.google?.translate?.TranslateElement) {
             try {
               // Clear and reinitialize the translate element

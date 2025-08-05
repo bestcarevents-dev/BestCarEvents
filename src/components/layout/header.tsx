@@ -469,8 +469,9 @@ export default function Header() {
                       </button>
                       <button 
                         onClick={() => {
-                          setLanguage('it');
-                          setMobileMenuOpen(false);
+                          // Force page reload for mobile translation
+                          localStorage.setItem('language', 'it');
+                          window.location.reload();
                         }}
                         className={`flex items-center gap-4 w-full px-4 py-3 text-base rounded-lg transition-all duration-200 border ${
                           language === 'it' 
