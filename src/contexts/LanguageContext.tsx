@@ -24,120 +24,60 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  // CSS injection to hide Google Translate banner - NO DOM MANIPULATION
+  // Static CSS injection to hide Google Translate banner - NO DYNAMIC MANIPULATION
   useEffect(() => {
-    const style = document.createElement('style');
-    style.id = 'google-translate-hide';
-    style.textContent = `
-      /* Hide Google Translate Banner - CSS ONLY APPROACH */
-      .goog-te-banner-frame,
-      .goog-te-banner-frame.skiptranslate,
-      .goog-te-gadget,
-      .goog-te-gadget .goog-te-combo,
-      .goog-te-menu-value,
-      .VIpgJd-ZVi9od-ORHb,
-      .VIpgJd-ZVi9od-ORHb-KE6vqe,
-      .goog-te-spinner-pos,
-      .goog-te-spinner-animation,
-      .goog-te-spinner,
-      .goog-te-spinner-img,
-      iframe[src*="translate.google.com"],
-      iframe[src*="translate.googleapis.com"],
-      div[class*="goog-te"],
-      div[class*="VIpgJd"],
-      div[id*="goog-te"],
-      table[class*="goog-te"],
-      table[class*="VIpgJd"],
-      [class*="goog-te"],
-      [id*="goog-te"],
-      [class*="VIpgJd"] {
-        display: none !important;
-        visibility: hidden !important;
-        height: 0 !important;
-        width: 0 !important;
-        overflow: hidden !important;
-        position: absolute !important;
-        top: -9999px !important;
-        left: -9999px !important;
-        z-index: -9999 !important;
-        opacity: 0 !important;
-        pointer-events: none !important;
-        clip: rect(0, 0, 0, 0) !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        border: none !important;
-      }
-
-      /* Prevent body shift */
-      body {
-        top: 0px !important;
-        position: static !important;
-      }
-    `;
-    document.head.appendChild(style);
-
-    // NO CLEANUP FUNCTION - let the style stay in the DOM
-  }, []);
-
-  // Function to hide Google Translate elements with CSS ONLY
-  const hideGoogleTranslateElements = () => {
-    const selectors = [
-      '.goog-te-banner-frame',
-      '.goog-te-banner-frame.skiptranslate',
-      '.goog-te-gadget',
-      '.goog-te-gadget .goog-te-combo',
-      '.goog-te-menu-value',
-      '.VIpgJd-ZVi9od-ORHb',
-      '.VIpgJd-ZVi9od-ORHb-KE6vqe',
-      '.goog-te-spinner-pos',
-      '.goog-te-spinner-animation',
-      '.goog-te-spinner',
-      '.goog-te-spinner-img',
-      'iframe[src*="translate.google.com"]',
-      'iframe[src*="translate.googleapis.com"]',
-      'div[class*="goog-te"]',
-      'div[class*="VIpgJd"]',
-      'div[id*="goog-te"]',
-      'table[class*="goog-te"]',
-      'table[class*="VIpgJd"]',
-      '[class*="goog-te"]',
-      '[id*="goog-te"]',
-      '[class*="VIpgJd"]'
-    ];
-
-    selectors.forEach(selector => {
-      const elements = document.querySelectorAll(selector);
-      elements.forEach(el => {
-        if (el instanceof HTMLElement) {
-          el.style.setProperty('display', 'none', 'important');
-          el.style.setProperty('visibility', 'hidden', 'important');
-          el.style.setProperty('height', '0', 'important');
-          el.style.setProperty('width', '0', 'important');
-          el.style.setProperty('position', 'absolute', 'important');
-          el.style.setProperty('top', '-9999px', 'important');
-          el.style.setProperty('left', '-9999px', 'important');
-          el.style.setProperty('z-index', '-9999', 'important');
-          el.style.setProperty('opacity', '0', 'important');
-          el.style.setProperty('pointer-events', 'none', 'important');
+    // Only inject CSS if it doesn't already exist
+    if (!document.getElementById('google-translate-hide')) {
+      const style = document.createElement('style');
+      style.id = 'google-translate-hide';
+      style.textContent = `
+        /* Hide Google Translate Banner - STATIC CSS ONLY */
+        .goog-te-banner-frame,
+        .goog-te-banner-frame.skiptranslate,
+        .goog-te-gadget,
+        .goog-te-gadget .goog-te-combo,
+        .goog-te-menu-value,
+        .VIpgJd-ZVi9od-ORHb,
+        .VIpgJd-ZVi9od-ORHb-KE6vqe,
+        .goog-te-spinner-pos,
+        .goog-te-spinner-animation,
+        .goog-te-spinner,
+        .goog-te-spinner-img,
+        iframe[src*="translate.google.com"],
+        iframe[src*="translate.googleapis.com"],
+        div[class*="goog-te"],
+        div[class*="VIpgJd"],
+        div[id*="goog-te"],
+        table[class*="goog-te"],
+        table[class*="VIpgJd"],
+        [class*="goog-te"],
+        [id*="goog-te"],
+        [class*="VIpgJd"] {
+          display: none !important;
+          visibility: hidden !important;
+          height: 0 !important;
+          width: 0 !important;
+          overflow: hidden !important;
+          position: absolute !important;
+          top: -9999px !important;
+          left: -9999px !important;
+          z-index: -9999 !important;
+          opacity: 0 !important;
+          pointer-events: none !important;
+          clip: rect(0, 0, 0, 0) !important;
+          margin: 0 !important;
+          padding: 0 !important;
+          border: none !important;
         }
-      });
-    });
-  };
 
-  // Set up a MutationObserver to continuously hide Google Translate elements
-  useEffect(() => {
-    const observer = new MutationObserver(() => {
-      hideGoogleTranslateElements();
-    });
-
-    observer.observe(document.body, {
-      childList: true,
-      subtree: true,
-      attributes: true,
-      attributeFilter: ['class', 'id', 'src']
-    });
-
-    return () => observer.disconnect();
+        /* Prevent body shift */
+        body {
+          top: 0px !important;
+          position: static !important;
+        }
+      `;
+      document.head.appendChild(style);
+    }
   }, []);
 
   const setLanguage = (lang: Language) => {
@@ -175,19 +115,6 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
                 select.value = 'it';
                 select.dispatchEvent(new Event('change'));
               }
-              
-              // Hide any Google Translate elements
-              hideGoogleTranslateElements();
-              
-              // Set up continuous hiding
-              const hideInterval = setInterval(() => {
-                hideGoogleTranslateElements();
-              }, 100);
-              
-              // Stop the interval after 10 seconds
-              setTimeout(() => {
-                clearInterval(hideInterval);
-              }, 10000);
             }, 1500);
           } catch (error) {
             console.error('Google Translate initialization error:', error);
@@ -210,14 +137,9 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
 
           // Reset HTML lang attribute
           document.documentElement.lang = 'en';
-
-          // Hide any remaining Google Translate elements
-          hideGoogleTranslateElements();
           
         } catch (error) {
           console.error('Error resetting Google Translate:', error);
-          // If all else fails, just hide everything
-          hideGoogleTranslateElements();
         }
       }
     }
