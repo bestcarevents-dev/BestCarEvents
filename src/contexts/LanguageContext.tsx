@@ -19,6 +19,53 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   const [googleTranslateLoaded, setGoogleTranslateLoaded] = useState(false);
   const pathname = usePathname();
 
+  // NUCLEAR OPTION: Override removeChild globally to prevent Google Translate errors
+  useEffect(() => {
+    // Store original removeChild
+    const originalRemoveChild = Node.prototype.removeChild;
+    
+    // Override removeChild to catch and suppress Google Translate errors
+    Node.prototype.removeChild = function<T extends Node>(child: T): T {
+      try {
+        // Check if this is a Google Translate related element
+        const isGoogleTranslateElement = 
+          child && 
+          (('className' in child && typeof child.className === 'string' && child.className.includes('goog-te')) || 
+           ('id' in child && typeof child.id === 'string' && child.id.includes('goog-te')) ||
+           ('className' in child && typeof child.className === 'string' && child.className.includes('VIpgJd')) ||
+           ('tagName' in child && child.tagName === 'IFRAME' && 'src' in child && typeof child.src === 'string' && child.src.includes('translate.google.com')));
+        
+        if (isGoogleTranslateElement) {
+          console.warn('Suppressed Google Translate removeChild operation:', child);
+          // Instead of removing, just hide it
+          if (child instanceof HTMLElement) {
+            child.style.setProperty('display', 'none', 'important');
+            child.style.setProperty('visibility', 'hidden', 'important');
+            child.style.setProperty('height', '0', 'important');
+            child.style.setProperty('width', '0', 'important');
+            child.style.setProperty('position', 'absolute', 'important');
+            child.style.setProperty('top', '-9999px', 'important');
+            child.style.setProperty('left', '-9999px', 'important');
+            child.style.setProperty('z-index', '-9999', 'important');
+          }
+          return child; // Return the child to satisfy the function signature
+        }
+        
+        // For non-Google Translate elements, use original removeChild
+        return originalRemoveChild.call(this, child) as T;
+      } catch (error) {
+        console.warn('Error in overridden removeChild:', error);
+        // If there's any error, just return the child without removing
+        return child;
+      }
+    };
+
+    // Restore original removeChild on cleanup
+    return () => {
+      Node.prototype.removeChild = originalRemoveChild;
+    };
+  }, []);
+
   // Load language preference from localStorage on mount
   useEffect(() => {
     try {
