@@ -195,6 +195,27 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     });
   };
 
+  // Safe function to remove elements
+  const safeRemoveElement = (element: Element) => {
+    try {
+      if (element && element.parentNode) {
+        element.parentNode.removeChild(element);
+      }
+    } catch (error) {
+      // Element might already be removed, just hide it instead
+      if (element instanceof HTMLElement) {
+        element.style.setProperty('display', 'none', 'important');
+        element.style.setProperty('visibility', 'hidden', 'important');
+        element.style.setProperty('height', '0', 'important');
+        element.style.setProperty('width', '0', 'important');
+        element.style.setProperty('position', 'absolute', 'important');
+        element.style.setProperty('top', '-9999px', 'important');
+        element.style.setProperty('left', '-9999px', 'important');
+        element.style.setProperty('z-index', '-9999', 'important');
+      }
+    }
+  };
+
   // Set up a MutationObserver to continuously hide Google Translate elements
   useEffect(() => {
     const observer = new MutationObserver(() => {
@@ -273,28 +294,22 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
             translateElement.innerHTML = '';
           }
           
-          // Remove Google Translate iframe if it exists
+          // Safely remove Google Translate iframes
           const iframes = document.querySelectorAll('iframe[src*="translate.google.com"]');
           iframes.forEach(iframe => {
-            if (iframe.parentNode) {
-              iframe.parentNode.removeChild(iframe);
-            }
+            safeRemoveElement(iframe);
           });
           
-          // Remove Google Translate banner if it exists
+          // Safely remove Google Translate banners
           const banners = document.querySelectorAll('.goog-te-banner-frame');
           banners.forEach(banner => {
-            if (banner.parentNode) {
-              banner.parentNode.removeChild(banner);
-            }
+            safeRemoveElement(banner);
           });
           
-          // Remove Google Translate styles
+          // Safely remove Google Translate styles
           const styles = document.querySelectorAll('style[data-google-translate]');
           styles.forEach(style => {
-            if (style.parentNode) {
-              style.parentNode.removeChild(style);
-            }
+            safeRemoveElement(style);
           });
           
           // Reset page language
