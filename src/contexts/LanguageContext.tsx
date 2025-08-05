@@ -24,12 +24,12 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  // Robust CSS injection to hide Google Translate banner
+  // CSS injection to hide Google Translate banner - NO DOM MANIPULATION
   useEffect(() => {
     const style = document.createElement('style');
     style.id = 'google-translate-hide';
     style.textContent = `
-      /* Hide Google Translate Banner - Multiple approaches */
+      /* Hide Google Translate Banner - CSS ONLY APPROACH */
       .goog-te-banner-frame,
       .goog-te-banner-frame.skiptranslate,
       .goog-te-gadget,
@@ -40,7 +40,17 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
       .goog-te-spinner-pos,
       .goog-te-spinner-animation,
       .goog-te-spinner,
-      .goog-te-spinner-img {
+      .goog-te-spinner-img,
+      iframe[src*="translate.google.com"],
+      iframe[src*="translate.googleapis.com"],
+      div[class*="goog-te"],
+      div[class*="VIpgJd"],
+      div[id*="goog-te"],
+      table[class*="goog-te"],
+      table[class*="VIpgJd"],
+      [class*="goog-te"],
+      [id*="goog-te"],
+      [class*="VIpgJd"] {
         display: none !important;
         visibility: hidden !important;
         height: 0 !important;
@@ -63,71 +73,13 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
         top: 0px !important;
         position: static !important;
       }
-
-      /* Hide any iframe from Google Translate */
-      iframe[src*="translate.google.com"],
-      iframe[src*="translate.googleapis.com"] {
-        display: none !important;
-        visibility: hidden !important;
-        height: 0 !important;
-        width: 0 !important;
-        position: absolute !important;
-        top: -9999px !important;
-        left: -9999px !important;
-        z-index: -9999 !important;
-      }
-
-      /* Hide any div with Google Translate classes */
-      div[class*="goog-te"],
-      div[class*="VIpgJd"],
-      div[id*="goog-te"] {
-        display: none !important;
-        visibility: hidden !important;
-        height: 0 !important;
-        width: 0 !important;
-        position: absolute !important;
-        top: -9999px !important;
-        left: -9999px !important;
-        z-index: -9999 !important;
-      }
-
-      /* Hide any table with Google Translate classes */
-      table[class*="goog-te"],
-      table[class*="VIpgJd"] {
-        display: none !important;
-        visibility: hidden !important;
-        height: 0 !important;
-        width: 0 !important;
-        position: absolute !important;
-        top: -9999px !important;
-        left: -9999px !important;
-        z-index: -9999 !important;
-      }
-
-      /* Hide any element with Google Translate attributes */
-      [class*="goog-te"],
-      [id*="goog-te"],
-      [class*="VIpgJd"] {
-        display: none !important;
-        visibility: hidden !important;
-        height: 0 !important;
-        width: 0 !important;
-        position: absolute !important;
-        top: -9999px !important;
-        left: -9999px !important;
-        z-index: -9999 !important;
-      }
     `;
     document.head.appendChild(style);
 
-    return () => {
-      if (style.parentNode) {
-        style.parentNode.removeChild(style);
-      }
-    };
+    // NO CLEANUP FUNCTION - let the style stay in the DOM
   }, []);
 
-  // Function to aggressively hide Google Translate elements
+  // Function to hide Google Translate elements with CSS ONLY
   const hideGoogleTranslateElements = () => {
     const selectors = [
       '.goog-te-banner-frame',
@@ -167,96 +119,9 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
           el.style.setProperty('z-index', '-9999', 'important');
           el.style.setProperty('opacity', '0', 'important');
           el.style.setProperty('pointer-events', 'none', 'important');
-          el.style.setProperty('clip', 'rect(0, 0, 0, 0)', 'important');
-          el.style.setProperty('margin', '0', 'important');
-          el.style.setProperty('padding', '0', 'important');
-          el.style.setProperty('border', 'none', 'important');
         }
       });
     });
-
-    // Also hide any elements with Google Translate classes
-    const allElements = document.querySelectorAll('*');
-    allElements.forEach(el => {
-      const className = el.className || '';
-      const id = el.id || '';
-      if (typeof className === 'string' && (className.includes('goog-te') || className.includes('VIpgJd'))) {
-        if (el instanceof HTMLElement) {
-          el.style.setProperty('display', 'none', 'important');
-          el.style.setProperty('visibility', 'hidden', 'important');
-          el.style.setProperty('height', '0', 'important');
-          el.style.setProperty('width', '0', 'important');
-          el.style.setProperty('position', 'absolute', 'important');
-          el.style.setProperty('top', '-9999px', 'important');
-          el.style.setProperty('left', '-9999px', 'important');
-          el.style.setProperty('z-index', '-9999', 'important');
-        }
-      }
-    });
-  };
-
-  // Safe function to remove elements
-  const safeRemoveElement = (element: Element) => {
-    try {
-      if (element && element.parentNode) {
-        element.parentNode.removeChild(element);
-      }
-    } catch (error) {
-      // Element might already be removed, just hide it instead
-      if (element instanceof HTMLElement) {
-        element.style.setProperty('display', 'none', 'important');
-        element.style.setProperty('visibility', 'hidden', 'important');
-        element.style.setProperty('height', '0', 'important');
-        element.style.setProperty('width', '0', 'important');
-        element.style.setProperty('position', 'absolute', 'important');
-        element.style.setProperty('top', '-9999px', 'important');
-        element.style.setProperty('left', '-9999px', 'important');
-        element.style.setProperty('z-index', '-9999', 'important');
-        element.style.setProperty('opacity', '0', 'important');
-        element.style.setProperty('pointer-events', 'none', 'important');
-      }
-    }
-  };
-
-  // Enhanced function to safely remove all Google Translate elements
-  const safeRemoveAllGoogleTranslateElements = () => {
-    try {
-      // Remove all Google Translate scripts
-      const scripts = document.querySelectorAll('script[src*="translate.google.com"], script[src*="translate.googleapis.com"]');
-      scripts.forEach(script => safeRemoveElement(script));
-
-      // Remove all Google Translate iframes
-      const iframes = document.querySelectorAll('iframe[src*="translate.google.com"], iframe[src*="translate.googleapis.com"]');
-      iframes.forEach(iframe => safeRemoveElement(iframe));
-
-      // Remove all Google Translate banners and elements
-      const googleElements = document.querySelectorAll('.goog-te-banner-frame, .goog-te-gadget, .VIpgJd-ZVi9od-ORHb, [class*="goog-te"], [id*="goog-te"], [class*="VIpgJd"]');
-      googleElements.forEach(el => safeRemoveElement(el));
-
-      // Remove Google Translate styles
-      const styles = document.querySelectorAll('style[data-google-translate], link[href*="translate.googleapis.com"]');
-      styles.forEach(style => safeRemoveElement(style));
-
-      // Clear the translate element
-      const translateElement = document.getElementById('google_translate_element');
-      if (translateElement) {
-        translateElement.innerHTML = '';
-      }
-
-      // Reset body styles that Google Translate might have added
-      if (document.body) {
-        document.body.style.top = '';
-        document.body.style.position = '';
-      }
-
-      // Reset HTML lang attribute
-      document.documentElement.lang = 'en';
-
-    } catch (error) {
-      console.error('Error removing Google Translate elements:', error);
-      // If removal fails, just hide everything aggressively
-      hideGoogleTranslateElements();
-    }
   };
 
   // Set up a MutationObserver to continuously hide Google Translate elements
@@ -311,7 +176,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
                 select.dispatchEvent(new Event('change'));
               }
               
-              // Aggressively hide any Google Translate elements
+              // Hide any Google Translate elements
               hideGoogleTranslateElements();
               
               // Set up continuous hiding
@@ -329,18 +194,28 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
           }
         };
       } else {
-        // Reset to English - safely remove Google Translate without page reload
+        // Reset to English - CSS ONLY APPROACH
         try {
-          // Use the enhanced removal function
-          safeRemoveAllGoogleTranslateElements();
-          
-          // Additional cleanup after a short delay
-          setTimeout(() => {
-            hideGoogleTranslateElements();
-          }, 100);
+          // Clear the translate element
+          const translateElement = document.getElementById('google_translate_element');
+          if (translateElement) {
+            translateElement.innerHTML = '';
+          }
+
+          // Reset body styles that Google Translate might have added
+          if (document.body) {
+            document.body.style.top = '';
+            document.body.style.position = '';
+          }
+
+          // Reset HTML lang attribute
+          document.documentElement.lang = 'en';
+
+          // Hide any remaining Google Translate elements
+          hideGoogleTranslateElements();
           
         } catch (error) {
-          console.error('Error removing Google Translate:', error);
+          console.error('Error resetting Google Translate:', error);
           // If all else fails, just hide everything
           hideGoogleTranslateElements();
         }
