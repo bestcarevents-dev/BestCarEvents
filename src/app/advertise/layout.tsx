@@ -5,9 +5,11 @@ import { Home, PlusCircle, Menu, CreditCard, List, Car, ChevronDown, ChevronRigh
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useState, useEffect } from "react";
+import { getAuth, onAuthStateChanged, User } from "firebase/auth";
+import { app } from "@/lib/firebase";
 
 const navLinks = [
   { href: "/advertise/dashboard", icon: Home, label: "Buy Advertistments" },
@@ -32,7 +34,30 @@ const featureListingLinks = [
 
 export default function PartnersLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
   const [isFeatureListingsOpen, setIsFeatureListingsOpen] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+  const [authChecked, setAuthChecked] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Authentication check
+  useEffect(() => {
+    const auth = getAuth(app);
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+      setAuthChecked(true);
+      setIsLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (authChecked && !user) {
+      router.push('/login');
+    }
+  }, [authChecked, user, router]);
 
   // Check if current path is in feature listings
   const isInFeatureListings = pathname.startsWith('/advertise/listings') || 
@@ -48,6 +73,23 @@ export default function PartnersLayout({ children }: { children: React.ReactNode
       setIsFeatureListingsOpen(true);
     }
   }, [isInFeatureListings]);
+
+  // Show loading state while checking authentication
+  if (isLoading || !authChecked) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="flex flex-col items-center gap-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+          <p className="text-muted-foreground">Checking authentication...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Don't render anything if user is not authenticated (will redirect)
+  if (!user) {
+    return null;
+  }
 
   return (
     <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">

@@ -83,7 +83,7 @@ const AuthButtons = ({ inMobileNav = false, user, onMobileMenuClose }: { inMobil
                 <span className="font-medium">Events Listing</span>
               </Link>
               <Link 
-                href="/advertise/auctions-listing" 
+                href="/advertise/auction-listing" 
                 className="flex items-center gap-4 px-4 py-3 text-base text-gray-900 hover:text-white hover:bg-orange-600 rounded-lg transition-all duration-200 border border-gray-300 bg-white shadow-sm"
                 onClick={onMobileMenuClose}
               >
@@ -197,7 +197,7 @@ const AuthButtons = ({ inMobileNav = false, user, onMobileMenuClose }: { inMobil
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-orange-50 hover:text-orange-700 transition-colors duration-200">
-                <Link href="/advertise/auctions-listing" className="flex items-center gap-3 w-full">
+                <Link href="/advertise/auction-listing" className="flex items-center gap-3 w-full">
                   <Gavel className="w-4 h-4" />
                   Auction Listing
                 </Link>
