@@ -3,6 +3,9 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, BadgeCheck, Trophy, Group, Clock } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { getFirestore, collection, getDocs, query, orderBy, limit } from "firebase/firestore";
+import { app } from "@/lib/firebase";
 import HeroSlider from '@/components/hero-slider';
 import EventListItem from '@/components/event-list-item';
 import FeaturedCarCard from '@/components/featured-car-card';
@@ -47,34 +50,34 @@ const ValueProposition = () => {
 };
 
 const FeaturedCarsSection = () => {
-    const featuredCars = [
-        {
-            id: 1,
-            name: "Bugatti Tourbillon",
-            year: "2026",
-            price: "4,000,000",
-            image: "https://cf-img-a-in.tosshub.com/sites/visualstory/wp/2024/07/opener-w-Bugatti-3.webp?size=*:675",
-            hint: "blue bugatti",
-            specs: [
-                { name: "0-60 mph", value: "2.0s" },
-                { name: "Horsepower", value: "1800 hp" },
-                { name: "Top Speed", value: "277 mph" }
-            ]
-        },
-        {
-            id: 2,
-            name: "Chevrolet Corvette Z06",
-            year: "2023",
-            price: "112,700",
-            image: "https://www.carpro.com/hubfs/2023-Chevrolet-Corvette-Z06-credit-chevrolet.jpeg",
-            hint: "red corvette",
-            specs: [
-                { name: "0-60 mph", value: "2.6s" },
-                { name: "Horsepower", value: "670 hp" },
-                { name: "Top Speed", value: "195 mph" }
-            ]
-        },
-    ];
+    const [featuredCars, setFeaturedCars] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchFeaturedCars = async () => {
+            setLoading(true);
+            try {
+                const db = getFirestore(app);
+                // Fetch cars from the cars collection, ordered by creation date, limit to 4
+                const carsQuery = query(
+                    collection(db, "cars"), 
+                    orderBy("createdAt", "desc"),
+                    limit(4)
+                );
+                const snapshot = await getDocs(carsQuery);
+                const data = snapshot.docs.map(doc => ({ 
+                    documentId: doc.id, 
+                    ...doc.data() 
+                }));
+                setFeaturedCars(data);
+            } catch (error) {
+                console.error("Error fetching featured cars:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchFeaturedCars();
+    }, []);
 
     return (
         <section className="py-20 sm:py-28 bg-background">
@@ -83,9 +86,29 @@ const FeaturedCarsSection = () => {
                     <h2 className="text-4xl font-headline font-extrabold sm:text-5xl tracking-tight text-foreground">Featured Cars</h2>
                     <p className="mt-4 text-lg text-muted-foreground">Explore a selection of exceptional vehicles from our curated marketplace.</p>
                 </div>
-                <div className="space-y-8 max-w-5xl mx-auto">
-                    {featuredCars.map((car) => <FeaturedCarCard key={String(car.id)} {...car} />)}
-                </div>
+                {loading ? (
+                    <div className="text-center text-lg py-12 text-gray-600">Loading featured cars...</div>
+                ) : featuredCars.length === 0 ? (
+                    <div className="text-center py-12 text-gray-600">
+                        <p className="text-lg">No cars available at the moment.</p>
+                        <p className="text-sm mt-2">Check back soon for new listings.</p>
+                    </div>
+                ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        {featuredCars.map((car, index) => (
+                            <CarCard
+                                key={car.documentId || index}
+                                id={car.documentId}
+                                name={car.make && car.model ? `${car.year} ${car.make} ${car.model}` : car.name || "Car"}
+                                price={car.price && car.currency ? `${car.currency} ${car.price}` : "N/A"}
+                                location={car.location || ""}
+                                image={car.images && car.images[0] ? car.images[0] : "https://via.placeholder.com/600x400?text=No+Image"}
+                                hint={car.hint || car.make || "car"}
+                                featured={false}
+                            />
+                        ))}
+                    </div>
+                )}
                 <div className="text-center mt-16">
                     <Button size="lg" asChild className="font-bold rounded-full">
                         <Link href="/cars">View Marketplace <ArrowRight className="w-5 h-5 ml-2" /></Link>
