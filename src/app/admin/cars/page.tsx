@@ -24,7 +24,8 @@ interface CarRequest {
   make: string;
   model: string;
   year: number;
-  price: number;
+  price: string;
+  currency: string;
   mileage: number;
   vin?: string;
   bodyStyle: string;
@@ -142,7 +143,7 @@ export default function PendingCarsPage() {
                       </TableCell>
                       <TableCell className="font-medium">{request.make} {request.model}</TableCell>
                       <TableCell>{request.year}</TableCell>
-                      <TableCell>${request.price.toLocaleString()}</TableCell>
+                      <TableCell>{request.currency} {request.price}</TableCell>
                       <TableCell>{request.sellerName}</TableCell>
                       <TableCell>
                         <Badge variant={request.status === 'pending' ? 'default' : 'outline'}>{request.status}</Badge>
@@ -182,7 +183,7 @@ export default function PendingCarsPage() {
                       </TableCell>
                       <TableCell className="font-medium">{request.make} {request.model}</TableCell>
                       <TableCell>{request.year}</TableCell>
-                      <TableCell>${request.price.toLocaleString()}</TableCell>
+                      <TableCell>{request.currency} {request.price}</TableCell>
                       <TableCell>{request.sellerName}</TableCell>
                       <TableCell>
                         <Badge variant="secondary">Approved</Badge>
@@ -238,7 +239,7 @@ export default function PendingCarsPage() {
                 </div>
                 <div>
                   <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-                    <DetailItem label="Price" value={`$${selectedCar.price.toLocaleString()}`} />
+                    <DetailItem label="Price" value={`${selectedCar.currency} ${selectedCar.price}`} />
                     <DetailItem label="Mileage" value={selectedCar.mileage.toLocaleString()} />
                     <DetailItem label="VIN" value={selectedCar.vin} />
                     <DetailItem label="Body Style" value={selectedCar.bodyStyle} />

@@ -113,7 +113,7 @@ export default function CarDetailsPage() {
             </div>
           </div>
           <div className="flex flex-col md:items-end gap-2">
-            <span className="text-3xl font-mono font-bold text-yellow-600 drop-shadow-lg">${car.price?.toLocaleString()}</span>
+            <span className="text-3xl font-mono font-bold text-yellow-600 drop-shadow-lg">{car.currency} {car.price}</span>
             <Button size="lg" className="mt-2 animate-pop" onClick={() => setShowContact(true)}><Mail className="mr-2" />Contact Seller</Button>
           </div>
         </div>

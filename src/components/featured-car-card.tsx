@@ -41,7 +41,7 @@ export default function FeaturedCarCard({ name, year, price, image, hint, specs 
           <div className="flex-grow">
             <span className="font-semibold text-primary">{year}</span>
             <h3 className="text-3xl lg:text-4xl font-headline font-extrabold text-foreground mt-1">{name}</h3>
-            <p className="text-2xl font-mono font-bold text-primary mt-4">${parseInt(price).toLocaleString()}</p>
+            <p className="text-2xl font-mono font-bold text-primary mt-4">{price}</p>
             
             <div className="mt-6 pt-6 border-t border-border/50">
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">

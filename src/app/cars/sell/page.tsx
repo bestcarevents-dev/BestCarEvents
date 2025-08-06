@@ -108,7 +108,8 @@ const carSchema = z.object({
   make: z.string().min(2, "Make is required"),
   model: z.string().min(1, "Model is required"),
   year: z.number().min(1900, "Invalid year").max(new Date().getFullYear() + 1, "Invalid year"),
-  price: z.number().positive("Price must be positive"),
+  price: z.string().min(1, "Price is required"),
+  currency: z.string().min(1, "Currency is required"),
   mileage: z.number().positive("Mileage must be positive"),
   
   // Detailed Specs
@@ -178,6 +179,7 @@ export default function SellCarPage() {
     resolver: zodResolver(carSchema),
     defaultValues: {
         features: [],
+        currency: "USD",
     }
   });
 
@@ -488,9 +490,35 @@ export default function SellCarPage() {
                         {errors.year && <p className="text-red-500 text-sm">{errors.year.message}</p>}
                     </div>
                      <div className="space-y-2">
-                        <Label htmlFor="price">Price (USD)</Label>
-                        <Input id="price" type="number" {...register("price", { valueAsNumber: true })} />
+                        <Label htmlFor="price">Price</Label>
+                        <div className="flex gap-2">
+                            <Input id="price" type="text" placeholder="Enter price" {...register("price")} className="flex-1" />
+                            <Controller
+                                name="currency"
+                                control={control}
+                                render={({ field }) => (
+                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                        <SelectTrigger className="w-24">
+                                            <SelectValue placeholder="Currency" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="USD">USD</SelectItem>
+                                            <SelectItem value="EUR">EUR</SelectItem>
+                                            <SelectItem value="CHF">CHF</SelectItem>
+                                            <SelectItem value="GBP">GBP</SelectItem>
+                                            <SelectItem value="CAD">CAD</SelectItem>
+                                            <SelectItem value="AUD">AUD</SelectItem>
+                                            <SelectItem value="JPY">JPY</SelectItem>
+                                            <SelectItem value="CNY">CNY</SelectItem>
+                                            <SelectItem value="INR">INR</SelectItem>
+                                            <SelectItem value="AED">AED</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                )}
+                            />
+                        </div>
                         {errors.price && <p className="text-red-500 text-sm">{errors.price.message}</p>}
+                        {errors.currency && <p className="text-red-500 text-sm">{errors.currency.message}</p>}
                     </div>
                      <div className="space-y-2">
                         <Label htmlFor="mileage">Mileage</Label>

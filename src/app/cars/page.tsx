@@ -76,11 +76,11 @@ export default function CarsPage() {
           car.drivetrain?.toLowerCase() === selectedDrivetrain.toLowerCase();
         
         const matchesPriceRange = selectedPriceRange === "all" || 
-          (selectedPriceRange === "under-10k" && car.price < 10000) ||
-          (selectedPriceRange === "10k-25k" && car.price >= 10000 && car.price < 25000) ||
-          (selectedPriceRange === "25k-50k" && car.price >= 25000 && car.price < 50000) ||
-          (selectedPriceRange === "50k-100k" && car.price >= 50000 && car.price < 100000) ||
-          (selectedPriceRange === "over-100k" && car.price >= 100000);
+          (selectedPriceRange === "under-10k" && parseFloat(car.price) < 10000) ||
+          (selectedPriceRange === "10k-25k" && parseFloat(car.price) >= 10000 && parseFloat(car.price) < 25000) ||
+          (selectedPriceRange === "25k-50k" && parseFloat(car.price) >= 25000 && parseFloat(car.price) < 50000) ||
+          (selectedPriceRange === "50k-100k" && parseFloat(car.price) >= 50000 && parseFloat(car.price) < 100000) ||
+          (selectedPriceRange === "over-100k" && parseFloat(car.price) >= 100000);
         
         return matchesSearch && matchesMake && matchesBodyStyle && matchesTransmission && matchesDrivetrain && matchesPriceRange;
       });
@@ -97,9 +97,9 @@ export default function CarsPage() {
             const dateBOld = b.createdAt?.seconds ? new Date(b.createdAt.seconds * 1000) : new Date(b.createdAt || 0);
             return dateAOld.getTime() - dateBOld.getTime();
           case "price-asc":
-            return (a.price || 0) - (b.price || 0);
+            return parseFloat(a.price || "0") - parseFloat(b.price || "0");
           case "price-desc":
-            return (b.price || 0) - (a.price || 0);
+            return parseFloat(b.price || "0") - parseFloat(a.price || "0");
           case "mileage-asc":
             return (a.mileage || 0) - (b.mileage || 0);
           case "mileage-desc":
@@ -293,11 +293,11 @@ export default function CarsPage() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Any Price</SelectItem>
-                  <SelectItem value="under-10k">Under $10,000</SelectItem>
-                  <SelectItem value="10k-25k">$10,000 - $25,000</SelectItem>
-                  <SelectItem value="25k-50k">$25,000 - $50,000</SelectItem>
-                  <SelectItem value="50k-100k">$50,000 - $100,000</SelectItem>
-                  <SelectItem value="over-100k">Over $100,000</SelectItem>
+                  <SelectItem value="under-10k">Under 10,000</SelectItem>
+                  <SelectItem value="10k-25k">10,000 - 25,000</SelectItem>
+                  <SelectItem value="25k-50k">25,000 - 50,000</SelectItem>
+                  <SelectItem value="50k-100k">50,000 - 100,000</SelectItem>
+                  <SelectItem value="over-100k">Over 100,000</SelectItem>
                 </SelectContent>
               </Select>
               <Select value={sortBy} onValueChange={setSortBy}>
@@ -347,7 +347,7 @@ export default function CarsPage() {
                       key={car.documentId || index}
                       id={car.documentId}
                       name={car.make && car.model ? `${car.year} ${car.make} ${car.model}` : car.name || "Car"}
-                      price={car.price ? `$${car.price.toLocaleString()}` : "N/A"}
+                      price={car.price && car.currency ? `${car.currency} ${car.price}` : "N/A"}
                       location={car.location || ""}
                       image={car.images && car.images[0] ? car.images[0] : "https://via.placeholder.com/600x400?text=No+Image"}
                       hint={car.hint || car.make || "car"}
@@ -371,7 +371,7 @@ export default function CarsPage() {
                     key={car.documentId || index}
                     id={car.documentId}
                     name={car.make && car.model ? `${car.year} ${car.make} ${car.model}` : car.name || "Car"}
-                    price={car.price ? `$${car.price.toLocaleString()}` : "N/A"}
+                    price={car.price && car.currency ? `${car.currency} ${car.price}` : "N/A"}
                     location={car.location || ""}
                     image={car.images && car.images[0] ? car.images[0] : "https://via.placeholder.com/600x400?text=No+Image"}
                     hint={car.hint || car.make || "car"}

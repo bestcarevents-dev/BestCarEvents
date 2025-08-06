@@ -287,7 +287,7 @@ export default function DashboardPage() {
       data: cars,
       columns: [
         { label: "Name", key: (c: any) => `${c.year} ${c.make} ${c.model}` },
-        { label: "Price", key: (c: any) => c.price ? `$${c.price.toLocaleString()}` : "N/A" },
+        { label: "Price", key: (c: any) => c.price && c.currency ? `${c.currency} ${c.price}` : "N/A" },
         { label: "Location", key: "location" },
         { label: "Status", key: "status" },
         { label: "Type", key: "type" },
