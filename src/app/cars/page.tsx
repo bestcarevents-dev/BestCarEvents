@@ -12,12 +12,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { PlusCircle } from "lucide-react";
 import Link from "next/link";
 import PartnerAdRotator from '@/components/PartnerAdRotator';
+import { useSearchParams } from "next/navigation";
 
 export default function CarsPage() {
     const [cars, setCars] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [currentUser, setCurrentUser] = useState<User | null>(null);
     const [showDialog, setShowDialog] = useState(false);
+    const searchParams = useSearchParams();
     
     // Pagination state
     const [currentPage, setCurrentPage] = useState(1);
@@ -32,6 +34,25 @@ export default function CarsPage() {
     const [selectedPriceRange, setSelectedPriceRange] = useState("all");
     const [sortBy, setSortBy] = useState("newest");
     const [showFilters, setShowFilters] = useState(false);
+
+    // Initialize search from URL parameters
+    useEffect(() => {
+        const search = searchParams.get("search");
+        const make = searchParams.get("make");
+        const bodystyle = searchParams.get("bodystyle");
+        
+        if (search) {
+            setSearchQuery(search);
+        }
+        
+        if (make && make !== "all") {
+            setSelectedMake(make);
+        }
+        
+        if (bodystyle && bodystyle !== "all") {
+            setSelectedBodyStyle(bodystyle);
+        }
+    }, [searchParams]);
 
     useEffect(() => {
       const fetchCars = async () => {

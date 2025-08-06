@@ -16,6 +16,7 @@ import { getAuth, onAuthStateChanged, User } from 'firebase/auth';
 import PartnerAdRotator from '@/components/PartnerAdRotator';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { Badge } from "@/components/ui/badge";
+import { useSearchParams } from "next/navigation";
 
 interface ServiceCardProps {
   id: string;
@@ -114,6 +115,21 @@ export default function OthersPage() {
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedType, setSelectedType] = useState("all");
     const [sortBy, setSortBy] = useState("name");
+    const searchParams = useSearchParams();
+
+    // Initialize search from URL parameters
+    useEffect(() => {
+      const search = searchParams.get("search");
+      const servicetype = searchParams.get("servicetype");
+      
+      if (search) {
+        setSearchTerm(search);
+      }
+      
+      if (servicetype && servicetype !== "all") {
+        setSelectedType(servicetype);
+      }
+    }, [searchParams]);
 
     useEffect(() => {
       const fetchServices = async () => {

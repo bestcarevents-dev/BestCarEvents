@@ -16,6 +16,7 @@ type FeaturedCarCardProps = {
   image: string;
   hint: string;
   specs: CarSpec[];
+  featured?: boolean;
 };
 
 const iconMap: { [key: string]: React.ElementType } = {
@@ -24,7 +25,7 @@ const iconMap: { [key: string]: React.ElementType } = {
   "Top Speed": Gauge,
 };
 
-export default function FeaturedCarCard({ name, year, price, image, hint, specs }: FeaturedCarCardProps) {
+export default function FeaturedCarCard({ name, year, price, image, hint, specs, featured = false }: FeaturedCarCardProps) {
   return (
     <Card className="w-full overflow-hidden shadow-lg transition-all duration-300 hover:shadow-2xl bg-card group">
       <div className="flex flex-col md:flex-row">
@@ -36,6 +37,11 @@ export default function FeaturedCarCard({ name, year, price, image, hint, specs 
             className="object-cover w-full h-full transition-transform duration-500 ease-in-out group-hover:scale-105"
             data-ai-hint={hint}
           />
+          {featured && (
+            <div className="absolute top-3 left-3 z-10">
+              <span className="inline-flex items-center rounded-full bg-yellow-400 text-black px-3 py-1 text-xs font-bold shadow-lg animate-pulse">Featured</span>
+            </div>
+          )}
         </div>
         <div className="flex flex-col flex-grow p-6 md:p-8">
           <div className="flex-grow">

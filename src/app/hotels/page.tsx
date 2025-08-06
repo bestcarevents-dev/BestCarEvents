@@ -14,12 +14,14 @@ import PartnerAdRotator from '@/components/PartnerAdRotator';
 import { getAuth, onAuthStateChanged, User } from 'firebase/auth';
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from '@/components/ui/dialog';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import { useSearchParams } from "next/navigation";
 
 export default function CarHotelsPage() {
   const [hotels, setHotels] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [showDialog, setShowDialog] = useState(false);
+  const searchParams = useSearchParams();
   
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
@@ -33,6 +35,25 @@ export default function CarHotelsPage() {
   const [selectedFeature, setSelectedFeature] = useState("all");
   const [sortBy, setSortBy] = useState("newest");
   const [showFilters, setShowFilters] = useState(false);
+
+  // Initialize search from URL parameters
+  useEffect(() => {
+    const search = searchParams.get("search");
+    const city = searchParams.get("city");
+    const storagetype = searchParams.get("storagetype");
+    
+    if (search) {
+      setSearchQuery(search);
+    }
+    
+    if (city && city !== "all") {
+      setSelectedCity(city);
+    }
+    
+    if (storagetype && storagetype !== "all") {
+      setSelectedStorageType(storagetype);
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     const fetchHotels = async () => {
