@@ -138,22 +138,8 @@ export default function AuctionListingPage() {
     try {
       const db = getFirestore(app);
       
-      // Find the actual document ID from the auctions array
-      const auctionItem = auctions.find(auction => auction.id === id);
-      if (!auctionItem) {
-        toast({
-          title: "Error",
-          description: "Auction not found.",
-          variant: "destructive",
-        });
-        return;
-      }
-      
-      // Use the document ID from the document data, not the Firestore document ID
-      const actualDocId = auctionItem.documentId || auctionItem.id;
-      
       // Check if the document exists before trying to update it
-      const docRef = doc(db, col, actualDocId);
+      const docRef = doc(db, col, id);
       const docSnap = await getDoc(docRef);
       
       if (!docSnap.exists()) {
@@ -208,23 +194,8 @@ export default function AuctionListingPage() {
         return;
       }
 
-      // Find the actual document ID from the auctions array
-      const auctionItem = auctions.find(auction => auction.id === id);
-      if (!auctionItem) {
-        toast({
-          title: "Error",
-          description: "Auction not found.",
-          variant: "destructive",
-        });
-        setAdvertiseLoading(false);
-        return;
-      }
-      
-      // Use the document ID from the document data, not the Firestore document ID
-      const actualDocId = auctionItem.documentId || auctionItem.id;
-
       // Check if the document exists before trying to update it
-      const docRef = doc(db, col, actualDocId);
+      const docRef = doc(db, col, id);
       const docSnap = await getDoc(docRef);
       
       if (!docSnap.exists()) {
