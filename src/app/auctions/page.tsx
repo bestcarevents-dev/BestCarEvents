@@ -6,7 +6,7 @@ import { Pagination, PaginationContent, PaginationItem, PaginationLink, Paginati
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Clock, PlusCircle, Star } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, Suspense } from "react";
 import { getFirestore, collection, getDocs, query, orderBy } from "firebase/firestore";
 import { app } from "@/lib/firebase";
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from '@/components/ui/dialog';
@@ -15,7 +15,7 @@ import PartnerAdRotator from '@/components/PartnerAdRotator';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { useSearchParams } from "next/navigation";
 
-export default function AuctionsPage() {
+function AuctionsPageContent() {
   const [auctions, setAuctions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
@@ -198,7 +198,7 @@ export default function AuctionsPage() {
   return (
     <div className="bg-white">
       <div className="container mx-auto px-4 py-8">
-         <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-12">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-12">
           <div className="text-center md:text-left mb-4 md:mb-0">
             <h1 className="text-4xl md:text-5xl font-extrabold font-headline text-gray-900">Car Auctions</h1>
             <p className="mt-4 text-lg text-gray-600 max-w-2xl mx-auto md:mx-0">
@@ -411,24 +411,18 @@ export default function AuctionsPage() {
                     >
                       <CarouselContent className="-ml-2 md:-ml-4">
                         {featuredAuctions.map((auction) => (
-                          <CarouselItem key={auction.documentId} className="pl-2 md:pl-4 basis-full md:basis-1/2 lg:basis-1/3 xl:basis-1/4">
+                          <CarouselItem key={auction.documentId} className="pl-2 md:pl-4 basis-full md:basis-1/2 lg:basis-1/3">
                             <div className="p-2">
-                              <div className="relative group">
-                                <CarCard
-                                  id={auction.documentId}
-                                  name={auction.auctionName}
-                                  price={auction.auctionHouse}
-                                  location={`Starts ${auction.city}, ${auction.state}`}
-                                  image={auction.imageUrl || "https://via.placeholder.com/800x500?text=No+Image"}
-                                  hint={auction.auctionType}
-                                  type="auction"
-                                  featured={true}
-                                />
-                                <div className="absolute top-4 right-4 bg-white/80 backdrop-blur-sm text-gray-900 px-3 py-1 rounded-full flex items-center gap-2 text-sm">
-                                  <Clock className="w-4 h-4 text-yellow-600" />
-                                  <span>{auction.startDate?.seconds ? new Date(auction.startDate.seconds * 1000).toLocaleDateString() : "-"}</span>
-                                </div>
-                              </div>
+                              <CarCard
+                                key={auction.documentId}
+                                id={auction.documentId}
+                                name={auction.auctionName || "Auction"}
+                                price={`${auction.auctionHouse || "Auction House"}`}
+                                location={`${auction.city}, ${auction.state}`}
+                                image={auction.imageUrl || "https://via.placeholder.com/600x400?text=No+Image"}
+                                hint={auction.auctionType || "auction"}
+                                featured={true}
+                              />
                             </div>
                           </CarouselItem>
                         ))}
@@ -452,27 +446,21 @@ export default function AuctionsPage() {
             <div className="mb-6">
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-2 h-8 bg-yellow-600 rounded-full"></div>
-                <h2 className="text-2xl font-headline font-bold text-gray-900">Live Auctions</h2>
+                <h2 className="text-2xl font-headline font-bold text-gray-900">All Auctions</h2>
                 <div className="flex-1 h-px bg-gradient-to-r from-yellow-600/50 to-transparent"></div>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                {paginatedAuctions.map(auction => (
-                  <div key={auction.documentId} className="relative group">
-                    <CarCard
-                      id={auction.documentId}
-                      name={auction.auctionName}
-                      price={auction.auctionHouse}
-                      location={`Starts ${auction.city}, ${auction.state}`}
-                      image={auction.imageUrl || "https://via.placeholder.com/800x500?text=No+Image"}
-                      hint={auction.auctionType}
-                      type="auction"
-                      featured={false}
-                    />
-                    <div className="absolute top-4 right-4 bg-white/80 backdrop-blur-sm text-gray-900 px-3 py-1 rounded-full flex items-center gap-2 text-sm">
-                      <Clock className="w-4 h-4 text-yellow-600" />
-                      <span>{auction.startDate?.seconds ? new Date(auction.startDate.seconds * 1000).toLocaleDateString() : "-"}</span>
-                    </div>
-                  </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {paginatedAuctions.map((auction, index) => (
+                  <CarCard
+                    key={auction.documentId || index}
+                    id={auction.documentId}
+                    name={auction.auctionName || "Auction"}
+                    price={`${auction.auctionHouse || "Auction House"}`}
+                    location={`${auction.city}, ${auction.state}`}
+                    image={auction.imageUrl || "https://via.placeholder.com/600x400?text=No+Image"}
+                    hint={auction.auctionType || "auction"}
+                    featured={false}
+                  />
                 ))}
               </div>
               {paginatedAuctions.length === 0 && (
@@ -535,5 +523,13 @@ export default function AuctionsPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function AuctionsPage() {
+  return (
+    <Suspense fallback={<div className="text-center text-lg py-12 text-gray-600">Loading...</div>}>
+      <AuctionsPageContent />
+    </Suspense>
   );
 }

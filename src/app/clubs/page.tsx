@@ -6,7 +6,7 @@ import { Pagination, PaginationContent, PaginationItem, PaginationLink, Paginati
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import Link from "next/link";
 import { PlusCircle, Star } from "lucide-react";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, Suspense } from "react";
 import { getFirestore, collection, getDocs, query, orderBy } from "firebase/firestore";
 import { app } from "@/lib/firebase";
 import Image from "next/image";
@@ -18,7 +18,7 @@ import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, Dialog
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { useSearchParams } from "next/navigation";
 
-export default function ClubsPage() {
+function ClubsPageContent() {
   const [clubs, setClubs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
@@ -569,4 +569,12 @@ export default function ClubsPage() {
       </main>
     </div>
   )
+}
+
+export default function ClubsPage() {
+  return (
+    <Suspense fallback={<div className="text-center text-lg py-12 text-gray-600">Loading...</div>}>
+      <ClubsPageContent />
+    </Suspense>
+  );
 }

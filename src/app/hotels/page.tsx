@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, Suspense } from "react";
 import { getFirestore, collection, getDocs } from "firebase/firestore";
 import { app } from "@/lib/firebase";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -16,7 +16,7 @@ import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, Dialog
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { useSearchParams } from "next/navigation";
 
-export default function CarHotelsPage() {
+function CarHotelsPageContent() {
   const [hotels, setHotels] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
@@ -555,5 +555,13 @@ export default function CarHotelsPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function CarHotelsPage() {
+  return (
+    <Suspense fallback={<div className="text-center text-lg py-12 text-gray-600">Loading...</div>}>
+      <CarHotelsPageContent />
+    </Suspense>
   );
 }

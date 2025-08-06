@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { List, Map, PlusCircle, Star, Settings, Wrench, Car, Package, Palette, Shield } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { getFirestore, collection, getDocs } from "firebase/firestore";
 import { app } from "@/lib/firebase";
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from '@/components/ui/dialog';
@@ -107,7 +107,7 @@ const ServiceCard = ({ id, serviceName, serviceType, description, location, pric
   );
 };
 
-export default function OthersPage() {
+function OthersPageContent() {
     const [services, setServices] = useState<ServiceCardProps[]>([]);
     const [loading, setLoading] = useState(true);
     const [currentUser, setCurrentUser] = useState<User | null>(null);
@@ -411,10 +411,10 @@ export default function OthersPage() {
                              <type.icon className="w-6 h-6 text-gray-600" />
                            </div>
                            <h2 className="text-2xl font-headline font-bold text-gray-900">{type.label}</h2>
-                           <div className="flex-1 h-px bg-gradient-to-r from-gray-300/50 to-transparent"></div>
+                           <div className="flex-1 h-px bg-gradient-to-r from-gray-400/50 to-transparent"></div>
                          </div>
                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                           {typeServices.map((service) => (
+                           {typeServices.map(service => (
                              <ServiceCard key={service.id} {...service} />
                            ))}
                          </div>
@@ -469,8 +469,15 @@ export default function OthersPage() {
                 </div>
             </TabsContent>
           </Tabs>
-
         </div>
     </div>
+  );
+}
+
+export default function OthersPage() {
+  return (
+    <Suspense fallback={<div className="text-center text-lg py-12 text-gray-600">Loading...</div>}>
+      <OthersPageContent />
+    </Suspense>
   );
 } 
