@@ -310,8 +310,9 @@ export default function SellCarPage() {
       }
 
       // Add car to database
+      const { video, ...carData } = data; // Remove video field from data
       await addDoc(collection(db, "pendingCars"), {
-        ...data,
+        ...carData,
         images: imageUrls,
         videoUrl: videoUrl,
         listing_type: isFreeListing ? "free" : selectedListingType,
