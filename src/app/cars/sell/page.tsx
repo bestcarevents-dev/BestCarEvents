@@ -269,29 +269,60 @@ export default function SellCarPage() {
 
     setIsSubmitting(true);
     try {
+      // Show initial progress
+      toast({
+        title: "Starting submission...",
+        description: "Preparing your car listing for upload.",
+      });
+
       const imageUrls = [];
       const files = images;
 
       if (files.length === 0) {
           setIsSubmitting(false);
+          toast({
+            title: "Submission Failed",
+            description: "At least one image is required.",
+            variant: "destructive",
+          });
           return;
       }
 
       // Upload images
-      for (const file of Array.from(files)) {
+      toast({
+        title: "Uploading images...",
+        description: `Uploading ${files.length} image${files.length > 1 ? 's' : ''} to our servers.`,
+      });
+
+      for (let i = 0; i < Array.from(files).length; i++) {
+        const file = Array.from(files)[i];
         const imageRef = ref(storage, `car_images/${Date.now()}_${file.name}`);
         await uploadBytes(imageRef, file);
         const imageUrl = await getDownloadURL(imageRef);
         imageUrls.push(imageUrl);
+        
+        // Update progress for each image
+        if (i < files.length - 1) {
+          toast({
+            title: "Uploading images...",
+            description: `Uploaded ${i + 1} of ${files.length} images.`,
+          });
+        }
       }
 
       // Upload video if provided and allowed
       let videoUrl = null;
-      if (video && isVideoAllowed()) {
-        const videoRef = ref(storage, `car_videos/${Date.now()}_${video.name}`);
+      const currentVideo = video; // Get the video from state
+      if (currentVideo && isVideoAllowed()) {
+        toast({
+          title: "Uploading video...",
+          description: "Uploading your professional video. This may take a few moments.",
+        });
+
+        const videoRef = ref(storage, `car_videos/${Date.now()}_${currentVideo.name}`);
         
         // Create upload task for progress tracking
-        const uploadTask = uploadBytesResumable(videoRef, video);
+        const uploadTask = uploadBytesResumable(videoRef, currentVideo);
         
         // Track upload progress
         uploadTask.on('state_changed', 
@@ -307,12 +338,23 @@ export default function SellCarPage() {
         
         await uploadTask;
         videoUrl = await getDownloadURL(videoRef);
+        
+        toast({
+          title: "Video uploaded successfully!",
+          description: "Your professional video has been uploaded.",
+        });
       }
 
+      // Save to database
+      toast({
+        title: "Saving listing...",
+        description: "Saving your car listing to our database.",
+      });
+
       // Add car to database
-      const { video, ...carData } = data; // Remove video field from data
+      const { video: formVideo, ...carDataWithoutVideo } = data; // Remove video field from data
       await addDoc(collection(db, "pendingCars"), {
-        ...carData,
+        ...carDataWithoutVideo,
         images: imageUrls,
         videoUrl: videoUrl,
         listing_type: isFreeListing ? "free" : selectedListingType,
@@ -334,10 +376,20 @@ export default function SellCarPage() {
         setUserDoc({ ...userDoc, [quotaField]: currentQuota - 1 });
       }
 
+      toast({
+        title: "Submission Successful!",
+        description: "Your car listing has been submitted for approval. You will be notified once it's reviewed.",
+      });
+
       router.push("/cars/submission-success");
     } catch (error) {
       console.error("Error submitting car:", error);
       setIsSubmitting(false);
+      toast({
+        title: "Submission Failed",
+        description: "There was an error submitting your car listing. Please try again.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -825,7 +877,14 @@ export default function SellCarPage() {
             </fieldset>
 
             <Button type="submit" className="w-full text-lg py-6" disabled={isSubmitting}>
-              {isSubmitting ? "Submitting..." : "Submit Listing for Approval"}
+              {isSubmitting ? (
+                <div className="flex items-center justify-center gap-2">
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                  <span>Processing your listing...</span>
+                </div>
+              ) : (
+                "Submit Listing for Approval"
+              )}
             </Button>
           </form>
         </CardContent>
