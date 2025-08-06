@@ -17,6 +17,7 @@ import { app } from "@/lib/firebase";
 import { useRouter } from "next/navigation";
 import { Upload, MapPin, Phone, Mail, Globe, Clock, DollarSign, Shield } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { createServiceRequestNotification } from "@/lib/notifications";
 
 const serviceSchema = z.object({
   serviceName: z.string().min(2, "Service name must be at least 2 characters"),
@@ -137,7 +138,18 @@ export default function RegisterServicePage() {
         createdAt: new Date(),
       };
 
-      await addDoc(collection(db, "pendingOthers"), serviceData);
+      const docRef = await addDoc(collection(db, "pendingOthers"), serviceData);
+      
+      // Create notification (non-blocking)
+      try {
+        await createServiceRequestNotification({
+          ...serviceData,
+          id: docRef.id
+        });
+      } catch (notificationError) {
+        console.error('Error creating service notification:', notificationError);
+        // Don't fail the submission if notification fails
+      }
 
       router.push("/others/submission-success");
     } catch (error) {

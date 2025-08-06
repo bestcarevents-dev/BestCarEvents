@@ -16,6 +16,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { UploadCloud, X } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
+import { createPartnerRequestNotification } from "@/lib/notifications";
 
 const partnerCategories = [
   "Tires & Wheels",
@@ -102,7 +103,8 @@ export default function PartnerSubmitPage() {
       const logoRef = ref(storage, `partner_logos/${Date.now()}_${data.logo.name}`);
       await uploadBytes(logoRef, data.logo);
       const logoUrl = await getDownloadURL(logoRef);
-      await addDoc(collection(db, "pendingPartners"), {
+      
+      const partnerData = {
         partnerName: data.partnerName,
         businessName: data.businessName,
         contactEmail: data.contactEmail,
@@ -117,7 +119,22 @@ export default function PartnerSubmitPage() {
         submittedAt: new Date(),
         uploadedByUserId: currentUser?.uid || null,
         uploadedByUserEmail: currentUser?.email || null,
-      });
+      };
+
+      const docRef = await addDoc(collection(db, "pendingPartners"), partnerData);
+      
+      // Create notification (non-blocking)
+      try {
+        await createPartnerRequestNotification({
+          ...partnerData,
+          id: docRef.id,
+          userId: currentUser?.uid || null
+        });
+      } catch (notificationError) {
+        console.error('Error creating partner notification:', notificationError);
+        // Don't fail the submission if notification fails
+      }
+
       router.push("/advertise/my-ads");
     } catch (error) {
       console.error("Error submitting partner:", error);
@@ -270,7 +287,7 @@ export default function PartnerSubmitPage() {
                   <input type="radio" id="pay-paypal" value="paypal" {...register("paymentMethod")}/>
                   <Label htmlFor="pay-paypal">Pay with PayPal</Label>
                 </div>
-                <Button type="button" variant={mockPaid ? "success" : "default"} onClick={() => setMockPaid(true)} disabled={mockPaid}>
+                <Button type="button" variant={mockPaid ? "default" : "default"} onClick={() => setMockPaid(true)} disabled={mockPaid}>
                   {mockPaid ? "Payment Successful (Mock)" : "Pay Now (Mock)"}
                 </Button>
                 {!mockPaid && <p className="text-sm text-muted-foreground">You must complete payment before submitting.</p>}

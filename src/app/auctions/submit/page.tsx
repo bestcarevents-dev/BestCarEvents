@@ -21,6 +21,7 @@ import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import React from "react";
+import { createAuctionRequestNotification } from "@/lib/notifications";
 
 const auctionSchema = z.object({
   auctionName: z.string().min(5, "Auction name is required"),
@@ -96,7 +97,7 @@ export default function RegisterAuctionPage() {
       await uploadBytes(imageRef, data.image);
       const imageUrl = await getDownloadURL(imageRef);
 
-      await addDoc(collection(db, "pendingAuctions"), {
+      const auctionData = {
         auctionName: data.auctionName,
         auctionHouse: data.auctionHouse,
         startDate: data.startDate,
@@ -115,7 +116,21 @@ export default function RegisterAuctionPage() {
         submittedAt: new Date(),
         uploadedByUserId: currentUser?.uid || null,
         uploadedByUserEmail: currentUser?.email || null,
-      });
+      };
+
+      const docRef = await addDoc(collection(db, "pendingAuctions"), auctionData);
+      
+      // Create notification (non-blocking)
+      try {
+        await createAuctionRequestNotification({
+          ...auctionData,
+          id: docRef.id,
+          userId: currentUser?.uid || null
+        });
+      } catch (notificationError) {
+        console.error('Error creating auction notification:', notificationError);
+        // Don't fail the submission if notification fails
+      }
 
       router.push("/auctions/submission-success");
     } catch (error) {

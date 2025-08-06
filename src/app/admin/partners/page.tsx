@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { getFirestore, collection, getDocs, doc, deleteDoc, addDoc } from "firebase/firestore";
+import { getFirestore, collection, getDocs, doc, deleteDoc } from "firebase/firestore";
 import { app } from "@/lib/firebase";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -11,11 +11,9 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
   DialogClose,
 } from "@/components/ui/dialog";
 import Image from "next/image";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { X } from "lucide-react";
 
 interface PartnerRequest {
@@ -35,20 +33,14 @@ interface PartnerRequest {
 }
 
 export default function AdminPartnersPage() {
-  const [pendingRequests, setPendingRequests] = useState<PartnerRequest[]>([]);
   const [approvedRequests, setApprovedRequests] = useState<PartnerRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedPartner, setSelectedPartner] = useState<PartnerRequest | null>(null);
-  const [tab, setTab] = useState("pending");
   const db = getFirestore(app);
 
   useEffect(() => {
     const fetchRequests = async () => {
       setLoading(true);
-      // Fetch pending partners
-      const pendingSnapshot = await getDocs(collection(db, "pendingPartners"));
-      const pendingData = pendingSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as PartnerRequest));
-      setPendingRequests(pendingData);
       // Fetch approved partners
       const approvedSnapshot = await getDocs(collection(db, "partners"));
       const approvedData = approvedSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as PartnerRequest));
@@ -57,28 +49,6 @@ export default function AdminPartnersPage() {
     };
     fetchRequests();
   }, [db]);
-
-  const handleApprove = async (request: PartnerRequest) => {
-    try {
-      const { id, ...partnerData } = { ...request, status: "approved", createdAt: new Date() };
-      await addDoc(collection(db, "partners"), partnerData);
-      await deleteDoc(doc(db, "pendingPartners", request.id));
-      setPendingRequests(pendingRequests.filter(r => r.id !== request.id));
-      setSelectedPartner(null);
-    } catch (error) {
-      console.error("Error approving partner: ", error);
-    }
-  };
-
-  const handleReject = async (id: string) => {
-    try {
-      await deleteDoc(doc(db, "pendingPartners", id));
-      setPendingRequests(pendingRequests.filter(r => r.id !== id));
-      setSelectedPartner(null);
-    } catch (error) {
-      console.error("Error rejecting partner: ", error);
-    }
-  };
 
   const handleDeleteApproved = async (id: string) => {
     try {
@@ -100,95 +70,42 @@ export default function AdminPartnersPage() {
   return (
     <>
       <h1 className="text-2xl font-semibold mb-4">Partner Applications</h1>
-      <Tabs value={tab} onValueChange={setTab} className="mb-6">
-        <TabsList>
-          <TabsTrigger value="pending">Pending</TabsTrigger>
-          <TabsTrigger value="approved">Approved</TabsTrigger>
-          <TabsTrigger value="denied">Denied</TabsTrigger>
-        </TabsList>
-      </Tabs>
-      {tab === "pending" && (
-        loading ? (
-          <p>Loading...</p>
-        ) : (
-          <div className="border rounded-lg">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Logo</TableHead>
-                  <TableHead>Business Name</TableHead>
-                  <TableHead>Categories</TableHead>
-                  <TableHead>Contact</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
+      {loading ? (
+        <p>Loading...</p>
+      ) : (
+        <div className="border rounded-lg">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Logo</TableHead>
+                <TableHead>Business Name</TableHead>
+                <TableHead>Categories</TableHead>
+                <TableHead>Contact</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Created At</TableHead>
+                <TableHead>Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {approvedRequests.map(request => (
+                <TableRow key={request.id} onClick={() => setSelectedPartner(request)} className="cursor-pointer">
+                  <TableCell>
+                    <Image src={request.logoUrl} alt={request.businessName} width={40} height={40} className="rounded-md object-contain" />
+                  </TableCell>
+                  <TableCell className="font-medium">{request.businessName}</TableCell>
+                  <TableCell>{request.categories?.join(", ")}</TableCell>
+                  <TableCell>{request.contactEmail}</TableCell>
+                  <TableCell>
+                    <Badge variant="secondary">Approved</Badge>
+                  </TableCell>
+                  <TableCell>{request.createdAt?.seconds ? new Date(request.createdAt.seconds * 1000).toLocaleString() : (request.createdAt ? request.createdAt.toString() : "-")}</TableCell>
+                  <TableCell>
+                    <Button variant="destructive" size="sm" onClick={e => { e.stopPropagation(); handleDeleteApproved(request.id); }}>Delete</Button>
+                  </TableCell>
                 </TableRow>
-              </TableHeader>
-              <TableBody>
-                {pendingRequests.map(request => (
-                  <TableRow key={request.id} onClick={() => setSelectedPartner(request)} className="cursor-pointer">
-                    <TableCell>
-                      <Image src={request.logoUrl} alt={request.businessName} width={40} height={40} className="rounded-md object-contain" />
-                    </TableCell>
-                    <TableCell className="font-medium">{request.businessName}</TableCell>
-                    <TableCell>{request.categories?.join(", ")}</TableCell>
-                    <TableCell>{request.contactEmail}</TableCell>
-                    <TableCell>
-                      <Badge variant={request.status === 'pending' ? 'default' : 'outline'}>{request.status}</Badge>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <Button variant="outline" size="sm" onClick={e => { e.stopPropagation(); setSelectedPartner(request); }}>View Details</Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-        )
-      )}
-      {tab === "approved" && (
-        loading ? (
-          <p>Loading...</p>
-        ) : (
-          <div className="border rounded-lg">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Logo</TableHead>
-                  <TableHead>Business Name</TableHead>
-                  <TableHead>Categories</TableHead>
-                  <TableHead>Contact</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Created At</TableHead>
-                  <TableHead>Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {approvedRequests.map(request => (
-                  <TableRow key={request.id} onClick={() => setSelectedPartner(request)} className="cursor-pointer">
-                    <TableCell>
-                      <Image src={request.logoUrl} alt={request.businessName} width={40} height={40} className="rounded-md object-contain" />
-                    </TableCell>
-                    <TableCell className="font-medium">{request.businessName}</TableCell>
-                    <TableCell>{request.categories?.join(", ")}</TableCell>
-                    <TableCell>{request.contactEmail}</TableCell>
-                    <TableCell>
-                      <Badge variant="secondary">Approved</Badge>
-                    </TableCell>
-                    <TableCell>{request.createdAt?.seconds ? new Date(request.createdAt.seconds * 1000).toLocaleString() : (request.createdAt ? request.createdAt.toString() : "-")}</TableCell>
-                    <TableCell>
-                      <Button variant="destructive" size="sm" onClick={e => { e.stopPropagation(); handleDeleteApproved(request.id); }}>Delete</Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-        )
-      )}
-      {tab === "denied" && (
-        <div className="p-8 text-center text-muted-foreground">
-          <h2 className="text-xl font-semibold mb-2">Denied Partners</h2>
-          <p>Denied partners are not stored. Once denied, a partner application is permanently removed from the system.</p>
+              ))}
+            </TableBody>
+          </Table>
         </div>
       )}
       {selectedPartner && (
@@ -228,15 +145,6 @@ export default function AdminPartnersPage() {
                 )}
               </div>
             </div>
-            {tab === "pending" && (
-              <DialogFooter className="px-6 pb-6">
-                <DialogClose asChild>
-                  <Button variant="outline">Cancel</Button>
-                </DialogClose>
-                <Button variant="destructive" onClick={() => handleReject(selectedPartner.id)}>Reject</Button>
-                <Button onClick={() => handleApprove(selectedPartner)}>Approve</Button>
-              </DialogFooter>
-            )}
           </DialogContent>
         </Dialog>
       )}

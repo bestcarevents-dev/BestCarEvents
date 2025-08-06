@@ -21,6 +21,7 @@ import { CalendarIcon, UploadCloud } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { createEventRequestNotification } from "@/lib/notifications";
 
 const eventSchema = z.object({
   eventName: z.string().min(5, "Event name must be at least 5 characters"),
@@ -85,7 +86,7 @@ export default function HostEventPage() {
       await uploadBytes(imageRef, data.image);
       const imageUrl = await getDownloadURL(imageRef);
 
-      await addDoc(collection(db, "pendingEvents"), {
+      const eventData = {
         eventName: data.eventName,
         eventDate: data.eventDate,
         location: data.location,
@@ -106,7 +107,21 @@ export default function HostEventPage() {
         submittedAt: new Date(),
         uploadedByUserId: currentUser?.uid || null,
         uploadedByUserEmail: currentUser?.email || null,
-      });
+      };
+
+      const docRef = await addDoc(collection(db, "pendingEvents"), eventData);
+      
+      // Create notification (non-blocking)
+      try {
+        await createEventRequestNotification({
+          ...eventData,
+          id: docRef.id,
+          userId: currentUser?.uid || null
+        });
+      } catch (notificationError) {
+        console.error('Error creating event notification:', notificationError);
+        // Don't fail the submission if notification fails
+      }
 
       router.push("/events/submission-success");
     } catch (error) {

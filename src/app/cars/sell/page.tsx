@@ -33,6 +33,7 @@ import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 import { Elements } from '@stripe/react-stripe-js';
 import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { useToast } from "@/hooks/use-toast";
+import { createCarRequestNotification } from "@/lib/notifications";
 
 const carFeatures = ["Air Conditioning", "Power Steering", "Power Windows", "Sunroof/Moonroof", "Navigation System", "Bluetooth", "Backup Camera", "Leather Seats", "Heated Seats"] as const;
 
@@ -353,7 +354,7 @@ export default function SellCarPage() {
 
       // Add car to database
       const { video: formVideo, ...carDataWithoutVideo } = data; // Remove video field from data
-      await addDoc(collection(db, "pendingCars"), {
+      const carData = {
         ...carDataWithoutVideo,
         images: imageUrls,
         videoUrl: videoUrl,
@@ -362,7 +363,21 @@ export default function SellCarPage() {
         submittedAt: new Date(),
         uploadedByUserId: currentUser?.uid || null,
         uploadedByUserEmail: currentUser?.email || null,
-      });
+      };
+
+      const docRef = await addDoc(collection(db, "pendingCars"), carData);
+      
+      // Create notification (non-blocking)
+      try {
+        await createCarRequestNotification({
+          ...carData,
+          id: docRef.id,
+          userId: currentUser?.uid || null
+        });
+      } catch (notificationError) {
+        console.error('Error creating car notification:', notificationError);
+        // Don't fail the submission if notification fails
+      }
 
       // Decrease user's quota only if not free listing
       if (!isFreeListing && currentUser) {

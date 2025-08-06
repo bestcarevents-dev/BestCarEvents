@@ -16,6 +16,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { UploadCloud, X } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
+import { createHotelRequestNotification } from "@/lib/notifications";
 
 const hotelFeatures = ["Climate Controlled", "24/7 Security", "Detailing Services", "Member's Lounge", "Battery Tending", "Transportation", "24/7 Access", "Social Events", "Sales & Brokerage"] as const;
 
@@ -126,7 +127,8 @@ export default function ListHotelPage() {
         const imageUrl = await getDownloadURL(imageRef);
         imageUrls.push(imageUrl);
       }
-      await addDoc(collection(db, "pendingHotels"), {
+      
+      const hotelData = {
         hotelName: data.hotelName,
         address: data.address,
         city: data.city,
@@ -143,7 +145,22 @@ export default function ListHotelPage() {
         submittedAt: new Date(),
         uploadedByUserId: currentUser?.uid || null,
         uploadedByUserEmail: currentUser?.email || null,
-      });
+      };
+
+      const docRef = await addDoc(collection(db, "pendingHotels"), hotelData);
+      
+      // Create notification (non-blocking)
+      try {
+        await createHotelRequestNotification({
+          ...hotelData,
+          id: docRef.id,
+          userId: currentUser?.uid || null
+        });
+      } catch (notificationError) {
+        console.error('Error creating hotel notification:', notificationError);
+        // Don't fail the submission if notification fails
+      }
+
       router.push("/hotels/submission-success");
     } catch (error) {
       console.error("Error submitting hotel:", error);

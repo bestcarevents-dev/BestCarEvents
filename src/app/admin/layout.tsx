@@ -18,7 +18,8 @@ import {
   Handshake,
   Mail,
   Star,
-  Settings
+  Settings,
+  CreditCard
 } from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
@@ -58,6 +59,7 @@ const navLinks = [
     { href: "/admin/users", icon: Users, label: "Manage Users" },
     { href: "/admin/newsletter", icon: Mail, label: "Newsletter" },
     { href: "/admin/newsletter-requests", icon: Mail, label: "Newsletter Requests" },
+    { href: "/admin/payments", icon: CreditCard, label: "Payments" },
     { href: "/admin/settings", icon: Settings, label: "Settings" },
 ];
 

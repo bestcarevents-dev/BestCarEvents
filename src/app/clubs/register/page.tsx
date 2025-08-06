@@ -15,6 +15,7 @@ import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { UploadCloud, X } from "lucide-react";
+import { createClubRequestNotification } from "@/lib/notifications";
 
 const clubSchema = z.object({
   clubName: z.string().min(3, "Club name is required"),
@@ -92,7 +93,7 @@ export default function RegisterClubPage() {
       await uploadBytes(logoRef, data.logo);
       const logoUrl = await getDownloadURL(logoRef);
 
-      await addDoc(collection(db, "pendingClubs"), {
+      const clubData = {
         clubName: data.clubName,
         city: data.city,
         country: data.country,
@@ -108,7 +109,21 @@ export default function RegisterClubPage() {
         submittedAt: new Date(),
         uploadedByUserId: currentUser?.uid || null,
         uploadedByUserEmail: currentUser?.email || null,
-      });
+      };
+
+      const docRef = await addDoc(collection(db, "pendingClubs"), clubData);
+      
+      // Create notification (non-blocking)
+      try {
+        await createClubRequestNotification({
+          ...clubData,
+          id: docRef.id,
+          userId: currentUser?.uid || null
+        });
+      } catch (notificationError) {
+        console.error('Error creating club notification:', notificationError);
+        // Don't fail the submission if notification fails
+      }
 
       router.push("/clubs/submission-success");
     } catch (error) {

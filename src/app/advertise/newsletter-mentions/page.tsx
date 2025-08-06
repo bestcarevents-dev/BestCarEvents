@@ -20,6 +20,7 @@ import { Info, Plus, AlertTriangle, Upload, X } from "lucide-react";
 import { loadStripe } from "@stripe/stripe-js";
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 import { useToast } from "@/hooks/use-toast";
+import { createNewsletterRequestNotification } from "@/lib/notifications";
 
 interface NewsletterRequest {
   id: string;
@@ -209,7 +210,19 @@ export default function NewsletterMentionsPage() {
         uploadedByUserEmail: currentUser.email
       };
 
-      await addDoc(collection(db, "newsletterrequests"), newsletterRequest);
+      const docRef = await addDoc(collection(db, "newsletterrequests"), newsletterRequest);
+      
+      // Create notification (non-blocking)
+      try {
+        await createNewsletterRequestNotification({
+          ...newsletterRequest,
+          id: docRef.id,
+          userId: currentUser.uid
+        });
+      } catch (notificationError) {
+        console.error('Error creating newsletter notification:', notificationError);
+        // Don't fail the submission if notification fails
+      }
 
       await updateDoc(doc(db, "users", currentUser.uid), {
         [quotaField]: (userDoc[quotaField] ?? 0) - 1

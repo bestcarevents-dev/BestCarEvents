@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { db } from '@/lib/firebase';
-import { collection, query, where, getDocs, updateDoc, increment } from 'firebase/firestore';
+import { collection, query, where, getDocs, updateDoc, increment, addDoc, serverTimestamp } from 'firebase/firestore';
+import { createPaymentNotification } from '@/lib/notifications';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2022-11-15',
@@ -32,6 +33,7 @@ export async function POST(req: NextRequest) {
       console.error('Missing email or description in session.', { email, description });
       return NextResponse.json({ error: 'Missing email or description in session.' }, { status: 400 });
     }
+    
     // Map description to Firestore field
     let update: Record<string, any> = {};
     switch (description) {
@@ -117,6 +119,7 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: 'Unknown product description.' }, { status: 400 });
     }
     console.log('Firestore update object:', update);
+    
     // Update user by email
     try {
       const usersRef = collection(db, 'users');
@@ -132,6 +135,38 @@ export async function POST(req: NextRequest) {
       console.log('Updating user doc ref:', userDoc.ref.path, 'with:', update);
       await updateDoc(userDoc.ref, update);
       console.log('Firestore update successful');
+      
+      // Create payment record in database
+      const paymentData = {
+        amount: session.amount_total ? session.amount_total / 100 : 0, // Convert from cents
+        currency: session.currency?.toUpperCase() || 'USD',
+        description: description,
+        customerEmail: email,
+        paymentMethod: 'Stripe',
+        status: 'completed',
+        createdAt: serverTimestamp(),
+        paymentId: session.id,
+        stripeSessionId: session.id
+      };
+      
+      await addDoc(collection(db, 'payments'), paymentData);
+      console.log('Payment record created successfully');
+      
+      // Create notification (non-blocking)
+      try {
+        await createPaymentNotification({
+          amount: paymentData.amount,
+          description: description,
+          customerEmail: email,
+          paymentId: session.id,
+          paymentMethod: 'Stripe'
+        });
+        console.log('Payment notification created successfully');
+      } catch (notificationError) {
+        console.error('Error creating payment notification:', notificationError);
+        // Don't fail the payment process if notification fails
+      }
+      
       return NextResponse.json({ received: true, updated: update });
     } catch (firestoreError) {
       console.error('Firestore error:', firestoreError);
