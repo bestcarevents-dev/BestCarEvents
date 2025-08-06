@@ -828,7 +828,7 @@ export default function ClubListingPage() {
                               <Button
                                 className="w-full text-lg py-4"
                                 disabled={advertiseLoading || !selectedFeatureType}
-                                onClick={async () => await handleAdvertise(tableData.col, item.id)}
+                                onClick={() => handleAdvertise(tableData.col, item.id)}
                               >
                                 {advertiseLoading ? "Processing..." : `Feature ${selectedFeatureType === 'standard' ? 'Standard' : 'Premium'}`}
                               </Button>

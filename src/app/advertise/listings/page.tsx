@@ -792,7 +792,7 @@ export default function DashboardPage() {
                                     <Button
                                       className="w-full text-lg py-4"
                                       disabled={advertiseLoading || !selectedFeatureType}
-                                      onClick={async () => await handleAdvertise(table.col, item.id)}
+                                      onClick={() => handleAdvertise(table.col, item.id)}
                                     >
                                       {advertiseLoading ? "Processing..." : `Feature ${selectedFeatureType === 'standard' ? 'Standard' : 'Premium'}`}
                                     </Button>

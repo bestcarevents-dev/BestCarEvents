@@ -135,21 +135,59 @@ export default function AuctionListingPage() {
   }, [showSuccessMessage]);
 
   const handleDeactivate = async (col: string, id: string) => {
-    const db = getFirestore(app);
-    await updateDoc(doc(db, col, id), { deactivated: true });
-    // Refresh the data
-    if (currentUser) {
-      const fetchByUser = async (col: string) => {
-        const snap = await getDocs(collection(db, col));
-        return snap.docs
-          .map((doc) => ({ id: doc.id, ...doc.data() }))
-          .filter(
-            (item: any) =>
-              item.uploadedByUserId === currentUser.uid ||
-              item.uploadedByUserEmail === currentUser.email
-          );
-      };
-      setAuctions(await fetchByUser("auctions"));
+    try {
+      const db = getFirestore(app);
+      
+      // Find the actual document ID from the auctions array
+      const auctionItem = auctions.find(auction => auction.id === id);
+      if (!auctionItem) {
+        toast({
+          title: "Error",
+          description: "Auction not found.",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      // Use the document ID from the document data, not the Firestore document ID
+      const actualDocId = auctionItem.documentId || auctionItem.id;
+      
+      // Check if the document exists before trying to update it
+      const docRef = doc(db, col, actualDocId);
+      const docSnap = await getDoc(docRef);
+      
+      if (!docSnap.exists()) {
+        toast({
+          title: "Error",
+          description: "The listing you're trying to deactivate no longer exists.",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      await updateDoc(docRef, { deactivated: true });
+      
+      // Refresh the data
+      if (currentUser) {
+        const fetchByUser = async (col: string) => {
+          const snap = await getDocs(collection(db, col));
+          return snap.docs
+            .map((doc) => ({ id: doc.id, ...doc.data() }))
+            .filter(
+              (item: any) =>
+                item.uploadedByUserId === currentUser.uid ||
+                item.uploadedByUserEmail === currentUser.email
+            );
+        };
+        setAuctions(await fetchByUser("auctions"));
+      }
+    } catch (error: any) {
+      console.error("Error deactivating listing:", error);
+      toast({
+        title: "Error",
+        description: error.message || "Failed to deactivate the listing. Please try again.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -157,80 +195,119 @@ export default function AuctionListingPage() {
     setAdvertiseLoading(true);
     const db = getFirestore(app);
     
-    // Check if user has remaining Credit for the selected feature type
-    if (selectedFeatureType === 'standard' && (!userDoc || userDoc.standardListingRemaining <= 0)) {
-      alert("You don't have enough Standard Listing Credit remaining.");
-      setAdvertiseLoading(false);
-      return;
-    }
-    if (selectedFeatureType === 'featured' && (!userDoc || userDoc.featuredListingRemaining <= 0)) {
-      alert("You don't have enough Featured Listing Credit remaining.");
-      setAdvertiseLoading(false);
-      return;
-    }
+    try {
+      // Check if user has remaining Credit for the selected feature type
+      if (selectedFeatureType === 'standard' && (!userDoc || userDoc.standardListingRemaining <= 0)) {
+        alert("You don't have enough Standard Listing Credit remaining.");
+        setAdvertiseLoading(false);
+        return;
+      }
+      if (selectedFeatureType === 'featured' && (!userDoc || userDoc.featuredListingRemaining <= 0)) {
+        alert("You don't have enough Featured Listing Credit remaining.");
+        setAdvertiseLoading(false);
+        return;
+      }
 
-    // Calculate feature end date based on type
-    const now = new Date();
-    const featureStart = now;
-    let featureEnd;
-    
-    if (selectedFeatureType === 'standard') {
-      featureEnd = new Date(now.getTime() + (30 * 24 * 60 * 60 * 1000)); // 1 month
-    } else {
-      featureEnd = new Date(now.getTime() + (365 * 24 * 60 * 60 * 1000)); // 1 year
-    }
-
-    await updateDoc(doc(db, col, id), { 
-      featured: true,
-      feature_type: selectedFeatureType,
-      feature_start: featureStart,
-      feature_end: featureEnd
-    });
-    
-    // Decrement the user's Credit
-    if (selectedFeatureType === 'standard') {
-      await updateDoc(doc(db, "users", currentUser!.uid), {
-        standardListingRemaining: (userDoc?.standardListingRemaining || 0) - 1
-      });
-      // Update local state immediately
-      setUserDoc((prev: any) => prev ? {
-        ...prev,
-        standardListingRemaining: (prev.standardListingRemaining || 0) - 1
-      } : null);
-    } else {
-      await updateDoc(doc(db, "users", currentUser!.uid), {
-        featuredListingRemaining: (userDoc?.featuredListingRemaining || 0) - 1
-      });
-      // Update local state immediately
-      setUserDoc((prev: any) => prev ? {
-        ...prev,
-        featuredListingRemaining: (prev.featuredListingRemaining || 0) - 1
-      } : null);
-    }
-    
-    setAdvertiseLoading(false);
-    setAdvertiseModal(null);
-    setSelectedFeatureType(null);
-    setShowSuccessMessage(true);
-    
-    // Refresh the data
-    if (currentUser) {
-      const fetchByUser = async (col: string) => {
-        const snap = await getDocs(collection(db, col));
-        return snap.docs
-          .map((doc) => ({ id: doc.id, ...doc.data() }))
-          .filter(
-            (item: any) =>
-              item.uploadedByUserId === currentUser.uid ||
-              item.uploadedByUserEmail === currentUser.email
-          );
-      };
-      setAuctions(await fetchByUser("auctions"));
+      // Find the actual document ID from the auctions array
+      const auctionItem = auctions.find(auction => auction.id === id);
+      if (!auctionItem) {
+        toast({
+          title: "Error",
+          description: "Auction not found.",
+          variant: "destructive",
+        });
+        setAdvertiseLoading(false);
+        return;
+      }
       
-      // Refresh user document
-      const userRef = doc(db, "users", currentUser.uid);
-      const userSnap = await getDoc(userRef);
-      setUserDoc(userSnap.exists() ? userSnap.data() : null);
+      // Use the document ID from the document data, not the Firestore document ID
+      const actualDocId = auctionItem.documentId || auctionItem.id;
+
+      // Check if the document exists before trying to update it
+      const docRef = doc(db, col, actualDocId);
+      const docSnap = await getDoc(docRef);
+      
+      if (!docSnap.exists()) {
+        toast({
+          title: "Error",
+          description: "The listing you're trying to feature no longer exists.",
+          variant: "destructive",
+        });
+        setAdvertiseLoading(false);
+        return;
+      }
+
+      // Calculate feature end date based on type
+      const now = new Date();
+      const featureStart = now;
+      let featureEnd;
+      
+      if (selectedFeatureType === 'standard') {
+        featureEnd = new Date(now.getTime() + (30 * 24 * 60 * 60 * 1000)); // 1 month
+      } else {
+        featureEnd = new Date(now.getTime() + (365 * 24 * 60 * 60 * 1000)); // 1 year
+      }
+
+      await updateDoc(docRef, { 
+        featured: true,
+        feature_type: selectedFeatureType,
+        feature_start: featureStart,
+        feature_end: featureEnd
+      });
+      
+      // Decrement the user's Credit
+      if (selectedFeatureType === 'standard') {
+        await updateDoc(doc(db, "users", currentUser!.uid), {
+          standardListingRemaining: (userDoc?.standardListingRemaining || 0) - 1
+        });
+        // Update local state immediately
+        setUserDoc((prev: any) => prev ? {
+          ...prev,
+          standardListingRemaining: (prev.standardListingRemaining || 0) - 1
+        } : null);
+      } else {
+        await updateDoc(doc(db, "users", currentUser!.uid), {
+          featuredListingRemaining: (userDoc?.featuredListingRemaining || 0) - 1
+        });
+        // Update local state immediately
+        setUserDoc((prev: any) => prev ? {
+          ...prev,
+          featuredListingRemaining: (prev.featuredListingRemaining || 0) - 1
+        } : null);
+      }
+      
+      setAdvertiseLoading(false);
+      setAdvertiseModal(null);
+      setSelectedFeatureType(null);
+      setShowSuccessMessage(true);
+      
+      // Refresh the data
+      if (currentUser) {
+        const fetchByUser = async (col: string) => {
+          const snap = await getDocs(collection(db, col));
+          return snap.docs
+            .map((doc) => ({ id: doc.id, ...doc.data() }))
+            .filter(
+              (item: any) =>
+                item.uploadedByUserId === currentUser.uid ||
+                item.uploadedByUserEmail === currentUser.email
+            );
+        };
+        setAuctions(await fetchByUser("auctions"));
+        
+        // Refresh user document
+        const userRef = doc(db, "users", currentUser.uid);
+        const userSnap = await getDoc(userRef);
+        setUserDoc(userSnap.exists() ? userSnap.data() : null);
+      }
+    } catch (error: any) {
+      console.error("Error featuring listing:", error);
+      toast({
+        title: "Error",
+        description: error.message || "Failed to feature the listing. Please try again.",
+        variant: "destructive",
+      });
+      setAdvertiseLoading(false);
     }
   };
 
@@ -841,7 +918,7 @@ export default function AuctionListingPage() {
                               <Button
                                 className="w-full text-lg py-4"
                                 disabled={advertiseLoading || !selectedFeatureType}
-                                onClick={async () => await handleAdvertise(tableData.col, item.id)}
+                                onClick={() => handleAdvertise(tableData.col, item.id)}
                               >
                                 {advertiseLoading ? "Processing..." : `Feature ${selectedFeatureType === 'standard' ? 'Standard' : 'Premium'}`}
                               </Button>
