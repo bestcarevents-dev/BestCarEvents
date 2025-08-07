@@ -32,6 +32,7 @@ import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 import { Elements } from '@stripe/react-stripe-js';
 import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { useToast } from "@/hooks/use-toast";
+import HowItWorksModal from "@/components/HowItWorksModal";
 
 export default function HotelListingPage() {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
@@ -465,6 +466,11 @@ export default function HotelListingPage() {
                 <CardDescription>Manage your {tableData.label.toLowerCase()} here.</CardDescription>
               </div>
               <div className="flex gap-2">
+                <HowItWorksModal 
+                  listingType="hotel"
+                  triggerText="How it works"
+                  triggerVariant="outline"
+                />
                 <Dialog open={paymentModal?.open} onOpenChange={(open) => {
                   if (!open) {
                     setPaymentModal(null);

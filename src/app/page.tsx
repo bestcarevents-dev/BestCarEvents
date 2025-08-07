@@ -15,6 +15,7 @@ import NewsletterSubscribe from '@/components/NewsletterSubscribe';
 import { ChevronLeft, ChevronRight, Circle } from 'lucide-react';
 import Image from 'next/image';
 import { Globe, Users, Link as LinkIcon } from 'lucide-react';
+import HomepageAdCarousel from "@/components/HomepageAdCarousel";
 
 type CarData = {
   id: string;
@@ -136,6 +137,11 @@ const ValueProposition = () => {
                     <h3 className="text-xl font-headline font-semibold text-gray-900">Premier Experiences</h3>
                     <p className="mt-2 text-gray-600">Discover and attend the most prestigious automotive events.</p>
                 </div>
+            </div>
+            
+            {/* Partner Ads Section */}
+            <div className="mt-20">
+                <HomepageAdCarousel />
             </div>
         </div>
     </div>

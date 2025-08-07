@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Star, Mail, Globe, Linkedin, Facebook, Users, Calendar, Image, Video, TrendingUp, Award, ChevronDown, ChevronUp, ArrowRight, LogIn, BarChart3, Car } from "lucide-react";
+import { Star, Mail, Globe, Linkedin, Facebook, Users, Calendar, Image, Video, TrendingUp, Award, ChevronDown, ChevronUp, ArrowRight, LogIn, BarChart3, Car, CheckCircle, Zap, Gift } from "lucide-react";
 import { useState, useEffect } from "react";
 import { getAuth, onAuthStateChanged, User } from "firebase/auth";
 import { app } from "@/lib/firebase";
@@ -17,6 +17,46 @@ const formatPrice = (chfPrice: string, eurPrice: string) => {
     </div>
   );
 };
+
+// Free posting categories
+const freeCategories = [
+  {
+    name: "Events",
+    icon: <Calendar className="w-8 h-8" />,
+    description: "List your car events, meetups, and gatherings for free",
+    color: "bg-blue-100 text-blue-600"
+  },
+  {
+    name: "Clubs",
+    icon: <Users className="w-8 h-8" />,
+    description: "Promote your car clubs and communities at no cost",
+    color: "bg-green-100 text-green-600"
+  },
+  {
+    name: "Hotels",
+    icon: <Star className="w-8 h-8" />,
+    description: "Showcase your hotel services to car enthusiasts",
+    color: "bg-purple-100 text-purple-600"
+  },
+  {
+    name: "Auctions",
+    icon: <Award className="w-8 h-8" />,
+    description: "Feature your car auctions and sales events",
+    color: "bg-orange-100 text-orange-600"
+  },
+  {
+    name: "Services",
+    icon: <Car className="w-8 h-8" />,
+    description: "Advertise your automotive services for free",
+    color: "bg-red-100 text-red-600"
+  },
+  {
+    name: "Forums",
+    icon: <Zap className="w-8 h-8" />,
+    description: "Any other car-related services you offer",
+    color: "bg-yellow-100 text-yellow-600"
+  }
+];
 
 const whyJoin = [
   "Targeted Audience: Gain direct access to an exclusive community of high-standard car collectors who are always on the lookout for premium events, clubs, auctions, and hotels.",
@@ -180,7 +220,7 @@ const carSalePricing = [
           "Up to 5 images",
           "Great visibility at an affordable price"
         ],
-        icon: <Image className="w-5 h-5" />
+        icon: <Image className="w-5 h-5 text-black" />
       },
       {
         name: "Enhanced Listing",
@@ -193,7 +233,7 @@ const carSalePricing = [
           "Visibility across social media platforms",
           "Instagram, Facebook, LinkedIn exposure"
         ],
-        icon: <TrendingUp className="w-5 h-5" />
+        icon: <TrendingUp className="w-5 h-5 text-black" />
       },
       {
         name: "Premium Listing",
@@ -206,7 +246,7 @@ const carSalePricing = [
           "Featured across all social media platforms",
           "Top-tier exposure and maximum visibility"
         ],
-        icon: <Video className="w-5 h-5" />
+        icon: <Video className="w-5 h-5 text-black  " />
       },
       {
         name: "Exclusive Banner Placement",
@@ -219,7 +259,7 @@ const carSalePricing = [
           "Enhanced visibility for up to 30 days",
           "Premium positioning for serious sellers"
         ],
-        icon: <Award className="w-5 h-5" />
+        icon: <Award className="w-5 h-5 text-black" />
       }
     ]
   }
@@ -253,10 +293,30 @@ const optionalAddons = [
 ];
 
 const whyChooseBestCar = [
-  "Lower pricing than competitors like AutoScout24 and ClassicDriver",
-  "Exclusive promotional offers with free listings for the first 2-3 months",
-  "Greater visibility with social media integration and banner placement",
-  "Flexible pricing plans designed to meet the needs of all sellers"
+  {
+    text: "Lower pricing than competitors like AutoScout24 and ClassicDriver",
+    isFree: false
+  },
+  {
+    text: "Exclusive promotional offers with FREE listings for the first 2 months",
+    isFree: true
+  },
+  {
+    text: "FREE basic listings for hotels, events, auctions, clubs, and services",
+    isFree: true
+  },
+  {
+    text: "Greater visibility with social media integration and banner placement",
+    isFree: false
+  },
+  {
+    text: "Flexible pricing plans designed to meet the needs of all sellers",
+    isFree: false
+  },
+  {
+    text: "FREE community access to thousands of car enthusiasts",
+    isFree: true
+  }
 ];
 
 export default function AdvertisePage() {
@@ -276,121 +336,164 @@ export default function AdvertisePage() {
 
   return (
     <div className="bg-white">
-      <div className="container mx-auto px-4 py-16">
-        {/* Context Instructions Section */}
-        <Card className="mb-12 p-8 bg-white border border-gray-200 shadow-lg">
-          <CardHeader className="text-center p-0 mb-6">
-            <div className="flex justify-center mb-4">
-              <div className="p-3 bg-yellow-100 rounded-full">
-                <BarChart3 className="h-8 w-8 text-yellow-600" />
-              </div>
-            </div>
-            <CardTitle className="text-3xl font-bold text-yellow-600 mb-2">
-              Comprehensive Advertisement & Listing Dashboard
-            </CardTitle>
-            <CardDescription className="text-lg text-gray-600 max-w-3xl mx-auto">
-              Access our powerful dashboard to buy ad Credits, manage listings, and feature your content across all categories
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="p-0">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-              <div className="space-y-4">
-                <h3 className="text-xl font-semibold text-gray-900">How It Works:</h3>
-                <div className="space-y-3">
-                  <div className="flex items-start gap-3">
-                    <div className="w-6 h-6 bg-yellow-600 text-white rounded-full flex items-center justify-center text-sm font-bold mt-0.5">1</div>
-                    <div>
-                      <p className="font-medium text-gray-900">Buy any ad Credit (slot)</p>
-                      <p className="text-sm text-gray-600">Purchase credits for banners, listings, or newsletter features</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <div className="w-6 h-6 bg-yellow-600 text-white rounded-full flex items-center justify-center text-sm font-bold mt-0.5">2</div>
-                    <div>
-                      <p className="font-medium text-gray-900">Advertise using your Credit</p>
-                      <p className="text-sm text-gray-600">Use your purchased credits to create and manage advertisements</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <div className="w-6 h-6 bg-yellow-600 text-white rounded-full flex items-center justify-center text-sm font-bold mt-0.5">3</div>
-                    <div>
-                      <p className="font-medium text-gray-900">Feature across categories</p>
-                      <p className="text-sm text-gray-600">Feature cars, auctions, hotels, clubs with comprehensive options</p>
-                    </div>
-                  </div>
+      <div className="container mx-auto px-4 py-8">
+        {/* Hero Section - Free Features Emphasis */}
+        <div className="mb-8">
+          <Card className="p-6 bg-gradient-to-r from-yellow-50 to-orange-50 border-2 border-yellow-200 shadow-lg">
+            <CardHeader className="text-center p-0 mb-6">
+              <div className="flex justify-center mb-3">
+                <div className="p-3 bg-yellow-100 rounded-full">
+                  <Gift className="h-8 w-8 text-yellow-600" />
                 </div>
               </div>
-              <div className="space-y-4">
-                <h3 className="text-xl font-semibold text-gray-900">Available Options:</h3>
-                <div className="space-y-3">
-                  <div className="flex items-center gap-2">
-                    <Star className="h-4 w-4 text-yellow-600" />
-                    <span className="text-sm text-gray-600">Banner advertisements</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Calendar className="h-4 w-4 text-yellow-600" />
-                    <span className="text-sm text-gray-600">Event/Club/Hotel/Auction listings</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Mail className="h-4 w-4 text-yellow-600" />
-                    <span className="text-sm text-gray-600">Newsletter mentions</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Image className="h-4 w-4 text-yellow-600" />
-                    <span className="text-sm text-gray-600">Car listings with multiple tiers</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <TrendingUp className="h-4 w-4 text-yellow-600" />
-                    <span className="text-sm text-gray-600">Featured placements</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            {!authChecked ? (
-              <div className="text-center">
-                <div className="animate-pulse">
-                  <div className="h-4 bg-gray-200 rounded w-48 mx-auto mb-4"></div>
-                </div>
-              </div>
-            ) : currentUser ? (
-              <div className="text-center">
-                <Button size="lg" asChild className="font-bold rounded-full bg-yellow-600 hover:bg-yellow-700">
-                  <Link href="/advertise/dashboard">
-                    <BarChart3 className="mr-2 h-5 w-5" />
-                    Go to Dashboard
-                    <ArrowRight className="ml-2 h-5 w-5" />
-                  </Link>
-                </Button>
-                <p className="text-sm text-gray-600 mt-3">
-                  Access your comprehensive dashboard to manage all advertisements and listings
+              <CardTitle className="text-xl md:text-2xl font-bold text-yellow-600 mb-3">
+                🎉 Post Your Listings for FREE! 🎉
+              </CardTitle>
+              <CardDescription className="text-lg md:text-xl text-gray-700 max-w-3xl mx-auto font-semibold">
+                List your hotel, event, auction, club, or any car-related service for FREE today — get seen by thousands of car lovers!
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="p-0">
+              <div className="text-center mb-6">
+                <p className="text-base text-gray-600 mb-4">
+                  <strong>All listings in categories like Hotels, Events, Auctions, Services, etc. are 100% FREE to post!</strong>
                 </p>
-              </div>
-            ) : (
-              <div className="text-center">
-                <div className="mb-4">
-                  <p className="text-gray-600 mb-4">
-                    Please log in to access our comprehensive advertisement dashboard
-                  </p>
-                  <Button size="lg" asChild className="font-bold rounded-full bg-yellow-600 hover:bg-yellow-700">
-                    <Link href="/login">
-                      <LogIn className="mr-2 h-5 w-5" />
-                      Login to Continue
+                <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
+                  <Button size="default" asChild className="font-bold rounded-full bg-green-600 hover:bg-green-700 text-white px-6 py-2 text-base w-full sm:w-auto">
+                    <Link href={currentUser ? "/post-a-listing" : "/register"}>
+                      <CheckCircle className="mr-2 h-5 w-5" />
+                      {currentUser ? "Post Your Listing for Free" : "Subscribe/Register for Free"}
                       <ArrowRight className="ml-2 h-5 w-5" />
                     </Link>
                   </Button>
+                  {!currentUser && (
+                    <Button size="default" asChild variant="outline" className="font-bold rounded-full border-2 border-yellow-600 text-yellow-600 hover:bg-yellow-50 px-6 py-2 text-base w-full sm:w-auto">
+                      <Link href="/login">
+                        <LogIn className="mr-2 h-5 w-5" />
+                        Login to Post
+                        <ArrowRight className="ml-2 h-5 w-5" />
+                      </Link>
+                    </Button>
+                  )}
                 </div>
-                <p className="text-sm text-gray-600">
-                  Don't have an account? <Link href="/register" className="text-yellow-600 hover:underline">Register here</Link>
-                </p>
               </div>
-            )}
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        </div>
 
+        {/* Free Categories Section */}
+        <div className="mb-16">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-4 text-gray-900">
+            What Can You Post for FREE?
+          </h2>
+          <p className="text-lg text-center text-gray-600 mb-8 max-w-3xl mx-auto">
+            Choose from these categories and start posting immediately. No hidden fees, no complicated pricing — just free exposure to our community of car enthusiasts.
+          </p>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            {freeCategories.map((category, index) => (
+              <Card key={index} className="hover:shadow-lg transition-all duration-300 border-2 border-gray-200 hover:border-yellow-300 bg-white">
+                <CardContent className="p-6 text-center">
+                  <div className={`inline-flex p-3 rounded-full mb-4 ${category.color}`}>
+                    {category.icon}
+                  </div>
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">{category.name}</h3>
+                  <p className="text-gray-600 mb-4">{category.description}</p>
+                  <div className="flex items-center justify-center gap-2 text-green-600 font-semibold">
+                    <CheckCircle className="w-5 h-5" />
+                    <span>100% FREE</span>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          {/* Call to Action for Free Posting */}
+          <Card className="p-6 bg-green-50 border-2 border-green-200 text-center">
+            <CardContent className="p-0">
+              <h3 className="text-2xl font-bold text-green-700 mb-4">
+                Ready to Get Started?
+              </h3>
+              <p className="text-lg text-gray-700 mb-6">
+                Post your listing for free in the relevant category and get seen by thousands of car lovers!
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Button size="lg" asChild className="font-bold rounded-full bg-green-600 hover:bg-green-700 text-white px-8 py-4 text-lg w-full sm:w-auto">
+                  <Link href={currentUser ? "/post-a-listing" : "/register"}>
+                    <CheckCircle className="mr-2 h-6 w-6" />
+                    {currentUser ? "Post Your Listing for Free" : "Subscribe/Register for Free"}
+                    <ArrowRight className="ml-2 h-6 w-6" />
+                  </Link>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Optional Paid Upgrades Section */}
+        <div className="mb-16">
+          <Card className="p-8 bg-yellow-50 border-2 border-yellow-200">
+            <CardHeader className="text-center p-0 mb-6">
+              <CardTitle className="text-3xl font-bold text-yellow-700 mb-2">
+                Want More Visibility?
+              </CardTitle>
+              <CardDescription className="text-lg text-gray-700 max-w-3xl mx-auto">
+                While basic listings are free, you can choose optional paid upgrades for enhanced visibility, banner ads, homepage features, and premium positioning.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="p-0">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div className="bg-white p-6 rounded-lg border border-yellow-200">
+                  <h4 className="text-xl font-bold text-yellow-700 mb-3">Free Features Include:</h4>
+                  <ul className="space-y-2">
+                    <li className="flex items-center gap-2">
+                      <CheckCircle className="w-5 h-5 text-green-600" />
+                      <span className="text-gray-700" >Basic listing in your category</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckCircle className="w-5 h-5 text-green-600" />
+                      <span className="text-gray-700" >Essential details and images</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckCircle className="w-5 h-5 text-green-600" />
+                      <span className="text-gray-700" >Community visibility</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckCircle className="w-5 h-5 text-green-600" />
+                      <span className="text-gray-700" >Direct contact with enthusiasts</span>
+                    </li>
+                  </ul>
+                </div>
+                <div className="bg-white p-6 rounded-lg border border-yellow-200">
+                  <h4 className="text-xl font-bold text-yellow-700 mb-3">Paid Upgrades Include:</h4>
+                  <ul className="space-y-2">
+                    <li className="flex items-center gap-2">
+                      <Star className="w-5 h-5 text-yellow-600" />
+                      <span className="text-gray-700" >Banner advertisements</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <Star className="w-5 h-5 text-yellow-600" />
+                      <span className="text-gray-700" >Homepage featured placement</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <Star className="w-5 h-5 text-yellow-600" />
+                      <span className="text-gray-700" >Newsletter mentions</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <Star className="w-5 h-5 text-yellow-600" />
+                      <span className="text-gray-700" >Priority positioning</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+       
         {/* Pricing Plans Section */}
         <div className="mb-16">
-          <h2 className="text-3xl font-bold font-headline text-center mb-10 text-gray-900">Advertisment Plans</h2>
+          <h2 className="text-3xl font-bold font-headline text-center mb-10 text-gray-900">Premium Advertisement Plans</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {pricingPlans.map((plan) => (
               <Card key={plan.title} className="flex flex-col h-full hover:shadow-lg transition-shadow bg-white border border-gray-200">
@@ -408,22 +511,48 @@ export default function AdvertisePage() {
                   </div>
                   <CardTitle className="text-xl font-headline text-yellow-600">{plan.title}</CardTitle>
                 </CardHeader>
-                <CardContent className="flex-grow space-y-4">
-                  {plan.options.map((opt, idx) => (
-                    <div key={idx} className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                      <div className="font-semibold text-lg text-gray-900 mb-2">{opt.name}</div>
-                      <div className="text-gray-600 text-sm mb-3">{opt.details}</div>
-                      <div className="flex items-center justify-between">
-                        <span className="inline-block bg-yellow-100 text-yellow-800 font-bold px-3 py-1 rounded-full text-sm">{opt.duration}</span>
-                        <div className="inline-block bg-yellow-600 text-white font-bold px-3 py-1 rounded-full text-sm">
-                          <div className="flex flex-col items-center">
-                            <span className="text-sm">{opt.chfPrice}</span>
-                            <span className="text-xs opacity-90">{opt.eurPrice}</span>
+                <CardContent className="flex flex-col flex-grow space-y-4">
+                  <div className="flex-grow">
+                    {plan.options.map((opt, idx) => (
+                      <div key={idx} className="bg-gray-50 rounded-lg p-4 border border-gray-200 mb-4 last:mb-0">
+                        <div className="font-semibold text-lg text-gray-900 mb-2">{opt.name}</div>
+                        <div className="text-gray-600 text-sm mb-3">{opt.details}</div>
+                        <div className="flex items-center justify-between">
+                          <span className="inline-block bg-yellow-100 text-yellow-800 font-bold px-3 py-1 rounded-full text-sm">{opt.duration}</span>
+                          <div className="inline-block bg-yellow-600 text-white font-bold px-3 py-1 rounded-full text-sm">
+                            <div className="flex flex-col items-center">
+                              <span className="text-sm">{opt.chfPrice}</span>
+                              <span className="text-xs opacity-90">{opt.eurPrice}</span>
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
+                  {/* Get Started Button for each plan */}
+                  <div className="mt-4 flex justify-center">
+                    {plan.title === "Banner Advertisement" && (
+                      <Button asChild size="lg" className="bg-yellow-600 hover:bg-yellow-700 text-white font-bold rounded-full px-8 py-3">
+                        <Link href="/advertise/my-ads">
+                          Get Started <ArrowRight className="ml-2 h-5 w-5" />
+                        </Link>
+                      </Button>
+                    )}
+                    {plan.title === "Event/Club/Hotel/Auction Listing" && (
+                      <Button asChild size="lg" className="bg-yellow-600 hover:bg-yellow-700 text-white font-bold rounded-full px-8 py-3">
+                        <Link href="/advertise/listings">
+                          Get Started <ArrowRight className="ml-2 h-5 w-5" />
+                        </Link>
+                      </Button>
+                    )}
+                    {plan.title === "Newsletter Mentions (2 per month, 12 months)" && (
+                      <Button asChild size="lg" className="bg-yellow-600 hover:bg-yellow-700 text-white font-bold rounded-full px-8 py-3">
+                        <Link href="/advertise/newsletter-mentions">
+                          Get Started <ArrowRight className="ml-2 h-5 w-5" />
+                        </Link>
+                      </Button>
+                    )}
+                  </div>
                 </CardContent>
               </Card>
             ))}
@@ -475,7 +604,7 @@ export default function AdvertisePage() {
             </Card>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
             {carSalePricing[0].plans.map((plan, idx) => (
               <Card key={idx} className="flex flex-col h-full hover:shadow-lg transition-shadow bg-white border border-gray-200">
                 <CardHeader className="text-center">
@@ -500,6 +629,14 @@ export default function AdvertisePage() {
                 </CardContent>
               </Card>
             ))}
+          </div>
+          {/* Post Your Car Button */}
+          <div className="text-center mt-12 mb-8">
+            <Button asChild size="lg" className="bg-yellow-600 hover:bg-yellow-700 text-white font-bold rounded-full px-10 py-4">
+              <Link href="/cars/sell">
+                Post Your Car <ArrowRight className="ml-2 h-6 w-6" />
+              </Link>
+            </Button>
           </div>
 
           {/* Optional Add-ons */}
@@ -576,9 +713,20 @@ export default function AdvertisePage() {
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {whyChooseBestCar.map((item, i) => (
-                  <div key={i} className="flex items-start gap-3">
-                    <Star className="w-5 h-5 text-yellow-600 mt-1" />
-                    <span className="font-medium text-base text-gray-900">{item}</span>
+                  <div key={i} className="flex items-start gap-3 p-3 rounded-lg bg-white border border-gray-200">
+                    {item.isFree ? (
+                      <CheckCircle className="w-5 h-5 text-green-600 mt-1 flex-shrink-0" />
+                    ) : (
+                      <Star className="w-5 h-5 text-yellow-600 mt-1 flex-shrink-0" />
+                    )}
+                    <span className="font-medium text-base text-gray-900">
+                      {item.text}
+                      {item.isFree && (
+                        <span className="ml-2 inline-block bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-bold">
+                          FREE
+                        </span>
+                      )}
+                    </span>
                   </div>
                 ))}
               </div>
@@ -625,6 +773,14 @@ export default function AdvertisePage() {
               </Card>
             ))}
           </div>
+          {/* View Packages Button */}
+          <div className="text-center mt-8">
+            <Button asChild size="lg" className="bg-yellow-600 hover:bg-yellow-700 text-white font-bold rounded-full px-10 py-4">
+              <Link href="/advertise/dashboard">
+                View Packages <ArrowRight className="ml-2 h-6 w-6" />
+              </Link>
+            </Button>
+          </div>
         </div>
 
         {/* Social Networks Section */}
@@ -643,6 +799,117 @@ export default function AdvertisePage() {
           </div>
         </div>
 
+ {/* Context Instructions Section */}
+ <Card className="mb-12 p-8 bg-white border border-gray-200 shadow-lg">
+          <CardHeader className="text-center p-0 mb-6">
+            <div className="flex justify-center mb-4">
+              <div className="p-3 bg-yellow-100 rounded-full">
+                <BarChart3 className="h-8 w-8 text-yellow-600" />
+              </div>
+            </div>
+            <CardTitle className="text-3xl font-bold text-yellow-600 mb-2">
+              Comprehensive Advertisement & Listing Dashboard
+            </CardTitle>
+            <CardDescription className="text-lg text-gray-600 max-w-3xl mx-auto">
+              Access our powerful dashboard to buy ad Credits, manage listings, and feature your content across all categories
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="p-0">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+              <div className="space-y-4">
+                <h3 className="text-xl font-semibold text-gray-900">How It Works:</h3>
+                <div className="space-y-3">
+                  <div className="flex items-start gap-3">
+                    <div className="w-6 h-6 bg-yellow-600 text-white rounded-full flex items-center justify-center text-sm font-bold mt-0.5">1</div>
+                    <div>
+                      <p className="font-medium text-gray-900">Buy any ad Credit (slot)</p>
+                      <p className="text-sm text-gray-600">Purchase credits for banners, listings, or newsletter features</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="w-6 h-6 bg-yellow-600 text-white rounded-full flex items-center justify-center text-sm font-bold mt-0.5">2</div>
+                    <div>
+                      <p className="font-medium text-gray-900">Advertise using your Credit</p>
+                      <p className="text-sm text-gray-600">Use your purchased credits to create and manage advertisements</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="w-6 h-6 bg-yellow-600 text-white rounded-full flex items-center justify-center text-sm font-bold mt-0.5">3</div>
+                    <div>
+                      <p className="font-medium text-gray-900">Feature across categories</p>
+                      <p className="text-sm text-gray-600">Feature cars, auctions, hotels, clubs with comprehensive options</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="space-y-4">
+                <h3 className="text-xl font-semibold text-gray-900">Available Options:</h3>
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2">
+                    <Star className="h-4 w-4 text-yellow-600" />
+                    <span className="text-sm text-gray-600">Banner advertisements</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Calendar className="h-4 w-4 text-yellow-600" />
+                    <span className="text-sm text-gray-600">Event/Club/Hotel/Auction listings</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Mail className="h-4 w-4 text-yellow-600" />
+                    <span className="text-sm text-gray-600">Newsletter mentions</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Image className="h-4 w-4 text-yellow-600" />
+                    <span className="text-sm text-gray-600">Car listings with multiple tiers</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <TrendingUp className="h-4 w-4 text-yellow-600" />
+                    <span className="text-sm text-gray-600">Featured placements</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            {!authChecked ? (
+              <div className="text-center">
+                <div className="animate-pulse">
+                  <div className="h-4 bg-gray-200 rounded w-48 mx-auto mb-4"></div>
+                </div>
+              </div>
+            ) : currentUser ? (
+              <div className="text-center">
+                <Button size="lg" asChild className="font-bold rounded-full bg-yellow-600 hover:bg-yellow-700 w-full sm:w-auto">
+                  <Link href="/advertise/dashboard">
+                    <BarChart3 className="mr-2 h-5 w-5" />
+                    Go to Dashboard
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </Link>
+                </Button> 
+                <p className="text-sm text-gray-600 mt-3">
+                  Access your comprehensive dashboard to manage all advertisements and listings
+                </p>
+              </div>
+            ) : (
+              <div className="text-center">
+                <div className="mb-4">
+                  <p className="text-gray-600 mb-4">
+                    Please log in to access our comprehensive advertisement dashboard
+                  </p>
+                  <Button size="lg" asChild className="font-bold rounded-full bg-yellow-600 hover:bg-yellow-700 w-full sm:w-auto">
+                    <Link href="/login">
+                      <LogIn className="mr-2 h-5 w-5" />
+                      Login to Continue
+                      <ArrowRight className="ml-2 h-5 w-5" />
+                    </Link>
+                  </Button>
+                </div>
+                <p className="text-sm text-gray-600">
+                  Don't have an account? <Link href="/register" className="text-yellow-600 hover:underline">Register here</Link>
+                </p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
         {/* Custom Offer & Contact Section */}
         <Card className="text-center p-8 bg-white border border-gray-200 rounded-lg mb-8">
           <CardHeader>
@@ -651,8 +918,11 @@ export default function AdvertisePage() {
           <CardContent>
             <p className="text-gray-600 mb-4">Please feel free to make your own offer, for us it's important to have you on board.</p>
             <p className="text-lg font-semibold mb-6 text-gray-900">Join us today and connect with an elite audience of car collectors and enthusiasts. Promote your events, clubs, hotels, or auctions in a way that ensures high visibility and engagement.</p>
-            <Button size="lg" asChild className="font-bold rounded-full bg-yellow-600 hover:bg-yellow-700" >
-              <a href="mailto:info@bestcarevents.com"><Mail className="mr-2" />Contact Us: info@bestcarevents.com</a>
+            <Button size="lg" asChild className="font-bold rounded-full bg-yellow-600 hover:bg-yellow-700 w-full sm:w-auto" >
+              <a href="mailto:info@bestcarevents.com">
+                <Mail className="mr-2 h-5 w-5" />
+                Contact Us: info@bestcarevents.com
+              </a>
             </Button>
           </CardContent>
         </Card>
