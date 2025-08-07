@@ -64,7 +64,7 @@ const AuthButtons = ({ inMobileNav = false, user, onMobileMenuClose }: { inMobil
           
           {/* Mobile My Listings Section */}
           <div className="w-full">
-            <div className="text-lg font-bold text-gray-900 mb-4 pb-2 border-b-2 border-orange-500">My Listings</div>
+            <div className="text-lg font-bold text-white mb-4 pb-2 border-b-2 border-orange-500">My Listings</div>
             <div className="space-y-3 pl-2">
               <Link 
                 href="/advertise/cars-listing" 
@@ -97,6 +97,14 @@ const AuthButtons = ({ inMobileNav = false, user, onMobileMenuClose }: { inMobil
               >
                 <Users className="w-5 h-5 text-orange-600" />
                 <span className="font-medium">Club Listing</span>
+              </Link>
+              <Link 
+                href="/advertise/hotel-listing" 
+                className="flex items-center gap-4 px-4 py-3 text-base text-gray-900 hover:text-white hover:bg-orange-600 rounded-lg transition-all duration-200 border border-gray-300 bg-white shadow-sm"
+                onClick={onMobileMenuClose}
+              >
+                <Car className="w-5 h-5 text-orange-600" />
+                <span className="font-medium">Hotel Listing</span>
               </Link>
               <Link 
                 href="/advertise/others-listing" 
@@ -196,6 +204,8 @@ const AuthButtons = ({ inMobileNav = false, user, onMobileMenuClose }: { inMobil
                   Events Listing
                 </Link>
               </DropdownMenuItem>
+
+              
               <DropdownMenuItem asChild className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-orange-50 hover:text-orange-700 transition-colors duration-200">
                 <Link href="/advertise/auction-listing" className="flex items-center gap-3 w-full">
                   <Gavel className="w-4 h-4" />
@@ -206,6 +216,12 @@ const AuthButtons = ({ inMobileNav = false, user, onMobileMenuClose }: { inMobil
                 <Link href="/advertise/club-listing" className="flex items-center gap-3 w-full">
                   <Users className="w-4 h-4" />
                   Club Listing
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-orange-50 hover:text-orange-700 transition-colors duration-200">
+                <Link href="/advertise/hotel-listing" className="flex items-center gap-3 w-full">
+                  <Car className="w-4 h-4" />
+                  Hotel Listing
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-orange-50 hover:text-orange-700 transition-colors duration-200">
@@ -451,7 +467,7 @@ export default function Header() {
                   
                   {/* Mobile Language Dropdown */}
                   <div className="space-y-4">
-                    <div className="text-lg font-bold text-gray-900 pb-2 border-b-2 border-orange-500">Language</div>
+                    <div className="text-lg font-bold text-white pb-2 border-b-2 border-orange-500">Language</div>
                     <div className="space-y-3 pl-2">
                       <button 
                         onClick={() => {

@@ -31,9 +31,9 @@ export default function Footer() {
                 <li><Link href="/cars" className="text-sm hover:text-primary transition-colors">Cars for Sale</Link></li>
                 <li><Link href="/auctions" className="text-sm hover:text-primary transition-colors">Auctions</Link></li>
                 <li><Link href="/advertise/cars-listing" className="text-sm hover:text-primary transition-colors">My Car Listing</Link></li>
-                <li><Link href="/advertise/hotels-listing" className="text-sm hover:text-primary transition-colors">My Hotel Listings</Link></li>
-                <li><Link href="/advertise/clubs-listing" className="text-sm hover:text-primary transition-colors">My Club Listing</Link></li>
-                <li><Link href="/advertise/event-listing" className="text-sm hover:text-primary transition-colors">My Event Listing</Link></li>
+                <li><Link href="/advertise/hotel-listing" className="text-sm hover:text-primary transition-colors">My Hotel Listings</Link></li>
+                <li><Link href="/advertise/club-listing" className="text-sm hover:text-primary transition-colors">My Club Listing</Link></li>
+                <li><Link href="/advertise/events-listing" className="text-sm hover:text-primary transition-colors">My Event Listing</Link></li>
                 <li><Link href="/advertise/dashboard" className="text-sm hover:text-primary transition-colors">My Listing/Advertise Dashboard</Link></li>
               </ul>
             </div>
