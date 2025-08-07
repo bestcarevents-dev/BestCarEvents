@@ -6,17 +6,17 @@ import Footer from '@/components/layout/footer';
 import GlobalNewsletterProvider from '@/components/GlobalNewsletterProvider';
 import { LanguageProvider } from '@/contexts/LanguageContext';
 import { cn } from '@/lib/utils';
-import { Poppins, PT_Sans } from 'next/font/google';
+import { Montserrat } from 'next/font/google';
 
-const fontHeadline = Poppins({
+const fontHeadline = Montserrat({
   subsets: ['latin'],
   weight: ['400', '600', '700', '800'],
   variable: '--font-headline',
 });
 
-const fontBody = PT_Sans({
+const fontBody = Montserrat({
   subsets: ['latin'],
-  weight: ['400', '700'],
+  weight: ['300', '400', '500', '600', '700'],
   variable: '--font-body',
 });
 
