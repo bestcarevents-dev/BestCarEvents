@@ -14,6 +14,7 @@ import { getAuth, onAuthStateChanged, User } from 'firebase/auth';
 import PartnerAdRotator from '@/components/PartnerAdRotator';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { useSearchParams } from "next/navigation";
+import FreeCallout from "@/components/free-callout";
 
 function AuctionsPageContent() {
   const [auctions, setAuctions] = useState<any[]>([]);
@@ -198,7 +199,7 @@ function AuctionsPageContent() {
   return (
     <div className="bg-white">
       <div className="container mx-auto px-4 py-8">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-12">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
           <div className="text-center md:text-left mb-4 md:mb-0">
             <h1 className="text-4xl md:text-5xl font-extrabold font-headline text-gray-900">Car Auctions</h1>
             <p className="mt-4 text-lg text-gray-600 max-w-2xl mx-auto md:mx-0">
@@ -272,6 +273,20 @@ function AuctionsPageContent() {
               </Dialog>
             </div>
           )}
+        </div>
+        <div className="mb-8">
+          <FreeCallout
+            title="Promote or Join Auctions — Free"
+            icon="megaphone"
+            messages={[
+              "Join a community of enthusiasts — No fees, no subscription.",
+              "Discover premium car auctions — Showcase or find auctions for free.",
+              "List your auction or bid — Free of charge.",
+              "Worldwide exposure. Zero fees.",
+            ]}
+            ctaHref="/auctions/submit"
+            ctaText="Post an Auction"
+          />
         </div>
 
         <div className="bg-gray-50 p-6 rounded-lg border border-gray-200 mb-8">

@@ -13,12 +13,15 @@ import { PlusCircle } from "lucide-react";
 import Link from "next/link";
 import PartnerAdRotator from '@/components/PartnerAdRotator';
 import { useSearchParams } from "next/navigation";
+import FreeCallout from "@/components/free-callout";
+import { getFirestore as getFirestoreClient, doc, getDoc } from "firebase/firestore";
 
 function CarsPageContent() {
     const [cars, setCars] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [currentUser, setCurrentUser] = useState<User | null>(null);
     const [showDialog, setShowDialog] = useState(false);
+    const [isFreeCarListing, setIsFreeCarListing] = useState<boolean>(false);
     const searchParams = useSearchParams();
     
     // Pagination state
@@ -65,6 +68,23 @@ function CarsPageContent() {
         setLoading(false);
       };
       fetchCars();
+    }, []);
+
+    // Fetch settings to determine if car listing is free
+    useEffect(() => {
+      const fetchSettings = async () => {
+        try {
+          const db = getFirestoreClient(app);
+          const settingsRef = doc(db, "settings", "carlisting");
+          const snap = await getDoc(settingsRef);
+          if (snap.exists()) {
+            setIsFreeCarListing(Boolean(snap.data()?.isFree));
+          }
+        } catch (e) {
+          setIsFreeCarListing(false);
+        }
+      };
+      fetchSettings();
     }, []);
 
     useEffect(() => {
@@ -188,7 +208,7 @@ function CarsPageContent() {
     return (
     <div className="bg-white">
       <div className="container mx-auto px-4 py-8">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-12">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
           <div className="text-center md:text-left mb-4 md:mb-0">
             <h1 className="text-4xl md:text-5xl font-extrabold font-headline text-gray-900">Cars for Sale</h1>
             <p className="mt-4 text-lg text-gray-600 max-w-2xl mx-auto md:mx-0">
@@ -229,6 +249,21 @@ function CarsPageContent() {
             </Dialog>
           )}
         </div>
+        {isFreeCarListing && (
+          <div className="mb-8">
+            <FreeCallout
+              title="List Your Car — First 2 Months Free"
+              icon="sparkles"
+              messages={[
+                "Sell smarter. Pay nothing for the first 60 days.",
+                "Launch offer: List for free for the first two months.",
+                "Zero listing fees for 60 days — Get maximum exposure.",
+              ]}
+              ctaHref="/cars/sell"
+              ctaText="Start Selling"
+            />
+          </div>
+        )}
 
         <div className="bg-gray-50 p-6 rounded-lg border border-gray-200 mb-8">
           {/* Search Bar - Always Visible */}

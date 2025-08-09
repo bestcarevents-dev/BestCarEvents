@@ -17,6 +17,7 @@ import { getAuth, onAuthStateChanged, User } from 'firebase/auth';
 import PartnerAdRotator from '@/components/PartnerAdRotator';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { useSearchParams } from "next/navigation";
+import FreeCallout from "@/components/free-callout";
 
 function EventsPageContent() {
     const [events, setEvents] = useState<any[]>([]);
@@ -180,7 +181,7 @@ function EventsPageContent() {
     return (
     <div className="bg-white">
         <div className="container mx-auto px-4 py-8">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-12">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
                 <div className="text-center md:text-left mb-4 md:mb-0">
                     <h1 className="text-4xl md:text-5xl font-extrabold font-headline text-gray-900">Discover Events</h1>
                     <p className="mt-4 text-lg text-gray-600 max-w-2xl">
@@ -228,32 +229,28 @@ function EventsPageContent() {
                         </div>
                       </DialogContent>
                     </Dialog>
-                    <Dialog open={showDialog} onOpenChange={setShowDialog}>
-                      <DialogTrigger asChild>
-                        <Button className="flex items-center">
+                    <Button asChild>
+                      <Link href="/events/host" className="flex items-center">
                           <PlusCircle className="mr-2 h-5 w-5" />
                           Host an Event
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent className="max-w-md w-full">
-                        <DialogHeader>
-                          <DialogTitle>Login Required</DialogTitle>
-                        </DialogHeader>
-                        <div className="py-4 text-center">
-                          <p className="text-lg font-semibold mb-2 text-destructive">Please login to host an event.</p>
-                          <DialogFooter>
-                            <DialogClose asChild>
-                              <Button variant="outline">Close</Button>
-                            </DialogClose>
-                            <Button asChild variant="default">
-                              <a href="/login">Login</a>
-                            </Button>
-                          </DialogFooter>
-                        </div>
-                      </DialogContent>
-                    </Dialog>
+                      </Link>
+                    </Button>
                   </div>
                 )}
+            </div>
+            <div className="mb-8">
+              <FreeCallout
+                title="List or Join Events — Always Free"
+                icon="sparkles"
+                messages={[
+                  "Join a community of enthusiasts — No fees, no subscription.",
+                  "Discover premium car events — Promote or find events for free.",
+                  "List your event or join one — Free of charge.",
+                  "Worldwide exposure. Zero fees.",
+                ]}
+                ctaHref="/events/host"
+                ctaText="Post an Event"
+              />
             </div>
 
           <div className="bg-gray-50 p-6 rounded-lg border border-gray-200 mb-8">

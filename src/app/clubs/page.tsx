@@ -17,6 +17,7 @@ import { getAuth, onAuthStateChanged, User } from 'firebase/auth';
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from '@/components/ui/dialog';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { useSearchParams } from "next/navigation";
+import FreeCallout from "@/components/free-callout";
 
 function ClubsPageContent() {
   const [clubs, setClubs] = useState<any[]>([]);
@@ -204,7 +205,7 @@ function ClubsPageContent() {
     <div className="bg-white">
       <main className="py-12 md:py-10 lg:py-20">
         <div className="container px-4 md:px-6">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-12">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
             <div className="text-center md:text-left mb-4 md:mb-0">
                 <h1 className="text-4xl md:text-5xl font-extrabold font-headline text-gray-900">Car Clubs</h1>
                 <p className="mt-4 text-lg text-gray-600 max-w-2xl mx-auto md:mx-0">
@@ -278,6 +279,20 @@ function ClubsPageContent() {
                 </Dialog>
               </div>
             )}
+          </div>
+          <div className="mb-8">
+            <FreeCallout
+              title="Grow Your Club — Free to Register"
+              icon="sparkles"
+              messages={[
+                "Join a community of enthusiasts — No fees, no subscription.",
+                "Promote your car club — Get members for free.",
+                "Register your club or join one — Free of charge.",
+                "Worldwide exposure. Zero fees.",
+              ]}
+              ctaHref="/clubs/register"
+              ctaText="Register Your Club"
+            />
           </div>
 
           {/* Club Search Bar */}

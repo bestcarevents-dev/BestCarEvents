@@ -428,10 +428,10 @@ export default function SellCarPage() {
               </div>
               <h3 className="text-xl font-semibold mb-2">🎉 Promotional Offer!</h3>
               <p className="text-lg text-muted-foreground mb-4">
-                Cars listing for the first month after launch is <span className="font-bold text-primary">FREE</span>!
+                List Your Car — First <span className="font-bold text-primary">2 Months Free</span>
               </p>
               <p className="text-sm text-muted-foreground">
-                You can submit your car for approval with up to 5 images at no cost.
+                Sell smarter. Pay nothing for the first 60 days. Submit your car with up to 5 images at no cost.
               </p>
             </div>
           </CardContent>
