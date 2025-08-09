@@ -184,8 +184,8 @@ function EventsPageContent() {
             <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
                 <div className="text-center md:text-left mb-4 md:mb-0">
                     <h1 className="text-4xl md:text-5xl font-extrabold font-headline text-gray-900">Discover Events</h1>
-                    <p className="mt-4 text-lg text-gray-600 max-w-2xl">
-                    From local meetups to international shows, find your next car adventure.
+                    <p className="mt-4 text-lg text-gray-600 max-w-3xl">
+                      From local meetups to international shows, find your next car adventure. Organize, promote, and discover gatherings for every passion—from coffee runs and track days to concours weekends—curated by a global community of enthusiasts.
                     </p>
                 </div>
                 {currentUser ? (
@@ -248,8 +248,6 @@ function EventsPageContent() {
                   "List your event or join one — Free of charge.",
                   "Worldwide exposure. Zero fees.",
                 ]}
-                ctaHref="/events/host"
-                ctaText="Post an Event"
               />
             </div>
 

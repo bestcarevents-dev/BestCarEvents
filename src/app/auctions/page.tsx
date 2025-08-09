@@ -202,8 +202,8 @@ function AuctionsPageContent() {
         <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
           <div className="text-center md:text-left mb-4 md:mb-0">
             <h1 className="text-4xl md:text-5xl font-extrabold font-headline text-gray-900">Car Auctions</h1>
-            <p className="mt-4 text-lg text-gray-600 max-w-2xl mx-auto md:mx-0">
-              Find and bid on the most exclusive collector cars from around the world.
+            <p className="mt-4 text-lg text-gray-600 max-w-3xl mx-auto md:mx-0">
+              Find and bid on exclusive collector cars from around the world. Discover live and upcoming auctions, compare lots, and follow your favorite houses—all in one place—curated for serious bidders and passionate enthusiasts alike.
             </p>
           </div>
           {currentUser ? (
@@ -284,8 +284,6 @@ function AuctionsPageContent() {
               "List your auction or bid — Free of charge.",
               "Worldwide exposure. Zero fees.",
             ]}
-            ctaHref="/auctions/submit"
-            ctaText="Post an Auction"
           />
         </div>
 

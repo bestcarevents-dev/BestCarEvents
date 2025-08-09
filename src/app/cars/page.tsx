@@ -211,8 +211,8 @@ function CarsPageContent() {
         <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
           <div className="text-center md:text-left mb-4 md:mb-0">
             <h1 className="text-4xl md:text-5xl font-extrabold font-headline text-gray-900">Cars for Sale</h1>
-            <p className="mt-4 text-lg text-gray-600 max-w-2xl mx-auto md:mx-0">
-              Browse thousands of unique cars from our curated marketplace.
+            <p className="mt-4 text-lg text-gray-600 max-w-3xl mx-auto md:mx-0">
+              Browse thousands of unique cars curated by enthusiasts and trusted sellers. Refine by make, body style, year, and price to find your perfect match—whether you’re chasing a weekend classic or your next daily driver.
             </p>
           </div>
           {currentUser ? (
@@ -259,8 +259,6 @@ function CarsPageContent() {
                 "Launch offer: List for free for the first two months.",
                 "Zero listing fees for 60 days — Get maximum exposure.",
               ]}
-              ctaHref="/cars/sell"
-              ctaText="Start Selling"
             />
           </div>
         )}

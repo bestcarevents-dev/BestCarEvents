@@ -285,8 +285,6 @@ function CarHotelsPageContent() {
               "List your hotel — Free of charge.",
               "Worldwide exposure. Zero fees.",
             ]}
-            ctaHref="/hotels/list"
-            ctaText="List Your Hotel"
           />
         </div>
 

@@ -290,8 +290,6 @@ function ClubsPageContent() {
                 "Register your club or join one — Free of charge.",
                 "Worldwide exposure. Zero fees.",
               ]}
-              ctaHref="/clubs/register"
-              ctaText="Register Your Club"
             />
           </div>
 
