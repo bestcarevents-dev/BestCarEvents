@@ -17,6 +17,7 @@ import PartnerAdRotator from '@/components/PartnerAdRotator';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { Badge } from "@/components/ui/badge";
 import { useSearchParams } from "next/navigation";
+import FreeCallout from "@/components/free-callout";
 
 interface ServiceCardProps {
   id: string;
@@ -292,6 +293,20 @@ function OthersPageContent() {
                     </Dialog>
                   </div>
                 )}
+            </div>
+
+            <div className="mb-8">
+              <FreeCallout
+                title="Post Your Services — Always Free"
+                icon="sparkles"
+                messages={[
+                  "Posting all services is free.",
+                  "Reach car enthusiasts — No fees, no subscription.",
+                  "Register your service today at no cost.",
+                ]}
+                ctaHref="/others/register"
+                ctaText="Register Service"
+              />
             </div>
 
           <div className="bg-gray-50 p-6 rounded-lg border border-gray-200 mb-8">
