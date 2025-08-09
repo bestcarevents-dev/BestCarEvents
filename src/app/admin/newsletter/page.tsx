@@ -12,7 +12,10 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { X } from "lucide-react";
+import { X, Loader2 } from "lucide-react";
+import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "firebase/storage";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import { useToast } from "@/hooks/use-toast";
 
 interface NewsletterRequestDoc {
   id: string;
@@ -58,6 +61,20 @@ export default function AdminNewsletterPage() {
   const [activeTab, setActiveTab] = useState<string>("builder");
   const [builderBlocks, setBuilderBlocks] = useState<BuilderBlock[]>([]);
   const [iframePreviewKey, setIframePreviewKey] = useState<number>(0);
+  const [blockUploading, setBlockUploading] = useState<Record<string, boolean>>({});
+
+  // Visual design settings for non-technical users
+  const [design, setDesign] = useState({
+    fontFamily: "Arial, sans-serif",
+    textColor: "#111111",
+    backgroundColor: "#f6f7f9",
+    containerBgColor: "#ffffff",
+    accentColor: "#111111",
+    containerWidth: 600,
+    borderRadius: 8,
+  });
+
+  const { toast } = useToast();
 
   // Raw HTML sender (legacy)
   const [newsletterHtml, setNewsletterHtml] = useState("");
@@ -198,14 +215,36 @@ export default function AdminNewsletterPage() {
               onChange={(e) =>
                 setBuilderBlocks((b) => b.map((x) => (x.id === block.id ? { ...block, url: e.target.value } : x)))
               }
+              placeholder="https://..."
             />
-            <Label>Alt text</Label>
-            <Input
-              value={block.alt || ""}
-              onChange={(e) =>
-                setBuilderBlocks((b) => b.map((x) => (x.id === block.id ? { ...block, alt: e.target.value } : x)))
-              }
-            />
+            <div className="flex items-center gap-2">
+              <input
+                id={`file-${block.id}`}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={async (e) => {
+                  const file = e.target.files?.[0];
+                  if (!file) return;
+                  try {
+                    setBlockUploading((s) => ({ ...s, [block.id]: true }));
+                    const storage = getStorage(app);
+                    const objRef = storageRef(storage, `newsletter_builder_images/${Date.now()}_${file.name}`);
+                    await uploadBytes(objRef, file);
+                    const url = await getDownloadURL(objRef);
+                    setBuilderBlocks((b) => b.map((x) => (x.id === block.id ? { ...block, url } : x)));
+                    toast({ title: "Image uploaded", description: "The image URL has been set for this block." });
+                  } catch (err) {
+                    toast({ title: "Upload failed", description: "Could not upload image. Try again.", variant: "destructive" });
+                  } finally {
+                    setBlockUploading((s) => ({ ...s, [block.id]: false }));
+                  }
+                }}
+              />
+              <Button type="button" variant="secondary" size="sm" onClick={() => document.getElementById(`file-${block.id}`)?.click()} disabled={!!blockUploading[block.id]}>
+                {blockUploading[block.id] ? (<span className="inline-flex items-center gap-2"><Loader2 className="h-4 w-4 animate-spin" />Uploading...</span>) : "Upload Image"}
+              </Button>
+            </div>
           </div>
         );
       case "button":
@@ -224,6 +263,7 @@ export default function AdminNewsletterPage() {
               onChange={(e) =>
                 setBuilderBlocks((b) => b.map((x) => (x.id === block.id ? { ...block, href: e.target.value } : x)))
               }
+              placeholder="https://..."
             />
           </div>
         );
@@ -237,12 +277,12 @@ export default function AdminNewsletterPage() {
     const rows = builderBlocks
       .map((b) => {
         if (b.type === "heading") {
-          return `<tr><td style="padding:16px 0;font-family:Arial,sans-serif;font-size:24px;font-weight:bold;color:#111">${escapeHtml(
+          return `<tr><td style="padding:16px 0;font-family:${design.fontFamily};font-size:24px;font-weight:bold;color:${design.textColor}">${escapeHtml(
             b.content
           )}</td></tr>`;
         }
         if (b.type === "text") {
-          return `<tr><td style="padding:8px 0;font-family:Arial,sans-serif;font-size:14px;line-height:1.6;color:#333">${escapeHtml(
+          return `<tr><td style="padding:8px 0;font-family:${design.fontFamily};font-size:14px;line-height:1.6;color:${design.textColor}">${escapeHtml(
             b.content
           ).replace(/\n/g, "<br/>")}</td></tr>`;
         }
@@ -254,7 +294,7 @@ export default function AdminNewsletterPage() {
         if (b.type === "button") {
           return `<tr><td style="padding:16px 0"><a href="${encodeURI(
             b.href
-          )}" style="background:#111;color:#fff;padding:12px 20px;border-radius:6px;text-decoration:none;font-family:Arial,sans-serif;font-size:14px;display:inline-block">${escapeHtml(
+          )}" style="background:${design.accentColor};color:#fff;padding:12px 20px;border-radius:${design.borderRadius}px;text-decoration:none;font-family:${design.fontFamily};font-size:14px;display:inline-block">${escapeHtml(
             b.label
           )}</a></td></tr>`;
         }
@@ -272,11 +312,11 @@ export default function AdminNewsletterPage() {
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Newsletter</title>
 </head>
-<body style="margin:0;padding:0;background:#f6f7f9;">
-  <table role="presentation" width="100%" cellPadding="0" cellSpacing="0" style="background:#f6f7f9;padding:24px 0;">
+<body style="margin:0;padding:0;background:${design.backgroundColor};">
+  <table role="presentation" width="100%" cellPadding="0" cellSpacing="0" style="background:${design.backgroundColor};padding:24px 0;">
     <tr>
       <td>
-        <table role="presentation" width="600" align="center" cellPadding="0" cellSpacing="0" style="margin:0 auto;background:#ffffff;padding:24px;border-radius:8px;">
+        <table role="presentation" width="${design.containerWidth}" align="center" cellPadding="0" cellSpacing="0" style="margin:0 auto;background:${design.containerBgColor};padding:24px;border-radius:${design.borderRadius}px;">
           ${rows}
         </table>
       </td>
@@ -284,7 +324,7 @@ export default function AdminNewsletterPage() {
   </table>
 </body>
 </html>`;
-  }, [builderBlocks]);
+  }, [builderBlocks, design]);
 
   const refreshIframe = () => setIframePreviewKey((k) => k + 1);
 
@@ -306,6 +346,47 @@ export default function AdminNewsletterPage() {
                 <CardDescription>Build a newsletter without HTML. Add blocks and preview.</CardDescription>
               </CardHeader>
               <CardContent>
+                <div className="mb-6 space-y-3">
+                  <div className="font-semibold">Design Settings</div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div className="space-y-1">
+                      <Label>Font Family</Label>
+                      <Select value={design.fontFamily} onValueChange={(v) => setDesign((d) => ({ ...d, fontFamily: v }))}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select font" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Arial, sans-serif">Arial</SelectItem>
+                          <SelectItem value="Georgia, serif">Georgia</SelectItem>
+                          <SelectItem value="'Times New Roman', Times, serif">Times New Roman</SelectItem>
+                          <SelectItem value="Verdana, Geneva, sans-serif">Verdana</SelectItem>
+                          <SelectItem value="Tahoma, Geneva, sans-serif">Tahoma</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-1">
+                      <Label>Text Color</Label>
+                      <Input type="color" value={design.textColor} onChange={(e) => setDesign((d) => ({ ...d, textColor: e.target.value }))} />
+                    </div>
+                    <div className="space-y-1">
+                      <Label>Background Color</Label>
+                      <Input type="color" value={design.backgroundColor} onChange={(e) => setDesign((d) => ({ ...d, backgroundColor: e.target.value }))} />
+                    </div>
+                    <div className="space-y-1">
+                      <Label>Container Color</Label>
+                      <Input type="color" value={design.containerBgColor} onChange={(e) => setDesign((d) => ({ ...d, containerBgColor: e.target.value }))} />
+                    </div>
+                    <div className="space-y-1">
+                      <Label>Accent Color (Buttons)</Label>
+                      <Input type="color" value={design.accentColor} onChange={(e) => setDesign((d) => ({ ...d, accentColor: e.target.value }))} />
+                    </div>
+                    <div className="space-y-1">
+                      <Label>Container Width (px)</Label>
+                      <Input type="number" min={320} max={800} value={design.containerWidth} onChange={(e) => setDesign((d) => ({ ...d, containerWidth: Number(e.target.value || 600) }))} />
+                    </div>
+                  </div>
+                </div>
+
                 <div className="flex flex-wrap gap-2 mb-4">
                   <Button size="sm" variant="secondary" onClick={() => addBlock("heading")}>Add Heading</Button>
                   <Button size="sm" variant="secondary" onClick={() => addBlock("text")}>Add Text</Button>
@@ -340,6 +421,7 @@ export default function AdminNewsletterPage() {
                     variant="outline"
                     onClick={() => {
                       navigator.clipboard.writeText(generatedHtml);
+                      toast({ title: "HTML copied", description: "You can now paste this into your sender." });
                     }}
                     disabled={!builderBlocks.length}
                   >
@@ -501,11 +583,24 @@ export default function AdminNewsletterPage() {
                     <div>
                       <div className="text-xs text-muted-foreground mb-2">Images</div>
                       {selectedRequest.images?.length ? (
-                        <div className="grid grid-cols-2 gap-3">
-                          {selectedRequest.images.map((img, idx) => (
-                            <img key={idx} src={img} alt="newsletter" className="w-full h-28 object-cover rounded" />
-                          ))}
-                        </div>
+                        <>
+                          <div className="text-xs text-muted-foreground mb-2">Tip: Click an image to copy its URL. Then paste it into the Image block in the builder.</div>
+                          <div className="grid grid-cols-2 gap-3">
+                            {selectedRequest.images.map((img, idx) => (
+                              <img
+                                key={idx}
+                                src={img}
+                                alt="newsletter"
+                                title="Click to copy URL"
+                                className="w-full h-28 object-cover rounded cursor-pointer hover:opacity-80"
+                                onClick={async () => {
+                                  await navigator.clipboard.writeText(img);
+                                  toast({ title: "Image URL copied", description: "Paste it into the builder's Image block." });
+                                }}
+                              />
+                            ))}
+                          </div>
+                        </>
                       ) : (
                         <div className="text-sm text-muted-foreground">No images</div>
                       )}
