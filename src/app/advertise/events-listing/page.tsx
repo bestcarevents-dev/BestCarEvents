@@ -52,6 +52,7 @@ export default function EventsListingPage() {
   const [processing, setProcessing] = useState(false);
   const [stripeClientSecret, setStripeClientSecret] = useState<string | null>(null);
   const [paymentError, setPaymentError] = useState<string | null>(null);
+  const [attendeesModal, setAttendeesModal] = useState<{ open: boolean; attendees: Array<{ uid?: string; email?: string }> } | null>(null);
 
   useEffect(() => {
     const auth = getAuth(app);
@@ -495,7 +496,8 @@ export default function EventsListingPage() {
                     <Button 
                       variant="default"
                       onClick={() => {
-                        setPaymentModal({ open: true, col: 'users', id: currentUser?.uid });
+                        if (!currentUser) return;
+                        setPaymentModal({ open: true, col: 'users', id: currentUser.uid });
                         setSelectedFeatureType(null);
                         setPaymentStep('selectType');
                         setSelectedPayment(null);
@@ -741,6 +743,14 @@ export default function EventsListingPage() {
                             >
                               Deactivate
                             </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() => {
+                                const attendees = Array.isArray(item.attendees) ? item.attendees : [];
+                                setAttendeesModal({ open: true, attendees });
+                              }}
+                            >
+                              View Registrations
+                            </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </TableCell>
@@ -752,6 +762,34 @@ export default function EventsListingPage() {
           </CardContent>
         </Card>
       )}
+
+      <Dialog open={!!attendeesModal?.open} onOpenChange={(o) => !o && setAttendeesModal(null)}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Event Registrations</DialogTitle>
+            <DialogDescription>People who registered for this event.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-2 max-h-[400px] overflow-auto">
+            {attendeesModal?.attendees && attendeesModal.attendees.length > 0 ? (
+              attendeesModal.attendees.map((a, i) => (
+                <div key={i} className="flex items-center justify-between border rounded px-3 py-2">
+                  <div className="text-sm">
+                    <div className="font-medium">{a.email || a.uid || "Unknown"}</div>
+                    {a.uid && <div className="text-xs text-muted-foreground">UID: {a.uid}</div>}
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="text-sm text-muted-foreground">No registrations yet.</div>
+            )}
+          </div>
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button variant="outline">Close</Button>
+            </DialogClose>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 } 
