@@ -18,6 +18,7 @@ import { useRouter } from "next/navigation";
 import { Upload, MapPin, Phone, Mail, Globe, Clock, DollarSign, Shield } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { createServiceRequestNotification } from "@/lib/notifications";
+import TagInput from "@/components/form/TagInput";
 
 const serviceSchema = z.object({
   serviceName: z.string().min(2, "Service name must be at least 2 characters"),
@@ -337,11 +338,12 @@ export default function RegisterServicePage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <Label htmlFor="specializations" className="text-gray-700 font-medium">Specializations</Label>
-                    <Input 
-                      id="specializations" 
-                      {...register("specializations")} 
-                      placeholder="e.g., Classic cars, Exotic vehicles, Vintage restoration"
-                      className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400" 
+                    <TagInput
+                      // react-hook-form cannot control custom without Controller here; we set manually via register fallback
+                      value={watch("specializations") as any}
+                      onChange={(v) => setValue("specializations", v)}
+                      placeholder="Type a specialization and press Enter"
+                      helperText="Press Enter after each specialization."
                     />
                     {errors.specializations && <p className="text-red-500 text-sm">{errors.specializations.message}</p>}
                   </div>

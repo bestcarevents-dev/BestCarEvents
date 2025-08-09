@@ -22,6 +22,7 @@ import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { createEventRequestNotification } from "@/lib/notifications";
+import TagInput from "@/components/form/TagInput";
 
 const eventSchema = z.object({
   eventName: z.string().min(5, "Event name must be at least 5 characters"),
@@ -243,7 +244,18 @@ export default function HostEventPage() {
 
               <div className="space-y-2">
                   <Label htmlFor="activities" className="text-gray-700 font-medium">Specific Activities (Optional)</Label>
-                  <Textarea id="activities" {...register("activities")} rows={3} placeholder="e.g., Live Music, Food Trucks, Vendor Booths, Kids Zone" className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400"/>
+                  <Controller
+                    name="activities"
+                    control={control}
+                    render={({ field }) => (
+                      <TagInput
+                        value={field.value as any}
+                        onChange={field.onChange}
+                        placeholder="Type an activity and press Enter (e.g., Live Music)"
+                        helperText="Press Enter after each activity."
+                      />
+                    )}
+                  />
                   {errors.activities && <p className="text-red-500 text-sm">{errors.activities.message}</p>}
               </div>
 
@@ -262,7 +274,18 @@ export default function HostEventPage() {
 
               <div className="space-y-2">
                   <Label htmlFor="sponsors" className="text-gray-700 font-medium">Sponsors (Optional)</Label>
-                  <Textarea id="sponsors" {...register("sponsors")} rows={2} placeholder="List sponsors here" className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400"/>
+                  <Controller
+                    name="sponsors"
+                    control={control}
+                    render={({ field }) => (
+                      <TagInput
+                        value={field.value as any}
+                        onChange={field.onChange}
+                        placeholder="Type a sponsor name and press Enter"
+                        helperText="Press Enter after each sponsor."
+                      />
+                    )}
+                  />
                   {errors.sponsors && <p className="text-red-500 text-sm">{errors.sponsors.message}</p>}
               </div>
 

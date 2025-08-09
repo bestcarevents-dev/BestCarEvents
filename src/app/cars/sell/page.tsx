@@ -183,6 +183,7 @@ export default function SellCarPage() {
         currency: "USD",
     }
   });
+  const [customFeature, setCustomFeature] = useState("");
 
   // Get max images based on selected listing type
   const getMaxImages = () => {

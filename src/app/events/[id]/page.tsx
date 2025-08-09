@@ -84,12 +84,19 @@ export default function EventDetailsPage({ params }: { params: { id: string } })
         return <div className="container mx-auto py-12 sm:py-24 text-center text-destructive text-xl sm:text-2xl font-bold flex flex-col items-center"><Car className="w-8 h-8 sm:w-12 sm:h-12 mb-4 animate-spin" />Event not found.</div>;
     }
 
-    // Helper function to split comma-separated strings
-    const splitString = (str: string): string[] => str ? str.split(',').map((item: string) => item.trim()) : [];
+    // Normalize string or array into array of trimmed strings
+    const toItems = (value: any): string[] => {
+        if (!value) return [];
+        if (Array.isArray(value)) return value.map((v) => String(v).trim()).filter(Boolean);
+        return String(value)
+            .split(/[\n,]+/)
+            .map((s) => s.trim())
+            .filter(Boolean);
+    };
 
-    const scheduleItems = splitString(event.scheduleHighlights);
-    const activityItems = splitString(event.activities);
-    const sponsorItems = splitString(event.sponsors);
+    const scheduleItems = toItems(event.scheduleHighlights);
+    const activityItems = toItems(event.activities);
+    const sponsorItems = toItems(event.sponsors);
 
     return (
         <div className="container mx-auto px-4 py-6 sm:py-10 bg-white animate-fade-in">

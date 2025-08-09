@@ -213,7 +213,7 @@ export default function AdminNewsletterPage() {
             <Input
               value={block.url}
               onChange={(e) =>
-                setBuilderBlocks((b) => b.map((x) => (x.id === block.id ? { ...block, url: e.target.value } : x)))
+                setBuilderBlocks((b) => b.map((x) => (x.id === block.id ? { ...block, url: normalizeStorageUrl(e.target.value) } : x)))
               }
               placeholder="https://..."
             />
@@ -232,7 +232,7 @@ export default function AdminNewsletterPage() {
                     const objRef = storageRef(storage, `newsletter_builder_images/${Date.now()}_${file.name}`);
                     await uploadBytes(objRef, file);
                     const url = await getDownloadURL(objRef);
-                    setBuilderBlocks((b) => b.map((x) => (x.id === block.id ? { ...block, url } : x)));
+                    setBuilderBlocks((b) => b.map((x) => (x.id === block.id ? { ...block, url: normalizeStorageUrl(url) } : x)));
                     toast({ title: "Image uploaded", description: "The image URL has been set for this block." });
                   } catch (err) {
                     toast({ title: "Upload failed", description: "Could not upload image. Try again.", variant: "destructive" });
@@ -287,7 +287,7 @@ export default function AdminNewsletterPage() {
           ).replace(/\n/g, "<br/>")}</td></tr>`;
         }
         if (b.type === "image") {
-          return `<tr><td style="padding:12px 0"><img src="${encodeURI(b.url)}" alt="${escapeHtml(
+          return `<tr><td style="padding:12px 0"><img src="${encodeURI(normalizeStorageUrl(b.url))}" alt="${escapeHtml(
             b.alt || ""
           )}" style="max-width:100%;height:auto;border:0;display:block"/></td></tr>`;
         }
@@ -589,12 +589,12 @@ export default function AdminNewsletterPage() {
                             {selectedRequest.images.map((img, idx) => (
                               <img
                                 key={idx}
-                                src={img}
+                                src={normalizeStorageUrl(img)}
                                 alt="newsletter"
                                 title="Click to copy URL"
                                 className="w-full h-28 object-cover rounded cursor-pointer hover:opacity-80"
                                 onClick={async () => {
-                                  await navigator.clipboard.writeText(img);
+                                  await navigator.clipboard.writeText(normalizeStorageUrl(img));
                                   toast({ title: "Image URL copied", description: "Paste it into the builder's Image block." });
                                 }}
                               />
@@ -690,4 +690,9 @@ function escapeHtml(input: string) {
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#039;");
+}
+
+function normalizeStorageUrl(input: string) {
+  // Fix double-encoded slashes in Firebase Storage URLs
+  return input.replace(/%252F/g, "%2F");
 } 

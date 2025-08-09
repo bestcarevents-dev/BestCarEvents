@@ -154,8 +154,14 @@ export default function ServiceDetailsPage({ params }: { params: { id: string } 
                             <CardContent className="p-0">
                                 <h2 className="text-xl sm:text-2xl font-bold font-headline mb-3 sm:mb-4 text-yellow-600">Specializations</h2>
                                 <div className="flex flex-wrap gap-2 sm:gap-4">
-                                    {service.specializations.split(',').map((spec, index) => (
-                                        <span key={index} className="bg-yellow-100 text-yellow-800 text-xs sm:text-sm font-medium px-2 sm:px-3 py-1 rounded-full">{spec.trim()}</span>
+                                    {(Array.isArray(service.specializations)
+                                      ? service.specializations
+                                      : String(service.specializations)
+                                          .split(/[\n,]+/)
+                                          .map(s => s.trim())
+                                          .filter(Boolean)
+                                    ).map((spec: string, index: number) => (
+                                        <span key={index} className="bg-yellow-100 text-yellow-800 text-xs sm:text-sm font-medium px-2 sm:px-3 py-1 rounded-full">{spec}</span>
                                     ))}
                                 </div>
                             </CardContent>
