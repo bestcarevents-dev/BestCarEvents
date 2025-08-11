@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { app } from "@/lib/firebase";
@@ -416,6 +416,7 @@ function GalleryManager({ label, collectionName }: { label: string; collectionNa
   const [progressText, setProgressText] = useState<string>("");
   const storage = useMemo(() => getStorage(app), []);
   const db = useMemo(() => getFirestore(app), []);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const load = async () => {
     setLoading(true);
@@ -457,6 +458,7 @@ function GalleryManager({ label, collectionName }: { label: string; collectionNa
     } finally {
       setUploading(false);
       setProgressText("");
+      if (fileInputRef.current) fileInputRef.current.value = "";
     }
   };
 
@@ -492,12 +494,15 @@ function GalleryManager({ label, collectionName }: { label: string; collectionNa
         <CardDescription>Upload and manage images for {label.toLowerCase()}.</CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="mb-4 flex items-center gap-3">
-          <Input type="file" accept="image/*" multiple onChange={(e) => onUpload(e.target.files)} />
-          <Button disabled={uploading} onClick={() => { /* no-op, uploads happen on select */ }}>
-            {uploading ? progressText || "Uploading..." : "Upload"}
+        <div className="mb-2 flex items-center gap-3">
+          <Input ref={fileInputRef} type="file" accept="image/*" multiple onChange={(e) => onUpload(e.target.files)} />
+          <Button type="button" disabled={uploading} onClick={() => fileInputRef.current?.click()}>
+            {uploading ? (progressText || "Uploading...") : "Add Images"}
           </Button>
         </div>
+        <p className="text-xs text-muted-foreground mb-4">
+          Tip: You can upload multiple images at once, or add more later. Try to keep each gallery to about 12 images. After managing images, remember to save your changes on this page.
+        </p>
         {loading ? (
           <p className="text-sm text-gray-600">Loading images...</p>
         ) : items.length === 0 ? (
