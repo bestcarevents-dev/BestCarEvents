@@ -18,6 +18,7 @@ import { Globe, Users, Link as LinkIcon } from 'lucide-react';
 import HomepageAdCarousel from "@/components/HomepageAdCarousel";
 import { fetchHomepageContent, defaultHomepageContent } from "@/lib/homepageContent";
 import type { HomepageContent } from "@/types/homepage";
+import SimpleGallerySection from "@/components/SimpleGallerySection";
 
 type CarData = {
   id: string;
@@ -2101,13 +2102,25 @@ export default function Home() {
       <HeroSlider slides={copy.hero?.slides} />
       <PromoAnnouncement copy={copy.promo ?? defaultHomepageContent.promo!} />
       <ValueProposition copy={copy.value ?? defaultHomepageContent.value!} />
-      <GallerySection title={copy.galleries?.main?.title ?? defaultHomepageContent.galleries!.main!.title} collectionName="gallery" bgClass="bg-white" />
+      {(copy.galleries?.main?.layout ?? 'random') === 'random' ? (
+        <GallerySection title={copy.galleries?.main?.title ?? defaultHomepageContent.galleries!.main!.title} collectionName="gallery" bgClass="bg-white" />
+      ) : (
+        <SimpleGallerySection title={copy.galleries?.main?.title ?? defaultHomepageContent.galleries!.main!.title} collectionName="gallery" max={12} />
+      )}
       <FeaturedCarsSection copy={copy.featuredCars ?? defaultHomepageContent.featuredCars!} />
       <FeaturedEventsSection copy={copy.featuredEvents ?? defaultHomepageContent.featuredEvents!} />
-      <GallerySection title={copy.galleries?.location1?.title ?? defaultHomepageContent.galleries!.location1!.title} collectionName="gallery_location1" bgClass="bg-[#E0D8C1]" />
+      {(copy.galleries?.location1?.layout ?? 'random') === 'random' ? (
+        <GallerySection title={copy.galleries?.location1?.title ?? defaultHomepageContent.galleries!.location1!.title} collectionName="gallery_location1" bgClass="bg-[#E0D8C1]" />
+      ) : (
+        <SimpleGallerySection title={copy.galleries?.location1?.title ?? defaultHomepageContent.galleries!.location1!.title} collectionName="gallery_location1" max={12} />
+      )}
       <FeaturedAuctionsSection copy={copy.featuredAuctions ?? defaultHomepageContent.featuredAuctions!} />
       <FeaturedHotelsSection copy={copy.featuredHotels ?? defaultHomepageContent.featuredHotels!} />
-      <GallerySection title={copy.galleries?.location2?.title ?? defaultHomepageContent.galleries!.location2!.title} collectionName="gallery_location2" bgClass="bg-white" />
+      {(copy.galleries?.location2?.layout ?? 'random') === 'random' ? (
+        <GallerySection title={copy.galleries?.location2?.title ?? defaultHomepageContent.galleries!.location2!.title} collectionName="gallery_location2" bgClass="bg-white" />
+      ) : (
+        <SimpleGallerySection title={copy.galleries?.location2?.title ?? defaultHomepageContent.galleries!.location2!.title} collectionName="gallery_location2" max={12} />
+      )}
       <FeaturedClubsSection copy={copy.featuredClubs ?? defaultHomepageContent.featuredClubs!} />
       <FeaturedOtherServicesSection copy={copy.featuredServices ?? defaultHomepageContent.featuredServices!} />
     </div>

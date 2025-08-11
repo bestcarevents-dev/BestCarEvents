@@ -35,6 +35,7 @@ export type SectionCopy = {
 
 export type GallerySectionCopy = {
   title: string;
+  layout?: 'random' | 'simple';
 };
 
 export type HomepageContent = {

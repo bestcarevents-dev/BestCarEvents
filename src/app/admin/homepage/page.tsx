@@ -387,15 +387,48 @@ function GalleryTitlesEditor({ value, onSave, saving }: { value: NonNullable<Hom
       <CardContent className="space-y-3">
         <div>
           <Label>Main Gallery Title</Label>
-          <Input value={local.main?.title ?? ""} onChange={(e) => setLocal((p) => ({ ...p, main: { title: e.target.value } }))} />
+          <Input value={local.main?.title ?? ""} onChange={(e) => setLocal((p) => ({ ...p, main: { ...(p.main || {}), title: e.target.value } }))} />
+          <div className="mt-2">
+            <Label className="mr-2">Layout</Label>
+            <select
+              className="border rounded px-2 py-1 text-sm"
+              value={local.main?.layout ?? 'random'}
+              onChange={(e) => setLocal((p) => ({ ...p, main: { ...(p.main || {}), layout: e.target.value as 'random' | 'simple' } }))}
+            >
+              <option value="random">Random (masonry)</option>
+              <option value="simple">Simple grid</option>
+            </select>
+          </div>
         </div>
         <div>
           <Label>Location 1 Title</Label>
-          <Input value={local.location1?.title ?? ""} onChange={(e) => setLocal((p) => ({ ...p, location1: { title: e.target.value } }))} />
+          <Input value={local.location1?.title ?? ""} onChange={(e) => setLocal((p) => ({ ...p, location1: { ...(p.location1 || {}), title: e.target.value } }))} />
+          <div className="mt-2">
+            <Label className="mr-2">Layout</Label>
+            <select
+              className="border rounded px-2 py-1 text-sm"
+              value={local.location1?.layout ?? 'random'}
+              onChange={(e) => setLocal((p) => ({ ...p, location1: { ...(p.location1 || {}), layout: e.target.value as 'random' | 'simple' } }))}
+            >
+              <option value="random">Random (masonry)</option>
+              <option value="simple">Simple grid</option>
+            </select>
+          </div>
         </div>
         <div>
           <Label>Location 2 Title</Label>
-          <Input value={local.location2?.title ?? ""} onChange={(e) => setLocal((p) => ({ ...p, location2: { title: e.target.value } }))} />
+          <Input value={local.location2?.title ?? ""} onChange={(e) => setLocal((p) => ({ ...p, location2: { ...(p.location2 || {}), title: e.target.value } }))} />
+          <div className="mt-2">
+            <Label className="mr-2">Layout</Label>
+            <select
+              className="border rounded px-2 py-1 text-sm"
+              value={local.location2?.layout ?? 'random'}
+              onChange={(e) => setLocal((p) => ({ ...p, location2: { ...(p.location2 || {}), layout: e.target.value as 'random' | 'simple' } }))}
+            >
+              <option value="random">Random (masonry)</option>
+              <option value="simple">Simple grid</option>
+            </select>
+          </div>
         </div>
         <div className="flex gap-2">
           <Button onClick={() => onSave(local)} disabled={saving}>

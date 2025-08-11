@@ -98,9 +98,9 @@ export const defaultHomepageContent: HomepageContent = {
     ctaHref: "/others",
   },
   galleries: {
-    main: { title: "Community Gallery" },
-    location1: { title: "Location Spotlight: 1" },
-    location2: { title: "Location Spotlight: 2" },
+    main: { title: "Community Gallery", layout: 'random' },
+    location1: { title: "Location Spotlight: 1", layout: 'random' },
+    location2: { title: "Location Spotlight: 2", layout: 'random' },
   },
 };
 
@@ -120,6 +120,11 @@ export async function fetchHomepageContent(): Promise<HomepageContent> {
     hero: {
       slides: data?.hero?.slides?.length ? data.hero.slides : defaultHomepageContent.hero!.slides,
     },
+    galleries: {
+      main: { title: data?.galleries?.main?.title ?? defaultHomepageContent.galleries!.main!.title, layout: data?.galleries?.main?.layout ?? 'random' },
+      location1: { title: data?.galleries?.location1?.title ?? defaultHomepageContent.galleries!.location1!.title, layout: data?.galleries?.location1?.layout ?? 'random' },
+      location2: { title: data?.galleries?.location2?.title ?? defaultHomepageContent.galleries!.location2!.title, layout: data?.galleries?.location2?.layout ?? 'random' },
+    }
   };
 }
 
