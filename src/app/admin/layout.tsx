@@ -60,6 +60,7 @@ const navLinks = [
     { href: "/admin/newsletter", icon: Mail, label: "Newsletter" },
     { href: "/admin/newsletter-requests", icon: Mail, label: "Newsletter Requests" },
     { href: "/admin/payments", icon: CreditCard, label: "Payments" },
+    { href: "/admin/homepage", icon: Settings, label: "Homepage Content" },
     { href: "/admin/settings", icon: Settings, label: "Settings" },
 ];
 

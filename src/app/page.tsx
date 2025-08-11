@@ -16,6 +16,8 @@ import { ChevronLeft, ChevronRight, Circle } from 'lucide-react';
 import Image from 'next/image';
 import { Globe, Users, Link as LinkIcon } from 'lucide-react';
 import HomepageAdCarousel from "@/components/HomepageAdCarousel";
+import { fetchHomepageContent, defaultHomepageContent } from "@/lib/homepageContent";
+import type { HomepageContent } from "@/types/homepage";
 
 type CarData = {
   id: string;
@@ -110,7 +112,7 @@ type OtherServiceData = {
 // New: Promo announcement and gallery types
 type GalleryImage = { id: string; url: string };
 
-const PromoAnnouncement = () => {
+const PromoAnnouncement = ({ copy }: { copy: NonNullable<HomepageContent["promo"]> }) => {
   return (
     <div className="bg-gradient-to-b from-white to-[#E0D8C1]">
       <div className="container mx-auto px-4 py-12">
@@ -125,34 +127,24 @@ const PromoAnnouncement = () => {
           <div className="relative flex flex-col items-center text-center">
             <div className="inline-flex items-center gap-2 bg-yellow-400/20 backdrop-blur-sm px-4 py-2 rounded-full mb-6">
               <span className="animate-pulse">🎉</span>
-              <span className="font-semibold text-gray-900">ZERO COST LISTINGS</span>
+              <span className="font-semibold text-gray-900">{copy.badgeText}</span>
               <span className="animate-pulse">🎉</span>
             </div>
             
             <h2 className="text-4xl md:text-6xl lg:text-7xl font-extrabold font-headline bg-clip-text text-transparent bg-gradient-to-r from-amber-400 via-yellow-600 to-amber-400 [background-size:200%_auto] animate-[gradient_2s_linear_infinite] pb-2">
-              ALL LISTINGS ARE FREE
+              {copy.mainHeading}
             </h2>
             
             <div className="mt-8 flex flex-wrap justify-center gap-4 text-lg md:text-xl">
-              <div className="bg-yellow-400/10 backdrop-blur-sm rounded-full px-6 py-2 border border-yellow-400/20 text-gray-900">
-                🏨 Hotels
-              </div>
-              <div className="bg-yellow-400/10 backdrop-blur-sm rounded-full px-6 py-2 border border-yellow-400/20 text-gray-900">
-                👥 Clubs
-              </div>
-              <div className="bg-yellow-400/10 backdrop-blur-sm rounded-full px-6 py-2 border border-yellow-400/20 text-gray-900">
-                🎪 Events
-              </div>
-              <div className="bg-yellow-400/10 backdrop-blur-sm rounded-full px-6 py-2 border border-yellow-400/20 text-gray-900">
-                🔨 Auctions
-              </div>
-              <div className="bg-yellow-400/10 backdrop-blur-sm rounded-full px-6 py-2 border border-yellow-400/20 text-gray-900">
-                🛠️ Services
-              </div>
+              {copy.chips.map((chip) => (
+                <div key={chip} className="bg-yellow-400/10 backdrop-blur-sm rounded-full px-6 py-2 border border-yellow-400/20 text-gray-900">
+                  {chip}
+                </div>
+              ))}
             </div>
             
             <p className="mt-6 text-xl md:text-2xl text-gray-800 max-w-2xl">
-              <span className="font-bold text-yellow-500">Cars:</span> Enjoy <span className="font-bold text-yellow-500">2 months free</span> listing period!
+              <span className="font-bold text-yellow-500">{copy.carsLinePrefix}</span> Enjoy <span className="font-bold text-yellow-500">{copy.carsLineHighlight}</span> listing period!
             </p>
 
             <div className="mt-10 flex justify-center w-full">
@@ -161,7 +153,7 @@ const PromoAnnouncement = () => {
                 size="lg" 
                 className="bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-bold text-lg md:text-xl px-12 py-6 rounded-full shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300"
               >
-                <Link href="/post-a-listing">Post a Listing</Link>
+                <Link href={copy.ctaHref}>{copy.ctaLabel}</Link>
               </Button>
             </div>
           </div>
@@ -192,7 +184,18 @@ const GallerySection = ({
     const fetchGallery = async () => {
       try {
         const db = getFirestore(app);
-        const q = query(collection(db, collectionName), orderBy("createdAt", "desc"), limit(24));
+        
+        // Different image limits for each gallery
+        let imageLimit = 24; // default
+        if (collectionName === "gallery") {
+          imageLimit = 18; // Main gallery - more images
+        } else if (collectionName === "gallery_location1") {
+          imageLimit = 12; // Location 1 - medium
+        } else if (collectionName === "gallery_location2") {
+          imageLimit = 15; // Location 2 - different count
+        }
+        
+        const q = query(collection(db, collectionName), orderBy("createdAt", "desc"), limit(imageLimit));
         const snap = await getDocs(q);
         const fromDb = snap.docs.map((doc) => {
           const data = doc.data() as any;
@@ -201,9 +204,9 @@ const GallerySection = ({
         });
         const filtered = fromDb.filter((g) => !!g.url);
         const fallbacks: string[] = [
-          "https://images.unsplash.com/photo-1511910849309-0dffb9f5fa7b?q=80&w=1600&auto=format&fit=crop",
+          "https://images.unsplash.com/photo-1494976388531-0dffb9f5fa7b?q=80&w=1600&auto=format&fit=crop",
           "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?q=80&w=1600&auto=format&fit=crop",
-          "https://images.unsplash.com/photo-1518552781856-7e1cebd8b0b2?q=80&w=1600&auto=format&fit=crop",
+          "https://images.unsplash.com/photo-1494976388531-7e1cebd8b0b2?q=80&w=1600&auto=format&fit=crop",
           "https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=1600&auto=format&fit=crop",
           "https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?q=80&w=1600&auto=format&fit=crop",
           "https://images.unsplash.com/photo-1483721310020-03333e577078?q=80&w=1600&auto=format&fit=crop",
@@ -215,7 +218,7 @@ const GallerySection = ({
           "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?q=80&w=1600&auto=format&fit=crop",
         ];
         const finalImages = (filtered.length ? filtered : fallbacks.map((url, i) => ({ id: `fallback-${i}`, url })))
-          .slice(0, 24);
+          .slice(0, imageLimit);
         setImages(finalImages);
       } catch (e) {
         // fallback
@@ -233,6 +236,92 @@ const GallerySection = ({
     fetchGallery();
   }, [collectionName]);
 
+  // Different patterns for each gallery
+  const getHeight = (index: number) => {
+    if (collectionName === "gallery") {
+      // Main gallery - varied heights
+      const heights = ['h-64', 'h-80', 'h-72', 'h-88', 'h-64', 'h-80'];
+      return heights[index % heights.length];
+    } else if (collectionName === "gallery_location1") {
+      // Location 1 - taller, more dramatic
+      const heights = ['h-72', 'h-96', 'h-80', 'h-88', 'h-72', 'h-96'];
+      return heights[index % heights.length];
+    } else {
+      // Location 2 - shorter, more compact
+      const heights = ['h-56', 'h-64', 'h-60', 'h-72', 'h-56', 'h-64'];
+      return heights[index % heights.length];
+    }
+  };
+
+  const getWidth = (index: number) => {
+    if (collectionName === "gallery") {
+      // Main gallery - varied widths
+      const widths = ['w-full', 'w-11/12', 'w-full', 'w-11/12', 'w-full', 'w-11/12'];
+      return widths[index % widths.length];
+    } else if (collectionName === "gallery_location1") {
+      // Location 1 - more width variation
+      const widths = ['w-full', 'w-10/12', 'w-11/12', 'w-full', 'w-10/12', 'w-11/12'];
+      return widths[index % widths.length];
+    } else {
+      // Location 2 - mostly full width
+      const widths = ['w-full', 'w-11/12', 'w-full', 'w-11/12', 'w-full', 'w-11/12'];
+      return widths[index % widths.length];
+    }
+  };
+
+  const getPosition = (index: number) => {
+    if (collectionName === "gallery") {
+      // Main gallery - subtle positioning
+      const positions = ['', 'ml-2', '', 'mr-2', '', 'ml-2'];
+      return positions[index % positions.length];
+    } else if (collectionName === "gallery_location1") {
+      // Location 1 - more dramatic positioning
+      const positions = ['', 'ml-4', 'mr-4', '', 'ml-4', 'mr-4'];
+      return positions[index % positions.length];
+    } else {
+      // Location 2 - minimal positioning
+      const positions = ['', 'ml-1', '', 'mr-1', '', 'ml-1'];
+      return positions[index % positions.length];
+    }
+  };
+
+  const getGridSpan = (index: number) => {
+    if (collectionName === "gallery") {
+      // Main gallery - varied spans
+      const spans = [
+        { row: 1, col: 1 },
+        { row: 2, col: 1 },
+        { row: 1, col: 1 },
+        { row: 2, col: 1 },
+        { row: 1, col: 1 },
+        { row: 2, col: 1 },
+      ];
+      return spans[index % spans.length];
+    } else if (collectionName === "gallery_location1") {
+      // Location 1 - more dramatic spans
+      const spans = [
+        { row: 1, col: 1 },
+        { row: 3, col: 1 },
+        { row: 1, col: 2 },
+        { row: 2, col: 1 },
+        { row: 1, col: 1 },
+        { row: 3, col: 1 },
+      ];
+      return spans[index % spans.length];
+    } else {
+      // Location 2 - simpler spans
+      const spans = [
+        { row: 1, col: 1 },
+        { row: 1, col: 1 },
+        { row: 2, col: 1 },
+        { row: 1, col: 1 },
+        { row: 1, col: 1 },
+        { row: 2, col: 1 },
+      ];
+      return spans[index % spans.length];
+    }
+  };
+
   return (
     <section className={`py-14 sm:py-20 ${bgClass}`}>
       <div className="container mx-auto px-4">
@@ -243,13 +332,44 @@ const GallerySection = ({
         {loading ? (
           <div className="text-center py-8 text-gray-600">Loading gallery...</div>
         ) : (
-          <div className="columns-2 md:columns-3 lg:columns-4 gap-4 [column-fill:_balance]">{/* masonry */}
-            {images.map((img) => (
-              <a key={img.id} href={img.url} target="_blank" rel="noreferrer" className="group block mb-4 break-inside-avoid rounded-xl overflow-hidden shadow-sm">
-                {/* Using img to allow variable heights without layout constraints */}
-                <img src={img.url} alt="Gallery" loading="lazy" className="w-full h-auto group-hover:opacity-95" />
-              </a>
-            ))}
+          <div className="relative">
+            {/* Organic Pinterest-style masonry grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 auto-rows-[200px]">
+              {images.map((img, index) => (
+                <div 
+                  key={img.id} 
+                  className={`group relative overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 ${getHeight(index)} ${getWidth(index)} ${getPosition(index)}`}
+                  style={{
+                    gridRow: `span ${getGridSpan(index).row}`,
+                    gridColumn: `span ${getGridSpan(index).col}`,
+                  }}
+                >
+                  <a href={img.url} target="_blank" rel="noreferrer" className="block w-full h-full">
+                    <img 
+                      src={img.url} 
+                      alt="Gallery" 
+                      loading="lazy" 
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out" 
+                    />
+                    {/* Organic overlay with irregular shape */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    
+                    {/* Decorative elements for organic feel */}
+                    <div className="absolute top-3 right-3 w-3 h-3 bg-white/20 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-500 delay-100"></div>
+                    <div className="absolute bottom-4 left-4 w-2 h-2 bg-yellow-400/60 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-500 delay-200"></div>
+                    
+                    {/* Organic corner accent */}
+                    <div className="absolute top-0 left-0 w-8 h-8 bg-gradient-to-br from-yellow-400/30 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 delay-300"></div>
+                  </a>
+                </div>
+              ))}
+            </div>
+            
+            {/* Organic floating elements for artistic touch */}
+            <div className="absolute top-10 left-10 w-4 h-4 bg-yellow-400/20 rounded-full animate-pulse"></div>
+            <div className="absolute top-20 right-20 w-6 h-6 bg-[#80A0A9]/20 rounded-full animate-pulse delay-1000"></div>
+            <div className="absolute bottom-20 left-1/4 w-3 h-3 bg-yellow-400/30 rounded-full animate-pulse delay-500"></div>
+            <div className="absolute bottom-10 right-1/3 w-5 h-5 bg-[#80A0A9]/25 rounded-full animate-pulse delay-1500"></div>
           </div>
         )}
       </div>
@@ -257,35 +377,35 @@ const GallerySection = ({
   );
 };
 
-const ValueProposition = () => {
+const ValueProposition = ({ copy }: { copy: NonNullable<HomepageContent["value"]> }) => {
   return (
     <div className="bg-[#E0D8C1]">
         <div className="container mx-auto px-4 py-20">
              <div className="text-center max-w-3xl mx-auto mb-16">
-                <h2 className="text-4xl font-headline font-extrabold sm:text-5xl tracking-tight text-gray-900">Join Our Global Car Community</h2>
-                <p className="mt-4 text-lg text-gray-700">Connect with passionate car enthusiasts, collectors, and professionals. Share experiences, discover events, and be part of something extraordinary.</p>
+                <h2 className="text-4xl font-headline font-extrabold sm:text-5xl tracking-tight text-gray-900">{copy.heading}</h2>
+                <p className="mt-4 text-lg text-gray-700">{copy.description}</p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-12 text-center">
                 <div className="flex flex-col items-center">
                     <div className="flex items-center justify-center h-16 w-16 rounded-full bg-white mb-6">
                         <BadgeCheck className="h-8 w-8 text-yellow-600"/>
                     </div>
-                    <h3 className="text-xl font-headline font-semibold text-gray-900">Verified Members</h3>
-                    <p className="mt-2 text-gray-700">Connect with trusted enthusiasts and professionals in the automotive world.</p>
+                    <h3 className="text-xl font-headline font-semibold text-gray-900">{copy.items[0]?.title}</h3>
+                    <p className="mt-2 text-gray-700">{copy.items[0]?.description}</p>
                 </div>
                 <div className="flex flex-col items-center">
                      <div className="flex items-center justify-center h-16 w-16 rounded-full bg-white mb-6">
                         <Trophy className="h-8 w-8 text-yellow-600"/>
                     </div>
-                    <h3 className="text-xl font-headline font-semibold text-gray-900">Exclusive Access</h3>
-                    <p className="mt-2 text-gray-700">Get early access to premium events, rare car listings, and special offers.</p>
+                    <h3 className="text-xl font-headline font-semibold text-gray-900">{copy.items[1]?.title}</h3>
+                    <p className="mt-2 text-gray-700">{copy.items[1]?.description}</p>
                 </div>
                 <div className="flex flex-col items-center">
                     <div className="flex items-center justify-center h-16 w-16 rounded-full bg-white mb-6">
                         <Group className="h-8 w-8 text-yellow-600"/>
                     </div>
-                    <h3 className="text-xl font-headline font-semibold text-gray-900">Growing Network</h3>
-                    <p className="mt-2 text-gray-700">Join thousands of car enthusiasts sharing their passion and expertise daily.</p>
+                    <h3 className="text-xl font-headline font-semibold text-gray-900">{copy.items[2]?.title}</h3>
+                    <p className="mt-2 text-gray-700">{copy.items[2]?.description}</p>
                 </div>
             </div>
             
@@ -298,7 +418,7 @@ const ValueProposition = () => {
   );
 };
 
-const FeaturedCarsSection = () => {
+const FeaturedCarsSection = ({ copy }: { copy: NonNullable<HomepageContent["featuredCars"]> }) => {
     const [featuredCars, setFeaturedCars] = useState<CarData[]>([]);
     const [loading, setLoading] = useState(true);
     const [currentSlide, setCurrentSlide] = useState(0);
@@ -394,8 +514,8 @@ const FeaturedCarsSection = () => {
         <section className="py-20 sm:py-28 bg-[#E0D8C1]">
             <div className="container mx-auto px-4">
                 <div className="text-center max-w-3xl mx-auto mb-16">
-                    <h2 className="text-4xl font-headline font-extrabold sm:text-5xl tracking-tight text-gray-900">Featured Cars</h2>
-                    <p className="mt-4 text-lg text-gray-700">Explore a selection of exceptional vehicles. Car listings are free for 2 months.</p>
+                    <h2 className="text-4xl font-headline font-extrabold sm:text-5xl tracking-tight text-gray-900">{copy.title}</h2>
+                    <p className="mt-4 text-lg text-gray-700">{copy.description}</p>
                 </div>
                 {loading ? (
                     <div className="text-center text-lg py-12 text-gray-600">Loading featured cars...</div>
@@ -510,7 +630,7 @@ const FeaturedCarsSection = () => {
                 )}
                 <div className="text-center mt-16">
                     <Button size="lg" asChild className="font-bold rounded-full">
-                        <Link href="/cars">View Marketplace <ArrowRight className="w-5 h-5 ml-2" /></Link>
+                        <Link href={copy.ctaHref}>{copy.ctaLabel} <ArrowRight className="w-5 h-5 ml-2" /></Link>
                     </Button>
                 </div>
             </div>
@@ -518,7 +638,7 @@ const FeaturedCarsSection = () => {
     );
 };
 
-const FeaturedEventsSection = () => {
+const FeaturedEventsSection = ({ copy }: { copy: NonNullable<HomepageContent["featuredEvents"]> }) => {
   const [featuredEvents, setFeaturedEvents] = useState<EventData[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -628,8 +748,8 @@ const FeaturedEventsSection = () => {
     <section className="py-20 sm:py-28 bg-[#80A0A9]">
       <div className="container mx-auto px-4">
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <h2 className="text-4xl font-headline font-extrabold sm:text-5xl tracking-tight text-white">Upcoming Events</h2>
-          <p className="mt-4 text-lg text-white/90">Discover the most exclusive automotive gatherings around the world. Event listings are free.</p>
+          <h2 className="text-4xl font-headline font-extrabold sm:text-5xl tracking-tight text-white">{copy.title}</h2>
+          <p className="mt-4 text-lg text-white/90">{copy.description}</p>
         </div>
         {loading ? (
           <div className="text-center text-lg py-12 text-gray-600">Loading upcoming events...</div>
@@ -736,8 +856,8 @@ const FeaturedEventsSection = () => {
         )}
         <div className="text-center mt-16">
           <Button size="lg" asChild className="font-bold rounded-full">
-            <Link href="/events">
-              View All Events <ArrowRight className="w-5 h-5 ml-2" />
+            <Link href={copy.ctaHref}>
+              {copy.ctaLabel} <ArrowRight className="w-5 h-5 ml-2" />
             </Link>
           </Button>
         </div>
@@ -746,7 +866,7 @@ const FeaturedEventsSection = () => {
   );
 };
 
-const FeaturedAuctionsSection = () => {
+const FeaturedAuctionsSection = ({ copy }: { copy: NonNullable<HomepageContent["featuredAuctions"]> }) => {
   const [featuredAuctions, setFeaturedAuctions] = useState<AuctionData[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -857,8 +977,8 @@ const FeaturedAuctionsSection = () => {
     <section className="py-20 sm:py-28 bg-white">
       <div className="container mx-auto px-4">
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <h2 className="text-4xl font-headline font-extrabold sm:text-5xl tracking-tight text-gray-900">Live Auctions</h2>
-          <p className="mt-4 text-lg text-gray-600">Bid on rare and exclusive vehicles. Auction listings are free to post.</p>
+          <h2 className="text-4xl font-headline font-extrabold sm:text-5xl tracking-tight text-gray-900">{copy.title}</h2>
+          <p className="mt-4 text-lg text-gray-600">{copy.description}</p>
         </div>
         {loading ? (
           <div className="text-center text-lg py-12 text-gray-600">Loading live auctions...</div>
@@ -977,8 +1097,8 @@ const FeaturedAuctionsSection = () => {
         )}
         <div className="text-center mt-16">
           <Button size="lg" asChild className="font-bold rounded-full">
-            <Link href="/auctions">
-              View All Auctions <ArrowRight className="w-5 h-5 ml-2" />
+            <Link href={copy.ctaHref}>
+              {copy.ctaLabel} <ArrowRight className="w-5 h-5 ml-2" />
             </Link>
           </Button>
         </div>
@@ -987,7 +1107,7 @@ const FeaturedAuctionsSection = () => {
   );
 };
 
-const FeaturedHotelsSection = () => {
+const FeaturedHotelsSection = ({ copy }: { copy: NonNullable<HomepageContent["featuredHotels"]> }) => {
   const [featuredHotels, setFeaturedHotels] = useState<HotelData[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -1086,8 +1206,8 @@ const FeaturedHotelsSection = () => {
     <section className="py-20 sm:py-28 bg-white">
       <div className="container mx-auto px-4">
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <h2 className="text-4xl font-headline font-extrabold sm:text-5xl tracking-tight text-gray-900">Featured Hotels</h2>
-          <p className="mt-4 text-lg text-gray-600">Discover premium car hotels and storage facilities for your valuable vehicles. Hotel listings are free.</p>
+          <h2 className="text-4xl font-headline font-extrabold sm:text-5xl tracking-tight text-gray-900">{copy.title}</h2>
+          <p className="mt-4 text-lg text-gray-600">{copy.description}</p>
         </div>
         {loading ? (
           <div className="text-center text-lg py-12 text-gray-600">Loading featured hotels...</div>
@@ -1260,8 +1380,8 @@ const FeaturedHotelsSection = () => {
         )}
         <div className="text-center mt-16">
           <Button size="lg" asChild className="font-bold rounded-full">
-            <Link href="/hotels">
-              View All Hotels <ArrowRight className="w-5 h-5 ml-2" />
+            <Link href={copy.ctaHref}>
+              {copy.ctaLabel} <ArrowRight className="w-5 h-5 ml-2" />
             </Link>
           </Button>
         </div>
@@ -1270,7 +1390,7 @@ const FeaturedHotelsSection = () => {
   );
 };
 
-const FeaturedClubsSection = () => {
+const FeaturedClubsSection = ({ copy }: { copy: NonNullable<HomepageContent["featuredClubs"]> }) => {
   const [featuredClubs, setFeaturedClubs] = useState<ClubData[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -1381,8 +1501,8 @@ const FeaturedClubsSection = () => {
     <section className="py-20 sm:py-28 bg-[#80A0A9]">
       <div className="container mx-auto px-4">
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <h2 className="text-4xl font-headline font-extrabold sm:text-5xl tracking-tight text-white">Featured Clubs</h2>
-          <p className="mt-4 text-lg text-white/90">Join exclusive car clubs and connect with fellow enthusiasts. Club listings are free.</p>
+          <h2 className="text-4xl font-headline font-extrabold sm:text-5xl tracking-tight text-white">{copy.title}</h2>
+          <p className="mt-4 text-lg text-white/90">{copy.description}</p>
         </div>
         {loading ? (
           <div className="text-center text-lg py-12 text-gray-600">Loading featured clubs...</div>
@@ -1605,8 +1725,8 @@ const FeaturedClubsSection = () => {
         )}
         <div className="text-center mt-16">
           <Button size="lg" asChild className="font-bold rounded-full">
-            <Link href="/clubs">
-              View All Clubs <ArrowRight className="w-5 h-5 ml-2" />
+            <Link href={copy.ctaHref}>
+              {copy.ctaLabel} <ArrowRight className="w-5 h-5 ml-2" />
             </Link>
           </Button>
         </div>
@@ -1615,7 +1735,7 @@ const FeaturedClubsSection = () => {
   );
 };
 
-const FeaturedOtherServicesSection = () => {
+const FeaturedOtherServicesSection = ({ copy }: { copy: NonNullable<HomepageContent["featuredServices"]> }) => {
   const [featuredServices, setFeaturedServices] = useState<OtherServiceData[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -1718,8 +1838,8 @@ const FeaturedOtherServicesSection = () => {
     <section className="py-20 sm:py-28 bg-white">
       <div className="container mx-auto px-4">
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <h2 className="text-4xl font-headline font-extrabold sm:text-5xl tracking-tight text-gray-900">Other Services</h2>
-          <p className="mt-4 text-lg text-gray-600">Discover automotive services including storage, garages, parts, restoration, detailing, and more. Service listings are free.</p>
+          <h2 className="text-4xl font-headline font-extrabold sm:text-5xl tracking-tight text-gray-900">{copy.title}</h2>
+          <p className="mt-4 text-lg text-gray-600">{copy.description}</p>
         </div>
         {loading ? (
           <div className="text-center text-lg py-12 text-gray-600">Loading other services...</div>
@@ -1952,8 +2072,8 @@ const FeaturedOtherServicesSection = () => {
         )}
         <div className="text-center mt-16">
           <Button size="lg" asChild className="font-bold rounded-full">
-            <Link href="/others">
-              View All Services <ArrowRight className="w-5 h-5 ml-2" />
+            <Link href={copy.ctaHref}>
+              {copy.ctaLabel} <ArrowRight className="w-5 h-5 ml-2" />
             </Link>
           </Button>
         </div>
@@ -1963,20 +2083,33 @@ const FeaturedOtherServicesSection = () => {
 };
 
 export default function Home() {
+  const [copy, setCopy] = useState<HomepageContent>(defaultHomepageContent);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const data = await fetchHomepageContent();
+        setCopy(data);
+      } catch (e) {
+        // use defaults on failure
+      }
+    })();
+  }, []);
+
   return (
     <div className="bg-white">
-      <HeroSlider />
-      <PromoAnnouncement />
-      <ValueProposition />
-      <GallerySection title="Community Gallery" collectionName="gallery" bgClass="bg-white" />
-      <FeaturedCarsSection />
-      <FeaturedEventsSection />
-      <GallerySection title="Location Spotlight: 1" collectionName="gallery_location1" bgClass="bg-[#E0D8C1]" />
-      <FeaturedAuctionsSection />
-      <FeaturedHotelsSection />
-      <GallerySection title="Location Spotlight: 2" collectionName="gallery_location2" bgClass="bg-white" />
-      <FeaturedClubsSection />
-      <FeaturedOtherServicesSection />
+      <HeroSlider slides={copy.hero?.slides} />
+      <PromoAnnouncement copy={copy.promo ?? defaultHomepageContent.promo!} />
+      <ValueProposition copy={copy.value ?? defaultHomepageContent.value!} />
+      <GallerySection title={copy.galleries?.main?.title ?? defaultHomepageContent.galleries!.main!.title} collectionName="gallery" bgClass="bg-white" />
+      <FeaturedCarsSection copy={copy.featuredCars ?? defaultHomepageContent.featuredCars!} />
+      <FeaturedEventsSection copy={copy.featuredEvents ?? defaultHomepageContent.featuredEvents!} />
+      <GallerySection title={copy.galleries?.location1?.title ?? defaultHomepageContent.galleries!.location1!.title} collectionName="gallery_location1" bgClass="bg-[#E0D8C1]" />
+      <FeaturedAuctionsSection copy={copy.featuredAuctions ?? defaultHomepageContent.featuredAuctions!} />
+      <FeaturedHotelsSection copy={copy.featuredHotels ?? defaultHomepageContent.featuredHotels!} />
+      <GallerySection title={copy.galleries?.location2?.title ?? defaultHomepageContent.galleries!.location2!.title} collectionName="gallery_location2" bgClass="bg-white" />
+      <FeaturedClubsSection copy={copy.featuredClubs ?? defaultHomepageContent.featuredClubs!} />
+      <FeaturedOtherServicesSection copy={copy.featuredServices ?? defaultHomepageContent.featuredServices!} />
     </div>
   );
 }

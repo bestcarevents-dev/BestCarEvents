@@ -6,7 +6,14 @@ import Autoplay from "embla-carousel-autoplay"
 import HeroSearch from './hero-search';
 import { cn } from '@/lib/utils';
 
-const slides = [
+export type HeroSlide = {
+  headline: string;
+  subheadline: string;
+  image: string;
+  hint?: string;
+};
+
+const defaultSlides: HeroSlide[] = [
     {
         headline: "Discover Premium Car Events",
         subheadline: "Connect with automotive excellence worldwide",
@@ -27,9 +34,11 @@ const slides = [
     }
 ]
 
-export default function HeroSlider() {
+export default function HeroSlider({ slides }: { slides?: HeroSlide[] }) {
     const [api, setApi] = useState<any>()
     const [current, setCurrent] = useState(0)
+
+    const resolvedSlides = slides && slides.length > 0 ? slides : defaultSlides;
 
     React.useEffect(() => {
         if (!api) {
@@ -54,7 +63,7 @@ export default function HeroSlider() {
                 setApi={setApi}
             >
                 <CarouselContent>
-                    {slides.map((slide, index) => (
+                    {resolvedSlides.map((slide, index) => (
                         <CarouselItem key={index} className="relative w-full h-screen min-h-[700px]">
                             <Image
                                 src={slide.image}
@@ -74,10 +83,10 @@ export default function HeroSlider() {
                  <div className="absolute inset-0 flex items-center justify-center">
                     <div className="container mx-auto px-4 text-center">
                         <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl font-headline text-shadow-lg">
-                            {slides[current].headline}
+                            {resolvedSlides[current].headline}
                         </h1>
                         <p className="mt-6 text-xl text-neutral-200 text-shadow-md max-w-3xl mx-auto">
-                            {slides[current].subheadline}
+                            {resolvedSlides[current].subheadline}
                         </p>
                         <div className="mt-10 max-w-2xl mx-auto px-4 sm:px-0">
                             <HeroSearch />
@@ -86,7 +95,7 @@ export default function HeroSlider() {
                 </div>
 
                 <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex space-x-3">
-                    {slides.map((_, i) => (
+                    {resolvedSlides.map((_, i) => (
                         <button
                             key={i}
                             onClick={() => api?.scrollTo(i)}
