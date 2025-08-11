@@ -35,7 +35,7 @@ interface ServiceCardProps {
 
 const ServiceCard = ({ id, serviceName, serviceType, description, location, priceRange, imageUrls, featured = false, rating, contactInfo, coverageArea }: ServiceCardProps) => {
   return (
-    <Card className={`group relative overflow-hidden transition-all duration-300 hover:shadow-lg bg-white border-gray-200 ${featured ? 'ring-2 ring-yellow-400 shadow-md' : 'hover:scale-105'}`}>
+    <Card className={`group relative overflow-hidden transition-all duration-300 hover:shadow-lg bg-white border-gray-200 ${featured ? 'ring-2 ring-[#80A0A9] shadow-md' : 'hover:scale-105'}`}>
       <div className="relative aspect-video overflow-hidden">
         <img 
           src={imageUrls && imageUrls.length > 0 ? imageUrls[0] : 'https://via.placeholder.com/400x250?text=Service+Image'} 
@@ -44,7 +44,7 @@ const ServiceCard = ({ id, serviceName, serviceType, description, location, pric
         />
         {featured && (
           <div className="absolute top-2 left-2">
-            <Badge className="bg-yellow-500 text-white">
+            <Badge className="bg-[#80A0A9] text-white">
               <Star className="w-3 h-3 mr-1" />
               Featured
             </Badge>
@@ -55,18 +55,18 @@ const ServiceCard = ({ id, serviceName, serviceType, description, location, pric
       
       <CardContent className="p-4 bg-white">
         <div className="flex items-start justify-between mb-2">
-          <h3 className="font-headline font-bold text-lg text-gray-900 group-hover:text-yellow-600 transition-colors">
+          <h3 className="font-headline font-bold text-lg text-gray-900 group-hover:text-[#80A0A9] transition-colors">
             {serviceName}
           </h3>
           {rating && (
             <div className="flex items-center text-sm text-gray-600">
-              <Star className="w-4 h-4 text-yellow-500 fill-current" />
+              <Star className="w-4 h-4 text-[#80A0A9] fill-current" />
               <span className="ml-1">{rating}</span>
             </div>
           )}
         </div>
         
-        <Badge variant="outline" className="mb-2 text-xs bg-gray-50 border-gray-300 text-gray-700">
+        <Badge variant="outline" className="mb-2 text-xs bg-[#E0D8C1]/20 border-[#80A0A9]/30 text-[#80A0A9]">
           {serviceType}
         </Badge>
         
@@ -92,12 +92,12 @@ const ServiceCard = ({ id, serviceName, serviceType, description, location, pric
         </div>
         
         <div className="flex items-center justify-between">
-          <Button asChild size="sm" className="flex-1 mr-2 bg-yellow-600 hover:bg-yellow-700 text-white">
+          <Button asChild size="sm" className="flex-1 mr-2 bg-[#80A0A9] hover:bg-[#80A0A9]/90 text-white">
             <Link href={`/others/${id}`}>
               View Details
             </Link>
           </Button>
-          <Button asChild variant="outline" size="sm" className="border-gray-300 text-gray-700 hover:bg-gray-50">
+          <Button asChild variant="outline" size="sm" className="border-[#80A0A9]/50 text-[#80A0A9] hover:bg-[#80A0A9]/10">
             <a href={`mailto:${contactInfo}?subject=Inquiry about ${serviceName}`}>
               Contact
             </a>
@@ -222,19 +222,19 @@ function OthersPageContent() {
             <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-12">
                 <div className="text-center md:text-left mb-4 md:mb-0">
                     <h1 className="text-4xl md:text-5xl font-extrabold font-headline text-gray-900">Other Services</h1>
-                    <p className="mt-4 text-lg text-gray-600 max-w-2xl">
+                    <p className="mt-4 text-lg text-gray-700 max-w-2xl">
                     Discover automotive services including storage, garages, parts, restoration, detailing, and more.
                     </p>
                 </div>
                 {currentUser ? (
-                  <div className="flex gap-2">
-                    <Button asChild variant="outline" className="border-gray-300 text-gray-700 hover:bg-gray-50">
+                  <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+                    <Button asChild variant="outline" className="border-[#80A0A9] text-[#80A0A9] hover:bg-[#80A0A9]/10 text-sm sm:text-base">
                       <Link href="/advertise/others-listing" className="flex items-center">
                         <PlusCircle className="mr-2 h-5 w-5" />
                         Feature Service
                       </Link>
                     </Button>
-                    <Button asChild>
+                    <Button asChild className="bg-[#80A0A9] hover:bg-[#80A0A9]/90 text-white text-sm sm:text-base">
                       <Link href="/others/register" className="flex items-center">
                           <PlusCircle className="mr-2 h-5 w-5" />
                           Register Service
@@ -242,10 +242,10 @@ function OthersPageContent() {
                     </Button>
                   </div>
                 ) : (
-                  <div className="flex gap-2">
+                  <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
                     <Dialog open={showDialog} onOpenChange={setShowDialog}>
                       <DialogTrigger asChild>
-                        <Button variant="outline" className="border-gray-300 text-gray-700 hover:bg-gray-50 flex items-center">
+                        <Button variant="outline" className="border-[#80A0A9] text-[#80A0A9] hover:bg-[#80A0A9]/10 flex items-center text-sm sm:text-base">
                           <PlusCircle className="mr-2 h-5 w-5" />
                           Feature Service
                         </Button>
@@ -260,7 +260,7 @@ function OthersPageContent() {
                             <DialogClose asChild>
                               <Button variant="outline">Close</Button>
                             </DialogClose>
-                            <Button asChild variant="default">
+                            <Button asChild variant="default" className="bg-[#80A0A9] hover:bg-[#80A0A9]/90 text-white">
                               <a href="/login">Login</a>
                             </Button>
                           </DialogFooter>
@@ -269,7 +269,7 @@ function OthersPageContent() {
                     </Dialog>
                     <Dialog open={showDialog} onOpenChange={setShowDialog}>
                       <DialogTrigger asChild>
-                        <Button className="flex items-center">
+                        <Button className="flex items-center bg-[#80A0A9] hover:bg-[#80A0A9]/90 text-white text-sm sm:text-base">
                           <PlusCircle className="mr-2 h-5 w-5" />
                           Register Service
                         </Button>
@@ -284,7 +284,7 @@ function OthersPageContent() {
                             <DialogClose asChild>
                               <Button variant="outline">Close</Button>
                             </DialogClose>
-                            <Button asChild variant="default">
+                            <Button asChild variant="default" className="bg-[#80A0A9] hover:bg-[#80A0A9]/90 text-white">
                               <a href="/login">Login</a>
                             </Button>
                           </DialogFooter>
@@ -309,16 +309,16 @@ function OthersPageContent() {
               />
             </div>
 
-          <div className="bg-gray-50 p-6 rounded-lg border border-gray-200 mb-8">
+          <div className="bg-[#E0D8C1]/30 p-6 rounded-lg border border-[#E0D8C1]/50 mb-8">
             <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
               <Input 
                 placeholder="Search by service name, type..." 
-                className="md:col-span-2 bg-white border-gray-300 text-gray-900 placeholder:text-gray-500"
+                className="md:col-span-2 bg-white border-[#80A0A9]/50 text-gray-900 placeholder:text-gray-500 focus:border-[#80A0A9]"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
               <Select value={selectedType} onValueChange={setSelectedType}>
-                 <SelectTrigger className="bg-white border-gray-300 text-gray-900">
+                 <SelectTrigger className="bg-white border-[#80A0A9]/50 text-gray-900 focus:border-[#80A0A9]">
                    <SelectValue placeholder="Service Type: Any" />
                  </SelectTrigger>
                  <SelectContent>
@@ -329,7 +329,7 @@ function OthersPageContent() {
                  </SelectContent>
               </Select>
               <Select value={sortBy} onValueChange={setSortBy}>
-                <SelectTrigger className="bg-white border-gray-300 text-gray-900">
+                <SelectTrigger className="bg-white border-[#80A0A9]/50 text-gray-900 focus:border-[#80A0A9]">
                   <SelectValue placeholder="Sort by: Name" />
                 </SelectTrigger>
                 <SelectContent>
@@ -345,7 +345,7 @@ function OthersPageContent() {
                   setSortBy("name");
                 }}
                 variant="outline"
-                className="border-gray-300 text-gray-700 hover:bg-gray-50"
+                className="border-[#80A0A9]/50 text-[#80A0A9] hover:bg-[#80A0A9]/10"
               >
                 Clear
               </Button>
@@ -368,17 +368,17 @@ function OthersPageContent() {
                    {featuredServices.length > 0 ? (
                      <div className="mb-12">
                        <div className="flex items-center gap-3 mb-6">
-                         <div className="p-2 bg-yellow-100 rounded-full">
-                           <Star className="w-6 h-6 text-yellow-600" />
+                         <div className="p-2 bg-[#E0D8C1]/20 rounded-full">
+                           <Star className="w-6 h-6 text-[#80A0A9]" />
                          </div>
                          <h2 className="text-2xl font-headline font-bold text-gray-900">Featured Services</h2>
-                         <div className="flex-1 h-px bg-gradient-to-r from-yellow-400/50 to-transparent"></div>
+                         <div className="flex-1 h-px bg-gradient-to-r from-[#80A0A9]/50 to-transparent"></div>
                        </div>
                        
                        <div className="relative group">
-                         <div className="absolute inset-0 bg-gradient-to-r from-yellow-100/50 via-yellow-50/50 to-yellow-100/50 rounded-3xl border-2 border-yellow-200 shadow-lg group-hover:shadow-xl transition-shadow duration-300"></div>
-                         <div className="absolute inset-0 bg-gradient-to-r from-yellow-50/30 via-transparent to-yellow-50/30 rounded-3xl"></div>
-                         <div className="relative bg-white/95 backdrop-blur-sm rounded-3xl border-2 border-yellow-200 p-6 shadow-inner">
+                         <div className="absolute inset-0 bg-gradient-to-r from-[#E0D8C1]/30 via-[#80A0A9]/20 to-[#E0D8C1]/30 rounded-3xl border-2 border-[#80A0A9]/40 shadow-lg group-hover:shadow-xl transition-shadow duration-300"></div>
+                         <div className="absolute inset-0 bg-gradient-to-r from-[#E0D8C1]/10 via-transparent to-[#E0D8C1]/10 rounded-3xl"></div>
+                         <div className="relative bg-white/95 backdrop-blur-sm rounded-3xl border-2 border-[#80A0A9]/60 p-6 shadow-inner">
                            <Carousel
                              opts={{
                                align: "start",
@@ -395,16 +395,16 @@ function OthersPageContent() {
                                  </CarouselItem>
                                ))}
                              </CarouselContent>
-                             <CarouselPrevious className="absolute -left-4 top-1/2 -translate-y-1/2 bg-yellow-400 hover:bg-yellow-500 text-black border-yellow-400 h-10 w-10 shadow-lg transition-all duration-200 hover:scale-110" />
-                             <CarouselNext className="absolute -right-4 top-1/2 -translate-y-1/2 bg-yellow-400 hover:bg-yellow-500 text-black border-yellow-400 h-10 w-10 shadow-lg transition-all duration-200 hover:scale-110" />
+                             <CarouselPrevious className="absolute -left-4 top-1/2 -translate-y-1/2 bg-[#80A0A9] hover:bg-[#80A0A9]/90 text-white border-[#80A0A9] h-10 w-10 shadow-lg transition-all duration-200 hover:scale-110" />
+                             <CarouselNext className="absolute -right-4 top-1/2 -translate-y-1/2 bg-[#80A0A9] hover:bg-[#80A0A9]/90 text-white border-[#80A0A9] h-10 w-10 shadow-lg transition-all duration-200 hover:scale-110" />
                            </Carousel>
                          </div>
                        </div>
                      </div>
                    ) : (
-                     <div className="mb-8 p-6 bg-gray-50 rounded-lg border border-dashed border-gray-300">
+                     <div className="mb-8 p-6 bg-[#E0D8C1]/20 rounded-lg border border-dashed border-[#80A0A9]/30">
                        <div className="text-center text-gray-600">
-                         <Star className="w-8 h-8 mx-auto mb-2 text-yellow-500/50" />
+                         <Star className="w-8 h-8 mx-auto mb-2 text-[#80A0A9]/50" />
                          <p className="text-sm">No featured services at the moment. Check back soon for premium services!</p>
                        </div>
                      </div>
@@ -422,11 +422,11 @@ function OthersPageContent() {
                      return (
                        <div key={type.key} className="mb-12">
                          <div className="flex items-center gap-3 mb-6">
-                           <div className="p-2 bg-gray-100 rounded-full">
-                             <type.icon className="w-6 h-6 text-gray-600" />
+                           <div className="p-2 bg-[#E0D8C1]/20 rounded-full">
+                             <type.icon className="w-6 h-6 text-[#80A0A9]" />
                            </div>
                            <h2 className="text-2xl font-headline font-bold text-gray-900">{type.label}</h2>
-                           <div className="flex-1 h-px bg-gradient-to-r from-gray-400/50 to-transparent"></div>
+                           <div className="flex-1 h-px bg-gradient-to-r from-[#80A0A9]/50 to-transparent"></div>
                          </div>
                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                            {typeServices.map(service => (
@@ -441,9 +441,9 @@ function OthersPageContent() {
                    {sortedServices.length > 0 && (
                      <div className="mb-6">
                        <div className="flex items-center gap-3 mb-6">
-                         <div className="w-2 h-8 bg-gray-600 rounded-full"></div>
+                         <div className="w-2 h-8 bg-[#80A0A9] rounded-full"></div>
                          <h2 className="text-2xl font-headline font-bold text-gray-900">All Services</h2>
-                         <div className="flex-1 h-px bg-gradient-to-r from-gray-600/50 to-transparent"></div>
+                         <div className="flex-1 h-px bg-gradient-to-r from-[#80A0A9]/50 to-transparent"></div>
                        </div>
                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                           {sortedServices.map((service) => (
@@ -463,21 +463,21 @@ function OthersPageContent() {
                  )}
                  <div className="mt-12">
                     <Pagination>
-                    <PaginationContent className="bg-white border border-gray-300 rounded-lg p-1">
+                    <PaginationContent className="bg-white border border-[#80A0A9]/30 rounded-lg p-1">
                         <PaginationItem>
-                        <PaginationPrevious href="#" className="text-gray-700 hover:text-gray-900 hover:bg-gray-50" />
+                        <PaginationPrevious href="#" className="text-[#80A0A9] hover:text-[#80A0A9]/80 hover:bg-[#80A0A9]/10" />
                         </PaginationItem>
                         <PaginationItem>
-                        <PaginationLink href="#" className="text-gray-700 hover:text-gray-900 hover:bg-gray-50">1</PaginationLink>
+                        <PaginationLink href="#" className="text-[#80A0A9] hover:text-[#80A0A9]/80 hover:bg-[#80A0A9]/10">1</PaginationLink>
                         </PaginationItem>
                         <PaginationItem>
-                        <PaginationLink href="#" isActive className="bg-yellow-600 text-white hover:bg-yellow-700">2</PaginationLink>
+                        <PaginationLink href="#" isActive className="bg-[#80A0A9] text-white hover:bg-[#80A0A9]/90">2</PaginationLink>
                         </PaginationItem>
                         <PaginationItem>
-                        <PaginationLink href="#" className="text-gray-700 hover:text-gray-900 hover:bg-gray-50">3</PaginationLink>
+                        <PaginationLink href="#" className="text-[#80A0A9] hover:text-[#80A0A9]/80 hover:bg-[#80A0A9]/10">3</PaginationLink>
                         </PaginationItem>
                         <PaginationItem>
-                        <PaginationNext href="#" className="text-gray-700 hover:text-gray-900 hover:bg-gray-50" />
+                        <PaginationNext href="#" className="text-[#80A0A9] hover:text-[#80A0A9]/80 hover:bg-[#80A0A9]/10" />
                         </PaginationItem>
                     </PaginationContent>
                     </Pagination>

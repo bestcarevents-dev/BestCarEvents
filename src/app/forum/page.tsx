@@ -92,14 +92,14 @@ export default function ForumPage() {
             <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-12">
                 <div className="text-center md:text-left mb-4 md:mb-0">
                     <h1 className="text-4xl md:text-5xl font-extrabold font-headline text-gray-900">Community Forum</h1>
-                    <p className="mt-4 text-lg text-gray-600 max-w-2xl">
+                    <p className="mt-4 text-lg text-gray-700 max-w-2xl">
                     Connect with fellow car enthusiasts. Share experiences, ask questions, and discuss everything automotive.
                     </p>
                 </div>
                 {currentUser ? (
-                  <div className="flex gap-2">
+                  <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
                     
-                    <Button asChild>
+                    <Button asChild className="bg-[#80A0A9] hover:bg-[#80A0A9]/90 text-white text-sm sm:text-base">
                       <Link href="/forum/create" className="flex items-center">
                           <PlusCircle className="mr-2 h-5 w-5" />
                           Create Post
@@ -107,10 +107,10 @@ export default function ForumPage() {
                     </Button>
                   </div>
                 ) : (
-                  <div className="flex gap-2">
+                  <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
                     <Dialog open={showDialog} onOpenChange={setShowDialog}>
                       <DialogTrigger asChild>
-                        <Button className="flex items-center">
+                        <Button className="flex items-center bg-[#80A0A9] hover:bg-[#80A0A9]/90 text-white text-sm sm:text-base">
                           <PlusCircle className="mr-2 h-5 w-5" />
                           Create Post
                         </Button>
@@ -125,7 +125,7 @@ export default function ForumPage() {
                             <DialogClose asChild>
                               <Button variant="outline">Close</Button>
                             </DialogClose>
-                            <Button asChild variant="default">
+                            <Button asChild variant="default" className="bg-[#80A0A9] hover:bg-[#80A0A9]/90 text-white">
                               <a href="/login">Login</a>
                             </Button>
                           </DialogFooter>
@@ -136,16 +136,16 @@ export default function ForumPage() {
                 )}
             </div>
 
-          <div className="bg-gray-50 p-6 rounded-lg border border-gray-200 mb-8">
+          <div className="bg-[#E0D8C1]/30 p-6 rounded-lg border border-[#E0D8C1]/50 mb-8">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <Input 
                 placeholder="Search posts..." 
-                className="md:col-span-2 bg-white border-gray-300 text-gray-900 placeholder:text-gray-500"
+                className="md:col-span-2 bg-white border-[#80A0A9]/50 text-gray-900 placeholder:text-gray-500 focus:border-[#80A0A9]"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
               <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                 <SelectTrigger className="bg-white border-gray-300 text-gray-900">
+                 <SelectTrigger className="bg-white border-[#80A0A9]/50 text-gray-900 focus:border-[#80A0A9]">
                    <SelectValue placeholder="Category: Any" />
                  </SelectTrigger>
                  <SelectContent>
@@ -156,7 +156,7 @@ export default function ForumPage() {
                     ))}
                  </SelectContent>
               </Select>
-              <Button onClick={() => {}}>Search</Button>
+              <Button onClick={() => {}} className="bg-[#80A0A9] hover:bg-[#80A0A9]/90 text-white">Search</Button>
             </div>
           </div>
 
@@ -174,11 +174,11 @@ export default function ForumPage() {
               {featuredPosts.length > 0 && (
                 <div className="mb-12">
                   <div className="flex items-center gap-3 mb-6">
-                    <div className="p-2 bg-yellow-400/10 rounded-full">
-                      <Star className="w-6 h-6 text-yellow-500" />
+                    <div className="p-2 bg-[#E0D8C1]/20 rounded-full">
+                      <Star className="w-6 h-6 text-[#80A0A9]" />
                     </div>
                     <h2 className="text-2xl font-headline font-bold text-gray-900">Featured Posts</h2>
-                    <div className="flex-1 h-px bg-gradient-to-r from-yellow-400/50 to-transparent"></div>
+                    <div className="flex-1 h-px bg-gradient-to-r from-[#80A0A9]/50 to-transparent"></div>
                   </div>
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     {featuredPosts.map((post) => (
@@ -191,9 +191,9 @@ export default function ForumPage() {
               {/* Regular Posts */}
               <div className="mb-6">
                 <div className="flex items-center gap-3 mb-6">
-                  <div className="w-2 h-8 bg-yellow-600 rounded-full"></div>
+                  <div className="w-2 h-8 bg-[#80A0A9] rounded-full"></div>
                   <h2 className="text-2xl font-headline font-bold text-gray-900">All Posts</h2>
-                  <div className="flex-1 h-px bg-gradient-to-r from-yellow-600/50 to-transparent"></div>
+                  <div className="flex-1 h-px bg-gradient-to-r from-[#80A0A9]/50 to-transparent"></div>
                 </div>
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                    {regularPosts.map((post) => (

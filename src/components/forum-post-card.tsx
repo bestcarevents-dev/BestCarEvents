@@ -50,8 +50,8 @@ export default function ForumPostCard({
     <Link href={`/forum/${id}`}>
       <Card className={`overflow-hidden group bg-white border transition-all duration-300 cursor-pointer ${
         featured 
-          ? 'border-2 border-yellow-400 hover:border-yellow-500' 
-          : 'border-gray-200 hover:border-yellow-400'
+          ? 'border-2 border-[#80A0A9] hover:border-[#80A0A9]/80' 
+          : 'border-gray-200 hover:border-[#80A0A9]'
       }`}>
         <CardContent className="p-6">
           <div className="flex items-start gap-4">
@@ -69,15 +69,15 @@ export default function ForumPostCard({
               <div className="flex items-center gap-2 mb-2">
                 <Badge 
                   variant="secondary" 
-                  className={featured ? "bg-yellow-100 text-yellow-800" : "bg-gray-100 text-gray-700"}
+                  className={featured ? "bg-[#E0D8C1]/30 text-[#80A0A9]" : "bg-[#E0D8C1]/20 text-[#80A0A9]"}
                 >
                   {category}
                 </Badge>
                 {featured && (
-                  <Star className="w-4 h-4 text-yellow-500" />
+                  <Star className="w-4 h-4 text-[#80A0A9]" />
                 )}
               </div>
-              <h3 className="text-xl font-headline font-bold text-gray-900 group-hover:text-yellow-600 transition-colors line-clamp-2 mb-2">
+              <h3 className="text-xl font-headline font-bold text-gray-900 group-hover:text-[#80A0A9] transition-colors line-clamp-2 mb-2">
                 {title}
               </h3>
               <p className="text-sm text-gray-600 line-clamp-3 mb-3">

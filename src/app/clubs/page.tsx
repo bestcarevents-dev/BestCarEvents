@@ -208,19 +208,19 @@ function ClubsPageContent() {
           <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
             <div className="text-center md:text-left mb-4 md:mb-0">
                 <h1 className="text-4xl md:text-5xl font-extrabold font-headline text-gray-900">Car Clubs</h1>
-                <p className="mt-4 text-lg text-gray-600 max-w-2xl mx-auto md:mx-0">
+                <p className="mt-4 text-lg text-gray-700 max-w-2xl mx-auto md:mx-0">
                     Looking to take your passion for cars further while being in the company of other car lovers and petrolheads. Look no further. Keep reading for the world's most and less popular car clubs. Each car club offers exclusive parties and events, recreational races, and more.
                 </p>
             </div>
             {currentUser ? (
-              <div className="flex gap-2">
-                <Button asChild>
+              <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+                <Button asChild className="bg-[#80A0A9] hover:bg-[#80A0A9]/90 text-white text-sm sm:text-base">
                     <Link href="/clubs/register" className="flex items-center">
                         <PlusCircle className="mr-2 h-5 w-5" />
                         Register Your Club
                     </Link>
                 </Button>
-                <Button asChild variant="outline" className="border-gray-300 text-gray-700 hover:bg-gray-50">
+                <Button asChild variant="outline" className="border-[#80A0A9] text-[#80A0A9] hover:bg-[#80A0A9]/10 text-sm sm:text-base">
                     <Link href="/advertise/club-listing" className="flex items-center">
                         <PlusCircle className="mr-2 h-5 w-5" />
                         Feature Your Club
@@ -228,10 +228,10 @@ function ClubsPageContent() {
                 </Button>
               </div>
             ) : (
-              <div className="flex gap-2">
+              <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
                 <Dialog open={showDialog} onOpenChange={setShowDialog}>
                   <DialogTrigger asChild>
-                    <Button className="flex items-center">
+                    <Button className="flex items-center bg-[#80A0A9] hover:bg-[#80A0A9]/90 text-white text-sm sm:text-base">
                       <PlusCircle className="mr-2 h-5 w-5" />
                       Register Your Club
                     </Button>
@@ -246,7 +246,7 @@ function ClubsPageContent() {
                         <DialogClose asChild>
                           <Button variant="outline">Close</Button>
                         </DialogClose>
-                        <Button asChild variant="default">
+                        <Button asChild variant="default" className="bg-[#80A0A9] hover:bg-[#80A0A9]/90 text-white">
                           <a href="/login">Login</a>
                         </Button>
                       </DialogFooter>
@@ -255,7 +255,7 @@ function ClubsPageContent() {
                 </Dialog>
                 <Dialog open={showDialog} onOpenChange={setShowDialog}>
                   <DialogTrigger asChild>
-                    <Button variant="outline" className="border-gray-300 text-gray-700 hover:bg-gray-50 flex items-center">
+                    <Button variant="outline" className="border-[#80A0A9] text-[#80A0A9] hover:bg-[#80A0A9]/10 flex items-center text-sm sm:text-base">
                       <PlusCircle className="mr-2 h-5 w-5" />
                       Feature Your Club
                     </Button>
@@ -270,7 +270,7 @@ function ClubsPageContent() {
                         <DialogClose asChild>
                           <Button variant="outline">Close</Button>
                         </DialogClose>
-                        <Button asChild variant="default">
+                        <Button asChild variant="default" className="bg-[#80A0A9] hover:bg-[#80A0A9]/90 text-white">
                           <a href="/login">Login</a>
                         </Button>
                       </DialogFooter>
@@ -294,19 +294,19 @@ function ClubsPageContent() {
           </div>
 
           {/* Club Search Bar */}
-          <div className="bg-gray-50 p-6 rounded-lg border border-gray-200 mb-8">
+          <div className="bg-[#E0D8C1]/30 p-6 rounded-lg border border-[#E0D8C1]/50 mb-8">
             {/* Search Bar - Always Visible */}
             <div className="flex flex-col md:flex-row gap-4 mb-4">
               <Input 
                 placeholder="Search by club name, city, country, activities..." 
-                className="flex-1 bg-white border-gray-300 text-gray-900 placeholder:text-gray-500"
+                className="flex-1 bg-white border-[#80A0A9]/50 text-gray-900 placeholder:text-gray-500 focus:border-[#80A0A9]"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
               />
               <div className="flex gap-2 md:flex-shrink-0">
-                <Button onClick={handleSearch} className="bg-yellow-600 hover:bg-yellow-700">Search</Button>
-                <Button onClick={handleResetFilters} variant="outline" className="border-gray-300 text-gray-700 hover:bg-gray-50">Reset</Button>
+                <Button onClick={handleSearch} className="bg-[#80A0A9] hover:bg-[#80A0A9]/90 text-white">Search</Button>
+                <Button onClick={handleResetFilters} variant="outline" className="border-[#80A0A9]/50 text-[#80A0A9] hover:bg-[#80A0A9]/10">Reset</Button>
               </div>
             </div>
             
@@ -315,7 +315,7 @@ function ClubsPageContent() {
               <Button 
                 onClick={() => setShowFilters(!showFilters)} 
                 variant="outline" 
-                className="w-full border-gray-300 text-gray-700 hover:bg-gray-50"
+                className="w-full border-[#80A0A9]/50 text-[#80A0A9] hover:bg-[#80A0A9]/10"
               >
                 {showFilters ? "Hide Filters" : "Show Filters"}
               </Button>
@@ -325,7 +325,7 @@ function ClubsPageContent() {
             <div className={`${showFilters ? 'block' : 'hidden'} md:block`}>
               <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
                 <Select value={selectedCity} onValueChange={setSelectedCity}>
-                  <SelectTrigger className="bg-white border-gray-300 text-gray-900">
+                  <SelectTrigger className="bg-white border-[#80A0A9]/50 text-gray-900 focus:border-[#80A0A9]">
                     <SelectValue placeholder="City: Any" />
                   </SelectTrigger>
                   <SelectContent>
@@ -338,7 +338,7 @@ function ClubsPageContent() {
                   </SelectContent>
                 </Select>
                 <Select value={selectedCountry} onValueChange={setSelectedCountry}>
-                  <SelectTrigger className="bg-white border-gray-300 text-gray-900">
+                  <SelectTrigger className="bg-white border-[#80A0A9]/50 text-gray-900 focus:border-[#80A0A9]">
                     <SelectValue placeholder="Country: Any" />
                   </SelectTrigger>
                   <SelectContent>
@@ -351,7 +351,7 @@ function ClubsPageContent() {
                   </SelectContent>
                 </Select>
                 <Select value={selectedActivity} onValueChange={setSelectedActivity}>
-                  <SelectTrigger className="bg-white border-gray-300 text-gray-900">
+                  <SelectTrigger className="bg-white border-[#80A0A9]/50 text-gray-900 focus:border-[#80A0A9]">
                     <SelectValue placeholder="Activity: Any" />
                   </SelectTrigger>
                   <SelectContent>
@@ -364,7 +364,7 @@ function ClubsPageContent() {
                   </SelectContent>
                 </Select>
                 <Select value={sortBy} onValueChange={setSortBy}>
-                  <SelectTrigger className="bg-white border-gray-300 text-gray-900">
+                  <SelectTrigger className="bg-white border-[#80A0A9]/50 text-gray-900 focus:border-[#80A0A9]">
                     <SelectValue placeholder="Sort by: Newest" />
                   </SelectTrigger>
                   <SelectContent>
@@ -397,17 +397,17 @@ function ClubsPageContent() {
               {featuredClubs.length > 0 ? (
                 <div className="mb-12">
                   <div className="flex items-center gap-3 mb-6">
-                    <div className="p-2 bg-yellow-400/10 rounded-full">
-                      <Star className="w-6 h-6 text-yellow-500" />
+                    <div className="p-2 bg-[#E0D8C1]/20 rounded-full">
+                      <Star className="w-6 h-6 text-[#80A0A9]" />
                     </div>
                     <h2 className="text-2xl font-headline font-bold text-gray-900">Featured Clubs</h2>
-                    <div className="flex-1 h-px bg-gradient-to-r from-yellow-400/50 to-transparent"></div>
+                    <div className="flex-1 h-px bg-gradient-to-r from-[#80A0A9]/50 to-transparent"></div>
                   </div>
                   
                   <div className="relative group">
-                    <div className="absolute inset-0 bg-gradient-to-r from-yellow-400/20 via-yellow-300/20 to-yellow-400/20 rounded-3xl border-2 border-yellow-400/40 shadow-lg group-hover:shadow-xl transition-shadow duration-300"></div>
-                    <div className="absolute inset-0 bg-gradient-to-r from-yellow-400/5 via-transparent to-yellow-400/5 rounded-3xl"></div>
-                    <div className="relative bg-white/90 backdrop-blur-sm rounded-3xl border-2 border-yellow-400/60 p-6 shadow-inner">
+                    <div className="absolute inset-0 bg-gradient-to-r from-[#E0D8C1]/30 via-[#80A0A9]/20 to-[#E0D8C1]/30 rounded-3xl border-2 border-[#80A0A9]/40 shadow-lg group-hover:shadow-xl transition-shadow duration-300"></div>
+                    <div className="absolute inset-0 bg-gradient-to-r from-[#E0D8C1]/10 via-transparent to-[#E0D8C1]/10 rounded-3xl"></div>
+                    <div className="relative bg-white/90 backdrop-blur-sm rounded-3xl border-2 border-[#80A0A9]/60 p-6 shadow-inner">
                       <Carousel
                         opts={{
                           align: "start",
@@ -421,7 +421,7 @@ function ClubsPageContent() {
                               <div className="p-2">
                                 <Link
                                   href={`/clubs/${club.documentId}`}
-                                  className="group relative bg-white border border-gray-200 rounded-2xl shadow-lg p-6 flex flex-col items-center transition-transform duration-300 hover:-translate-y-2 hover:shadow-2xl hover:border-yellow-600/60 animate-fade-in cursor-pointer focus:outline-none focus:ring-2 focus:ring-yellow-600 block"
+                                  className="group relative bg-white border border-gray-200 rounded-2xl shadow-lg p-6 flex flex-col items-center transition-transform duration-300 hover:-translate-y-2 hover:shadow-2xl hover:border-[#80A0A9]/60 animate-fade-in cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#80A0A9] block"
                                   tabIndex={0}
                                   aria-label={`View details for ${club.clubName}`}
                                 >
@@ -431,7 +431,7 @@ function ClubsPageContent() {
                                     </div>
                                   </div>
                                   <div className="mt-12 w-full flex flex-col items-center">
-                                    <h3 className="text-xl font-bold font-headline text-yellow-600 mb-1 text-center group-hover:underline transition-all">{club.clubName}</h3>
+                                    <h3 className="text-xl font-bold font-headline text-[#80A0A9] mb-1 text-center group-hover:underline transition-all">{club.clubName}</h3>
                                     <div className="flex items-center gap-2 mb-2 text-gray-600">
                                       <Users className="w-4 h-4" />
                                       <span>{club.city}, {club.country}</span>
@@ -439,35 +439,35 @@ function ClubsPageContent() {
                                     <p className="text-sm text-gray-600 mb-4 text-center line-clamp-3">{club.description}</p>
                                     <div className="flex gap-3 mt-auto">
                                       {club.website && (
-                                        <a href={club.website} target="_blank" rel="noopener noreferrer" className="text-yellow-600 hover:text-yellow-700 transition-colors" title="Website">
+                                        <a href={club.website} target="_blank" rel="noopener noreferrer" className="text-[#80A0A9] hover:text-[#80A0A9]/80 transition-colors" title="Website">
                                           <Globe className="w-5 h-5" />
                                         </a>
                                       )}
                                       {club.socialMediaLink && (
-                                        <a href={club.socialMediaLink} target="_blank" rel="noopener noreferrer" className="text-yellow-600 hover:text-yellow-700 transition-colors" title="Social Media">
+                                        <a href={club.socialMediaLink} target="_blank" rel="noopener noreferrer" className="text-[#80A0A9] hover:text-[#80A0A9]/80 transition-colors" title="Social Media">
                                           <LinkIcon className="w-5 h-5" />
                                         </a>
                                       )}
                                     </div>
                                   </div>
                                   <div className="absolute top-4 right-4">
-                                    <span className="inline-block bg-gradient-to-r from-yellow-600 to-yellow-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow">{club.createdAt?.seconds ? new Date(club.createdAt.seconds * 1000).toLocaleDateString() : "New"}</span>
+                                    <span className="inline-block bg-gradient-to-r from-[#80A0A9] to-[#80A0A9]/90 text-white text-xs font-bold px-3 py-1 rounded-full shadow">{club.createdAt?.seconds ? new Date(club.createdAt.seconds * 1000).toLocaleDateString() : "New"}</span>
                                   </div>
                                 </Link>
                               </div>
                             </CarouselItem>
                           ))}
                         </CarouselContent>
-                        <CarouselPrevious className="absolute -left-4 top-1/2 -translate-y-1/2 bg-yellow-400 hover:bg-yellow-500 text-black border-yellow-400 h-10 w-10 shadow-lg transition-all duration-200 hover:scale-110" />
-                        <CarouselNext className="absolute -right-4 top-1/2 -translate-y-1/2 bg-yellow-400 hover:bg-yellow-500 text-black border-yellow-400 h-10 w-10 shadow-lg transition-all duration-200 hover:scale-110" />
+                        <CarouselPrevious className="absolute -left-4 top-1/2 -translate-y-1/2 bg-[#80A0A9] hover:bg-[#80A0A9]/90 text-white border-[#80A0A9] h-10 w-10 shadow-lg transition-all duration-200 hover:scale-110" />
+                        <CarouselNext className="absolute -right-4 top-1/2 -translate-y-1/2 bg-[#80A0A9] hover:bg-[#80A0A9]/90 text-white border-[#80A0A9] h-10 w-10 shadow-lg transition-all duration-200 hover:scale-110" />
                       </Carousel>
                     </div>
                   </div>
                 </div>
               ) : (
-                <div className="mb-8 p-6 bg-gray-100 rounded-lg border border-dashed border-gray-300">
+                <div className="mb-8 p-6 bg-[#E0D8C1]/20 rounded-lg border border-dashed border-[#80A0A9]/30">
                   <div className="text-center text-gray-600">
-                    <Star className="w-8 h-8 mx-auto mb-2 text-yellow-500/50" />
+                    <Star className="w-8 h-8 mx-auto mb-2 text-[#80A0A9]/50" />
                     <p className="text-sm">No featured clubs at the moment. Check back soon for premium clubs!</p>
                   </div>
                 </div>
@@ -476,16 +476,16 @@ function ClubsPageContent() {
               {/* Regular Clubs Grid */}
               <div className="mt-16">
                 <div className="flex items-center gap-3 mb-8">
-                  <div className="w-2 h-8 bg-yellow-600 rounded-full"></div>
+                  <div className="w-2 h-8 bg-[#80A0A9] rounded-full"></div>
                   <h2 className="text-3xl font-bold font-headline text-center md:text-left text-gray-900">Discover the Community</h2>
-                  <div className="flex-1 h-px bg-gradient-to-r from-yellow-600/50 to-transparent"></div>
+                  <div className="flex-1 h-px bg-gradient-to-r from-[#80A0A9]/50 to-transparent"></div>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                   {paginatedClubs.map((club, idx) => (
                     <Link
                       key={club.documentId || idx}
                       href={`/clubs/${club.documentId}`}
-                      className="group relative bg-white border border-gray-200 rounded-2xl shadow-lg p-6 flex flex-col items-center transition-transform duration-300 hover:-translate-y-2 hover:shadow-2xl hover:border-yellow-600/60 animate-fade-in cursor-pointer focus:outline-none focus:ring-2 focus:ring-yellow-600"
+                      className="group relative bg-white border border-gray-200 rounded-2xl shadow-lg p-6 flex flex-col items-center transition-transform duration-300 hover:-translate-y-2 hover:shadow-2xl hover:border-[#80A0A9]/60 animate-fade-in cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#80A0A9]"
                       tabIndex={0}
                       aria-label={`View details for ${club.clubName}`}
                     >
@@ -495,7 +495,7 @@ function ClubsPageContent() {
                         </div>
                       </div>
                       <div className="mt-12 w-full flex flex-col items-center">
-                        <h3 className="text-xl font-bold font-headline text-yellow-600 mb-1 text-center group-hover:underline transition-all">{club.clubName}</h3>
+                        <h3 className="text-xl font-bold font-headline text-[#80A0A9] mb-1 text-center group-hover:underline transition-all">{club.clubName}</h3>
                         <div className="flex items-center gap-2 mb-2 text-gray-600">
                           <Users className="w-4 h-4" />
                           <span>{club.city}, {club.country}</span>
@@ -503,19 +503,19 @@ function ClubsPageContent() {
                         <p className="text-sm text-gray-600 mb-4 text-center line-clamp-3">{club.description}</p>
                         <div className="flex gap-3 mt-auto">
                           {club.website && (
-                            <a href={club.website} target="_blank" rel="noopener noreferrer" className="text-yellow-600 hover:text-yellow-700 transition-colors" title="Website">
+                            <a href={club.website} target="_blank" rel="noopener noreferrer" className="text-[#80A0A9] hover:text-[#80A0A9]/80 transition-colors" title="Website">
                               <Globe className="w-5 h-5" />
                             </a>
                           )}
                           {club.socialMediaLink && (
-                            <a href={club.socialMediaLink} target="_blank" rel="noopener noreferrer" className="text-yellow-600 hover:text-yellow-700 transition-colors" title="Social Media">
+                            <a href={club.socialMediaLink} target="_blank" rel="noopener noreferrer" className="text-[#80A0A9] hover:text-[#80A0A9]/80 transition-colors" title="Social Media">
                               <LinkIcon className="w-5 h-5" />
                             </a>
                           )}
                         </div>
                       </div>
                       <div className="absolute top-4 right-4">
-                        <span className="inline-block bg-gradient-to-r from-yellow-600 to-yellow-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow">{club.createdAt?.seconds ? new Date(club.createdAt.seconds * 1000).toLocaleDateString() : "New"}</span>
+                        <span className="inline-block bg-gradient-to-r from-[#80A0A9] to-[#80A0A9]/90 text-white text-xs font-bold px-3 py-1 rounded-full shadow">{club.createdAt?.seconds ? new Date(club.createdAt.seconds * 1000).toLocaleDateString() : "New"}</span>
                       </div>
                     </Link>
                   ))}
@@ -534,11 +534,11 @@ function ClubsPageContent() {
           {totalPages > 1 && (
             <div className="mt-12">
               <Pagination>
-                <PaginationContent className="bg-white border border-gray-300 rounded-lg p-1">
+                <PaginationContent className="bg-white border border-[#80A0A9]/30 rounded-lg p-1">
                   <PaginationItem>
                     <PaginationPrevious 
                       href="#" 
-                      className="text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+                      className="text-[#80A0A9] hover:text-[#80A0A9]/80 hover:bg-[#80A0A9]/10"
                       onClick={(e) => {
                         e.preventDefault();
                         if (currentPage > 1) handlePageChange(currentPage - 1);
@@ -551,8 +551,8 @@ function ClubsPageContent() {
                     <PaginationItem key={page}>
                       <PaginationLink 
                         href="#" 
-                        className={`text-gray-700 hover:text-gray-900 hover:bg-gray-50 ${
-                          currentPage === page ? 'bg-yellow-600 text-white hover:bg-yellow-700' : ''
+                        className={`text-[#80A0A9] hover:text-[#80A0A9]/80 hover:bg-[#80A0A9]/10 ${
+                          currentPage === page ? 'bg-[#80A0A9] text-white hover:bg-[#80A0A9]/90' : ''
                         }`}
                         onClick={(e) => {
                           e.preventDefault();
@@ -567,7 +567,7 @@ function ClubsPageContent() {
                   <PaginationItem>
                     <PaginationNext 
                       href="#" 
-                      className="text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+                      className="text-[#80A0A9] hover:text-[#80A0A9]/80 hover:bg-[#80A0A9]/10"
                       onClick={(e) => {
                         e.preventDefault();
                         if (currentPage < totalPages) handlePageChange(currentPage + 1);
@@ -590,4 +590,4 @@ export default function ClubsPage() {
       <ClubsPageContent />
     </Suspense>
   );
-}
+} 

@@ -189,14 +189,14 @@ function EventsPageContent() {
                     </p>
                 </div>
                 {currentUser ? (
-                  <div className="flex gap-2">
-                    <Button asChild variant="outline" className="border-[#80A0A9] text-[#80A0A9] hover:bg-[#80A0A9]/10">
+                  <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+                    <Button asChild variant="outline" className="border-[#80A0A9] text-[#80A0A9] hover:bg-[#80A0A9]/10 text-sm sm:text-base">
                       <Link href="/advertise/events-listing" className="flex items-center">
                         <PlusCircle className="mr-2 h-5 w-5" />
                         Feature Event
                       </Link>
                     </Button>
-                    <Button asChild className="bg-[#80A0A9] hover:bg-[#80A0A9]/90 text-white">
+                    <Button asChild className="bg-[#80A0A9] hover:bg-[#80A0A9]/90 text-white text-sm sm:text-base">
                       <Link href="/events/host" className="flex items-center">
                           <PlusCircle className="mr-2 h-5 w-5" />
                           Host an Event
@@ -204,10 +204,10 @@ function EventsPageContent() {
                     </Button>
                   </div>
                 ) : (
-                  <div className="flex gap-2">
+                  <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
                     <Dialog open={showDialog} onOpenChange={setShowDialog}>
                       <DialogTrigger asChild>
-                        <Button variant="outline" className="border-[#80A0A9] text-[#80A0A9] hover:bg-[#80A0A9]/10 flex items-center">
+                        <Button variant="outline" className="border-[#80A0A9] text-[#80A0A9] hover:bg-[#80A0A9]/10 flex items-center text-sm sm:text-base">
                           <PlusCircle className="mr-2 h-5 w-5" />
                           Feature Event
                         </Button>
@@ -229,7 +229,7 @@ function EventsPageContent() {
                         </div>
                       </DialogContent>
                     </Dialog>
-                    <Button asChild className="bg-[#80A0A9] hover:bg-[#80A0A9]/90 text-white">
+                    <Button asChild className="bg-[#80A0A9] hover:bg-[#80A0A9]/90 text-white text-sm sm:text-base">
                       <Link href="/events/host" className="flex items-center">
                           <PlusCircle className="mr-2 h-5 w-5" />
                           Host an Event
