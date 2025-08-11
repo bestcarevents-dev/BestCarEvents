@@ -27,7 +27,7 @@ const iconMap: { [key: string]: React.ElementType } = {
 
 export default function FeaturedCarCard({ name, year, price, image, hint, specs, featured = false }: FeaturedCarCardProps) {
   return (
-    <Card className="w-full overflow-hidden shadow-lg transition-all duration-300 hover:shadow-2xl bg-card group">
+    <Card className="w-full overflow-hidden shadow-lg transition-all duration-300 hover:shadow-2xl bg-white/70 backdrop-blur-sm border border-white/50 group">
       <div className="flex flex-col md:flex-row">
         <div className="relative w-full md:w-2/5 aspect-video md:aspect-[4/3] shrink-0">
           <Image
@@ -45,20 +45,20 @@ export default function FeaturedCarCard({ name, year, price, image, hint, specs,
         </div>
         <div className="flex flex-col flex-grow p-6 md:p-8">
           <div className="flex-grow">
-            <span className="font-semibold text-primary">{year}</span>
-            <h3 className="text-3xl lg:text-4xl font-headline font-extrabold text-foreground mt-1">{name}</h3>
-            <p className="text-2xl font-mono font-bold text-primary mt-4">{price}</p>
+            <span className="font-semibold text-[#80A0A9]">{year}</span>
+            <h3 className="text-3xl lg:text-4xl font-headline font-extrabold text-gray-900 mt-1">{name}</h3>
+            <p className="text-2xl font-mono font-bold text-[#80A0A9] mt-4">{price}</p>
             
-            <div className="mt-6 pt-6 border-t border-border/50">
+            <div className="mt-6 pt-6 border-t border-[#E0D8C1]">
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
                 {specs.map((spec) => {
                   const Icon = iconMap[spec.name] || Zap;
                   return (
                     <div key={spec.name} className="flex items-center gap-3">
-                      <Icon className="w-7 h-7 text-primary/80" />
+                      <Icon className="w-7 h-7 text-[#80A0A9]" />
                       <div>
-                        <p className="text-sm font-semibold text-muted-foreground">{spec.name}</p>
-                        <p className="text-xl font-bold text-foreground">{spec.value}</p>
+                        <p className="text-sm font-semibold text-gray-600">{spec.name}</p>
+                        <p className="text-xl font-bold text-gray-900">{spec.value}</p>
                       </div>
                     </div>
                   );
@@ -67,7 +67,7 @@ export default function FeaturedCarCard({ name, year, price, image, hint, specs,
             </div>
           </div>
           <div className="mt-6 flex justify-end">
-            <Button asChild>
+            <Button asChild className="bg-[#80A0A9] hover:bg-[#80A0A9]/90 text-white">
               <Link href="/cars">
                 View Listing <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
               </Link>

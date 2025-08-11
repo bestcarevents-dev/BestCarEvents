@@ -27,25 +27,25 @@
   }
 
   .dark {
-    --background: 240 5% 14%; /* Dark Gray-Blue */
+    --background: 240 5% 16%; /* Slightly lighter dark base */
     --foreground: 0 0% 98%;
-    --card: 240 4% 18%;
+    --card: 240 4% 20%; /* Slightly lighter card background */
     --card-foreground: 0 0% 98%;
-    --popover: 240 5% 14%;
+    --popover: 240 5% 16%;
     --popover-foreground: 0 0% 98%;
-    --primary: 45 93% 47%; /* Gold/Yellow */
+    --primary: 60 100% 70%; /* Brighter yellowish color */
     --primary-foreground: 240 10% 3.9%;
-    --secondary: 240 4% 22%;
+    --secondary: 200 20% 25%; /* Hint of bluish color */
     --secondary-foreground: 0 0% 98%;
-    --muted: 240 4% 22%;
+    --muted: 200 15% 28%; /* Slightly bluish muted */
     --muted-foreground: 0 0% 60%;
-    --accent: 240 4% 22%;
+    --accent: 60 30% 35%; /* Yellowish accent */
     --accent-foreground: 0 0% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
-    --border: 240 4% 22%;
-    --input: 240 4% 22%;
-    --ring: 45 93% 47%; /* Gold/Yellow */
+    --border: 200 20% 30%; /* Bluish border */
+    --input: 200 15% 25%; /* Bluish input */
+    --ring: 60 100% 70%; /* Brighter yellowish ring */
   }
 }
 
@@ -59,4 +59,15 @@
   h1,h2,h3,h4,h5,h6 {
     @apply font-headline;
   }
+}
+
+@keyframes gradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.animate-gradient {
+  background-size: 200% auto;
+  animation: gradient 4s linear infinite;
 }

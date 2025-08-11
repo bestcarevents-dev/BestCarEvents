@@ -70,12 +70,12 @@ export default function NewsletterSubscribe() {
   }, [open, user]);
 
   return (
-    <div className="w-full flex justify-center mt-10 mb-0 bg-white py-16">
+    <div className="w-full flex justify-center">
       {user ? (
         <>
           <Button
             size="lg"
-            className="rounded-lg px-7 py-4 text-lg font-semibold shadow-xl bg-primary text-primary-foreground border border-primary hover:bg-primary/90 transition-all duration-300"
+            className="rounded-lg px-7 py-4 text-lg font-semibold shadow-xl bg-white/90 text-gray-900 border border-white hover:bg-white transition-all duration-300"
             onClick={handleSubscribe}
             disabled={submitting || subscribed}
           >

@@ -7,7 +7,7 @@ import FooterNewsletter from "@/components/FooterNewsletter";
 
 export default function Footer() {
   return (
-    <footer className="bg-muted text-muted-foreground">
+    <footer className="bg-muted/90 text-muted-foreground border-t border-[#E0D8C1]/30">
       <div className="container py-16">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
           
@@ -18,9 +18,9 @@ export default function Footer() {
             </Link>
             <p className="text-sm max-w-xs">The premier destination for automotive enthusiasts to discover events, buy and sell unique cars, and connect with a vibrant community.</p>
              <div className="flex mt-6 space-x-4">
-                <Link href="#" className="hover:text-primary transition-colors"><Facebook size={20}/></Link>
-                <Link href="#" className="hover:text-primary transition-colors"><Twitter size={20}/></Link>
-                <Link href="#" className="hover:text-primary transition-colors"><Instagram size={20}/></Link>
+                <Link href="#" className="hover:text-[#E0D8C1] transition-colors"><Facebook size={20}/></Link>
+                <Link href="#" className="hover:text-[#E0D8C1] transition-colors"><Twitter size={20}/></Link>
+                <Link href="#" className="hover:text-[#E0D8C1] transition-colors"><Instagram size={20}/></Link>
               </div>
           </div>
 
@@ -28,37 +28,37 @@ export default function Footer() {
             <div>
               <h3 className="font-semibold font-headline text-foreground">Marketplace</h3>
               <ul className="mt-4 space-y-3">
-                <li><Link href="/cars" className="text-sm hover:text-primary transition-colors">Cars for Sale</Link></li>
-                <li><Link href="/auctions" className="text-sm hover:text-primary transition-colors">Auctions</Link></li>
-                <li><Link href="/advertise/cars-listing" className="text-sm hover:text-primary transition-colors">My Car Listing</Link></li>
-                <li><Link href="/advertise/hotel-listing" className="text-sm hover:text-primary transition-colors">My Hotel Listings</Link></li>
-                <li><Link href="/advertise/club-listing" className="text-sm hover:text-primary transition-colors">My Club Listing</Link></li>
-                <li><Link href="/advertise/events-listing" className="text-sm hover:text-primary transition-colors">My Event Listing</Link></li>
-                <li><Link href="/advertise/dashboard" className="text-sm hover:text-primary transition-colors">My Listing/Advertise Dashboard</Link></li>
+                <li><Link href="/cars" className="text-sm hover:text-[#E0D8C1] transition-colors">Cars for Sale</Link></li>
+                <li><Link href="/auctions" className="text-sm hover:text-[#E0D8C1] transition-colors">Auctions</Link></li>
+                <li><Link href="/advertise/cars-listing" className="text-sm hover:text-[#E0D8C1] transition-colors">My Car Listing</Link></li>
+                <li><Link href="/advertise/hotel-listing" className="text-sm hover:text-[#E0D8C1] transition-colors">My Hotel Listings</Link></li>
+                <li><Link href="/advertise/club-listing" className="text-sm hover:text-[#E0D8C1] transition-colors">My Club Listing</Link></li>
+                <li><Link href="/advertise/events-listing" className="text-sm hover:text-[#E0D8C1] transition-colors">My Event Listing</Link></li>
+                <li><Link href="/advertise/dashboard" className="text-sm hover:text-[#E0D8C1] transition-colors">My Listing/Advertise Dashboard</Link></li>
               </ul>
             </div>
              <div>
               <h3 className="font-semibold font-headline text-foreground">Events</h3>
               <ul className="mt-4 space-y-3">
-                <li><Link href="/events" className="text-sm hover:text-primary transition-colors">All Events</Link></li>
-                <li><Link href="/events/host" className="text-sm hover:text-primary transition-colors">Submit an Event</Link></li>
+                <li><Link href="/events" className="text-sm hover:text-[#E0D8C1] transition-colors">All Events</Link></li>
+                <li><Link href="/events/host" className="text-sm hover:text-[#E0D8C1] transition-colors">Submit an Event</Link></li>
               </ul>
             </div>
             <div>
               <h3 className="font-semibold font-headline text-foreground">Community</h3>
               <ul className="mt-4 space-y-3">
-                <li><Link href="/forum" className="text-sm hover:text-primary transition-colors">Forum</Link></li>
-                <li><Link href="/clubs" className="text-sm hover:text-primary transition-colors">Car Clubs</Link></li>
-                <li><Link href="/advertise/my-ads" className="text-sm hover:text-primary transition-colors">Advertise</Link></li>
+                <li><Link href="/forum" className="text-sm hover:text-[#E0D8C1] transition-colors">Forum</Link></li>
+                <li><Link href="/clubs" className="text-sm hover:text-[#E0D8C1] transition-colors">Car Clubs</Link></li>
+                <li><Link href="/advertise/my-ads" className="text-sm hover:text-[#E0D8C1] transition-colors">Advertise</Link></li>
               </ul>
             </div>
              <div>
               <h3 className="font-semibold font-headline text-foreground">Company</h3>
               <ul className="mt-4 space-y-3">
-                 <li><Link href="/about" className="text-sm hover:text-primary transition-colors">About Us</Link></li>
-                 <li><Link href="/contact" className="text-sm hover:text-primary transition-colors">Contact</Link></li>
-                 <li><Link href="/terms" className="text-sm hover:text-primary transition-colors">Terms of Service</Link></li>
-                 <li><Link href="/privacy" className="text-sm hover:text-primary transition-colors">Privacy Policy</Link></li>
+                 <li><Link href="/about" className="text-sm hover:text-[#E0D8C1] transition-colors">About Us</Link></li>
+                 <li><Link href="/contact" className="text-sm hover:text-[#E0D8C1] transition-colors">Contact</Link></li>
+                 <li><Link href="/terms" className="text-sm hover:text-[#E0D8C1] transition-colors">Terms of Service</Link></li>
+                 <li><Link href="/privacy" className="text-sm hover:text-[#E0D8C1] transition-colors">Privacy Policy</Link></li>
               </ul>
             </div>
           </div>
@@ -66,7 +66,7 @@ export default function Footer() {
         <div className="flex justify-center mt-8">
           <FooterNewsletter />
         </div>
-        <div className="mt-12 border-t pt-8 text-center text-sm">
+        <div className="mt-12 border-t border-[#E0D8C1]/30 pt-8 text-center text-sm">
           <p>&copy; {new Date().getFullYear()} BestCarEvents. All rights reserved.</p>
         </div>
       </div>

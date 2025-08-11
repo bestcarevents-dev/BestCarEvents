@@ -34,14 +34,14 @@ export default function RootLayout({
   return (
     <html lang="en" className='dark'>
       <body className={cn(
-        "font-body antialiased flex flex-col min-h-screen bg-background",
+        "font-body antialiased flex flex-col min-h-screen bg-muted/90",
         fontHeadline.variable,
         fontBody.variable
       )}>
         <LanguageProvider>
           <GlobalNewsletterProvider>
             <Header />
-            <main className="flex-1 pt-24">{children}</main>
+            <main className="flex-1 mt-24">{children}</main>
             <Footer />
             <Toaster />
           </GlobalNewsletterProvider>

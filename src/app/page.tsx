@@ -107,35 +107,185 @@ type OtherServiceData = {
   createdAt?: any;
 };
 
+// New: Promo announcement and gallery types
+type GalleryImage = { id: string; url: string };
+
+const PromoAnnouncement = () => {
+  return (
+    <div className="bg-gradient-to-b from-white to-[#E0D8C1]">
+      <div className="container mx-auto px-4 py-12">
+        <div className="relative">
+          {/* Background decorative elements */}
+          <div className="absolute inset-0 overflow-hidden">
+            <div className="absolute -top-4 -left-4 w-32 h-32 bg-yellow-400/20 rounded-full blur-2xl"></div>
+            <div className="absolute -bottom-4 -right-4 w-32 h-32 bg-yellow-400/20 rounded-full blur-2xl"></div>
+          </div>
+          
+          {/* Main content */}
+          <div className="relative flex flex-col items-center text-center">
+            <div className="inline-flex items-center gap-2 bg-yellow-400/20 backdrop-blur-sm px-4 py-2 rounded-full mb-6">
+              <span className="animate-pulse">🎉</span>
+              <span className="font-semibold text-gray-900">ZERO COST LISTINGS</span>
+              <span className="animate-pulse">🎉</span>
+            </div>
+            
+            <h2 className="text-4xl md:text-6xl lg:text-7xl font-extrabold font-headline bg-clip-text text-transparent bg-gradient-to-r from-amber-400 via-yellow-600 to-amber-400 [background-size:200%_auto] animate-[gradient_2s_linear_infinite] pb-2">
+              ALL LISTINGS ARE FREE
+            </h2>
+            
+            <div className="mt-8 flex flex-wrap justify-center gap-4 text-lg md:text-xl">
+              <div className="bg-yellow-400/10 backdrop-blur-sm rounded-full px-6 py-2 border border-yellow-400/20 text-gray-900">
+                🏨 Hotels
+              </div>
+              <div className="bg-yellow-400/10 backdrop-blur-sm rounded-full px-6 py-2 border border-yellow-400/20 text-gray-900">
+                👥 Clubs
+              </div>
+              <div className="bg-yellow-400/10 backdrop-blur-sm rounded-full px-6 py-2 border border-yellow-400/20 text-gray-900">
+                🎪 Events
+              </div>
+              <div className="bg-yellow-400/10 backdrop-blur-sm rounded-full px-6 py-2 border border-yellow-400/20 text-gray-900">
+                🔨 Auctions
+              </div>
+              <div className="bg-yellow-400/10 backdrop-blur-sm rounded-full px-6 py-2 border border-yellow-400/20 text-gray-900">
+                🛠️ Services
+              </div>
+            </div>
+            
+            <p className="mt-6 text-xl md:text-2xl text-gray-800 max-w-2xl">
+              <span className="font-bold text-yellow-500">Cars:</span> Enjoy <span className="font-bold text-yellow-500">2 months free</span> listing period!
+            </p>
+
+            <div className="mt-10 flex justify-center w-full">
+              <Button 
+                asChild 
+                size="lg" 
+                className="bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-bold text-lg md:text-xl px-12 py-6 rounded-full shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300"
+              >
+                <Link href="/post-a-listing">Post a Listing</Link>
+              </Button>
+            </div>
+          </div>
+        </div>
+        
+        {/* Newsletter Section */}
+        <div className="text-center pt-12 mt-12 border-t border-yellow-400/20">
+          <NewsletterSubscribe />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const GallerySection = ({
+  title,
+  collectionName,
+  bgClass = "bg-white",
+}: {
+  title: string;
+  collectionName: string;
+  bgClass?: string;
+}) => {
+  const [images, setImages] = useState<GalleryImage[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchGallery = async () => {
+      try {
+        const db = getFirestore(app);
+        const q = query(collection(db, collectionName), orderBy("createdAt", "desc"), limit(24));
+        const snap = await getDocs(q);
+        const fromDb = snap.docs.map((doc) => {
+          const data = doc.data() as any;
+          const url = data?.url || data?.imageUrl || (Array.isArray(data?.images) ? data.images[0] : undefined);
+          return { id: doc.id, url } as GalleryImage;
+        });
+        const filtered = fromDb.filter((g) => !!g.url);
+        const fallbacks: string[] = [
+          "https://images.unsplash.com/photo-1511910849309-0dffb9f5fa7b?q=80&w=1600&auto=format&fit=crop",
+          "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?q=80&w=1600&auto=format&fit=crop",
+          "https://images.unsplash.com/photo-1518552781856-7e1cebd8b0b2?q=80&w=1600&auto=format&fit=crop",
+          "https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=1600&auto=format&fit=crop",
+          "https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?q=80&w=1600&auto=format&fit=crop",
+          "https://images.unsplash.com/photo-1483721310020-03333e577078?q=80&w=1600&auto=format&fit=crop",
+          "https://images.unsplash.com/photo-1502877338535-766e1452684a?q=80&w=1600&auto=format&fit=crop",
+          "https://images.unsplash.com/photo-1511396837277-9e2b41dbe13a?q=80&w=1600&auto=format&fit=crop",
+          "https://images.unsplash.com/photo-1465447142348-e9952c393450?q=80&w=1600&auto=format&fit=crop",
+          "https://images.unsplash.com/photo-1483729558449-99ef09a8c325?q=80&w=1600&auto=format&fit=crop",
+          "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?q=80&w=1600&auto=format&fit=crop",
+          "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?q=80&w=1600&auto=format&fit=crop",
+        ];
+        const finalImages = (filtered.length ? filtered : fallbacks.map((url, i) => ({ id: `fallback-${i}`, url })))
+          .slice(0, 24);
+        setImages(finalImages);
+      } catch (e) {
+        // fallback
+        const fallbacks: string[] = [
+          "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?q=80&w=1600&auto=format&fit=crop",
+          "https://images.unsplash.com/photo-1511910849309-0dffb9f5fa7b?q=80&w=1600&auto=format&fit=crop",
+          "https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?q=80&w=1600&auto=format&fit=crop",
+          "https://images.unsplash.com/photo-1502877338535-766e1452684a?q=80&w=1600&auto=format&fit=crop",
+        ];
+        setImages(fallbacks.map((url, i) => ({ id: `fallback-${i}`, url })));
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchGallery();
+  }, [collectionName]);
+
+  return (
+    <section className={`py-14 sm:py-20 ${bgClass}`}>
+      <div className="container mx-auto px-4">
+        <div className="max-w-4xl mx-auto text-center mb-10">
+          <h2 className={`text-3xl sm:text-4xl font-headline font-extrabold ${bgClass.includes('#80A0A9') ? 'text-white' : 'text-gray-900'}`}>{title}</h2>
+          <p className={`${bgClass.includes('#80A0A9') ? 'text-white/90' : 'text-gray-600'} mt-3`}>An immersive wall of moments from our community.</p>
+        </div>
+        {loading ? (
+          <div className="text-center py-8 text-gray-600">Loading gallery...</div>
+        ) : (
+          <div className="columns-2 md:columns-3 lg:columns-4 gap-4 [column-fill:_balance]">{/* masonry */}
+            {images.map((img) => (
+              <a key={img.id} href={img.url} target="_blank" rel="noreferrer" className="group block mb-4 break-inside-avoid rounded-xl overflow-hidden shadow-sm">
+                {/* Using img to allow variable heights without layout constraints */}
+                <img src={img.url} alt="Gallery" loading="lazy" className="w-full h-auto group-hover:opacity-95" />
+              </a>
+            ))}
+          </div>
+        )}
+      </div>
+    </section>
+  );
+};
+
 const ValueProposition = () => {
   return (
-    <div className="bg-white">
+    <div className="bg-[#E0D8C1]">
         <div className="container mx-auto px-4 py-20">
              <div className="text-center max-w-3xl mx-auto mb-16">
-                <h2 className="text-4xl font-headline font-extrabold sm:text-5xl tracking-tight text-gray-900">A Community Built for Car Lovers</h2>
-                <p className="mt-4 text-lg text-gray-600">We are more than a marketplace. We are a global community of enthusiasts, collectors, and connoisseurs.</p>
+                <h2 className="text-4xl font-headline font-extrabold sm:text-5xl tracking-tight text-gray-900">Join Our Global Car Community</h2>
+                <p className="mt-4 text-lg text-gray-700">Connect with passionate car enthusiasts, collectors, and professionals. Share experiences, discover events, and be part of something extraordinary.</p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-12 text-center">
                 <div className="flex flex-col items-center">
-                    <div className="flex items-center justify-center h-16 w-16 rounded-full bg-yellow-100 mb-6">
+                    <div className="flex items-center justify-center h-16 w-16 rounded-full bg-white mb-6">
                         <BadgeCheck className="h-8 w-8 text-yellow-600"/>
                     </div>
-                    <h3 className="text-xl font-headline font-semibold text-gray-900">Curated Marketplace</h3>
-                    <p className="mt-2 text-gray-600">Access a curated marketplace of the world's most desirable vehicles.</p>
+                    <h3 className="text-xl font-headline font-semibold text-gray-900">Verified Members</h3>
+                    <p className="mt-2 text-gray-700">Connect with trusted enthusiasts and professionals in the automotive world.</p>
                 </div>
                 <div className="flex flex-col items-center">
-                     <div className="flex items-center justify-center h-16 w-16 rounded-full bg-yellow-100 mb-6">
+                     <div className="flex items-center justify-center h-16 w-16 rounded-full bg-white mb-6">
                         <Trophy className="h-8 w-8 text-yellow-600"/>
                     </div>
-                    <h3 className="text-xl font-headline font-semibold text-gray-900">Verified & Trusted</h3>
-                    <p className="mt-2 text-gray-600">Connect with verified enthusiasts, collectors, and event organizers.</p>
+                    <h3 className="text-xl font-headline font-semibold text-gray-900">Exclusive Access</h3>
+                    <p className="mt-2 text-gray-700">Get early access to premium events, rare car listings, and special offers.</p>
                 </div>
                 <div className="flex flex-col items-center">
-                    <div className="flex items-center justify-center h-16 w-16 rounded-full bg-yellow-100 mb-6">
+                    <div className="flex items-center justify-center h-16 w-16 rounded-full bg-white mb-6">
                         <Group className="h-8 w-8 text-yellow-600"/>
                     </div>
-                    <h3 className="text-xl font-headline font-semibold text-gray-900">Premier Experiences</h3>
-                    <p className="mt-2 text-gray-600">Discover and attend the most prestigious automotive events.</p>
+                    <h3 className="text-xl font-headline font-semibold text-gray-900">Growing Network</h3>
+                    <p className="mt-2 text-gray-700">Join thousands of car enthusiasts sharing their passion and expertise daily.</p>
                 </div>
             </div>
             
@@ -241,11 +391,11 @@ const FeaturedCarsSection = () => {
     const isCarousel = featuredCars.length > 2;
 
     return (
-        <section className="py-20 sm:py-28 bg-background">
+        <section className="py-20 sm:py-28 bg-[#E0D8C1]">
             <div className="container mx-auto px-4">
                 <div className="text-center max-w-3xl mx-auto mb-16">
-                    <h2 className="text-4xl font-headline font-extrabold sm:text-5xl tracking-tight text-foreground">Featured Cars</h2>
-                    <p className="mt-4 text-lg text-muted-foreground">Explore a selection of exceptional vehicles from our curated marketplace.</p>
+                    <h2 className="text-4xl font-headline font-extrabold sm:text-5xl tracking-tight text-gray-900">Featured Cars</h2>
+                    <p className="mt-4 text-lg text-gray-700">Explore a selection of exceptional vehicles. Car listings are free for 2 months.</p>
                 </div>
                 {loading ? (
                     <div className="text-center text-lg py-12 text-gray-600">Loading featured cars...</div>
@@ -322,7 +472,7 @@ const FeaturedCarsSection = () => {
                                 <Button
                                     variant="outline"
                                     size="icon"
-                                    className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-background/80 backdrop-blur-sm border-border/50 hover:bg-background/90 transition-all duration-200 shadow-lg"
+                                    className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-white/90 backdrop-blur-sm border-gray-300 hover:bg-white transition-all duration-200 shadow-lg"
                                     onClick={prevSlide}
                                 >
                                     <ChevronLeft className="h-6 w-6" />
@@ -330,7 +480,7 @@ const FeaturedCarsSection = () => {
                                 <Button
                                     variant="outline"
                                     size="icon"
-                                    className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-background/80 backdrop-blur-sm border-border/50 hover:bg-background/90 transition-all duration-200 shadow-lg"
+                                    className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-white/90 backdrop-blur-sm border-gray-300 hover:bg-white transition-all duration-200 shadow-lg"
                                     onClick={nextSlide}
                                 >
                                     <ChevronRight className="h-6 w-6" />
@@ -475,11 +625,11 @@ const FeaturedEventsSection = () => {
   };
 
   return (
-    <section className="py-20 sm:py-28 bg-white">
+    <section className="py-20 sm:py-28 bg-[#80A0A9]">
       <div className="container mx-auto px-4">
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <h2 className="text-4xl font-headline font-extrabold sm:text-5xl tracking-tight text-gray-900">Upcoming Events</h2>
-          <p className="mt-4 text-lg text-gray-600">Discover the most exclusive automotive gatherings around the world.</p>
+          <h2 className="text-4xl font-headline font-extrabold sm:text-5xl tracking-tight text-white">Upcoming Events</h2>
+          <p className="mt-4 text-lg text-white/90">Discover the most exclusive automotive gatherings around the world. Event listings are free.</p>
         </div>
         {loading ? (
           <div className="text-center text-lg py-12 text-gray-600">Loading upcoming events...</div>
@@ -704,11 +854,11 @@ const FeaturedAuctionsSection = () => {
   };
 
   return (
-    <section className="py-20 sm:py-28 bg-background">
+    <section className="py-20 sm:py-28 bg-white">
       <div className="container mx-auto px-4">
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <h2 className="text-4xl font-headline font-extrabold sm:text-5xl tracking-tight text-foreground">Live Auctions</h2>
-          <p className="mt-4 text-lg text-muted-foreground">Bid on rare and exclusive vehicles from around the globe.</p>
+          <h2 className="text-4xl font-headline font-extrabold sm:text-5xl tracking-tight text-gray-900">Live Auctions</h2>
+          <p className="mt-4 text-lg text-gray-600">Bid on rare and exclusive vehicles. Auction listings are free to post.</p>
         </div>
         {loading ? (
           <div className="text-center text-lg py-12 text-gray-600">Loading live auctions...</div>
@@ -789,7 +939,7 @@ const FeaturedAuctionsSection = () => {
                 <Button
                   variant="outline"
                   size="icon"
-                  className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-background/80 backdrop-blur-sm border-border/50 hover:bg-background/90 transition-all duration-200 shadow-lg"
+                  className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-white/90 backdrop-blur-sm border-gray-300 hover:bg-white transition-all duration-200 shadow-lg"
                   onClick={prevSlide}
                 >
                   <ChevronLeft className="h-6 w-6" />
@@ -797,7 +947,7 @@ const FeaturedAuctionsSection = () => {
                 <Button
                   variant="outline"
                   size="icon"
-                  className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-background/80 backdrop-blur-sm border-border/50 hover:bg-background/90 transition-all duration-200 shadow-lg"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-white/90 backdrop-blur-sm border-gray-300 hover:bg-white transition-all duration-200 shadow-lg"
                   onClick={nextSlide}
                 >
                   <ChevronRight className="h-6 w-6" />
@@ -937,7 +1087,7 @@ const FeaturedHotelsSection = () => {
       <div className="container mx-auto px-4">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <h2 className="text-4xl font-headline font-extrabold sm:text-5xl tracking-tight text-gray-900">Featured Hotels</h2>
-          <p className="mt-4 text-lg text-gray-600">Discover premium car hotels and storage facilities for your valuable vehicles.</p>
+          <p className="mt-4 text-lg text-gray-600">Discover premium car hotels and storage facilities for your valuable vehicles. Hotel listings are free.</p>
         </div>
         {loading ? (
           <div className="text-center text-lg py-12 text-gray-600">Loading featured hotels...</div>
@@ -1075,7 +1225,7 @@ const FeaturedHotelsSection = () => {
                   className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-white/90 backdrop-blur-sm border-gray-300 hover:bg-white transition-all duration-200 shadow-lg"
                   onClick={prevSlide}
                 >
-                  <ChevronLeft className="h-6 w-6 text-gray-700" />
+                  <ChevronLeft className="h-6 w-6" />
                 </Button>
                 <Button
                   variant="outline"
@@ -1083,7 +1233,7 @@ const FeaturedHotelsSection = () => {
                   className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-white/90 backdrop-blur-sm border-gray-300 hover:bg-white transition-all duration-200 shadow-lg"
                   onClick={nextSlide}
                 >
-                  <ChevronRight className="h-6 w-6 text-gray-700" />
+                  <ChevronRight className="h-6 w-6" />
                 </Button>
 
                 {/* Dots Indicator */}
@@ -1228,11 +1378,11 @@ const FeaturedClubsSection = () => {
   };
 
   return (
-    <section className="py-20 sm:py-28 bg-background">
+    <section className="py-20 sm:py-28 bg-[#80A0A9]">
       <div className="container mx-auto px-4">
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <h2 className="text-4xl font-headline font-extrabold sm:text-5xl tracking-tight text-foreground">Featured Clubs</h2>
-          <p className="mt-4 text-lg text-muted-foreground">Join exclusive car clubs and connect with fellow enthusiasts around the world.</p>
+          <h2 className="text-4xl font-headline font-extrabold sm:text-5xl tracking-tight text-white">Featured Clubs</h2>
+          <p className="mt-4 text-lg text-white/90">Join exclusive car clubs and connect with fellow enthusiasts. Club listings are free.</p>
         </div>
         {loading ? (
           <div className="text-center text-lg py-12 text-gray-600">Loading featured clubs...</div>
@@ -1261,12 +1411,12 @@ const FeaturedClubsSection = () => {
                           <div key={club.id} className="relative pt-12 pb-4">
                             <Link
                               href={`/clubs/${club.id}`}
-                              className="group relative bg-card border border-border rounded-2xl shadow-lg p-6 pt-12 pb-8 flex flex-col items-center transition-transform duration-300 hover:-translate-y-2 hover:shadow-2xl hover:border-yellow-600/60 animate-fade-in cursor-pointer focus:outline-none focus:ring-2 focus:ring-yellow-600 min-h-[320px]"
+                              className="group relative bg-white border border-gray-200 rounded-2xl shadow-lg p-6 pt-12 pb-8 flex flex-col items-center transition-transform duration-300 hover:-translate-y-2 hover:shadow-2xl hover:border-yellow-600/60 animate-fade-in cursor-pointer focus:outline-none focus:ring-2 focus:ring-yellow-600 min-h-[320px]"
                               tabIndex={0}
                               aria-label={`View details for ${club.clubName}`}
                             >
                               <div className="absolute -top-6 left-1/2 -translate-x-1/2 z-10">
-                                <div className="rounded-full border-4 border-background shadow-lg bg-background w-20 h-20 flex items-center justify-center overflow-hidden animate-fade-in">
+                                <div className="rounded-full border-4 border-white shadow-lg bg-white w-20 h-20 flex items-center justify-center overflow-hidden animate-fade-in">
                                   <Image 
                                     src={club.logoUrl || "https://via.placeholder.com/80x80?text=Logo"} 
                                     alt={club.clubName || "Club"} 
@@ -1338,12 +1488,12 @@ const FeaturedClubsSection = () => {
                         <div key={club.id} className="relative pt-12 pb-4">
                           <Link
                             href={`/clubs/${club.id}`}
-                            className="group relative bg-card border border-border rounded-2xl shadow-lg p-6 pt-12 pb-8 flex flex-col items-center transition-transform duration-300 hover:-translate-y-2 hover:shadow-2xl hover:border-yellow-600/60 animate-fade-in cursor-pointer focus:outline-none focus:ring-2 focus:ring-yellow-600 min-h-[320px]"
+                            className="group relative bg-white border border-gray-200 rounded-2xl shadow-lg p-6 pt-12 pb-8 flex flex-col items-center transition-transform duration-300 hover:-translate-y-2 hover:shadow-2xl hover:border-yellow-600/60 animate-fade-in cursor-pointer focus:outline-none focus:ring-2 focus:ring-yellow-600 min-h-[320px]"
                             tabIndex={0}
                             aria-label={`View details for ${club.clubName}`}
                           >
                             <div className="absolute -top-6 left-1/2 -translate-x-1/2 z-10">
-                              <div className="rounded-full border-4 border-background shadow-lg bg-background w-20 h-20 flex items-center justify-center overflow-hidden animate-fade-in">
+                              <div className="rounded-full border-4 border-white shadow-lg bg-white w-20 h-20 flex items-center justify-center overflow-hidden animate-fade-in">
                                 <Image 
                                   src={club.logoUrl || "https://via.placeholder.com/80x80?text=Logo"} 
                                   alt={club.clubName || "Club"} 
@@ -1417,7 +1567,7 @@ const FeaturedClubsSection = () => {
                 <Button
                   variant="outline"
                   size="icon"
-                  className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-background/80 backdrop-blur-sm border-border/50 hover:bg-background/90 transition-all duration-200 shadow-lg"
+                  className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-white/90 backdrop-blur-sm border-gray-300 hover:bg-white transition-all duration-200 shadow-lg"
                   onClick={prevSlide}
                 >
                   <ChevronLeft className="h-6 w-6" />
@@ -1425,7 +1575,7 @@ const FeaturedClubsSection = () => {
                 <Button
                   variant="outline"
                   size="icon"
-                  className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-background/80 backdrop-blur-sm border-border/50 hover:bg-background/90 transition-all duration-200 shadow-lg"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-white/90 backdrop-blur-sm border-gray-300 hover:bg-white transition-all duration-200 shadow-lg"
                   onClick={nextSlide}
                 >
                   <ChevronRight className="h-6 w-6" />
@@ -1569,7 +1719,7 @@ const FeaturedOtherServicesSection = () => {
       <div className="container mx-auto px-4">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <h2 className="text-4xl font-headline font-extrabold sm:text-5xl tracking-tight text-gray-900">Other Services</h2>
-          <p className="mt-4 text-lg text-gray-600">Discover automotive services including storage, garages, parts, restoration, detailing, and more.</p>
+          <p className="mt-4 text-lg text-gray-600">Discover automotive services including storage, garages, parts, restoration, detailing, and more. Service listings are free.</p>
         </div>
         {loading ? (
           <div className="text-center text-lg py-12 text-gray-600">Loading other services...</div>
@@ -1814,14 +1964,17 @@ const FeaturedOtherServicesSection = () => {
 
 export default function Home() {
   return (
-    <div className="bg-background">
+    <div className="bg-white">
       <HeroSlider />
-      <NewsletterSubscribe />
+      <PromoAnnouncement />
       <ValueProposition />
+      <GallerySection title="Community Gallery" collectionName="gallery" bgClass="bg-white" />
       <FeaturedCarsSection />
       <FeaturedEventsSection />
+      <GallerySection title="Location Spotlight: 1" collectionName="gallery_location1" bgClass="bg-[#E0D8C1]" />
       <FeaturedAuctionsSection />
       <FeaturedHotelsSection />
+      <GallerySection title="Location Spotlight: 2" collectionName="gallery_location2" bgClass="bg-white" />
       <FeaturedClubsSection />
       <FeaturedOtherServicesSection />
     </div>

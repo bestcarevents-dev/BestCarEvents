@@ -65,7 +65,9 @@ export default function HeroSlider() {
                                 className="object-cover"
                                 data-ai-hint={slide.hint}
                             />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
+                            <div className="absolute inset-0 bg-gradient-to-t from-amber-950/70 via-black/40 to-transparent"></div>
+                            {/* Warm blend into page background */}
+                            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-b from-transparent to-[#E0D8C1]/70" />
                         </CarouselItem>
                     ))}
                 </CarouselContent>
@@ -88,13 +90,13 @@ export default function HeroSlider() {
                         <button
                             key={i}
                             onClick={() => api?.scrollTo(i)}
-                            className={cn("h-2.5 w-2.5 rounded-full transition-all duration-300", current === i ? "bg-primary w-8" : "bg-white/50")}
+                            className={cn("h-2.5 w-2.5 rounded-full transition-all duration-300", current === i ? "bg-yellow-400 w-8" : "bg-white/70")}
                         />
                     ))}
                 </div>
 
-                <CarouselPrevious className="absolute left-8 top-1/2 -translate-y-1/2 text-white bg-black/30 hover:bg-black/50 border-white/20 h-12 w-12" />
-                <CarouselNext className="absolute right-8 top-1/2 -translate-y-1/2 text-white bg-black/30 hover:bg-black/50 border-white/20 h-12 w-12" />
+                <CarouselPrevious className="absolute left-8 top-1/2 -translate-y-1/2 text-white bg-amber-900/30 hover:bg-amber-900/50 border-yellow-200/30 h-12 w-12" />
+                <CarouselNext className="absolute right-8 top-1/2 -translate-y-1/2 text-white bg-amber-900/30 hover:bg-amber-900/50 border-yellow-200/30 h-12 w-12" />
             </Carousel>
         </div>
     );

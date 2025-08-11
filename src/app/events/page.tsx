@@ -184,19 +184,19 @@ function EventsPageContent() {
             <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
                 <div className="text-center md:text-left mb-4 md:mb-0">
                     <h1 className="text-4xl md:text-5xl font-extrabold font-headline text-gray-900">Discover Events</h1>
-                    <p className="mt-4 text-lg text-gray-600 max-w-3xl">
+                    <p className="mt-4 text-lg text-gray-700 max-w-3xl">
                       From local meetups to international shows, find your next car adventure. Organize, promote, and discover gatherings for every passion—from coffee runs and track days to concours weekends—curated by a global community of enthusiasts.
                     </p>
                 </div>
                 {currentUser ? (
                   <div className="flex gap-2">
-                    <Button asChild variant="outline" className="border-gray-300 text-gray-700 hover:bg-gray-50">
+                    <Button asChild variant="outline" className="border-[#80A0A9] text-[#80A0A9] hover:bg-[#80A0A9]/10">
                       <Link href="/advertise/events-listing" className="flex items-center">
                         <PlusCircle className="mr-2 h-5 w-5" />
                         Feature Event
                       </Link>
                     </Button>
-                    <Button asChild>
+                    <Button asChild className="bg-[#80A0A9] hover:bg-[#80A0A9]/90 text-white">
                       <Link href="/events/host" className="flex items-center">
                           <PlusCircle className="mr-2 h-5 w-5" />
                           Host an Event
@@ -207,7 +207,7 @@ function EventsPageContent() {
                   <div className="flex gap-2">
                     <Dialog open={showDialog} onOpenChange={setShowDialog}>
                       <DialogTrigger asChild>
-                        <Button variant="outline" className="border-gray-300 text-gray-700 hover:bg-gray-50 flex items-center">
+                        <Button variant="outline" className="border-[#80A0A9] text-[#80A0A9] hover:bg-[#80A0A9]/10 flex items-center">
                           <PlusCircle className="mr-2 h-5 w-5" />
                           Feature Event
                         </Button>
@@ -222,14 +222,14 @@ function EventsPageContent() {
                             <DialogClose asChild>
                               <Button variant="outline">Close</Button>
                             </DialogClose>
-                            <Button asChild variant="default">
+                            <Button asChild variant="default" className="bg-[#80A0A9] hover:bg-[#80A0A9]/90 text-white">
                               <a href="/login">Login</a>
                             </Button>
                           </DialogFooter>
                         </div>
                       </DialogContent>
                     </Dialog>
-                    <Button asChild>
+                    <Button asChild className="bg-[#80A0A9] hover:bg-[#80A0A9]/90 text-white">
                       <Link href="/events/host" className="flex items-center">
                           <PlusCircle className="mr-2 h-5 w-5" />
                           Host an Event
@@ -251,19 +251,19 @@ function EventsPageContent() {
               />
             </div>
 
-          <div className="bg-gray-50 p-6 rounded-lg border border-gray-200 mb-8">
+          <div className="bg-[#E0D8C1]/30 p-6 rounded-lg border border-[#E0D8C1]/50 mb-8">
             {/* Search Bar - Always Visible */}
             <div className="flex flex-col md:flex-row gap-4 mb-4">
               <Input 
                 placeholder="Search by name, city..." 
-                className="flex-1 bg-white border-gray-300 text-gray-900 placeholder:text-gray-500"
+                className="flex-1 bg-white border-[#80A0A9]/50 text-gray-900 placeholder:text-gray-500 focus:border-[#80A0A9]"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
               />
               <div className="flex gap-2 md:flex-shrink-0">
-                <Button onClick={handleSearch} className="bg-yellow-600 hover:bg-yellow-700">Search</Button>
-                <Button onClick={handleResetFilters} variant="outline" className="border-gray-300 text-gray-700 hover:bg-gray-50">Reset</Button>
+                <Button onClick={handleSearch} className="bg-[#80A0A9] hover:bg-[#80A0A9]/90 text-white">Search</Button>
+                <Button onClick={handleResetFilters} variant="outline" className="border-[#80A0A9]/50 text-[#80A0A9] hover:bg-[#80A0A9]/10">Reset</Button>
               </div>
             </div>
             
@@ -272,7 +272,7 @@ function EventsPageContent() {
               <Button 
                 onClick={() => setShowFilters(!showFilters)} 
                 variant="outline" 
-                className="w-full border-gray-300 text-gray-700 hover:bg-gray-50"
+                className="w-full border-[#80A0A9]/50 text-[#80A0A9] hover:bg-[#80A0A9]/10"
               >
                 {showFilters ? "Hide Filters" : "Show Filters"}
               </Button>
@@ -282,7 +282,7 @@ function EventsPageContent() {
             <div className={`${showFilters ? 'block' : 'hidden'} md:block`}>
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                   <SelectTrigger className="bg-white border-gray-300 text-gray-900">
+                   <SelectTrigger className="bg-white border-[#80A0A9]/50 text-gray-900 focus:border-[#80A0A9]">
                      <SelectValue placeholder="Category: Any" />
                    </SelectTrigger>
                    <SelectContent>
@@ -295,7 +295,7 @@ function EventsPageContent() {
                    </SelectContent>
                 </Select>
                 <Select value={selectedVehicleFocus} onValueChange={setSelectedVehicleFocus}>
-                   <SelectTrigger className="bg-white border-gray-300 text-gray-900">
+                   <SelectTrigger className="bg-white border-[#80A0A9]/50 text-gray-900 focus:border-[#80A0A9]">
                      <SelectValue placeholder="Vehicle: Any" />
                    </SelectTrigger>
                    <SelectContent>
@@ -308,7 +308,7 @@ function EventsPageContent() {
                    </SelectContent>
                 </Select>
                 <Select value={selectedEntryFee} onValueChange={setSelectedEntryFee}>
-                   <SelectTrigger className="bg-white border-gray-300 text-gray-900">
+                   <SelectTrigger className="bg-white border-[#80A0A9]/50 text-gray-900 focus:border-[#80A0A9]">
                      <SelectValue placeholder="Fee: Any" />
                    </SelectTrigger>
                  <SelectContent>
@@ -318,7 +318,7 @@ function EventsPageContent() {
                  </SelectContent>
               </Select>
                 <Select value={sortBy} onValueChange={setSortBy}>
-                  <SelectTrigger className="bg-white border-gray-300 text-gray-900">
+                  <SelectTrigger className="bg-white border-[#80A0A9]/50 text-gray-900 focus:border-[#80A0A9]">
                     <SelectValue placeholder="Sort by: Date" />
                   </SelectTrigger>
                 <SelectContent>
@@ -350,8 +350,8 @@ function EventsPageContent() {
                    {featuredEvents.length > 0 ? (
                      <div className="mb-12">
                        <div className="flex items-center gap-3 mb-6">
-                         <div className="p-2 bg-yellow-400/10 rounded-full">
-                           <Star className="w-6 h-6 text-yellow-500" />
+                         <div className="p-2 bg-[#E0D8C1]/20 rounded-full">
+                           <Star className="w-6 h-6 text-[#80A0A9]" />
                          </div>
                          <h2 className="text-2xl font-headline font-bold text-gray-900">Featured Events</h2>
                          <div className="flex-1 h-px bg-gradient-to-r from-yellow-400/50 to-transparent"></div>

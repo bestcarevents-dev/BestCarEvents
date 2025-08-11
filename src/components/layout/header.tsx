@@ -68,50 +68,50 @@ const AuthButtons = ({ inMobileNav = false, user, onMobileMenuClose }: { inMobil
             <div className="space-y-3 pl-2">
               <Link 
                 href="/advertise/cars-listing" 
-                className="flex items-center gap-4 px-4 py-3 text-base text-gray-900 hover:text-white hover:bg-orange-600 rounded-lg transition-all duration-200 border border-gray-300 bg-white shadow-sm"
+                className="flex items-center gap-4 px-4 py-3 text-base text-gray-900 hover:text-white hover:bg-yellow-600 rounded-lg transition-all duration-200 border border-gray-300 bg-white shadow-sm"
                 onClick={onMobileMenuClose}
               >
-                <Car className="w-5 h-5 text-orange-600" />
+                <Car className="w-5 h-5 text-yellow-600" />
                 <span className="font-medium">Cars Listing</span>
               </Link>
               <Link 
                 href="/advertise/events-listing" 
-                className="flex items-center gap-4 px-4 py-3 text-base text-gray-900 hover:text-white hover:bg-orange-600 rounded-lg transition-all duration-200 border border-gray-300 bg-white shadow-sm"
+                className="flex items-center gap-4 px-4 py-3 text-base text-gray-900 hover:text-white hover:bg-yellow-600 rounded-lg transition-all duration-200 border border-gray-300 bg-white shadow-sm"
                 onClick={onMobileMenuClose}
               >
-                <Calendar className="w-5 h-5 text-orange-600" />
+                <Calendar className="w-5 h-5 text-yellow-600" />
                 <span className="font-medium">Events Listing</span>
               </Link>
               <Link 
                 href="/advertise/auction-listing" 
-                className="flex items-center gap-4 px-4 py-3 text-base text-gray-900 hover:text-white hover:bg-orange-600 rounded-lg transition-all duration-200 border border-gray-300 bg-white shadow-sm"
+                className="flex items-center gap-4 px-4 py-3 text-base text-gray-900 hover:text-white hover:bg-yellow-600 rounded-lg transition-all duration-200 border border-gray-300 bg-white shadow-sm"
                 onClick={onMobileMenuClose}
               >
-                <Gavel className="w-5 h-5 text-orange-600" />
+                <Gavel className="w-5 h-5 text-yellow-600" />
                 <span className="font-medium">Auction Listing</span>
               </Link>
               <Link 
                 href="/advertise/club-listing" 
-                className="flex items-center gap-4 px-4 py-3 text-base text-gray-900 hover:text-white hover:bg-orange-600 rounded-lg transition-all duration-200 border border-gray-300 bg-white shadow-sm"
+                className="flex items-center gap-4 px-4 py-3 text-base text-gray-900 hover:text-white hover:bg-yellow-600 rounded-lg transition-all duration-200 border border-gray-300 bg-white shadow-sm"
                 onClick={onMobileMenuClose}
               >
-                <Users className="w-5 h-5 text-orange-600" />
+                <Users className="w-5 h-5 text-yellow-600" />
                 <span className="font-medium">Club Listing</span>
               </Link>
               <Link 
                 href="/advertise/hotel-listing" 
-                className="flex items-center gap-4 px-4 py-3 text-base text-gray-900 hover:text-white hover:bg-orange-600 rounded-lg transition-all duration-200 border border-gray-300 bg-white shadow-sm"
+                className="flex items-center gap-4 px-4 py-3 text-base text-gray-900 hover:text-white hover:bg-yellow-600 rounded-lg transition-all duration-200 border border-gray-300 bg-white shadow-sm"
                 onClick={onMobileMenuClose}
               >
-                <Car className="w-5 h-5 text-orange-600" />
+                <Car className="w-5 h-5 text-yellow-600" />
                 <span className="font-medium">Hotel Listing</span>
               </Link>
               <Link 
                 href="/advertise/others-listing" 
-                className="flex items-center gap-4 px-4 py-3 text-base text-gray-900 hover:text-white hover:bg-orange-600 rounded-lg transition-all duration-200 border border-gray-300 bg-white shadow-sm"
+                className="flex items-center gap-4 px-4 py-3 text-base text-gray-900 hover:text-white hover:bg-yellow-600 rounded-lg transition-all duration-200 border border-gray-300 bg-white shadow-sm"
                 onClick={onMobileMenuClose}
               >
-                <Settings className="w-5 h-5 text-orange-600" />
+                <Settings className="w-5 h-5 text-yellow-600" />
                 <span className="font-medium">Others Listing</span>
               </Link>
             </div>
@@ -120,37 +120,37 @@ const AuthButtons = ({ inMobileNav = false, user, onMobileMenuClose }: { inMobil
           <div className="w-full space-y-3">
             <Link 
               href="/advertise/my-ads" 
-              className="flex items-center gap-4 w-full px-4 py-3 text-base text-gray-900 hover:text-white hover:bg-orange-600 rounded-lg transition-all duration-200 border border-gray-300 bg-white shadow-sm font-medium"
+              className="flex items-center gap-4 w-full px-4 py-3 text-base text-gray-900 hover:text-white hover:bg-yellow-600 rounded-lg transition-all duration-200 border border-gray-300 bg-white shadow-sm font-medium"
               onClick={onMobileMenuClose}
             >
-              <Car className="w-5 h-5 text-orange-600" />
+              <Car className="w-5 h-5 text-yellow-600" />
               My Ads
             </Link>
 
             <Link 
               href="/advertise/advertise" 
-              className="flex items-center gap-4 w-full px-4 py-3 text-base text-gray-900 hover:text-white hover:bg-orange-600 rounded-lg transition-all duration-200 border border-gray-300 bg-white shadow-sm font-medium"
+              className="flex items-center gap-4 w-full px-4 py-3 text-base text-gray-900 hover:text-white hover:bg-yellow-600 rounded-lg transition-all duration-200 border border-gray-300 bg-white shadow-sm font-medium"
               onClick={onMobileMenuClose}
             >
-              <Car className="w-5 h-5 text-orange-600" />
+              <Car className="w-5 h-5 text-yellow-600" />
               Advertise
             </Link>
 
             <Link 
               href="/advertise/newsletter-mentions" 
-              className="flex items-center gap-4 w-full px-4 py-3 text-base text-gray-900 hover:text-white hover:bg-orange-600 rounded-lg transition-all duration-200 border border-gray-300 bg-white shadow-sm font-medium"
+              className="flex items-center gap-4 w-full px-4 py-3 text-base text-gray-900 hover:text-white hover:bg-yellow-600 rounded-lg transition-all duration-200 border border-gray-300 bg-white shadow-sm font-medium"
               onClick={onMobileMenuClose}
             >
-              <Car className="w-5 h-5 text-orange-600" />
+              <Car className="w-5 h-5 text-yellow-600" />
               Newsletter Mentions
             </Link>
             
             <Link 
               href="/advertise/dashboard" 
-              className="flex items-center gap-4 w-full px-4 py-3 text-base text-gray-900 hover:text-white hover:bg-orange-600 rounded-lg transition-all duration-200 border border-gray-300 bg-white shadow-sm font-medium"
+              className="flex items-center gap-4 w-full px-4 py-3 text-base text-gray-900 hover:text-white hover:bg-yellow-600 rounded-lg transition-all duration-200 border border-gray-300 bg-white shadow-sm font-medium"
               onClick={onMobileMenuClose}
             >
-              <LayoutDashboard className="w-5 h-5 text-orange-600" />
+              <LayoutDashboard className="w-5 h-5 text-yellow-600" />
               Dashboard
             </Link>
           </div>
@@ -185,20 +185,20 @@ const AuthButtons = ({ inMobileNav = false, user, onMobileMenuClose }: { inMobil
           {/* My Listings Submenu */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <DropdownMenuItem className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-orange-50 hover:text-orange-700 transition-colors duration-200 cursor-pointer">
+              <DropdownMenuItem className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-yellow-50 hover:text-yellow-700 transition-colors duration-200 cursor-pointer">
                 <Car className="w-4 h-4" />
                 My Listings
                   <ChevronDown className="w-4 h-4 ml-auto" />
               </DropdownMenuItem>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="bg-white/95 backdrop-blur-sm border border-white/20 shadow-xl min-w-[200px] ml-2">
-              <DropdownMenuItem asChild className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-orange-50 hover:text-orange-700 transition-colors duration-200">
+              <DropdownMenuItem asChild className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-yellow-50 hover:text-yellow-700 transition-colors duration-200">
                 <Link href="/advertise/cars-listing" className="flex items-center gap-3 w-full">
                   <Car className="w-4 h-4" />
                   Cars Listing
                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem asChild className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-orange-50 hover:text-orange-700 transition-colors duration-200">
+              <DropdownMenuItem asChild className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-yellow-50 hover:text-yellow-700 transition-colors duration-200">
                 <Link href="/advertise/events-listing" className="flex items-center gap-3 w-full">
                   <Calendar className="w-4 h-4" />
                   Events Listing
@@ -206,25 +206,25 @@ const AuthButtons = ({ inMobileNav = false, user, onMobileMenuClose }: { inMobil
               </DropdownMenuItem>
 
               
-              <DropdownMenuItem asChild className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-orange-50 hover:text-orange-700 transition-colors duration-200">
+              <DropdownMenuItem asChild className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-yellow-50 hover:text-yellow-700 transition-colors duration-200">
                 <Link href="/advertise/auction-listing" className="flex items-center gap-3 w-full">
                   <Gavel className="w-4 h-4" />
                   Auction Listing
                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem asChild className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-orange-50 hover:text-orange-700 transition-colors duration-200">
+              <DropdownMenuItem asChild className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-yellow-50 hover:text-yellow-700 transition-colors duration-200">
                 <Link href="/advertise/club-listing" className="flex items-center gap-3 w-full">
                   <Users className="w-4 h-4" />
                   Club Listing
                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem asChild className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-orange-50 hover:text-orange-700 transition-colors duration-200">
+              <DropdownMenuItem asChild className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-yellow-50 hover:text-yellow-700 transition-colors duration-200">
                 <Link href="/advertise/hotel-listing" className="flex items-center gap-3 w-full">
                   <Car className="w-4 h-4" />
                   Hotel Listing
                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem asChild className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-orange-50 hover:text-orange-700 transition-colors duration-200">
+              <DropdownMenuItem asChild className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-yellow-50 hover:text-yellow-700 transition-colors duration-200">
                 <Link href="/advertise/others-listing" className="flex items-center gap-3 w-full">
                   <Settings className="w-4 h-4" />
                   Others Listing
@@ -234,7 +234,7 @@ const AuthButtons = ({ inMobileNav = false, user, onMobileMenuClose }: { inMobil
           </DropdownMenu>
 
           <DropdownMenuSeparator className="bg-gray-200" />
-          <DropdownMenuItem asChild className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-orange-50 hover:text-orange-700 transition-colors duration-200">
+          <DropdownMenuItem asChild className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-yellow-50 hover:text-yellow-700 transition-colors duration-200">
             <Link href="/advertise/advertise" className="flex items-center gap-3 w-full">
               <Car className="w-4 h-4" />
               Advertise
@@ -242,7 +242,7 @@ const AuthButtons = ({ inMobileNav = false, user, onMobileMenuClose }: { inMobil
           </DropdownMenuItem>
 
           <DropdownMenuSeparator className="bg-gray-200" />
-          <DropdownMenuItem asChild className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-orange-50 hover:text-orange-700 transition-colors duration-200">
+          <DropdownMenuItem asChild className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-yellow-50 hover:text-yellow-700 transition-colors duration-200">
             <Link href="/advertise/my-ads" className="flex items-center gap-3 w-full">
               <Car className="w-4 h-4" />
               My Ads
@@ -252,7 +252,7 @@ const AuthButtons = ({ inMobileNav = false, user, onMobileMenuClose }: { inMobil
 
  
           <DropdownMenuSeparator className="bg-gray-200" />
-          <DropdownMenuItem asChild className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-orange-50 hover:text-orange-700 transition-colors duration-200">
+          <DropdownMenuItem asChild className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-yellow-50 hover:text-yellow-700 transition-colors duration-200">
             <Link href="/advertise/newsletter-mentions" className="flex items-center gap-3 w-full">
               <LayoutDashboard className="w-4 h-4" />
               Newsletter Mentions
@@ -260,7 +260,7 @@ const AuthButtons = ({ inMobileNav = false, user, onMobileMenuClose }: { inMobil
           </DropdownMenuItem>
           
           <DropdownMenuSeparator className="bg-gray-200" />
-          <DropdownMenuItem asChild className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-orange-50 hover:text-orange-700 transition-colors duration-200">
+          <DropdownMenuItem asChild className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-yellow-50 hover:text-yellow-700 transition-colors duration-200">
             <Link href="/advertise/dashboard" className="flex items-center gap-3 w-full">
               <LayoutDashboard className="w-4 h-4" />
               Dashboard
@@ -300,7 +300,7 @@ const NavMenu = ({ onLinkClick, isMobile = false }: { onLinkClick?: () => void, 
           <Link
             key={link.href}
             href={link.href}
-            className="text-white hover:text-orange-300 transition-colors duration-200 font-medium text-lg py-2"
+            className="text-white hover:text-yellow-300 transition-colors duration-200 font-medium text-lg py-2"
             onClick={onLinkClick}
           >
             {link.label}
@@ -314,7 +314,7 @@ const NavMenu = ({ onLinkClick, isMobile = false }: { onLinkClick?: () => void, 
               <Link
                 key={link.href}
                 href={link.href}
-                className="block text-white hover:text-orange-300 transition-colors duration-200 font-medium py-1"
+                className="block text-white hover:text-yellow-300 transition-colors duration-200 font-medium py-1"
                 onClick={onLinkClick}
               >
                 {link.label}
@@ -332,7 +332,7 @@ const NavMenu = ({ onLinkClick, isMobile = false }: { onLinkClick?: () => void, 
         <Link
           key={link.href}
           href={link.href}
-          className="text-white hover:text-orange-300 transition-colors duration-200 font-medium"
+          className="text-white hover:text-yellow-300 transition-colors duration-200 font-medium"
           onClick={onLinkClick}
         >
           {link.label}
@@ -341,7 +341,7 @@ const NavMenu = ({ onLinkClick, isMobile = false }: { onLinkClick?: () => void, 
       
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <button className="flex items-center gap-1 text-white hover:text-orange-300 transition-colors duration-200 font-medium">
+          <button className="flex items-center gap-1 text-white hover:text-yellow-300 transition-colors duration-200 font-medium">
             Automotive
             <ChevronDown className="w-4 h-4" />
           </button>
@@ -387,7 +387,7 @@ export default function Header() {
     <header
       className={cn(
         "fixed top-0 z-50 w-full text-white transition-all duration-300",
-        scrolled ? "bg-black/80 backdrop-blur-sm" : "bg-transparent"
+        scrolled ? "bg-amber-950/40 backdrop-blur-md border-b border-yellow-200/30 shadow-lg" : "bg-white/5 backdrop-blur-sm"
       )}
     >
       <div className="container mx-auto flex items-center justify-between h-20">
@@ -467,7 +467,7 @@ export default function Header() {
                   
                   {/* Mobile Language Dropdown */}
                   <div className="space-y-4">
-                    <div className="text-lg font-bold text-white pb-2 border-b-2 border-orange-500">Language</div>
+                    <div className="text-lg font-bold text-white pb-2 border-b-2 border-yellow-500">Language</div>
                     <div className="space-y-3 pl-2">
                       <button 
                         onClick={() => {
@@ -476,8 +476,8 @@ export default function Header() {
                         }}
                         className={`flex items-center gap-4 w-full px-4 py-3 text-base rounded-lg transition-all duration-200 border ${
                           language === 'en' 
-                            ? 'text-white bg-orange-600 border-orange-600' 
-                            : 'text-gray-900 hover:text-white hover:bg-orange-600 border-gray-300 bg-white shadow-sm'
+                            ? 'text-white bg-yellow-600 border-yellow-600' 
+                            : 'text-gray-900 hover:text-white hover:bg-yellow-600 border-gray-300 bg-white shadow-sm'
                         }`}
                       >
                         <Image src={FLAG_UK} alt="English (UK)" width={24} height={16} className="rounded shadow" />
@@ -491,8 +491,8 @@ export default function Header() {
                         }}
                         className={`flex items-center gap-4 w-full px-4 py-3 text-base rounded-lg transition-all duration-200 border ${
                           language === 'it' 
-                            ? 'text-white bg-orange-600 border-orange-600' 
-                            : 'text-gray-900 hover:text-white hover:bg-orange-600 border-gray-300 bg-white shadow-sm'
+                            ? 'text-white bg-yellow-600 border-yellow-600' 
+                            : 'text-gray-900 hover:text-white hover:bg-yellow-600 border-gray-300 bg-white shadow-sm'
                         }`}
                       >
                         <Image src={FLAG_IT} alt="Italiano" width={24} height={16} className="rounded shadow" />

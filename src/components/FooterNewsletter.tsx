@@ -118,7 +118,7 @@ export default function FooterNewsletter() {
             </DialogHeader>
             <div className="py-6 text-center">
               <div className="mb-4">
-                <LogIn className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+                <LogIn className="w-16 h-16 text-[#E0D8C1] mx-auto mb-4" />
                 <p className="text-lg font-semibold mb-2 text-destructive">Login Required</p>
                 <p className="text-sm text-muted-foreground">You need to be logged in to subscribe to our newsletter.</p>
               </div>
