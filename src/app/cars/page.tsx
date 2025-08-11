@@ -14,6 +14,7 @@ import Link from "next/link";
 import PartnerAdRotator from '@/components/PartnerAdRotator';
 import { useSearchParams } from "next/navigation";
 import FreeCallout from "@/components/free-callout";
+import SimpleGallerySection from "@/components/SimpleGallerySection";
 import { getFirestore as getFirestoreClient, doc, getDoc } from "firebase/firestore";
 
 function CarsPageContent() {
@@ -492,6 +493,8 @@ function CarsPageContent() {
           </div>
         )}
       </div>
+      {/* Cars Gallery Section */}
+      <SimpleGallerySection title="Cars Gallery" collectionName="gallery_cars" max={12} />
     </div>
   );
 }

@@ -15,6 +15,7 @@ import PartnerAdRotator from '@/components/PartnerAdRotator';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { useSearchParams } from "next/navigation";
 import FreeCallout from "@/components/free-callout";
+import SimpleGallerySection from "@/components/SimpleGallerySection";
 
 function AuctionsPageContent() {
   const [auctions, setAuctions] = useState<any[]>([]);
@@ -535,6 +536,8 @@ function AuctionsPageContent() {
           </div>
         )}
       </div>
+      {/* Auctions Gallery Section */}
+      <SimpleGallerySection title="Auctions Gallery" collectionName="gallery_auctions" max={12} />
     </div>
   );
 }

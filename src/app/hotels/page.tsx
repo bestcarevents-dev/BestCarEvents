@@ -16,6 +16,7 @@ import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, Dialog
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { useSearchParams } from "next/navigation";
 import FreeCallout from "@/components/free-callout";
+import SimpleGallerySection from "@/components/SimpleGallerySection";
 
 function CarHotelsPageContent() {
   const [hotels, setHotels] = useState<any[]>([]);
@@ -567,6 +568,8 @@ function CarHotelsPageContent() {
           </div>
         )}
       </div>
+      {/* Hotels Gallery Section */}
+      <SimpleGallerySection title="Hotels Gallery" collectionName="gallery_hotels" max={12} />
     </div>
   );
 }

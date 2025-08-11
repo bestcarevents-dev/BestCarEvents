@@ -18,6 +18,7 @@ import PartnerAdRotator from '@/components/PartnerAdRotator';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { useSearchParams } from "next/navigation";
 import FreeCallout from "@/components/free-callout";
+import SimpleGallerySection from "@/components/SimpleGallerySection";
 
 function EventsPageContent() {
     const [events, setEvents] = useState<any[]>([]);
@@ -482,6 +483,8 @@ function EventsPageContent() {
             </TabsContent>
           </Tabs>
 
+        {/* Events Gallery Section */}
+        <SimpleGallerySection title="Events Gallery" collectionName="gallery_events" max={12} />
         </div>
     </div>
   );

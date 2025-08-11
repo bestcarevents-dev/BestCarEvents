@@ -18,6 +18,7 @@ import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, Dialog
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { useSearchParams } from "next/navigation";
 import FreeCallout from "@/components/free-callout";
+import SimpleGallerySection from "@/components/SimpleGallerySection";
 
 function ClubsPageContent() {
   const [clubs, setClubs] = useState<any[]>([]);
@@ -580,6 +581,8 @@ function ClubsPageContent() {
           )}
         </div>
       </main>
+      {/* Clubs Gallery Section */}
+      <SimpleGallerySection title="Clubs Gallery" collectionName="gallery_clubs" max={12} />
     </div>
   )
 }
