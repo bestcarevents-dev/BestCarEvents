@@ -12,6 +12,8 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { fetchHomepageContent, saveHomepageSection, defaultHomepageContent } from "@/lib/homepageContent";
 import type { HomepageContent, HeroSlide, PromoContent, SectionCopy, ValuePropositionContent } from "@/types/homepage";
+import { getFirestore, collection, getDocs, orderBy, addDoc, deleteDoc, doc, serverTimestamp, query, getDoc } from "firebase/firestore";
+import { deleteObject } from "firebase/storage";
 
 export default function AdminHomepageEditor() {
   const [loading, setLoading] = useState(true);
@@ -169,6 +171,12 @@ export default function AdminHomepageEditor() {
             onSave={(val) => onSave("galleries", val as any)}
             saving={savingKey === "galleries"}
           />
+
+          <div className="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <GalleryManager label="Main Gallery" collectionName="gallery" />
+            <GalleryManager label="Location 1" collectionName="gallery_location1" />
+            <GalleryManager label="Location 2" collectionName="gallery_location2" />
+          </div>
         </TabsContent>
       </Tabs>
     </div>
@@ -394,6 +402,120 @@ function GalleryTitlesEditor({ value, onSave, saving }: { value: NonNullable<Hom
             {saving ? "Saving..." : "Save Galleries"}
           </Button>
         </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+type GalleryItem = { id: string; url: string };
+
+function GalleryManager({ label, collectionName }: { label: string; collectionName: string }) {
+  const [items, setItems] = useState<GalleryItem[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [uploading, setUploading] = useState<boolean>(false);
+  const [progressText, setProgressText] = useState<string>("");
+  const storage = useMemo(() => getStorage(app), []);
+  const db = useMemo(() => getFirestore(app), []);
+
+  const load = async () => {
+    setLoading(true);
+    try {
+      const qy = query(collection(db, collectionName), orderBy("createdAt", "desc"));
+      const snap = await getDocs(qy);
+      const list: GalleryItem[] = snap.docs.map(d => {
+        const data = d.data() as any;
+        const url = data?.url || data?.imageUrl || (Array.isArray(data?.images) ? data.images[0] : "");
+        return { id: d.id, url };
+      }).filter(it => !!it.url);
+      setItems(list);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [collectionName]);
+
+  const onUpload = async (files: FileList | null) => {
+    if (!files || files.length === 0) return;
+    setUploading(true);
+    try {
+      const total = files.length;
+      let done = 0;
+      for (const file of Array.from(files)) {
+        setProgressText(`Uploading ${done + 1} of ${total}...`);
+        const storagePath = `homepage/${collectionName}/${Date.now()}_${file.name}`;
+        const r = ref(storage, storagePath);
+        await uploadBytes(r, file);
+        const url = await getDownloadURL(r);
+        await addDoc(collection(db, collectionName), { url, storagePath, createdAt: serverTimestamp() });
+        done += 1;
+      }
+      await load();
+    } finally {
+      setUploading(false);
+      setProgressText("");
+    }
+  };
+
+  const onDelete = async (id: string) => {
+    if (!confirm("Delete this image from the gallery?")) return;
+    const dref = doc(db, collectionName, id);
+    try {
+      const ds = await getDoc(dref);
+      if (ds.exists()) {
+        const data = ds.data() as any;
+        const storagePath: string | undefined = data?.storagePath;
+        const url: string | undefined = data?.url || data?.imageUrl;
+        try {
+          if (storagePath) {
+            await deleteObject(ref(storage, storagePath));
+          } else if (url) {
+            await deleteObject(ref(storage, url));
+          }
+        } catch (e) {
+          // ignore storage deletion failure
+        }
+      }
+    } finally {
+      await deleteDoc(dref);
+    }
+    await load();
+  };
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>{label} Images</CardTitle>
+        <CardDescription>Upload and manage images for {label.toLowerCase()}.</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="mb-4 flex items-center gap-3">
+          <Input type="file" accept="image/*" multiple onChange={(e) => onUpload(e.target.files)} />
+          <Button disabled={uploading} onClick={() => { /* no-op, uploads happen on select */ }}>
+            {uploading ? progressText || "Uploading..." : "Upload"}
+          </Button>
+        </div>
+        {loading ? (
+          <p className="text-sm text-gray-600">Loading images...</p>
+        ) : items.length === 0 ? (
+          <p className="text-sm text-gray-600">No images yet.</p>
+        ) : (
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            {items.map((it) => (
+              <div key={it.id} className="relative group border rounded overflow-hidden">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={it.url} alt="Gallery" className="w-full h-32 object-cover" />
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors" />
+                <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <Button size="sm" variant="destructive" onClick={() => onDelete(it.id)}>Delete</Button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </CardContent>
     </Card>
   );
