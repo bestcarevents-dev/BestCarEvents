@@ -4,6 +4,8 @@ import { Toaster } from "@/components/ui/toaster";
 import Header from '@/components/layout/header';
 import Footer from '@/components/layout/footer';
 import GlobalNewsletterProvider from '@/components/GlobalNewsletterProvider';
+import FreeListingsProvider from '@/components/FreeListingsProvider';
+import TestFreeListingsModal from '@/components/TestFreeListingsModal';
 import { LanguageProvider } from '@/contexts/LanguageContext';
 import { cn } from '@/lib/utils';
 import { Montserrat } from 'next/font/google';
@@ -40,10 +42,13 @@ export default function RootLayout({
       )}>
         <LanguageProvider>
           <GlobalNewsletterProvider>
-            <Header />
-            <main className="flex-1 mt-24">{children}</main>
-            <Footer />
-            <Toaster />
+            <FreeListingsProvider>
+              <Header />
+              <main className="flex-1 mt-24">{children}</main>
+              <Footer />
+              <TestFreeListingsModal />
+              <Toaster />
+            </FreeListingsProvider>
           </GlobalNewsletterProvider>
         </LanguageProvider>
       </body>
