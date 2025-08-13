@@ -29,7 +29,7 @@ export default function FreeListingsProvider({ children }: FreeListingsProviderP
   const pathname = usePathname();
 
   // Pages where the modal should appear (only existing pages)
-  const targetPages = ["/events", "/hotels", "/clubs", "/auctions"];
+  const targetPages = ["/events", "/hotels", "/clubs", "/auctions", "/others", "/cars"];
 
   useEffect(() => {
     // Check if current page is in target pages
