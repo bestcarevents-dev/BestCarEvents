@@ -384,14 +384,14 @@ export default function CarsListingPage() {
               </div>
             )}
 
-            <div className="w-full overflow-x-auto" style={{ minWidth: '100%' }}>
-              <Table className="min-w-full">
+            <div className="w-full overflow-x-auto">
+              <Table className="w-full table-fixed">
                 <TableHeader>
                   <TableRow>
                     {tableData.columns.map((col) => (
-                      <TableHead key={typeof col.key === "string" ? col.key : col.label} className="whitespace-nowrap">{col.label}</TableHead>
+                      <TableHead key={typeof col.key === "string" ? col.key : col.label} className="whitespace-nowrap px-2">{col.label}</TableHead>
                     ))}
-                    <TableHead className="whitespace-nowrap">Actions</TableHead>
+                    <TableHead className="whitespace-nowrap px-2 w-24">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -403,7 +403,7 @@ export default function CarsListingPage() {
                     tableData.data.map((item: any) => (
                       <TableRow key={item.id}>
                         {tableData.columns.map((col, idx) => (
-                          <TableCell key={idx} className="whitespace-nowrap">
+                          <TableCell key={idx} className="whitespace-nowrap px-2">
                             {typeof col.key === "function"
                               ? col.key(item)
                               : col.key === "deactivated"
@@ -419,7 +419,7 @@ export default function CarsListingPage() {
                               : item[col.key] || "-"}
                           </TableCell>
                         ))}
-                        <TableCell className="flex gap-2 whitespace-nowrap">
+                        <TableCell className="flex gap-2 whitespace-nowrap px-2">
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                               <Button variant="outline" size="sm">Actions</Button>

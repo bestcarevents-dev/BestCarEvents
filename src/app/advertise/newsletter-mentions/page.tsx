@@ -631,26 +631,26 @@ export default function NewsletterMentionsPage() {
             </CardContent>
           </Card>
         ) : (
-          <div className="w-full overflow-x-auto" style={{ minWidth: '100%' }}>
-            <Table className="min-w-full">
+          <div className="w-full overflow-x-auto">
+            <Table className="w-full table-fixed">
               <TableHeader>
                 <TableRow>
-                  <TableHead className="whitespace-nowrap">Type</TableHead>
-                  <TableHead className="whitespace-nowrap">Title</TableHead>
-                  <TableHead className="whitespace-nowrap">Status</TableHead>
-                  <TableHead className="whitespace-nowrap">Created</TableHead>
+                  <TableHead className="whitespace-nowrap px-2">Type</TableHead>
+                  <TableHead className="whitespace-nowrap px-2">Title</TableHead>
+                  <TableHead className="whitespace-nowrap px-2">Status</TableHead>
+                  <TableHead className="whitespace-nowrap px-2">Created</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {previousRequests.map((request) => (
                   <TableRow key={request.id}>
-                    <TableCell className="whitespace-nowrap">
+                    <TableCell className="whitespace-nowrap px-2">
                       <Badge variant={request.type === "premium" ? "default" : "secondary"}>
                         {request.type === "premium" ? "Premium" : "Standard"}
                       </Badge>
                     </TableCell>
-                    <TableCell className="whitespace-nowrap">{request.title}</TableCell>
-                    <TableCell className="whitespace-nowrap">
+                    <TableCell className="whitespace-nowrap px-2">{request.title}</TableCell>
+                    <TableCell className="whitespace-nowrap px-2">
                       <Badge 
                         variant={
                           request.status === "approved" ? "default" : 
@@ -660,7 +660,7 @@ export default function NewsletterMentionsPage() {
                         {request.status}
                       </Badge>
                     </TableCell>
-                    <TableCell className="whitespace-nowrap">
+                    <TableCell className="whitespace-nowrap px-2">
                       {request.createdAt?.seconds 
                         ? new Date(request.createdAt.seconds * 1000).toLocaleDateString()
                         : "N/A"
