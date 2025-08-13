@@ -2,9 +2,9 @@
 
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { motion, AnimatePresence } from "framer-motion";
-import { CheckCircle2, Car, Calendar, Building2, Gavel, Users, Wrench, X } from "lucide-react";
+import { Star, Car, X } from "lucide-react";
 
 interface FreeListingsModalProps {
   isOpen: boolean;
@@ -16,120 +16,169 @@ export default function FreeListingsModal({ isOpen, onClose }: FreeListingsModal
     onClose();
   };
 
-  const features = [
-    { icon: Building2, title: "Hotels", description: "Free listings", color: "bg-blue-100 text-blue-700" },
-    { icon: Gavel, title: "Auctions", description: "Free listings", color: "bg-green-100 text-green-700" },
-    { icon: Users, title: "Clubs", description: "Free listings", color: "bg-purple-100 text-purple-700" },
-    { icon: Calendar, title: "Events", description: "Free listings", color: "bg-orange-100 text-orange-700" },
-    { icon: Wrench, title: "Services", description: "Free listings", color: "bg-gray-100 text-gray-700" },
-    { icon: Car, title: "Cars", description: "First two months", color: "bg-indigo-100 text-indigo-700" },
-  ];
+  // Generate random stars for the background
+  const stars = Array.from({ length: 20 }, (_, i) => ({
+    id: i,
+    x: Math.random() * 100,
+    y: Math.random() * 100,
+    size: Math.random() * 3 + 1,
+    delay: Math.random() * 2,
+  }));
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="max-w-md w-[90vw] p-0 overflow-hidden bg-white mx-4 border border-gray-200 shadow-lg">
+      <DialogContent className="max-w-md w-[90vw] p-0 overflow-hidden bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 mx-4 border-0 shadow-2xl">
         <AnimatePresence mode="wait">
           <motion.div
             key="modal"
-            initial={{ opacity: 0, scale: 0.95, y: 10 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 10 }}
-            transition={{ duration: 0.3, ease: "easeOut" }}
+            initial={{ opacity: 0, scale: 0.8, rotate: -5 }}
+            animate={{ opacity: 1, scale: 1, rotate: 0 }}
+            exit={{ opacity: 0, scale: 0.8, rotate: 5 }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
+            className="relative"
           >
-            <div className="relative">
-              <div className="relative p-4 sm:p-5">
-                {/* Close button */}
-                <button
-                  onClick={handleClose}
-                  className="absolute top-2 right-2 z-10 p-1.5 rounded-full bg-gray-100 hover:bg-gray-200 transition-all duration-200"
-                >
-                  <X className="w-3 h-3 text-gray-600" />
-                </button>
-
-                <DialogHeader className="text-center mb-4">
-                  {/* Professional icon */}
-                  <motion.div
-                    className="flex justify-center mb-3"
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ duration: 0.3, ease: "easeOut" }}
-                  >
-                    <div className="p-2.5 bg-blue-600 rounded-full shadow-sm">
-                      <CheckCircle2 className="w-5 h-5 text-white" />
-                    </div>
-                  </motion.div>
-
-                  {/* Main title */}
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.3, delay: 0.1 }}
-                  >
-                    <DialogTitle className="text-lg sm:text-xl font-bold font-headline text-gray-900 mb-1">
-                      The following are free
-                    </DialogTitle>
-                  </motion.div>
-                </DialogHeader>
-
-                {/* Professional features grid */}
+            {/* Starry background */}
+            <div className="absolute inset-0 overflow-hidden">
+              {stars.map((star) => (
                 <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3, delay: 0.2 }}
-                  className="grid grid-cols-2 gap-2 mb-4"
+                  key={star.id}
+                  className="absolute text-yellow-300"
+                  style={{
+                    left: `${star.x}%`,
+                    top: `${star.y}%`,
+                    fontSize: `${star.size}px`,
+                  }}
+                  initial={{ opacity: 0, scale: 0 }}
+                  animate={{ 
+                    opacity: [0, 1, 0.8, 1],
+                    scale: [0, 1.2, 1, 1.1],
+                    rotate: [0, 180, 360]
+                  }}
+                  transition={{
+                    duration: 3,
+                    repeat: Infinity,
+                    delay: star.delay,
+                    ease: "easeInOut"
+                  }}
                 >
-                  {features.map((feature, index) => (
-                    <motion.div
-                      key={feature.title}
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ duration: 0.3, delay: 0.3 + index * 0.05 }}
-                      className="group"
-                    >
-                      <div className="relative p-2.5 bg-white rounded-lg border border-gray-200 hover:border-gray-300 hover:shadow-sm transition-all duration-200">
-                        <div className="flex items-center space-x-2">
-                          <div className={`p-1.5 rounded-full flex-shrink-0 ${feature.color}`}>
-                            <feature.icon className="w-3 h-3" />
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <h3 className="font-medium text-gray-900 text-xs truncate">
-                              {feature.title}
-                            </h3>
-                            <p className="text-gray-600 text-xs truncate">
-                              {feature.description}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    </motion.div>
-                  ))}
+                  <Star className="w-full h-full fill-current" />
+                </motion.div>
+              ))}
+            </div>
+
+            <div className="relative p-6 sm:p-8">
+              {/* Close button */}
+              <button
+                onClick={handleClose}
+                className="absolute top-3 right-3 z-10 p-2 rounded-full bg-white/20 hover:bg-white/30 backdrop-blur-sm transition-all duration-200 hover:scale-110"
+              >
+                <X className="w-4 h-4 text-white" />
+              </button>
+
+              {/* Main content */}
+              <div className="text-center">
+                {/* Animated star icon */}
+                <motion.div
+                  className="flex justify-center mb-6"
+                  initial={{ scale: 0, rotate: -180 }}
+                  animate={{ scale: 1, rotate: 0 }}
+                  transition={{ duration: 0.8, ease: "bounceOut" }}
+                >
+                  <div className="relative">
+                    <div className="p-4 bg-gradient-to-br from-yellow-400 via-orange-500 to-red-500 rounded-full shadow-2xl animate-pulse">
+                      <Star className="w-8 h-8 text-white fill-current" />
+                    </div>
+                    {/* Glow effect */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-yellow-400 via-orange-500 to-red-500 rounded-full blur-xl opacity-50 animate-pulse"></div>
+                  </div>
                 </motion.div>
 
-                {/* Professional CTA Button */}
+                {/* Main title with dramatic animation */}
                 <motion.div
-                  initial={{ opacity: 0, y: 10 }}
+                  initial={{ opacity: 0, y: 30, scale: 0.8 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  transition={{ duration: 0.6, delay: 0.3, ease: "easeOut" }}
+                  className="mb-4"
+                >
+                  <h1 className="text-2xl sm:text-3xl font-black text-white mb-2 drop-shadow-lg">
+                    ALL LISTINGS ARE
+                  </h1>
+                  <motion.h1 
+                    className="text-4xl sm:text-5xl font-black bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 bg-clip-text text-transparent drop-shadow-lg"
+                    animate={{ 
+                      scale: [1, 1.1, 1],
+                      textShadow: [
+                        "0 0 20px rgba(255, 255, 0, 0.5)",
+                        "0 0 30px rgba(255, 255, 0, 0.8)",
+                        "0 0 20px rgba(255, 255, 0, 0.5)"
+                      ]
+                    }}
+                    transition={{
+                      duration: 2,
+                      repeat: Infinity,
+                      ease: "easeInOut"
+                    }}
+                  >
+                    FREE!
+                  </motion.h1>
+                </motion.div>
+
+                {/* Cars subtitle with car icon */}
+                <motion.div
+                  initial={{ opacity: 0, x: -50 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.6, delay: 0.6, ease: "easeOut" }}
+                  className="mb-6"
+                >
+                  <div className="flex items-center justify-center space-x-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 border border-white/20">
+                    <Car className="w-5 h-5 text-yellow-400" />
+                    <span className="text-lg font-bold text-white">
+                      Cars: Free for 2 months
+                    </span>
+                  </div>
+                </motion.div>
+
+                {/* CTA Button with dramatic effect */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3, delay: 0.6 }}
-                  className="text-center"
+                  transition={{ duration: 0.6, delay: 0.9, ease: "easeOut" }}
                 >
                   <Button
                     onClick={handleClose}
-                    className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg text-sm shadow-sm hover:shadow-md transition-all duration-200 w-full"
+                    className="bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 hover:from-yellow-500 hover:via-orange-600 hover:to-red-600 text-white font-black py-4 px-8 rounded-full text-lg shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-110 transform border-2 border-white/20"
                   >
-                    Get Started
+                    START LISTING NOW! 🚀
                   </Button>
                 </motion.div>
 
-                {/* Bottom text */}
+                {/* Bottom sparkle effect */}
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  transition={{ duration: 0.3, delay: 0.7 }}
-                  className="text-center mt-3"
+                  transition={{ duration: 0.6, delay: 1.2 }}
+                  className="mt-4"
                 >
-                  <p className="text-xs text-gray-500">
-                    No hidden fees • No credit card required
-                  </p>
+                  <div className="flex justify-center space-x-1">
+                    {[...Array(5)].map((_, i) => (
+                      <motion.div
+                        key={i}
+                        className="text-yellow-400"
+                        animate={{ 
+                          scale: [1, 1.3, 1],
+                          opacity: [0.5, 1, 0.5]
+                        }}
+                        transition={{
+                          duration: 1.5,
+                          repeat: Infinity,
+                          delay: i * 0.2,
+                          ease: "easeInOut"
+                        }}
+                      >
+                        ✨
+                      </motion.div>
+                    ))}
+                  </div>
                 </motion.div>
               </div>
             </div>
