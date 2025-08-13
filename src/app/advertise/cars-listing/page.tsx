@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { PlusCircle, Car, Star, Zap, Crown, Info } from "lucide-react";
+import { PlusCircle, Car, Star, Zap, Crown, Info, Eye, MoreHorizontal, Calendar, MapPin, Tag, DollarSign } from "lucide-react";
 import { useEffect, useState } from "react";
 import { getAuth, onAuthStateChanged, User } from "firebase/auth";
 import { getFirestore, collection, getDocs, query, where, doc, updateDoc, getDoc } from "firebase/firestore";
@@ -30,6 +30,7 @@ import { Label } from "@/components/ui/label";
 import { loadStripe } from "@stripe/stripe-js";
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 import { useToast } from "@/hooks/use-toast";
+import { Badge } from "@/components/ui/badge";
 
 // Car listing pricing tiers
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
@@ -384,65 +385,95 @@ export default function CarsListingPage() {
               </div>
             )}
 
-            <div className="w-full overflow-x-auto">
-              <Table className="w-full table-fixed">
-                <TableHeader>
-                  <TableRow>
-                    {tableData.columns.map((col) => (
-                      <TableHead key={typeof col.key === "string" ? col.key : col.label} className="whitespace-nowrap px-2">{col.label}</TableHead>
-                    ))}
-                    <TableHead className="whitespace-nowrap px-2 w-24">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {tableData.data.length === 0 ? (
-                    <TableRow>
-                      <TableCell colSpan={tableData.columns.length + 1} className="text-center text-muted-foreground">No car listings found.</TableCell>
-                    </TableRow>
-                  ) : (
-                    tableData.data.map((item: any) => (
-                      <TableRow key={item.id}>
-                        {tableData.columns.map((col, idx) => (
-                          <TableCell key={idx} className="whitespace-nowrap px-2">
-                            {typeof col.key === "function"
-                              ? col.key(item)
-                              : col.key === "deactivated"
-                              ? item.deactivated ? "Yes" : "No"
-                              : col.key === "featured"
-                              ? item.featured ? "Yes" : "No"
-                              : col.key === "type"
-                              ? item.listing_type || "N/A"
-                              : col.key === "eventDate" || col.key === "startDate"
-                              ? item[col.key]?.seconds
-                                ? new Date(item[col.key].seconds * 1000).toLocaleDateString()
-                                : item[col.key]?.toString() || "-"
-                              : item[col.key] || "-"}
-                          </TableCell>
-                        ))}
-                        <TableCell className="flex gap-2 whitespace-nowrap px-2">
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button variant="outline" size="sm">Actions</Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent>
-                              <DropdownMenuItem asChild>
-                                <Link href={tableData.viewPath + item.id}>View</Link>
-                              </DropdownMenuItem>
-                              <DropdownMenuItem
-                                onClick={() => handleDeactivate(tableData.col, item.id)}
-                                disabled={item.deactivated}
-                              >
-                                Deactivate
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </TableCell>
-                      </TableRow>
-                    ))
-                  )}
-                </TableBody>
-              </Table>
-            </div>
+            {/* Listings Grid */}
+            {cars.length === 0 ? (
+              <div className="text-center py-12">
+                <Car className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                <h3 className="text-lg font-medium mb-2">No car listings found</h3>
+                <p className="text-muted-foreground mb-4">Start by creating your first car listing.</p>
+                <Button onClick={() => router.push('/cars/sell')}>
+                  Create First Car Listing
+                </Button>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {cars.map((car) => (
+                  <Card key={car.id} className="overflow-hidden">
+                    <CardHeader className="pb-3">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1 min-w-0">
+                          <CardTitle className="text-base truncate">
+                            {car.year && car.make && car.model ? `${car.year} ${car.make} ${car.model}` : 'Unnamed Car'}
+                          </CardTitle>
+                          <CardDescription className="truncate">{car.location || 'Location TBD'}</CardDescription>
+                        </div>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                              <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem asChild>
+                              <Link href={`/cars/${car.id}`}>
+                                <Eye className="w-4 h-4 mr-2" />
+                                View
+                              </Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() => handleDeactivate('cars', car.id)}
+                              disabled={car.deactivated}
+                            >
+                              Deactivate
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="pt-0">
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-2 text-sm">
+                          <DollarSign className="w-4 h-4 text-muted-foreground" />
+                          <span className="text-muted-foreground">Price:</span>
+                          <span className="truncate">
+                            {car.price && car.currency ? `${car.currency} ${car.price}` : 'Price TBD'}
+                          </span>
+                        </div>
+                        
+                        <div className="flex items-center gap-2 text-sm">
+                          <MapPin className="w-4 h-4 text-muted-foreground" />
+                          <span className="text-muted-foreground">Location:</span>
+                          <span className="truncate">{car.location || 'TBD'}</span>
+                        </div>
+
+                        <div className="flex items-center gap-2 text-sm">
+                          <Tag className="w-4 h-4 text-muted-foreground" />
+                          <span className="text-muted-foreground">Listing Type:</span>
+                          <Badge variant="outline">
+                            {car.listing_type || 'Standard'}
+                          </Badge>
+                        </div>
+
+                        <div className="flex items-center gap-2 text-sm">
+                          <Tag className="w-4 h-4 text-muted-foreground" />
+                          <span className="text-muted-foreground">Status:</span>
+                          <Badge variant={car.status === 'approved' ? 'default' : 'secondary'}>
+                            {car.status || 'Pending'}
+                          </Badge>
+                        </div>
+
+                        {car.deactivated && (
+                          <div className="flex items-center gap-2 text-sm">
+                            <span className="text-muted-foreground">Status:</span>
+                            <Badge variant="destructive">Deactivated</Badge>
+                          </div>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
           </CardContent>
         </Card>
       )}

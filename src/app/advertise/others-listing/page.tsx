@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { PlusCircle, Car, Star, Zap, Crown, Info, Settings } from "lucide-react";
+import { PlusCircle, Car, Star, Zap, Crown, Info, Settings, Eye, MoreHorizontal, Calendar, MapPin, Tag, Wrench } from "lucide-react";
 import { useEffect, useState } from "react";
 import { getAuth, onAuthStateChanged, User } from "firebase/auth";
 import { getFirestore, collection, getDocs, query, where, doc, updateDoc, getDoc } from "firebase/firestore";
@@ -33,6 +33,7 @@ import { Elements } from '@stripe/react-stripe-js';
 import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { useToast } from "@/hooks/use-toast";
 import HowItWorksModal from "@/components/HowItWorksModal";
+import { Badge } from "@/components/ui/badge";
 
 export default function OthersListingPage() {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
@@ -692,170 +693,194 @@ export default function OthersListingPage() {
               </div>
             )}
 
-            <div className="w-full overflow-x-auto">
-              <Table className="w-full table-fixed">
-                <TableHeader>
-                  <TableRow>
-                    {tableData.columns.map((col) => (
-                      <TableHead key={typeof col.key === "string" ? col.key : col.label} className="whitespace-nowrap px-2">{col.label}</TableHead>
-                    ))}
-                    <TableHead className="whitespace-nowrap px-2 w-24">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {tableData.data.length === 0 ? (
-                    <TableRow>
-                      <TableCell colSpan={tableData.columns.length + 1} className="text-center text-muted-foreground">No service listings found.</TableCell>
-                    </TableRow>
-                  ) : (
-                    tableData.data.map((item: any) => (
-                      <TableRow key={item.id}>
-                        {tableData.columns.map((col, idx) => (
-                          <TableCell key={idx} className="whitespace-nowrap px-2">
-                            {typeof col.key === "function"
-                              ? (col.key as Function)(item)
-                              : col.key === "deactivated"
-                              ? item.deactivated ? "Yes" : "No"
-                              : col.key === "featured"
-                              ? item.featured ? "Yes" : "No"
-                              : col.key === "type"
-                              ? item.type || "N/A"
-                              : col.key === "serviceName"
-                              ? item.serviceName || "-"
-                              : col.key === "serviceType"
-                              ? item.serviceType || "-"
-                              : item[col.key] || "-"}
-                          </TableCell>
-                        ))}
-                        <TableCell className="flex gap-2 whitespace-nowrap px-2">
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button variant="outline" size="sm">Actions</Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent>
-                              <DropdownMenuItem asChild>
-                                <Link href={tableData.viewPath + item.id}>View</Link>
-                              </DropdownMenuItem>
-                              <DropdownMenuItem
-                                onClick={() => handleDeactivate(tableData.col, item.id)}
-                                disabled={item.deactivated}
-                              >
-                                Deactivate
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                          <Dialog open={advertiseModal?.open && advertiseModal.col === tableData.col && advertiseModal.id === item.id} onOpenChange={(open) => {
-                            if (!open) {
-                              setAdvertiseModal(null);
-                              setSelectedFeatureType(null);
-                            }
-                          }}>
-                            <DialogTrigger asChild>
-                              <Button
-                                variant={item.featured ? "secondary" : "default"}
-                                size="sm"
-                                disabled={item.featured}
-                                onClick={() => {
-                                  setAdvertiseModal({ open: true, col: tableData.col, id: item.id });
-                                  setSelectedFeatureType(null);
-                                }}
-                              >
-                                {item.featured ? "Featured" : "Feature"}
-                              </Button>
-                            </DialogTrigger>
-                            <DialogContent className="max-w-md">
-                              <DialogHeader>
-                                <DialogTitle>Feature Listing</DialogTitle>
-                                <DialogDescription>
-                                  Choose a feature type for your listing.
-                                </DialogDescription>
-                              </DialogHeader>
-                              
-                              {/* Credit Cards */}
-                              {userDoc && (
-                                <div className="mb-4">
-                                  <h4 className="text-sm font-medium mb-2">Your Current Credit</h4>
-                                  <div className="grid grid-cols-2 gap-3">
-                                    <div className="p-3 bg-muted rounded text-center">
-                                      <p className="text-sm font-medium">Standard</p>
-                                      <p className="text-lg font-bold text-primary">
-                                        {userDoc.standardListingRemaining || 0}
-                                      </p>
-                                      <p className="text-xs text-muted-foreground">Remaining</p>
-                                    </div>
-                                    <div className="p-3 bg-muted rounded text-center">
-                                      <p className="text-sm font-medium">Featured</p>
-                                      <p className="text-lg font-bold text-primary">
-                                        {userDoc.featuredListingRemaining || 0}
-                                      </p>
-                                      <p className="text-xs text-muted-foreground">Remaining</p>
-                                    </div>
+            {/* Listings Grid */}
+            {services.length === 0 ? (
+              <div className="text-center py-12">
+                <Wrench className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                <h3 className="text-lg font-medium mb-2">No service listings found</h3>
+                <p className="text-muted-foreground mb-4">Start by creating your first service listing.</p>
+                <Button onClick={() => router.push('/others/register')}>
+                  Create First Service
+                </Button>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {services.map((service) => (
+                  <Card key={service.id} className="overflow-hidden">
+                    <CardHeader className="pb-3">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1 min-w-0">
+                          <CardTitle className="text-base truncate">{service.serviceName || 'Unnamed Service'}</CardTitle>
+                          <CardDescription className="truncate">{service.serviceType || 'Service Type TBD'}</CardDescription>
+                        </div>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                              <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem asChild>
+                              <Link href={`/others/${service.id}`}>
+                                <Eye className="w-4 h-4 mr-2" />
+                                View
+                              </Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() => handleDeactivate('others', service.id)}
+                              disabled={service.deactivated}
+                            >
+                              Deactivate
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="pt-0">
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-2 text-sm">
+                          <Tag className="w-4 h-4 text-muted-foreground" />
+                          <span className="text-muted-foreground">Service Type:</span>
+                          <span className="truncate">{service.serviceType || 'TBD'}</span>
+                        </div>
+                        
+                        <div className="flex items-center gap-2 text-sm">
+                          <Tag className="w-4 h-4 text-muted-foreground" />
+                          <span className="text-muted-foreground">Status:</span>
+                          <Badge variant={service.status === 'approved' ? 'default' : 'secondary'}>
+                            {service.status || 'Pending'}
+                          </Badge>
+                        </div>
+
+                        <div className="flex items-center gap-2 text-sm">
+                          <Star className="w-4 h-4 text-muted-foreground" />
+                          <span className="text-muted-foreground">Featured:</span>
+                          <Badge variant={service.featured ? 'default' : 'outline'}>
+                            {service.featured ? 'Yes' : 'No'}
+                          </Badge>
+                        </div>
+
+                        {service.deactivated && (
+                          <div className="flex items-center gap-2 text-sm">
+                            <span className="text-muted-foreground">Status:</span>
+                            <Badge variant="destructive">Deactivated</Badge>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="mt-4">
+                        <Dialog open={advertiseModal?.open && advertiseModal.col === 'others' && advertiseModal.id === service.id} onOpenChange={(open) => {
+                          if (!open) {
+                            setAdvertiseModal(null);
+                            setSelectedFeatureType(null);
+                          }
+                        }}>
+                          <DialogTrigger asChild>
+                            <Button
+                              variant={service.featured ? "secondary" : "default"}
+                              size="sm"
+                              disabled={service.featured || service.deactivated}
+                              className="w-full"
+                              onClick={() => {
+                                setAdvertiseModal({ open: true, col: 'others', id: service.id });
+                                setSelectedFeatureType(null);
+                              }}
+                            >
+                              {service.featured ? "Featured" : "Feature"}
+                            </Button>
+                          </DialogTrigger>
+                          <DialogContent className="max-w-md">
+                            <DialogHeader>
+                              <DialogTitle>Feature Listing</DialogTitle>
+                              <DialogDescription>
+                                Choose a feature type for your listing.
+                              </DialogDescription>
+                            </DialogHeader>
+                            
+                            {/* Credit Cards */}
+                            {userDoc && (
+                              <div className="mb-4">
+                                <h4 className="text-sm font-medium mb-2">Your Current Credit</h4>
+                                <div className="grid grid-cols-2 gap-3">
+                                  <div className="p-3 bg-muted rounded text-center">
+                                    <p className="text-sm font-medium">Standard</p>
+                                    <p className="text-lg font-bold text-primary">
+                                      {userDoc.standardListingRemaining || 0}
+                                    </p>
+                                    <p className="text-xs text-muted-foreground">Remaining</p>
+                                  </div>
+                                  <div className="p-3 bg-muted rounded text-center">
+                                    <p className="text-sm font-medium">Featured</p>
+                                    <p className="text-lg font-bold text-primary">
+                                      {userDoc.featuredListingRemaining || 0}
+                                    </p>
+                                    <p className="text-xs text-muted-foreground">Remaining</p>
                                   </div>
                                 </div>
-                              )}
-                              
-                              {/* Feature Type Selection */}
-                              <div className="space-y-3">
-                                <div className="flex items-center gap-3">
-                                  <input 
-                                    type="radio" 
-                                    id="feature-standard" 
-                                    name="feature-type" 
-                                    value="standard" 
-                                    checked={selectedFeatureType === 'standard'} 
-                                    onChange={() => setSelectedFeatureType('standard')}
-                                    disabled={!userDoc || userDoc.standardListingRemaining <= 0}
-                                  />
-                                  <Label htmlFor="feature-standard" className="flex-1">
-                                    <div className="font-medium">Standard Listing</div>
-                                    <div className="text-sm text-muted-foreground">
-                                      Will display in the featured section for 1 month only
-                                    </div>
-                                  </Label>
-                                </div>
-                                <div className="flex items-center gap-3">
-                                  <input 
-                                    type="radio" 
-                                    id="feature-featured" 
-                                    name="feature-type" 
-                                    value="featured" 
-                                    checked={selectedFeatureType === 'featured'} 
-                                    onChange={() => setSelectedFeatureType('featured')}
-                                    disabled={!userDoc || userDoc.featuredListingRemaining <= 0}
-                                  />
-                                  <Label htmlFor="feature-featured" className="flex-1">
-                                    <div className="font-medium">Featured (Premium) Listing</div>
-                                    <div className="text-sm text-muted-foreground">
-                                      Will stay in the featured section for 1 year and will have higher priority and more clicks
-                                    </div>
-                                  </Label>
-                                </div>
                               </div>
-                              
-                              <div className="py-4 text-center">
-                                <Button
-                                  className="w-full text-lg py-4"
-                                  disabled={advertiseLoading || !selectedFeatureType}
-                                  onClick={() => handleAdvertise(tableData.col, item.id)}
-                                >
-                                  {advertiseLoading ? "Processing..." : `Feature ${selectedFeatureType === 'standard' ? 'Standard' : 'Premium'}`}
-                                </Button>
+                            )}
+                            
+                            {/* Feature Type Selection */}
+                            <div className="space-y-3">
+                              <div className="flex items-center gap-3">
+                                <input 
+                                  type="radio" 
+                                  id="feature-standard" 
+                                  name="feature-type" 
+                                  value="standard" 
+                                  checked={selectedFeatureType === 'standard'} 
+                                  onChange={() => setSelectedFeatureType('standard')}
+                                  disabled={!userDoc || userDoc.standardListingRemaining <= 0}
+                                />
+                                <Label htmlFor="feature-standard" className="flex-1">
+                                  <div className="font-medium">Standard Listing</div>
+                                  <div className="text-sm text-muted-foreground">
+                                    Will display in the featured section for 1 month only
+                                  </div>
+                                </Label>
                               </div>
-                              
-                              <DialogFooter>
-                                <DialogClose asChild>
-                                  <Button variant="outline">Cancel</Button>
-                                </DialogClose>
-                              </DialogFooter>
-                            </DialogContent>
-                          </Dialog>
-                        </TableCell>
-                      </TableRow>
-                    ))
-                  )}
-                </TableBody>
-              </Table>
-            </div>
+                              <div className="flex items-center gap-3">
+                                <input 
+                                  type="radio" 
+                                  id="feature-featured" 
+                                  name="feature-type" 
+                                  value="featured" 
+                                  checked={selectedFeatureType === 'featured'} 
+                                  onChange={() => setSelectedFeatureType('featured')}
+                                  disabled={!userDoc || userDoc.featuredListingRemaining <= 0}
+                                />
+                                <Label htmlFor="feature-featured" className="flex-1">
+                                  <div className="font-medium">Featured (Premium) Listing</div>
+                                  <div className="text-sm text-muted-foreground">
+                                    Will stay in the featured section for 1 year and will have higher priority and more clicks
+                                  </div>
+                                </Label>
+                              </div>
+                            </div>
+                            
+                            <div className="py-4 text-center">
+                              <Button
+                                className="w-full text-lg py-4"
+                                disabled={advertiseLoading || !selectedFeatureType}
+                                onClick={() => handleAdvertise('others', service.id)}
+                              >
+                                {advertiseLoading ? "Processing..." : `Feature ${selectedFeatureType === 'standard' ? 'Standard' : 'Premium'}`}
+                              </Button>
+                            </div>
+                            
+                            <DialogFooter>
+                              <DialogClose asChild>
+                                <Button variant="outline">Cancel</Button>
+                              </DialogClose>
+                            </DialogFooter>
+                          </DialogContent>
+                        </Dialog>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
           </CardContent>
         </Card>
       )}
