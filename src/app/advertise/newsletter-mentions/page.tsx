@@ -631,7 +631,7 @@ export default function NewsletterMentionsPage() {
             </CardContent>
           </Card>
         ) : (
-          <div className="overflow-x-auto">
+          <div className="w-full overflow-x-auto">
             <Table>
               <TableHeader>
                 <TableRow>

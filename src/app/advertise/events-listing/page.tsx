@@ -693,8 +693,9 @@ export default function EventsListingPage() {
                 </div>
               </div>
             )}
-
-            <Table>
+ 
+            <div className="w-full overflow-x-auto">
+              <Table>
               <TableHeader>
                 <TableRow>
                   {tableData.columns.map((col) => (
@@ -758,7 +759,8 @@ export default function EventsListingPage() {
                   ))
                 )}
               </TableBody>
-            </Table>
+              </Table>
+            </div>
           </CardContent>
         </Card>
       )}
