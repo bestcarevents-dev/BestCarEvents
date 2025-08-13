@@ -308,7 +308,7 @@ export default function CarsListingPage() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 sm:px-6 py-4 sm:py-8">
       {/* Success Message */}
       {showSuccessMessage && (
         <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
@@ -344,21 +344,24 @@ export default function CarsListingPage() {
                 <CardTitle>{tableData.label}</CardTitle>
                 <CardDescription>Manage your {tableData.label.toLowerCase()} here.</CardDescription>
               </div>
-              <div className="flex gap-2">
+              <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
                 <Button 
                   variant="default" 
+                  className="w-full sm:w-auto"
                   onClick={() => setCreditPaymentModal({ open: true, tierKey: null })}
                 >
                   Buy More Credit
                 </Button>
                 <Button 
                   variant="default" 
+                  className="w-full sm:w-auto"
                   onClick={() => router.push('/advertise/cars')}
                 >
                   View Plans
                 </Button>
                 <Button 
                   variant="outline" 
+                  className="w-full sm:w-auto"
                   onClick={() => router.push('/cars/sell')}
                 >
                   List your car
@@ -371,7 +374,7 @@ export default function CarsListingPage() {
             {userDoc && (
               <div className="mb-6">
                 <h3 className="text-lg font-semibold mb-4">Your Current Car Listing Credit</h3>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                   {CAR_LISTING_TIERS.map((tier) => (
                     <div key={tier.name} className="text-center p-3 bg-muted rounded">
                       <p className="text-sm font-medium">{tier.name}</p>

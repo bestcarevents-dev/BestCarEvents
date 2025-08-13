@@ -458,7 +458,7 @@ export default function AuctionListingPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-6 max-w-6xl">
+      <div className="container mx-auto px-4 sm:px-6 py-4 sm:py-6 max-w-6xl">
         {/* Success Message */}
         {showSuccessMessage && (
           <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
@@ -484,7 +484,7 @@ export default function AuctionListingPage() {
         </div>
         
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="text-lg">Active Listings</CardTitle>
@@ -519,7 +519,7 @@ export default function AuctionListingPage() {
                   <CardTitle className="text-lg">Your Current Auction Listing Credit</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="flex items-center justify-between p-4 bg-muted rounded-lg">
                       <div className="flex items-center gap-3">
                         <Info className="w-5 h-5 text-primary" />
@@ -564,7 +564,7 @@ export default function AuctionListingPage() {
                     <CardTitle className="text-lg">Auction Listings</CardTitle>
                     <CardDescription>Manage your auction listings here.</CardDescription>
                   </div>
-                  <div className="flex flex-col sm:flex-row gap-2">
+                  <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
                     <HowItWorksModal 
                       listingType="auction"
                       triggerText="How it works"
@@ -583,6 +583,7 @@ export default function AuctionListingPage() {
                       <DialogTrigger asChild>
                         <Button 
                           variant="default"
+                          className="w-full sm:w-auto"
                           onClick={() => {
                             setPaymentModal({ open: true, col: 'users', id: currentUser?.uid || '' });
                             setSelectedFeatureType(null);
@@ -746,6 +747,7 @@ export default function AuctionListingPage() {
                     </Dialog>
                     <Button 
                       variant="outline" 
+                      className="w-full sm:w-auto"
                       onClick={() => router.push('/auctions/submit')}
                     >
                       List your auction

@@ -420,7 +420,7 @@ export default function EventsListingPage() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 sm:px-6 py-4 sm:py-8">
       {/* Success Message */}
       {showSuccessMessage && (
         <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
@@ -446,7 +446,7 @@ export default function EventsListingPage() {
         </div>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
         <Card className="w-full">
           <CardHeader>
             <CardTitle>Active Listings</CardTitle>
@@ -472,12 +472,12 @@ export default function EventsListingPage() {
       ) : (
         <Card className="mb-8">
           <CardHeader>
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div>
-                <CardTitle>{tableData.label}</CardTitle>
-                <CardDescription>Manage your {tableData.label.toLowerCase()} here.</CardDescription>
+                <CardTitle className="text-lg">Events Listing</CardTitle>
+                <CardDescription>Manage your events listing here.</CardDescription>
               </div>
-              <div className="flex gap-2">
+              <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
                 <HowItWorksModal 
                   listingType="event"
                   triggerText="How it works"
@@ -496,6 +496,7 @@ export default function EventsListingPage() {
                   <DialogTrigger asChild>
                     <Button 
                       variant="default"
+                      className="w-full sm:w-auto"
                       onClick={() => {
                         if (!currentUser) return;
                         setPaymentModal({ open: true, col: 'users', id: currentUser.uid });
@@ -653,6 +654,7 @@ export default function EventsListingPage() {
                 </Dialog>
                 <Button 
                   variant="outline" 
+                  className="w-full sm:w-auto"
                   onClick={() => router.push('/events/host')}
                 >
                   List your event
@@ -665,7 +667,7 @@ export default function EventsListingPage() {
             {userDoc && (
               <div className="mb-6">
                 <h3 className="text-lg font-semibold mb-4">Your Current Event Listing Credit</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="flex items-center justify-between p-3 bg-muted rounded">
                     <div className="flex items-center gap-2">
                       <Info className="w-4 h-4 text-primary" />
