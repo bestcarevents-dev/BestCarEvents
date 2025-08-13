@@ -36,11 +36,11 @@ export default function FreeListingsProvider({ children }: FreeListingsProviderP
     const isTargetPage = targetPages.some(page => pathname.startsWith(page));
     
     if (isTargetPage && !hasShownOnCurrentPage) {
-      // Add a small delay to ensure the page is fully loaded
+      // Add a shorter delay to ensure the page is loaded but not too intrusive
       const timer = setTimeout(() => {
         setShowModal(true);
         setHasShownOnCurrentPage(true);
-      }, 1000);
+      }, 500);
 
       return () => clearTimeout(timer);
     }
