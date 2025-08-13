@@ -17,24 +17,24 @@ export default function FreeListingsModal({ isOpen, onClose }: FreeListingsModal
   };
 
   // Generate random stars for the background
-  const stars = Array.from({ length: 20 }, (_, i) => ({
+  const stars = Array.from({ length: 15 }, (_, i) => ({
     id: i,
     x: Math.random() * 100,
     y: Math.random() * 100,
-    size: Math.random() * 3 + 1,
+    size: Math.random() * 2 + 1,
     delay: Math.random() * 2,
   }));
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="max-w-md w-[90vw] p-0 overflow-hidden bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 mx-4 border-0 shadow-2xl">
+      <DialogContent className="max-w-md w-[90vw] p-0 overflow-hidden bg-gradient-to-br from-white to-[#E0D8C1] mx-4 border border-yellow-400/20 shadow-xl">
         <AnimatePresence mode="wait">
           <motion.div
             key="modal"
-            initial={{ opacity: 0, scale: 0.8, rotate: -5 }}
-            animate={{ opacity: 1, scale: 1, rotate: 0 }}
-            exit={{ opacity: 0, scale: 0.8, rotate: 5 }}
-            transition={{ duration: 0.5, ease: "easeOut" }}
+            initial={{ opacity: 0, scale: 0.9, y: 10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.9, y: 10 }}
+            transition={{ duration: 0.4, ease: "easeOut" }}
             className="relative"
           >
             {/* Starry background */}
@@ -42,7 +42,7 @@ export default function FreeListingsModal({ isOpen, onClose }: FreeListingsModal
               {stars.map((star) => (
                 <motion.div
                   key={star.id}
-                  className="absolute text-yellow-300"
+                  className="absolute text-yellow-400"
                   style={{
                     left: `${star.x}%`,
                     top: `${star.y}%`,
@@ -66,52 +66,47 @@ export default function FreeListingsModal({ isOpen, onClose }: FreeListingsModal
               ))}
             </div>
 
-            <div className="relative p-6 sm:p-8">
+            <div className="relative p-5 sm:p-6">
               {/* Close button */}
               <button
                 onClick={handleClose}
-                className="absolute top-3 right-3 z-10 p-2 rounded-full bg-white/20 hover:bg-white/30 backdrop-blur-sm transition-all duration-200 hover:scale-110"
+                className="absolute top-2 right-2 z-10 p-1.5 rounded-full bg-white/80 hover:bg-white shadow-sm transition-all duration-200 hover:scale-110"
               >
-                <X className="w-4 h-4 text-white" />
+                <X className="w-3 h-3 text-gray-600" />
               </button>
 
               {/* Main content */}
               <div className="text-center">
                 {/* Animated star icon */}
                 <motion.div
-                  className="flex justify-center mb-6"
-                  initial={{ scale: 0, rotate: -180 }}
-                  animate={{ scale: 1, rotate: 0 }}
-                  transition={{ duration: 0.8, ease: "bounceOut" }}
+                  className="flex justify-center mb-4"
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ duration: 0.6, ease: "easeOut" }}
                 >
                   <div className="relative">
-                    <div className="p-4 bg-gradient-to-br from-yellow-400 via-orange-500 to-red-500 rounded-full shadow-2xl animate-pulse">
-                      <Star className="w-8 h-8 text-white fill-current" />
+                    <div className="p-3 bg-gradient-to-br from-yellow-400 to-amber-500 rounded-full shadow-lg">
+                      <Star className="w-6 h-6 text-white fill-current" />
                     </div>
-                    {/* Glow effect */}
-                    <div className="absolute inset-0 bg-gradient-to-br from-yellow-400 via-orange-500 to-red-500 rounded-full blur-xl opacity-50 animate-pulse"></div>
+                    {/* Subtle glow effect */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-yellow-400 to-amber-500 rounded-full blur-lg opacity-30"></div>
                   </div>
                 </motion.div>
 
                 {/* Main title with dramatic animation */}
                 <motion.div
-                  initial={{ opacity: 0, y: 30, scale: 0.8 }}
+                  initial={{ opacity: 0, y: 20, scale: 0.9 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
-                  transition={{ duration: 0.6, delay: 0.3, ease: "easeOut" }}
-                  className="mb-4"
+                  transition={{ duration: 0.5, delay: 0.2, ease: "easeOut" }}
+                  className="mb-3"
                 >
-                  <h1 className="text-2xl sm:text-3xl font-black text-white mb-2 drop-shadow-lg">
+                  <h1 className="text-xl sm:text-2xl font-black text-gray-900 mb-1 drop-shadow-sm">
                     ALL LISTINGS ARE
                   </h1>
                   <motion.h1 
-                    className="text-4xl sm:text-5xl font-black bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 bg-clip-text text-transparent drop-shadow-lg"
+                    className="text-3xl sm:text-4xl font-black bg-gradient-to-r from-amber-400 via-yellow-600 to-amber-400 bg-clip-text text-transparent"
                     animate={{ 
-                      scale: [1, 1.1, 1],
-                      textShadow: [
-                        "0 0 20px rgba(255, 255, 0, 0.5)",
-                        "0 0 30px rgba(255, 255, 0, 0.8)",
-                        "0 0 20px rgba(255, 255, 0, 0.5)"
-                      ]
+                      scale: [1, 1.05, 1],
                     }}
                     transition={{
                       duration: 2,
@@ -125,14 +120,14 @@ export default function FreeListingsModal({ isOpen, onClose }: FreeListingsModal
 
                 {/* Cars subtitle with car icon */}
                 <motion.div
-                  initial={{ opacity: 0, x: -50 }}
+                  initial={{ opacity: 0, x: -30 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.6, delay: 0.6, ease: "easeOut" }}
-                  className="mb-6"
+                  transition={{ duration: 0.5, delay: 0.4, ease: "easeOut" }}
+                  className="mb-5"
                 >
-                  <div className="flex items-center justify-center space-x-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 border border-white/20">
-                    <Car className="w-5 h-5 text-yellow-400" />
-                    <span className="text-lg font-bold text-white">
+                  <div className="flex items-center justify-center space-x-2 bg-yellow-400/20 backdrop-blur-sm rounded-full px-4 py-2 border border-yellow-400/30">
+                    <Car className="w-4 h-4 text-yellow-600" />
+                    <span className="text-base font-bold text-gray-900">
                       Cars: Free for 2 months
                     </span>
                   </div>
@@ -140,13 +135,13 @@ export default function FreeListingsModal({ isOpen, onClose }: FreeListingsModal
 
                 {/* CTA Button with dramatic effect */}
                 <motion.div
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: 15 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: 0.9, ease: "easeOut" }}
+                  transition={{ duration: 0.5, delay: 0.6, ease: "easeOut" }}
                 >
                   <Button
                     onClick={handleClose}
-                    className="bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 hover:from-yellow-500 hover:via-orange-600 hover:to-red-600 text-white font-black py-4 px-8 rounded-full text-lg shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-110 transform border-2 border-white/20"
+                    className="bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-bold py-3 px-6 rounded-full text-base shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 transform border-2 border-yellow-500/20"
                   >
                     START LISTING NOW! 🚀
                   </Button>
@@ -156,17 +151,17 @@ export default function FreeListingsModal({ isOpen, onClose }: FreeListingsModal
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  transition={{ duration: 0.6, delay: 1.2 }}
-                  className="mt-4"
+                  transition={{ duration: 0.5, delay: 0.8 }}
+                  className="mt-3"
                 >
                   <div className="flex justify-center space-x-1">
-                    {[...Array(5)].map((_, i) => (
+                    {[...Array(3)].map((_, i) => (
                       <motion.div
                         key={i}
-                        className="text-yellow-400"
+                        className="text-yellow-500"
                         animate={{ 
-                          scale: [1, 1.3, 1],
-                          opacity: [0.5, 1, 0.5]
+                          scale: [1, 1.2, 1],
+                          opacity: [0.6, 1, 0.6]
                         }}
                         transition={{
                           duration: 1.5,
