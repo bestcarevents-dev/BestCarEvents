@@ -631,26 +631,26 @@ export default function NewsletterMentionsPage() {
             </CardContent>
           </Card>
         ) : (
-          <div className="w-full overflow-x-auto">
-            <Table>
+          <div className="w-full overflow-x-auto" style={{ minWidth: '100%' }}>
+            <Table className="min-w-full">
               <TableHeader>
                 <TableRow>
-                  <TableHead>Type</TableHead>
-                  <TableHead>Title</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Created</TableHead>
+                  <TableHead className="whitespace-nowrap">Type</TableHead>
+                  <TableHead className="whitespace-nowrap">Title</TableHead>
+                  <TableHead className="whitespace-nowrap">Status</TableHead>
+                  <TableHead className="whitespace-nowrap">Created</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {previousRequests.map((request) => (
                   <TableRow key={request.id}>
-                    <TableCell>
+                    <TableCell className="whitespace-nowrap">
                       <Badge variant={request.type === "premium" ? "default" : "secondary"}>
                         {request.type === "premium" ? "Premium" : "Standard"}
                       </Badge>
                     </TableCell>
-                    <TableCell>{request.title}</TableCell>
-                    <TableCell>
+                    <TableCell className="whitespace-nowrap">{request.title}</TableCell>
+                    <TableCell className="whitespace-nowrap">
                       <Badge 
                         variant={
                           request.status === "approved" ? "default" : 
@@ -660,7 +660,7 @@ export default function NewsletterMentionsPage() {
                         {request.status}
                       </Badge>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="whitespace-nowrap">
                       {request.createdAt?.seconds 
                         ? new Date(request.createdAt.seconds * 1000).toLocaleDateString()
                         : "N/A"

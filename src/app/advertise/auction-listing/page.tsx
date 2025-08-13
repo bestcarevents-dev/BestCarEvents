@@ -752,14 +752,14 @@ export default function AuctionListingPage() {
               </div>
             )}
 
-            <div className="w-full overflow-x-auto">
-              <Table>
+            <div className="w-full overflow-x-auto" style={{ minWidth: '100%' }}>
+              <Table className="min-w-full">
                 <TableHeader>
                   <TableRow>
                     {tableData.columns.map((col) => (
-                      <TableHead key={typeof col.key === "string" ? col.key : col.label}>{col.label}</TableHead>
+                      <TableHead key={typeof col.key === "string" ? col.key : col.label} className="whitespace-nowrap">{col.label}</TableHead>
                     ))}
-                    <TableHead>Actions</TableHead>
+                    <TableHead className="whitespace-nowrap">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -771,7 +771,7 @@ export default function AuctionListingPage() {
                     tableData.data.map((item: any) => (
                       <TableRow key={item.id}>
                         {tableData.columns.map((col, idx) => (
-                          <TableCell key={idx}>
+                          <TableCell key={idx} className="whitespace-nowrap">
                             {typeof col.key === "function"
                               ? col.key(item)
                               : col.key === "deactivated"
@@ -787,7 +787,7 @@ export default function AuctionListingPage() {
                               : item[col.key] || "-"}
                           </TableCell>
                         ))}
-                        <TableCell className="flex gap-2">
+                        <TableCell className="flex gap-2 whitespace-nowrap">
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                               <Button variant="outline" size="sm">Actions</Button>
