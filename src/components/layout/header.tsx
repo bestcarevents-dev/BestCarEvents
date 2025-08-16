@@ -384,25 +384,37 @@ const NavMenu = ({ onLinkClick, isMobile = false }: { onLinkClick?: () => void, 
         );
       })}
       
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <button className={cn(
-            "flex items-center gap-1 text-white hover:text-yellow-300 transition-colors duration-200 font-medium py-2 px-3 rounded-md hover:bg-white/5"
-          )}>
-            Automotive
-            <ChevronDown className="w-4 h-4" />
-          </button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-48">
-          {automotiveLinks.map((link) => (
-            <DropdownMenuItem key={link.href} asChild>
-              <Link href={link.href} onClick={onLinkClick}>
-                {link.label}
-              </Link>
-            </DropdownMenuItem>
-          ))}
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <div className="relative group px-2 py-2">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button
+              className={cn(
+                "flex items-center gap-1 font-medium transition-colors duration-200",
+                isAutomotiveActive ? "text-yellow-300" : "text-white hover:text-yellow-300"
+              )}
+            >
+              Automotive
+              <ChevronDown className="w-4 h-4" />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-48">
+            {automotiveLinks.map((link) => (
+              <DropdownMenuItem key={link.href} asChild>
+                <Link href={link.href} onClick={onLinkClick}>
+                  {link.label}
+                </Link>
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+        <span
+          aria-hidden
+          className={cn(
+            "pointer-events-none absolute -bottom-1 left-1/2 -translate-x-1/2 h-0.5 rounded-full bg-yellow-300 transition-all duration-200",
+            isAutomotiveActive ? "w-6 opacity-100" : "w-0 opacity-0 group-hover:w-6 group-hover:opacity-80"
+          )}
+        />
+      </div>
     </nav>
   );
 };
