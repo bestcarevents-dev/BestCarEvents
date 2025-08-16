@@ -18,6 +18,7 @@ import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious
 import { Badge } from "@/components/ui/badge";
 import { useSearchParams } from "next/navigation";
 import FreeCallout from "@/components/free-callout";
+import { defaultPageContent, fetchPageHeader, type PageHeader } from "@/lib/pageContent";
 
 interface ServiceCardProps {
   id: string;
@@ -117,6 +118,16 @@ function OthersPageContent() {
     const [selectedType, setSelectedType] = useState("all");
     const [sortBy, setSortBy] = useState("name");
     const searchParams = useSearchParams();
+    const [header, setHeader] = useState<PageHeader>(defaultPageContent.others);
+
+    useEffect(() => {
+      (async () => {
+        try {
+          const data = await fetchPageHeader('others');
+          setHeader(data);
+        } catch {}
+      })();
+    }, []);
 
     // Initialize search from URL parameters
     useEffect(() => {
@@ -218,82 +229,82 @@ function OthersPageContent() {
 
     return (
     <div className="bg-white">
-        <div className="container mx-auto px-4 py-8">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-12">
-                <div className="text-center md:text-left mb-4 md:mb-0">
-                    <h1 className="text-4xl md:text-5xl font-extrabold font-headline text-gray-900">Other Services</h1>
-                    <p className="mt-4 text-lg text-gray-700 max-w-2xl">
-                    Discover automotive services including storage, garages, parts, restoration, detailing, and more.
-                    </p>
-                </div>
-                {currentUser ? (
-                  <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-                    <Button asChild variant="outline" className="border-[#80A0A9] text-[#80A0A9] hover:bg-[#80A0A9]/10 text-sm sm:text-base">
-                      <Link href="/advertise/others-listing" className="flex items-center">
-                        <PlusCircle className="mr-2 h-5 w-5" />
-                        Feature Service
-                      </Link>
-                    </Button>
-                    <Button asChild className="bg-[#80A0A9] hover:bg-[#80A0A9]/90 text-white text-sm sm:text-base">
-                      <Link href="/others/register" className="flex items-center">
-                          <PlusCircle className="mr-2 h-5 w-5" />
-                          Register Service
-                      </Link>
-                    </Button>
-                  </div>
-                ) : (
-                  <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-                    <Dialog open={showDialog} onOpenChange={setShowDialog}>
-                      <DialogTrigger asChild>
-                        <Button variant="outline" className="border-[#80A0A9] text-[#80A0A9] hover:bg-[#80A0A9]/10 flex items-center text-sm sm:text-base">
-                          <PlusCircle className="mr-2 h-5 w-5" />
-                          Feature Service
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent className="max-w-md w-full">
-                        <DialogHeader>
-                          <DialogTitle>Login Required</DialogTitle>
-                        </DialogHeader>
-                        <div className="py-4 text-center">
-                          <p className="text-lg font-semibold mb-2 text-destructive">Please login to feature a service.</p>
-                          <DialogFooter>
-                            <DialogClose asChild>
-                              <Button variant="outline">Close</Button>
-                            </DialogClose>
-                            <Button asChild variant="default" className="bg-[#80A0A9] hover:bg-[#80A0A9]/90 text-white">
-                              <a href="/login">Login</a>
-                            </Button>
-                          </DialogFooter>
-                        </div>
-                      </DialogContent>
-                    </Dialog>
-                    <Dialog open={showDialog} onOpenChange={setShowDialog}>
-                      <DialogTrigger asChild>
-                        <Button className="flex items-center bg-[#80A0A9] hover:bg-[#80A0A9]/90 text-white text-sm sm:text-base">
-                          <PlusCircle className="mr-2 h-5 w-5" />
-                          Register Service
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent className="max-w-md w-full">
-                        <DialogHeader>
-                          <DialogTitle>Login Required</DialogTitle>
-                        </DialogHeader>
-                        <div className="py-4 text-center">
-                          <p className="text-lg font-semibold mb-2 text-destructive">Please login to register a service.</p>
-                          <DialogFooter>
-                            <DialogClose asChild>
-                              <Button variant="outline">Close</Button>
-                            </DialogClose>
-                            <Button asChild variant="default" className="bg-[#80A0A9] hover:bg-[#80A0A9]/90 text-white">
-                              <a href="/login">Login</a>
-                            </Button>
-                          </DialogFooter>
-                        </div>
-                      </DialogContent>
-                    </Dialog>
-                  </div>
-                )}
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+          <div className="text-center md:text-left mb-4 md:mb-0">
+            <h1 className="text-4xl md:text-5xl font-extrabold font-headline text-gray-900">{header.title}</h1>
+            <p className="mt-4 text-lg text-gray-700 max-w-3xl">
+              {header.description}
+            </p>
+          </div>
+          {currentUser ? (
+            <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+              <Button asChild className="bg-[#80A0A9] hover:bg-[#80A0A9]/90 text-white text-sm sm:text-base">
+                <Link href="/others/register" className="flex items-center">
+                  <PlusCircle className="mr-2 h-5 w-5" />
+                  List Your Service
+                </Link>
+              </Button>
+              <Button asChild variant="outline" className="border-[#80A0A9] text-[#80A0A9] hover:bg-[#80A0A9]/10 text-sm sm:text-base">
+                <Link href="/advertise/others-listing" className="flex items-center">
+                  <PlusCircle className="mr-2 h-5 w-5" />
+                  Feature Your Service
+                </Link>
+              </Button>
             </div>
+          ) : (
+            <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+              <Dialog open={showDialog} onOpenChange={setShowDialog}>
+                <DialogTrigger asChild>
+                  <Button className="flex items-center bg-[#80A0A9] hover:bg-[#80A0A9]/90 text-white text-sm sm:text-base">
+                    <PlusCircle className="mr-2 h-5 w-5" />
+                    List Your Service
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-md w-full">
+                  <DialogHeader>
+                    <DialogTitle>Login Required</DialogTitle>
+                  </DialogHeader>
+                  <div className="py-4 text-center">
+                    <p className="text-lg font-semibold mb-2 text-destructive">You must be logged in to list your service.</p>
+                    <DialogFooter>
+                      <DialogClose asChild>
+                        <Button variant="outline">Close</Button>
+                      </DialogClose>
+                      <Button asChild variant="default" className="bg-[#80A0A9] hover:bg-[#80A0A9]/90 text-white">
+                        <a href="/login">Login</a>
+                      </Button>
+                    </DialogFooter>
+                  </div>
+                </DialogContent>
+              </Dialog>
+              <Dialog open={showDialog} onOpenChange={setShowDialog}>
+                <DialogTrigger asChild>
+                  <Button variant="outline" className="border-[#80A0A9] text-[#80A0A9] hover:bg-[#80A0A9]/10 flex items-center text-sm sm:text-base">
+                    <PlusCircle className="mr-2 h-5 w-5" />
+                    Feature Your Service
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-md w-full">
+                  <DialogHeader>
+                    <DialogTitle>Login Required</DialogTitle>
+                  </DialogHeader>
+                  <div className="py-4 text-center">
+                    <p className="text-lg font-semibold mb-2 text-destructive">You must be logged in to feature your service.</p>
+                    <DialogFooter>
+                      <DialogClose asChild>
+                        <Button variant="outline">Close</Button>
+                      </DialogClose>
+                      <Button asChild variant="default" className="bg-[#80A0A9] hover:bg-[#80A0A9]/90 text-white">
+                        <a href="/login">Login</a>
+                      </Button>
+                    </DialogFooter>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            </div>
+          )}
+        </div>
 
             <div className="mb-8">
               <FreeCallout

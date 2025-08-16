@@ -16,6 +16,7 @@ import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious
 import { useSearchParams } from "next/navigation";
 import FreeCallout from "@/components/free-callout";
 import SimpleGallerySection from "@/components/SimpleGallerySection";
+import { defaultPageContent, fetchPageHeader, type PageHeader } from "@/lib/pageContent";
 
 function AuctionsPageContent() {
   const [auctions, setAuctions] = useState<any[]>([]);
@@ -23,6 +24,7 @@ function AuctionsPageContent() {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [showDialog, setShowDialog] = useState(false);
   const searchParams = useSearchParams();
+  const [header, setHeader] = useState<PageHeader>(defaultPageContent.auctions);
   
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
@@ -36,6 +38,15 @@ function AuctionsPageContent() {
   const [selectedAuctionType, setSelectedAuctionType] = useState("all");
   const [sortBy, setSortBy] = useState("ending-soon");
   const [showFilters, setShowFilters] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const data = await fetchPageHeader('auctions');
+        setHeader(data);
+      } catch {}
+    })();
+  }, []);
 
   // Initialize search from URL parameters
   useEffect(() => {
@@ -202,9 +213,9 @@ function AuctionsPageContent() {
       <div className="container mx-auto px-4 py-8">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
           <div className="text-center md:text-left mb-4 md:mb-0">
-            <h1 className="text-4xl md:text-5xl font-extrabold font-headline text-gray-900">Car Auctions</h1>
+            <h1 className="text-4xl md:text-5xl font-extrabold font-headline text-gray-900">{header.title}</h1>
             <p className="mt-4 text-lg text-gray-700 max-w-3xl mx-auto md:mx-0">
-              Find and bid on exclusive collector cars from around the world. Discover live and upcoming auctions, compare lots, and follow your favorite houses—all in one place—curated for serious bidders and passionate enthusiasts alike.
+              {header.description}
             </p>
           </div>
           {currentUser ? (

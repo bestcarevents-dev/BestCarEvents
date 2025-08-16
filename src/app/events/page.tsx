@@ -10,7 +10,7 @@ import { List, Map, PlusCircle, Star } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
 import { useEffect, useState, useMemo, Suspense } from "react";
-import { getFirestore, collection, getDocs } from "firebase/firestore";
+import { getFirestore, collection, getDocs, query, orderBy } from "firebase/firestore";
 import { app } from "@/lib/firebase";
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from '@/components/ui/dialog';
 import { getAuth, onAuthStateChanged, User } from 'firebase/auth';
@@ -19,6 +19,7 @@ import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious
 import { useSearchParams } from "next/navigation";
 import FreeCallout from "@/components/free-callout";
 import SimpleGallerySection from "@/components/SimpleGallerySection";
+import { defaultPageContent, fetchPageHeader, type PageHeader } from "@/lib/pageContent";
 
 function EventsPageContent() {
     const [events, setEvents] = useState<any[]>([]);
@@ -26,6 +27,7 @@ function EventsPageContent() {
     const [currentUser, setCurrentUser] = useState<User | null>(null);
     const [showDialog, setShowDialog] = useState(false);
     const searchParams = useSearchParams();
+    const [header, setHeader] = useState<PageHeader>(defaultPageContent.events);
     
     // Pagination state
     const [currentPage, setCurrentPage] = useState(1);
@@ -33,26 +35,43 @@ function EventsPageContent() {
     
     // Search and filter state
     const [searchQuery, setSearchQuery] = useState("");
-    const [selectedCategory, setSelectedCategory] = useState("all");
+    const [selectedCity, setSelectedCity] = useState("all");
+    const [selectedState, setSelectedState] = useState("all");
+    const [selectedCountry, setSelectedCountry] = useState("all");
+    const [selectedEventType, setSelectedEventType] = useState("all");
     const [selectedVehicleFocus, setSelectedVehicleFocus] = useState("all");
     const [selectedEntryFee, setSelectedEntryFee] = useState("all");
     const [sortBy, setSortBy] = useState("date");
-    const [showFilters, setShowFilters] = useState(false);
+    const [showFilters, setShowFilters] = useState(false); // For mobile toggle
+
+    useEffect(() => {
+      (async () => {
+        try {
+          const data = await fetchPageHeader('events');
+          setHeader(data);
+        } catch {}
+      })();
+    }, []);
 
     // Initialize search from URL parameters
     useEffect(() => {
       const search = searchParams.get("search");
-      const category = searchParams.get("category");
+      const city = searchParams.get("city");
+      const eventtype = searchParams.get("eventtype");
       const vehiclefocus = searchParams.get("vehiclefocus");
       
       if (search) {
         setSearchQuery(search);
       }
       
-      if (category && category !== "all") {
-        setSelectedCategory(category);
+      if (city && city !== "all") {
+        setSelectedCity(city);
       }
       
+      if (eventtype && eventtype !== "all") {
+        setSelectedEventType(eventtype);
+      }
+
       if (vehiclefocus && vehiclefocus !== "all") {
         setSelectedVehicleFocus(vehiclefocus);
       }
@@ -62,10 +81,9 @@ function EventsPageContent() {
       const fetchEvents = async () => {
         setLoading(true);
         const db = getFirestore(app);
-        const snapshot = await getDocs(collection(db, "events"));
-        const data = snapshot.docs
-          .map(doc => ({ id: doc.id, ...doc.data() }))
-          .filter((event: any) => event.status === "approved");
+        const eventsQuery = query(collection(db, "events"), orderBy("date", "asc"));
+        const snapshot = await getDocs(eventsQuery);
+        const data = snapshot.docs.map(doc => ({ documentId: doc.id, ...doc.data() }));
         setEvents(data);
         setLoading(false);
       };
@@ -85,51 +103,50 @@ function EventsPageContent() {
       let filtered = events.filter(event => {
         const matchesSearch = searchQuery === "" || 
           event.eventName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          event.location?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          event.description?.toLowerCase().includes(searchQuery.toLowerCase());
+          event.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          event.city?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          event.country?.toLowerCase().includes(searchQuery.toLowerCase());
         
-        const matchesCategory = selectedCategory === "all" || 
-          event.eventType?.toLowerCase() === selectedCategory.toLowerCase();
+        const matchesCity = selectedCity === "all" || 
+          event.city?.toLowerCase() === selectedCity.toLowerCase();
         
+        const matchesState = selectedState === "all" || 
+          event.state?.toLowerCase() === selectedState.toLowerCase();
+        
+        const matchesCountry = selectedCountry === "all" || 
+          event.country?.toLowerCase() === selectedCountry.toLowerCase();
+        
+        const matchesEventType = selectedEventType === "all" || 
+          event.eventType?.toLowerCase() === selectedEventType.toLowerCase();
+
         const matchesVehicleFocus = selectedVehicleFocus === "all" || 
-          event.vehicleFocus?.toLowerCase().includes(selectedVehicleFocus.toLowerCase());
-        
+          event.vehicleFocus?.toLowerCase() === selectedVehicleFocus.toLowerCase();
+
         const matchesEntryFee = selectedEntryFee === "all" || 
-          (selectedEntryFee === "free" && (!event.entryFee || event.entryFee === 0)) ||
-          (selectedEntryFee === "paid" && event.entryFee && event.entryFee > 0);
+          (selectedEntryFee === "free" && (event.entryFee === 0 || event.entryFee === "0")) ||
+          (selectedEntryFee === "paid" && (event.entryFee !== 0 && event.entryFee !== "0"));
         
-        return matchesSearch && matchesCategory && matchesVehicleFocus && matchesEntryFee;
+        return matchesSearch && matchesCity && matchesState && matchesCountry && matchesEventType && matchesVehicleFocus && matchesEntryFee;
       });
 
       // Sort events
       filtered.sort((a, b) => {
         switch (sortBy) {
           case "date":
-            const dateA = a.eventDate?.seconds ? new Date(a.eventDate.seconds * 1000) : new Date(a.eventDate || 0);
-            const dateB = b.eventDate?.seconds ? new Date(b.eventDate.seconds * 1000) : new Date(b.eventDate || 0);
+            const dateA = a.date?.seconds ? new Date(a.date.seconds * 1000) : new Date(a.date || 0);
+            const dateB = b.date?.seconds ? new Date(b.date.seconds * 1000) : new Date(b.date || 0);
             return dateA.getTime() - dateB.getTime();
-          case "popular":
-            // Sort by featured first, then by name
-            if (a.featured && !b.featured) return -1;
-            if (!a.featured && b.featured) return 1;
-            return (a.eventName || "").localeCompare(b.eventName || "");
-          case "distance":
-            // For now, sort by name as distance would require location services
-            return (a.eventName || "").localeCompare(b.eventName || "");
-          case "fee":
-            // Sort by entry fee (free first, then by amount)
-            const feeA = a.entryFee || 0;
-            const feeB = b.entryFee || 0;
-            if (feeA === 0 && feeB > 0) return -1;
-            if (feeA > 0 && feeB === 0) return 1;
-            return feeA - feeB;
+          case "newest":
+            const createdAtA = a.createdAt?.seconds ? new Date(a.createdAt.seconds * 1000) : new Date(a.createdAt || 0);
+            const createdAtB = b.createdAt?.seconds ? new Date(b.createdAt.seconds * 1000) : new Date(b.createdAt || 0);
+            return createdAtB.getTime() - createdAtA.getTime();
           default:
             return 0;
         }
       });
 
       return filtered;
-    }, [events, searchQuery, selectedCategory, selectedVehicleFocus, selectedEntryFee, sortBy]);
+    }, [events, searchQuery, selectedCity, selectedState, selectedCountry, selectedEventType, selectedVehicleFocus, selectedEntryFee, sortBy]);
 
     // Separate featured and regular events
     const featuredEvents = filteredAndSortedEvents.filter(event => event.featured === true);
@@ -141,32 +158,16 @@ function EventsPageContent() {
     const endIndex = startIndex + eventsPerPage;
     const paginatedEvents = regularEvents.slice(startIndex, endIndex);
 
-    // Get unique categories from events
-    const categories = useMemo(() => {
-      const cats = events
-        .map(event => event.eventType)
-        .filter(Boolean)
-        .filter((value, index, self) => self.indexOf(value) === index);
-      return cats;
-    }, [events]);
-
-    // Get unique vehicle focus options from events
-    const vehicleFocusOptions = useMemo(() => {
-      const focuses = events
-        .map(event => event.vehicleFocus)
-        .filter(Boolean)
-        .filter((value, index, self) => self.indexOf(value) === index);
-      return focuses;
-    }, [events]);
-
     const handleSearch = () => {
-      // Search is handled by the useMemo above, this is just for the button
-      setCurrentPage(1); // Reset to first page when searching
+      setCurrentPage(1);
     };
 
     const handleResetFilters = () => {
       setSearchQuery("");
-      setSelectedCategory("all");
+      setSelectedCity("all");
+      setSelectedState("all");
+      setSelectedCountry("all");
+      setSelectedEventType("all");
       setSelectedVehicleFocus("all");
       setSelectedEntryFee("all");
       setSortBy("date");
@@ -184,9 +185,9 @@ function EventsPageContent() {
         <div className="container mx-auto px-4 py-8">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
                 <div className="text-center md:text-left mb-4 md:mb-0">
-                    <h1 className="text-4xl md:text-5xl font-extrabold font-headline text-gray-900">Discover Events</h1>
+                    <h1 className="text-4xl md:text-5xl font-extrabold font-headline text-gray-900">{header.title}</h1>
                     <p className="mt-4 text-lg text-gray-700 max-w-3xl">
-                      From local meetups to international shows, find your next car adventure. Organize, promote, and discover gatherings for every passion—from coffee runs and track days to concours weekends—curated by a global community of enthusiasts.
+                      {header.description}
                     </p>
                 </div>
                 {currentUser ? (
@@ -208,9 +209,9 @@ function EventsPageContent() {
                   <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
                     <Dialog open={showDialog} onOpenChange={setShowDialog}>
                       <DialogTrigger asChild>
-                        <Button variant="outline" className="border-[#80A0A9] text-[#80A0A9] hover:bg-[#80A0A9]/10 flex items-center text-sm sm:text-base">
+                        <Button className="flex items-center bg-[#80A0A9] hover:bg-[#80A0A9]/90 text-white text-sm sm:text-base">
                           <PlusCircle className="mr-2 h-5 w-5" />
-                          Feature Event
+                          Host an Event
                         </Button>
                       </DialogTrigger>
                       <DialogContent className="max-w-md w-full">
@@ -218,7 +219,7 @@ function EventsPageContent() {
                           <DialogTitle>Login Required</DialogTitle>
                         </DialogHeader>
                         <div className="py-4 text-center">
-                          <p className="text-lg font-semibold mb-2 text-destructive">Please login to feature an event.</p>
+                          <p className="text-lg font-semibold mb-2 text-destructive">You must be logged in to host an event.</p>
                           <DialogFooter>
                             <DialogClose asChild>
                               <Button variant="outline">Close</Button>
@@ -230,12 +231,30 @@ function EventsPageContent() {
                         </div>
                       </DialogContent>
                     </Dialog>
-                    <Button asChild className="bg-[#80A0A9] hover:bg-[#80A0A9]/90 text-white text-sm sm:text-base">
-                      <Link href="/events/host" className="flex items-center">
+                    <Dialog open={showDialog} onOpenChange={setShowDialog}>
+                      <DialogTrigger asChild>
+                        <Button variant="outline" className="border-[#80A0A9] text-[#80A0A9] hover:bg-[#80A0A9]/10 flex items-center text-sm sm:text-base">
                           <PlusCircle className="mr-2 h-5 w-5" />
-                          Host an Event
-                      </Link>
-                    </Button>
+                          Feature Event
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="max-w-md w-full">
+                        <DialogHeader>
+                          <DialogTitle>Login Required</DialogTitle>
+                        </DialogHeader>
+                        <div className="py-4 text-center">
+                          <p className="text-lg font-semibold mb-2 text-destructive">You must be logged in to feature your event.</p>
+                          <DialogFooter>
+                            <DialogClose asChild>
+                              <Button variant="outline">Close</Button>
+                            </DialogClose>
+                            <Button asChild variant="default" className="bg-[#80A0A9] hover:bg-[#80A0A9]/90 text-white">
+                              <a href="/login">Login</a>
+                            </Button>
+                          </DialogFooter>
+                        </div>
+                      </DialogContent>
+                    </Dialog>
                   </div>
                 )}
             </div>
@@ -282,17 +301,40 @@ function EventsPageContent() {
             {/* Filters Section - Hidden on mobile by default */}
             <div className={`${showFilters ? 'block' : 'hidden'} md:block`}>
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                <Select value={selectedCity} onValueChange={setSelectedCity}>
                    <SelectTrigger className="bg-white border-[#80A0A9]/50 text-gray-900 focus:border-[#80A0A9]">
-                     <SelectValue placeholder="Category: Any" />
+                     <SelectValue placeholder="City: Any" />
                    </SelectTrigger>
                    <SelectContent>
-                      <SelectItem value="all">Any Category</SelectItem>
-                      {categories.map((category) => (
-                        <SelectItem key={category} value={category}>
-                          {category}
-                        </SelectItem>
-                      ))}
+                      <SelectItem value="all">Any City</SelectItem>
+                      {/* Add cities from events data if available */}
+                   </SelectContent>
+                </Select>
+                <Select value={selectedState} onValueChange={setSelectedState}>
+                   <SelectTrigger className="bg-white border-[#80A0A9]/50 text-gray-900 focus:border-[#80A0A9]">
+                     <SelectValue placeholder="State: Any" />
+                   </SelectTrigger>
+                   <SelectContent>
+                      <SelectItem value="all">Any State</SelectItem>
+                      {/* Add states from events data if available */}
+                   </SelectContent>
+                </Select>
+                <Select value={selectedCountry} onValueChange={setSelectedCountry}>
+                   <SelectTrigger className="bg-white border-[#80A0A9]/50 text-gray-900 focus:border-[#80A0A9]">
+                     <SelectValue placeholder="Country: Any" />
+                   </SelectTrigger>
+                   <SelectContent>
+                      <SelectItem value="all">Any Country</SelectItem>
+                      {/* Add countries from events data if available */}
+                   </SelectContent>
+                </Select>
+                <Select value={selectedEventType} onValueChange={setSelectedEventType}>
+                   <SelectTrigger className="bg-white border-[#80A0A9]/50 text-gray-900 focus:border-[#80A0A9]">
+                     <SelectValue placeholder="Event Type: Any" />
+                   </SelectTrigger>
+                   <SelectContent>
+                      <SelectItem value="all">Any Event Type</SelectItem>
+                      {/* Add event types from events data if available */}
                    </SelectContent>
                 </Select>
                 <Select value={selectedVehicleFocus} onValueChange={setSelectedVehicleFocus}>
@@ -301,11 +343,7 @@ function EventsPageContent() {
                    </SelectTrigger>
                    <SelectContent>
                       <SelectItem value="all">Any Vehicle Type</SelectItem>
-                      {vehicleFocusOptions.map((focus) => (
-                        <SelectItem key={focus} value={focus}>
-                          {focus}
-                        </SelectItem>
-                      ))}
+                      {/* Add vehicle focus options from events data if available */}
                    </SelectContent>
                 </Select>
                 <Select value={selectedEntryFee} onValueChange={setSelectedEntryFee}>
@@ -324,7 +362,7 @@ function EventsPageContent() {
                   </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="date">Date</SelectItem>
-                  <SelectItem value="popular">Popular</SelectItem>
+                  <SelectItem value="newest">Newest</SelectItem>
                     <SelectItem value="fee">Entry Fee</SelectItem>
                     <SelectItem value="distance">Name</SelectItem>
                 </SelectContent>
@@ -339,7 +377,7 @@ function EventsPageContent() {
                    <div className="py-12 text-center text-gray-600">Loading events...</div>
                  ) : filteredAndSortedEvents.length === 0 ? (
                    <div className="py-12 text-center text-gray-600">
-                     {searchQuery || selectedCategory !== "all" || selectedVehicleFocus !== "all" || selectedEntryFee !== "all" ? "No events found matching your criteria." : "No events found."}
+                     {searchQuery || selectedCity !== "all" || selectedState !== "all" || selectedCountry !== "all" || selectedEventType !== "all" || selectedVehicleFocus !== "all" || selectedEntryFee !== "all" ? "No events found matching your criteria." : "No events found."}
                    </div>
                  ) : (
                  <>
@@ -377,8 +415,8 @@ function EventsPageContent() {
                                        {...event} 
                                        featured={true} 
                                        name={event.eventName || event.name || `Event #${index + 1}`} 
-                                       date={event.eventDate?.seconds ? new Date(event.eventDate.seconds * 1000).toLocaleDateString() : event.date} 
-                                       location={event.location} 
+                                       date={event.date ? new Date(event.date.seconds * 1000).toLocaleDateString() : event.date} 
+                                       location={event.city} 
                                        image={event.imageUrl || event.image} 
                                        hint={event.eventType || event.hint} 
                                      />
@@ -415,8 +453,8 @@ function EventsPageContent() {
                             {...event} 
                             featured={false} 
                             name={event.eventName || event.name || `Event #${index + 1}`} 
-                            date={event.eventDate?.seconds ? new Date(event.eventDate.seconds * 1000).toLocaleDateString() : event.date} 
-                            location={event.location} 
+                            date={event.date ? new Date(event.date.seconds * 1000).toLocaleDateString() : event.date} 
+                            location={event.city} 
                             image={event.imageUrl || event.image} 
                             hint={event.eventType || event.hint} 
                           />

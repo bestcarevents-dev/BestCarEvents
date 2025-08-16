@@ -16,6 +16,7 @@ import { useSearchParams } from "next/navigation";
 import FreeCallout from "@/components/free-callout";
 import SimpleGallerySection from "@/components/SimpleGallerySection";
 import { getFirestore as getFirestoreClient, doc, getDoc } from "firebase/firestore";
+import { defaultPageContent, fetchPageHeader, type PageHeader } from "@/lib/pageContent";
 
 function CarsPageContent() {
     const [cars, setCars] = useState<any[]>([]);
@@ -24,6 +25,7 @@ function CarsPageContent() {
     const [showDialog, setShowDialog] = useState(false);
     const [isFreeCarListing, setIsFreeCarListing] = useState<boolean>(false);
     const searchParams = useSearchParams();
+    const [header, setHeader] = useState<PageHeader>(defaultPageContent.cars);
     
     // Pagination state
     const [currentPage, setCurrentPage] = useState(1);
@@ -38,6 +40,15 @@ function CarsPageContent() {
     const [selectedPriceRange, setSelectedPriceRange] = useState("all");
     const [sortBy, setSortBy] = useState("newest");
     const [showFilters, setShowFilters] = useState(false);
+
+    useEffect(() => {
+      (async () => {
+        try {
+          const data = await fetchPageHeader('cars');
+          setHeader(data);
+        } catch {}
+      })();
+    }, []);
 
     // Initialize search from URL parameters
     useEffect(() => {
@@ -211,43 +222,45 @@ function CarsPageContent() {
       <div className="container mx-auto px-4 py-8">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
           <div className="text-center md:text-left mb-4 md:mb-0">
-            <h1 className="text-4xl md:text-5xl font-extrabold font-headline text-gray-900">Cars for Sale</h1>
+            <h1 className="text-4xl md:text-5xl font-extrabold font-headline text-gray-900">{header.title}</h1>
             <p className="mt-4 text-lg text-gray-600 max-w-3xl mx-auto md:mx-0">
-              Browse thousands of unique cars curated by enthusiasts and trusted sellers. Refine by make, body style, year, and price to find your perfect match—whether you’re chasing a weekend classic or your next daily driver.
+              {header.description}
             </p>
           </div>
           {currentUser ? (
             <Button asChild>
               <Link href="/cars/sell" className="flex items-center">
-                  <PlusCircle className="mr-2 h-5 w-5" />
-                  Sell Your Car
+                <PlusCircle className="mr-2 h-5 w-5" />
+                Sell Your Car
               </Link>
             </Button>
           ) : (
-            <Dialog open={showDialog} onOpenChange={setShowDialog}>
-              <DialogTrigger asChild>
-                <Button className="flex items-center">
-                  <PlusCircle className="mr-2 h-5 w-5" />
-                  Sell Your Car
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="max-w-md w-full">
-                <DialogHeader>
-                  <DialogTitle>Login Required</DialogTitle>
-                </DialogHeader>
-                <div className="py-4 text-center">
-                  <p className="text-lg font-semibold mb-2 text-destructive">You must be logged in to post a listing.</p>
-                  <DialogFooter>
-                    <DialogClose asChild>
-                      <Button variant="outline">Close</Button>
-                    </DialogClose>
-                    <Button asChild variant="default">
-                      <a href="/login">Login</a>
-                    </Button>
-                  </DialogFooter>
-                </div>
-              </DialogContent>
-            </Dialog>
+            <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+              <Dialog open={showDialog} onOpenChange={setShowDialog}>
+                <DialogTrigger asChild>
+                  <Button className="flex items-center bg-[#80A0A9] hover:bg-[#80A0A9]/90 text-white text-sm sm:text-base">
+                    <PlusCircle className="mr-2 h-5 w-5" />
+                    Sell Your Car
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-md w-full">
+                  <DialogHeader>
+                    <DialogTitle>Login Required</DialogTitle>
+                  </DialogHeader>
+                  <div className="py-4 text-center">
+                    <p className="text-lg font-semibold mb-2 text-destructive">You must be logged in to post a car.</p>
+                    <DialogFooter>
+                      <DialogClose asChild>
+                        <Button variant="outline">Close</Button>
+                      </DialogClose>
+                      <Button asChild variant="default" className="bg-[#80A0A9] hover:bg-[#80A0A9]/90 text-white">
+                        <a href="/login">Login</a>
+                      </Button>
+                    </DialogFooter>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            </div>
           )}
         </div>
         {isFreeCarListing && (

@@ -7,11 +7,22 @@ import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import Image from "next/image";
 import { Globe, Link as LinkIcon } from "lucide-react";
+import { defaultPageContent, fetchPageHeader, type PageHeader } from "@/lib/pageContent";
 
 export default function PartnersPage() {
   const [partners, setPartners] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [header, setHeader] = useState<PageHeader>(defaultPageContent.partners);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const data = await fetchPageHeader('partners');
+        setHeader(data);
+      } catch {}
+    })();
+  }, []);
 
   useEffect(() => {
     const fetchPartners = async () => {
@@ -41,9 +52,9 @@ export default function PartnersPage() {
         <div className="container px-4 md:px-6">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-12">
             <div className="text-center md:text-left mb-4 md:mb-0">
-              <h1 className="text-4xl md:text-5xl font-extrabold font-headline text-gray-900">Partners</h1>
+              <h1 className="text-4xl md:text-5xl font-extrabold font-headline text-gray-900">{header.title}</h1>
               <p className="mt-4 text-lg text-gray-600 max-w-2xl mx-auto md:mx-0">
-                Promote your services to a dedicated audience of car enthusiasts. Become a partner and choose your relevant category to reach your target customers.
+                {header.description}
               </p>
             </div>
             <Button size="lg" asChild>

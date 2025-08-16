@@ -62,6 +62,7 @@ const navLinks = [
     { href: "/admin/payments", icon: CreditCard, label: "Payments" },
     { href: "/admin/homepage", icon: Settings, label: "Homepage Content" },
     { href: "/admin/section-galleries", icon: Settings, label: "Section Galleries" },
+    { href: "/admin/page-content", icon: Settings, label: "Page Content" },
     { href: "/admin/settings", icon: Settings, label: "Settings" },
 ];
 
@@ -78,7 +79,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <span className="">BestCarEvents</span>
             </Link>
           </div>
-          <div className="flex-1">
+          <div className="flex-1 overflow-y-auto">
             <nav className="grid items-start px-2 text-sm font-medium lg:px-4">
               <Link
                 href="/admin"

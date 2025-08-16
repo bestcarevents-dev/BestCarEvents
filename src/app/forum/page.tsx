@@ -1,55 +1,55 @@
-'use client'
+"use client";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { PlusCircle, Star } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { PlusCircle } from "lucide-react";
+import { useEffect, useState, useMemo } from "react";
 import { getFirestore, collection, getDocs, query, orderBy } from "firebase/firestore";
 import { app } from "@/lib/firebase";
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from '@/components/ui/dialog';
-import { getAuth, onAuthStateChanged, User as FirebaseUser } from 'firebase/auth';
+import { getAuth, onAuthStateChanged, User } from 'firebase/auth';
 import PartnerAdRotator from '@/components/PartnerAdRotator';
-import ForumPostCard from '@/components/forum-post-card';
+import { defaultPageContent, fetchPageHeader, type PageHeader } from "@/lib/pageContent";
 
-type ForumPost = {
+interface ForumPost {
   id: string;
   title: string;
   content: string;
+  author: string;
+  date: any;
   category: string;
-  author: {
-    name: string;
-    avatar?: string;
-  };
-  createdAt: any;
-  views: number;
-  replies: number;
-  likes: number;
   featured?: boolean;
-  images?: string[];
-  tags?: string[];
-};
+}
 
 export default function ForumPage() {
     const [posts, setPosts] = useState<ForumPost[]>([]);
     const [loading, setLoading] = useState(true);
-    const [currentUser, setCurrentUser] = useState<FirebaseUser | null>(null);
+    const [currentUser, setCurrentUser] = useState<User | null>(null);
     const [showDialog, setShowDialog] = useState(false);
-    const [searchTerm, setSearchTerm] = useState('');
-    const [selectedCategory, setSelectedCategory] = useState('all');
+    const [searchQuery, setSearchQuery] = useState("");
+    const [selectedCategory, setSelectedCategory] = useState("all");
+    const [sortBy, setSortBy] = useState("newest");
+    const [header, setHeader] = useState<PageHeader>(defaultPageContent.forum);
+
+    useEffect(() => {
+      (async () => {
+        try {
+          const data = await fetchPageHeader('forum');
+          setHeader(data);
+        } catch {}
+      })();
+    }, []);
 
     useEffect(() => {
       const fetchPosts = async () => {
         setLoading(true);
         const db = getFirestore(app);
-        const postsRef = collection(db, "forum_posts");
-        const q = query(postsRef, orderBy("createdAt", "desc"));
-        const snapshot = await getDocs(q);
-        const data = snapshot.docs.map(doc => ({ 
-          id: doc.id, 
-          ...doc.data() 
-        })) as ForumPost[];
+        const postsQuery = query(collection(db, "forum"), orderBy("date", "desc"));
+        const snapshot = await getDocs(postsQuery);
+        const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as ForumPost[];
         setPosts(data);
         setLoading(false);
       };
@@ -64,14 +64,33 @@ export default function ForumPage() {
       return () => unsubscribe();
     }, []);
 
-    const filteredPosts = posts.filter(post => {
-      const matchesSearch = post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           post.content.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesCategory = selectedCategory === 'all' || post.category === selectedCategory;
-      return matchesSearch && matchesCategory;
-    });
+    const filteredPosts = useMemo(() => {
+      let filtered = posts.filter(post => {
+        const matchesSearch = searchQuery === "" || 
+          post.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          post.content?.toLowerCase().includes(searchQuery.toLowerCase());
+        const matchesCategory = selectedCategory === "all" || post.category?.toLowerCase() === selectedCategory.toLowerCase();
+        return matchesSearch && matchesCategory;
+      });
+
+      filtered.sort((a, b) => {
+        switch (sortBy) {
+          case "newest":
+            const dateA = a.date?.seconds ? new Date(a.date.seconds * 1000) : new Date(a.date || 0);
+            const dateB = b.date?.seconds ? new Date(b.date.seconds * 1000) : new Date(b.date || 0);
+            return dateB.getTime() - dateA.getTime();
+          case "title":
+            return (a.title || "").localeCompare(b.title || "");
+          default:
+            return 0;
+        }
+      });
+
+      return filtered;
+    }, [posts, searchQuery, selectedCategory, sortBy]);
 
     const featuredPosts = filteredPosts.filter(post => post.featured === true);
+
     const regularPosts = filteredPosts.filter(post => post.featured !== true);
 
     const categories = [
@@ -91,9 +110,9 @@ export default function ForumPage() {
         <div className="container mx-auto px-4 py-8">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-12">
                 <div className="text-center md:text-left mb-4 md:mb-0">
-                    <h1 className="text-4xl md:text-5xl font-extrabold font-headline text-gray-900">Community Forum</h1>
+                    <h1 className="text-4xl md:text-5xl font-extrabold font-headline text-gray-900">{header.title}</h1>
                     <p className="mt-4 text-lg text-gray-700 max-w-2xl">
-                    Connect with fellow car enthusiasts. Share experiences, ask questions, and discuss everything automotive.
+                    {header.description}
                     </p>
                 </div>
                 {currentUser ? (
@@ -120,7 +139,7 @@ export default function ForumPage() {
                           <DialogTitle>Login Required</DialogTitle>
                         </DialogHeader>
                         <div className="py-4 text-center">
-                          <p className="text-lg font-semibold mb-2 text-destructive">Please login to create a post.</p>
+                          <p className="text-lg font-semibold mb-2 text-destructive">You must be logged in to create a post.</p>
                           <DialogFooter>
                             <DialogClose asChild>
                               <Button variant="outline">Close</Button>
@@ -141,8 +160,8 @@ export default function ForumPage() {
               <Input 
                 placeholder="Search posts..." 
                 className="md:col-span-2 bg-white border-[#80A0A9]/50 text-gray-900 placeholder:text-gray-500 focus:border-[#80A0A9]"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
               />
               <Select value={selectedCategory} onValueChange={setSelectedCategory}>
                  <SelectTrigger className="bg-white border-[#80A0A9]/50 text-gray-900 focus:border-[#80A0A9]">
