@@ -51,7 +51,7 @@ export default function FreeCallout({
             </div>
             
             {/* Animated gradient title */}
-            <h2 className="text-2xl md:text-3xl lg:text-4xl font-extrabold font-headline bg-clip-text text-transparent bg-gradient-to-r from-amber-400 via-yellow-600 to-amber-400 [background-size:200%_auto] animate-[gradient_2s_linear_infinite] pb-2 mb-3">
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-extrabold font-headline text-amber-500 pb-2 mb-3">
               ALL LISTINGS ARE FREE
             </h2>
             
