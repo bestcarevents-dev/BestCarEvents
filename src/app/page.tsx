@@ -132,7 +132,7 @@ const PromoAnnouncement = ({ copy }: { copy: NonNullable<HomepageContent["promo"
               <span className="animate-pulse">🎉</span>
             </div>
             
-            <h2 className="text-4xl md:text-6xl lg:text-7xl font-extrabold font-headline bg-clip-text text-transparent bg-gradient-to-r from-amber-400 via-yellow-600 to-amber-400 [background-size:200%_auto] animate-[gradient_2s_linear_infinite] pb-2">
+            <h2 className="text-4xl md:text-6xl lg:text-7xl font-extrabold font-headline text-amber-500 pb-2">
               {copy.mainHeading}
             </h2>
             
