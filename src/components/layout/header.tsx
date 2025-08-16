@@ -359,41 +359,38 @@ const NavMenu = ({ onLinkClick, isMobile = false }: { onLinkClick?: () => void, 
 
   return (
     <nav className="flex items-center gap-6">
-      {navLinks.map((link) => (
-        <div key={link.href} className="relative group">
-          <Link
-            href={link.href}
-            className={cn(
-              "text-white hover:text-yellow-300 transition-all duration-300 font-medium py-2 px-3 relative rounded-md",
-              isActiveLink(pathname, link.href) 
-                ? "text-yellow-300 bg-yellow-300/10" 
-                : "hover:bg-white/5"
-            )}
-            onClick={onLinkClick}
-          >
-            {link.label}
-            {isActiveLink(pathname, link.href) && (
-              <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-8 h-0.5 bg-yellow-300 rounded-full animate-pulse"></div>
-            )}
-            {/* Hover indicator */}
-            <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-0 h-0.5 bg-yellow-300 rounded-full transition-all duration-300 group-hover:w-6"></div>
-          </Link>
-        </div>
-      ))}
+      {navLinks.map((link) => {
+        const active = isActiveLink(pathname, link.href);
+        return (
+          <div key={link.href} className="relative group px-2 py-2">
+            <Link
+              href={link.href}
+              className={cn(
+                "font-medium transition-colors duration-200",
+                active ? "text-yellow-300" : "text-white hover:text-yellow-300"
+              )}
+              onClick={onLinkClick}
+            >
+              {link.label}
+            </Link>
+            <span
+              aria-hidden
+              className={cn(
+                "pointer-events-none absolute -bottom-1 left-1/2 -translate-x-1/2 h-0.5 rounded-full bg-yellow-300 transition-all duration-200",
+                active ? "w-6 opacity-100" : "w-0 opacity-0 group-hover:w-6 group-hover:opacity-80"
+              )}
+            />
+          </div>
+        );
+      })}
       
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <button className={cn(
-            "flex items-center gap-1 text-white hover:text-yellow-300 transition-all duration-300 font-medium py-2 px-3 rounded-md",
-            isAutomotiveActive 
-              ? "text-yellow-300 bg-yellow-300/10" 
-              : "hover:bg-white/5"
+            "flex items-center gap-1 text-white hover:text-yellow-300 transition-colors duration-200 font-medium py-2 px-3 rounded-md hover:bg-white/5"
           )}>
             Automotive
             <ChevronDown className="w-4 h-4" />
-            {isAutomotiveActive && (
-              <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-8 h-0.5 bg-yellow-300 rounded-full animate-pulse"></div>
-            )}
           </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-48">
