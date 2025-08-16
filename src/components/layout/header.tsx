@@ -358,11 +358,11 @@ const NavMenu = ({ onLinkClick, isMobile = false }: { onLinkClick?: () => void, 
   }
 
   return (
-    <nav className="flex items-center gap-6">
+    <nav className="flex items-center gap-4">
       {navLinks.map((link) => {
         const active = isActiveLink(pathname, link.href);
         return (
-          <div key={link.href} className="relative group px-2 py-2">
+          <div key={link.href} className="relative group px-1 py-2">
             <Link
               href={link.href}
               className={cn(
@@ -384,7 +384,7 @@ const NavMenu = ({ onLinkClick, isMobile = false }: { onLinkClick?: () => void, 
         );
       })}
       
-      <div className="relative group px-2 py-2">
+      <div className="relative group px-1 py-2">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button
@@ -460,7 +460,7 @@ export default function Header() {
             BestCarEvents
         </Link>
 
-        <div className="hidden lg:flex items-center gap-8">
+        <div className="hidden lg:flex items-center gap-4">
           <NavMenu />
         </div>
 
