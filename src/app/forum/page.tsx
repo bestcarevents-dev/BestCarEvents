@@ -5,21 +5,22 @@ import { Input } from "@/components/ui/input";
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import Link from "next/link";
-import { PlusCircle } from "lucide-react";
+import { PlusCircle, Star } from "lucide-react";
 import { useEffect, useState, useMemo } from "react";
 import { getFirestore, collection, getDocs, query, orderBy } from "firebase/firestore";
 import { app } from "@/lib/firebase";
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from '@/components/ui/dialog';
 import { getAuth, onAuthStateChanged, User } from 'firebase/auth';
 import PartnerAdRotator from '@/components/PartnerAdRotator';
+import ForumPostCard from '@/components/forum-post-card';
 import { defaultPageContent, fetchPageHeader, type PageHeader } from "@/lib/pageContent";
 
 interface ForumPost {
   id: string;
   title: string;
   content: string;
-  author: string;
-  date: any;
+  author: any;
+  createdAt: any;
   category: string;
   featured?: boolean;
 }
@@ -47,7 +48,7 @@ export default function ForumPage() {
       const fetchPosts = async () => {
         setLoading(true);
         const db = getFirestore(app);
-        const postsQuery = query(collection(db, "forum"), orderBy("date", "desc"));
+        const postsQuery = query(collection(db, "forum_posts"), orderBy("createdAt", "desc"));
         const snapshot = await getDocs(postsQuery);
         const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as ForumPost[];
         setPosts(data);
@@ -76,8 +77,8 @@ export default function ForumPage() {
       filtered.sort((a, b) => {
         switch (sortBy) {
           case "newest":
-            const dateA = a.date?.seconds ? new Date(a.date.seconds * 1000) : new Date(a.date || 0);
-            const dateB = b.date?.seconds ? new Date(b.date.seconds * 1000) : new Date(b.date || 0);
+            const dateA = a.createdAt?.seconds ? new Date(a.createdAt.seconds * 1000) : new Date(a.createdAt || 0);
+            const dateB = b.createdAt?.seconds ? new Date(b.createdAt.seconds * 1000) : new Date(b.createdAt || 0);
             return dateB.getTime() - dateA.getTime();
           case "title":
             return (a.title || "").localeCompare(b.title || "");

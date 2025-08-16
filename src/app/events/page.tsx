@@ -81,7 +81,7 @@ function EventsPageContent() {
       const fetchEvents = async () => {
         setLoading(true);
         const db = getFirestore(app);
-        const eventsQuery = query(collection(db, "events"), orderBy("date", "asc"));
+        const eventsQuery = query(collection(db, "events"), orderBy("eventDate", "asc"));
         const snapshot = await getDocs(eventsQuery);
         const data = snapshot.docs.map(doc => ({ documentId: doc.id, ...doc.data() }));
         setEvents(data);
@@ -104,6 +104,7 @@ function EventsPageContent() {
         const matchesSearch = searchQuery === "" || 
           event.eventName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
           event.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          event.location?.toLowerCase().includes(searchQuery.toLowerCase()) ||
           event.city?.toLowerCase().includes(searchQuery.toLowerCase()) ||
           event.country?.toLowerCase().includes(searchQuery.toLowerCase());
         
@@ -133,8 +134,8 @@ function EventsPageContent() {
       filtered.sort((a, b) => {
         switch (sortBy) {
           case "date":
-            const dateA = a.date?.seconds ? new Date(a.date.seconds * 1000) : new Date(a.date || 0);
-            const dateB = b.date?.seconds ? new Date(b.date.seconds * 1000) : new Date(b.date || 0);
+            const dateA = a.eventDate?.seconds ? new Date(a.eventDate.seconds * 1000) : new Date(a.eventDate || 0);
+            const dateB = b.eventDate?.seconds ? new Date(b.eventDate.seconds * 1000) : new Date(b.eventDate || 0);
             return dateA.getTime() - dateB.getTime();
           case "newest":
             const createdAtA = a.createdAt?.seconds ? new Date(a.createdAt.seconds * 1000) : new Date(a.createdAt || 0);
@@ -415,8 +416,8 @@ function EventsPageContent() {
                                        {...event} 
                                        featured={true} 
                                        name={event.eventName || event.name || `Event #${index + 1}`} 
-                                       date={event.date ? new Date(event.date.seconds * 1000).toLocaleDateString() : event.date} 
-                                       location={event.city} 
+                                       date={event.eventDate ? new Date(event.eventDate.seconds * 1000).toLocaleDateString() : event.date} 
+                                       location={event.location} 
                                        image={event.imageUrl || event.image} 
                                        hint={event.eventType || event.hint} 
                                      />
@@ -453,8 +454,8 @@ function EventsPageContent() {
                             {...event} 
                             featured={false} 
                             name={event.eventName || event.name || `Event #${index + 1}`} 
-                            date={event.date ? new Date(event.date.seconds * 1000).toLocaleDateString() : event.date} 
-                            location={event.city} 
+                            date={event.eventDate ? new Date(event.eventDate.seconds * 1000).toLocaleDateString() : event.date} 
+                            location={event.location} 
                             image={event.imageUrl || event.image} 
                             hint={event.eventType || event.hint} 
                           />
