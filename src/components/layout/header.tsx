@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { AlignJustify, Search, X, ChevronDown, User as UserIcon, Car, LogOut, LayoutDashboard, Calendar, Users, Gavel, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -43,6 +44,14 @@ const automotiveLinks = [
 
 const FLAG_UK = "https://flagcdn.com/gb.svg";
 const FLAG_IT = "https://flagcdn.com/it.svg";
+
+// Helper function to check if a link is active
+const isActiveLink = (pathname: string, href: string) => {
+  if (href === "/") {
+    return pathname === "/";
+  }
+  return pathname.startsWith(href);
+};
 
 const AuthButtons = ({ inMobileNav = false, user, onMobileMenuClose }: { inMobileNav?: boolean, user: User | null, onMobileMenuClose?: () => void }) => {
   const router = useRouter();
@@ -293,6 +302,8 @@ const AuthButtons = ({ inMobileNav = false, user, onMobileMenuClose }: { inMobil
 };
 
 const NavMenu = ({ onLinkClick, isMobile = false }: { onLinkClick?: () => void, isMobile?: boolean }) => {
+  const pathname = usePathname();
+
   if (isMobile) {
     return (
       <nav className="flex flex-col gap-4">
@@ -300,7 +311,10 @@ const NavMenu = ({ onLinkClick, isMobile = false }: { onLinkClick?: () => void, 
           <Link
             key={link.href}
             href={link.href}
-            className="text-white hover:text-yellow-300 transition-colors duration-200 font-medium text-lg py-2"
+            className={cn(
+              "text-white hover:text-yellow-300 transition-colors duration-200 font-medium text-lg py-2",
+              isActiveLink(pathname, link.href) && "text-yellow-300"
+            )}
             onClick={onLinkClick}
           >
             {link.label}
@@ -314,7 +328,10 @@ const NavMenu = ({ onLinkClick, isMobile = false }: { onLinkClick?: () => void, 
               <Link
                 key={link.href}
                 href={link.href}
-                className="block text-white hover:text-yellow-300 transition-colors duration-200 font-medium py-1"
+                className={cn(
+                  "block text-white hover:text-yellow-300 transition-colors duration-200 font-medium py-1",
+                  isActiveLink(pathname, link.href) && "text-yellow-300"
+                )}
                 onClick={onLinkClick}
               >
                 {link.label}
@@ -329,14 +346,21 @@ const NavMenu = ({ onLinkClick, isMobile = false }: { onLinkClick?: () => void, 
   return (
     <nav className="flex items-center gap-6">
       {navLinks.map((link) => (
-        <Link
-          key={link.href}
-          href={link.href}
-          className="text-white hover:text-yellow-300 transition-colors duration-200 font-medium"
-          onClick={onLinkClick}
-        >
-          {link.label}
-        </Link>
+        <div key={link.href} className="relative">
+          <Link
+            href={link.href}
+            className={cn(
+              "text-white hover:text-yellow-300 transition-colors duration-200 font-medium py-2 px-1 relative",
+              isActiveLink(pathname, link.href) && "text-yellow-300"
+            )}
+            onClick={onLinkClick}
+          >
+            {link.label}
+            {isActiveLink(pathname, link.href) && (
+              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-yellow-300 rounded-full"></div>
+            )}
+          </Link>
+        </div>
       ))}
       
       <DropdownMenu>
