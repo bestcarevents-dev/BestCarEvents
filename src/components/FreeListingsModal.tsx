@@ -104,7 +104,7 @@ export default function FreeListingsModal({ isOpen, onClose }: FreeListingsModal
                     ALL LISTINGS ARE
                   </h1>
                   <motion.h1 
-                    className="text-3xl sm:text-4xl font-black bg-gradient-to-r from-amber-400 via-yellow-600 to-amber-400 bg-clip-text text-transparent"
+                    className="text-3xl sm:text-4xl font-black text-amber-500"
                     animate={{ 
                       scale: [1, 1.05, 1],
                     }}
