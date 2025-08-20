@@ -126,6 +126,12 @@ export default function PartnerAdDetailPage() {
   return (
     <div className="bg-white">
       <div className="container mx-auto px-2 md:px-6 py-8 relative">
+        {/* Back */}
+        <div className="mb-4">
+          <Button variant="outline" size="sm" onClick={() => router.back()} className="text-gray-700 border-gray-300 hover:bg-gray-50">
+            <ArrowLeft className="w-4 h-4 mr-2" /> Back
+          </Button>
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
           {/* Images Section */}
           <div className="flex flex-col items-center w-full max-w-md mx-auto">
@@ -184,27 +190,27 @@ export default function PartnerAdDetailPage() {
           {/* Product Info Section */}
           <div className="flex flex-col gap-6">
             <div className="bg-gray-50 p-6 rounded-lg border border-gray-200">
-              <h1 className="text-3xl md:text-4xl font-extrabold font-headline text-primary mb-2">{ad.title || ad.shopName || ad.providerName || ad.experienceName || ad.serviceName}</h1>
+              <h1 className="text-3xl md:text-4xl font-extrabold font-headline text-gray-900 mb-2">{ad.title || ad.shopName || ad.providerName || ad.experienceName || ad.serviceName}</h1>
               <div className="flex flex-wrap items-center gap-2 mb-2">
-                <Badge variant="secondary" className="text-base px-3 py-1 font-semibold animate-pulse bg-gray-100 text-gray-700 border-gray-200">{ad.adType}</Badge>
+                <Badge variant="secondary" className="text-base px-3 py-1 font-semibold bg-gray-100 text-gray-700 border-gray-200">{ad.adType}</Badge>
               </div>
               {/* Show price if available */}
               {ad.price && (
-                <div className="text-2xl font-bold text-green-600 mb-2">{ad.price}</div>
+                <div className="text-2xl font-semibold text-gray-900 mb-2">{ad.price}</div>
               )}
               {ad.priceRange && (
-                <div className="text-xl font-semibold text-green-600 mb-2">{ad.priceRange}</div>
+                <div className="text-xl font-semibold text-gray-900 mb-2">{ad.priceRange}</div>
               )}
-              <p className="text-base text-gray-600 mb-4 max-w-xl">{ad.description}</p>
+              <p className="text-base text-gray-700 mb-4 max-w-xl leading-relaxed">{ad.description}</p>
               <div className="flex flex-wrap gap-4 mb-4">
                 {renderAdFields(ad)}
               </div>
             </div>
             {/* Sticky Contact Card */}
             <div className="lg:sticky lg:top-28 h-fit">
-              <Card className="shadow-xl border-2 border-primary/30 animate-fade-in-up">
-                <CardHeader className="bg-primary/10 rounded-t-xl">
-                  <CardTitle className="text-2xl font-headline text-primary">Contact</CardTitle>
+              <Card className="shadow-xl border border-gray-200">
+                <CardHeader className="bg-gray-50 rounded-t-xl">
+                  <CardTitle className="text-2xl font-headline text-gray-900">Contact</CardTitle>
                   <CardDescription>Get in touch with the advertiser</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -212,10 +218,24 @@ export default function PartnerAdDetailPage() {
                     <Mail className="w-5 h-5 text-muted-foreground" />
                     <span className="text-base">{ad.contactEmail}</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Star className="w-5 h-5 text-muted-foreground" />
-                    <span className="text-base">{ad.contactName}</span>
-                  </div>
+                  {ad.contactName && (
+                    <div className="flex items-center gap-2">
+                      <Star className="w-5 h-5 text-muted-foreground" />
+                      <span className="text-base">{ad.contactName}</span>
+                    </div>
+                  )}
+                  {ad.phone && (
+                    <div className="flex items-center gap-2">
+                      <Phone className="w-5 h-5 text-muted-foreground" />
+                      <span className="text-base">{ad.phone}</span>
+                    </div>
+                  )}
+                  {ad.website && (
+                    <div className="flex items-center gap-2">
+                      <Globe className="w-5 h-5 text-muted-foreground" />
+                      <a href={ad.website} target="_blank" rel="noopener noreferrer" className="text-base text-blue-600 underline">Website</a>
+                    </div>
+                  )}
                   {ad.coverageArea && (
                     <div className="flex items-center gap-2">
                       <MapPin className="w-5 h-5 text-muted-foreground" />
