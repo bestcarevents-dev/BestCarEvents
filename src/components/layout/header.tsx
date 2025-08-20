@@ -189,6 +189,13 @@ const AuthButtons = ({ inMobileNav = false, user, onMobileMenuClose }: { inMobil
           </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-56 mt-2 bg-white/95 backdrop-blur-sm border border-white/20 shadow-xl">
+          <DropdownMenuItem asChild className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-yellow-50 hover:text-yellow-700 transition-colors duration-200">
+            <Link href="/account" className="flex items-center gap-3 w-full">
+              <UserIcon className="w-4 h-4" />
+              My Account
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
           
           
           {/* My Listings Submenu */}

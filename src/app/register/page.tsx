@@ -50,7 +50,7 @@ export default function RegisterPage() {
         });
       }
 
-      router.push("/dashboard");
+      router.push("/onboarding");
     } catch (error: any) {
         let errorMessage = "Failed to create an account.";
         if (error.code === 'auth/email-already-in-use') {
@@ -66,7 +66,7 @@ export default function RegisterPage() {
 
   return (
     <div className="w-full h-screen lg:grid lg:grid-cols-2">
-       <div className="flex items-center justify-center py-12 bg-background">
+      <div className="flex items-center justify-center py-12 bg-background">
         <div className="mx-auto grid w-[350px] gap-6">
           <div className="grid gap-2 text-center">
             <h1 className="text-3xl font-bold font-headline text-primary">Create an Account</h1>
@@ -142,20 +142,20 @@ export default function RegisterPage() {
           </div>
         </div>
       </div>
-        <div className="relative flex-1 hidden w-full h-full lg:block">
-            <Image
-                src="https://images.unsplash.com/photo-1553440569-bcc63803a83d?q=80&w=2700&auto=format&fit=crop"
-                alt="Sleek black sports car interior"
-                layout="fill"
-                objectFit="cover"
-                className="opacity-90"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-            <div className="absolute top-10 right-10 text-white text-right">
-                <h1 className="text-5xl font-bold font-headline drop-shadow-lg">Join the Elite</h1>
-                <p className="mt-2 text-xl font-sans drop-shadow-md">Access exclusive events and a community of enthusiasts.</p>
-            </div>
+      <div className="relative flex-1 hidden w-full h-full lg:block">
+        <Image
+          src="https://images.unsplash.com/photo-1553440569-bcc63803a83d?q=80&w=2700&auto=format&fit=crop"
+          alt="Sleek black sports car interior"
+          layout="fill"
+          objectFit="cover"
+          className="opacity-90"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+        <div className="absolute top-10 right-10 text-white text-right">
+          <h1 className="text-5xl font-bold font-headline drop-shadow-lg">Join the Elite</h1>
+          <p className="mt-2 text-xl font-sans drop-shadow-md">Access exclusive events and a community of enthusiasts.</p>
         </div>
+      </div>
     </div>
   );
 }
