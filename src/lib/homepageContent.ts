@@ -97,6 +97,10 @@ export const defaultHomepageContent: HomepageContent = {
     ctaLabel: "View All Services",
     ctaHref: "/others",
   },
+  video: {
+    title: "Behind the Scenes",
+    text: "Get a quick peek into our world — vertical video highlights from recent shoots and events.",
+  },
   galleries: {
     main: { title: "Community Gallery", layout: 'random' },
     location1: { title: "Location Spotlight: 1", layout: 'random' },

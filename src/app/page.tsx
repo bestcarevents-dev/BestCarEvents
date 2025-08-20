@@ -2097,6 +2097,8 @@ export default function Home() {
     })();
   }, []);
 
+  const videoCopy = copy.video ?? defaultHomepageContent.video!;
+
   return (
     <div className="bg-white">
       <HeroSlider slides={copy.hero?.slides} />
@@ -2111,25 +2113,31 @@ export default function Home() {
       {/* Homepage Vertical Video Section */}
       <section className="py-12">
         <div className="container mx-auto px-4">
-          <div className="mb-6 flex items-center gap-3">
-            <div className="w-2 h-8 bg-yellow-600 rounded-full"></div>
-            <h2 className="text-2xl font-headline font-bold text-gray-900">Behind the Scenes</h2>
-            <div className="flex-1 h-px bg-gradient-to-r from-yellow-600/50 to-transparent"></div>
-          </div>
-          <div className="mx-auto max-w-xs sm:max-w-sm md:max-w-md">
-            <div className="relative bg-black rounded-xl overflow-hidden shadow-lg">
-              <div className="w-full aspect-[9/16]">
-                <video
-                  src="https://firebasestorage.googleapis.com/v0/b/bestcarevents-dev.firebasestorage.app/o/constants%2FAE662F4F-BCCB-40C8-B3E7-AF6C77BDB44A.mov?alt=media&token=5aa24a27-3c8e-4fd3-aacb-d862e37e0ec1"
-                  className="w-full h-full object-contain bg-black"
-                  controls
-                  playsInline
-                  autoPlay
-                  muted
-                  loop
-                  preload="metadata"
-                />
+          <div className="grid grid-cols-1 md:grid-cols-[auto,1fr] items-center gap-8">
+            {/* Left: Smaller video */}
+            <div className="justify-self-center md:justify-self-start">
+              <div className="relative bg-black rounded-xl overflow-hidden shadow-lg w-full max-w-[220px] sm:max-w-[260px] md:max-w-[280px]">
+                <div className="w-full aspect-[9/16]">
+                  <video
+                    src="https://firebasestorage.googleapis.com/v0/b/bestcarevents-dev.firebasestorage.app/o/constants%2FAE662F4F-BCCB-40C8-B3E7-AF6C77BDB44A.mov?alt=media&token=5aa24a27-3c8e-4fd3-aacb-d862e37e0ec1"
+                    className="w-full h-full object-contain bg-black"
+                    controls
+                    playsInline
+                    autoPlay
+                    muted
+                    loop
+                    preload="metadata"
+                  />
+                </div>
               </div>
+            </div>
+            {/* Right: Text */}
+            <div>
+              <div className="mb-3 flex items-center gap-3">
+                <div className="w-2 h-8 bg-yellow-600 rounded-full" />
+                <h2 className="text-2xl font-headline font-bold text-gray-900">{videoCopy.title}</h2>
+              </div>
+              <p className="text-gray-700 leading-relaxed max-w-prose">{videoCopy.text}</p>
             </div>
           </div>
         </div>

@@ -38,6 +38,11 @@ export type GallerySectionCopy = {
   layout?: 'random' | 'simple';
 };
 
+export type VideoSectionCopy = {
+  title: string;
+  text: string;
+};
+
 export type HomepageContent = {
   hero?: { slides: HeroSlide[] };
   promo?: PromoContent;
@@ -48,6 +53,7 @@ export type HomepageContent = {
   featuredHotels?: SectionCopy;
   featuredClubs?: SectionCopy;
   featuredServices?: SectionCopy;
+  video?: VideoSectionCopy;
   galleries?: {
     main?: GallerySectionCopy;
     location1?: GallerySectionCopy;

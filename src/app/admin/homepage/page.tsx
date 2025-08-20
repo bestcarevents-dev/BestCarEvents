@@ -74,6 +74,7 @@ export default function AdminHomepageEditor() {
           <TabsTrigger value="hero">Hero</TabsTrigger>
           <TabsTrigger value="promo">Promo</TabsTrigger>
           <TabsTrigger value="value">Value Proposition</TabsTrigger>
+          <TabsTrigger value="video">Video Section</TabsTrigger>
           <TabsTrigger value="cars">Featured Cars</TabsTrigger>
           <TabsTrigger value="events">Featured Events</TabsTrigger>
           <TabsTrigger value="auctions">Featured Auctions</TabsTrigger>
@@ -104,6 +105,14 @@ export default function AdminHomepageEditor() {
             value={content.value ?? defaultHomepageContent.value!}
             onSave={(val) => onSave("value", val)}
             saving={savingKey === "value"}
+          />
+        </TabsContent>
+
+        <TabsContent value="video">
+          <VideoEditor
+            value={content.video ?? defaultHomepageContent.video!}
+            onSave={(val) => onSave("video", val as any)}
+            saving={savingKey === "video"}
           />
         </TabsContent>
 
@@ -231,6 +240,33 @@ function HeroEditor({ slides, onSave, saving }: { slides: HeroSlide[]; onSave: (
           <Button variant="outline" onClick={addSlide}>Add Slide</Button>
           <Button onClick={() => onSave(localSlides)} disabled={saving}>
             {saving ? "Saving..." : "Save Hero"}
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function VideoEditor({ value, onSave, saving }: { value: NonNullable<HomepageContent["video"]>; onSave: (v: NonNullable<HomepageContent["video"]>) => Promise<void>; saving: boolean }) {
+  const [local, setLocal] = useState(value);
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Video Section</CardTitle>
+        <CardDescription>Edit the title and description shown next to the homepage video.</CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-3">
+        <div>
+          <Label>Title</Label>
+          <Input value={local.title} onChange={(e) => setLocal((p) => ({ ...p, title: e.target.value }))} />
+        </div>
+        <div>
+          <Label>Text</Label>
+          <Textarea value={local.text} onChange={(e) => setLocal((p) => ({ ...p, text: e.target.value }))} />
+        </div>
+        <div className="flex gap-2">
+          <Button onClick={() => onSave(local)} disabled={saving}>
+            {saving ? "Saving..." : "Save Video Section"}
           </Button>
         </div>
       </CardContent>
@@ -387,13 +423,13 @@ function GalleryTitlesEditor({ value, onSave, saving }: { value: NonNullable<Hom
       <CardContent className="space-y-3">
         <div>
           <Label>Main Gallery Title</Label>
-          <Input value={local.main?.title ?? ""} onChange={(e) => setLocal((p) => ({ ...p, main: { ...(p.main || {}), title: e.target.value } }))} />
+          <Input value={local.main?.title ?? ""} onChange={(e) => setLocal((p) => ({ ...p, main: { title: e.target.value, layout: p.main?.layout ?? 'random' } }))} />
           <div className="mt-2">
             <Label className="mr-2">Layout</Label>
             <select
               className="border rounded px-2 py-1 text-sm"
               value={local.main?.layout ?? 'random'}
-              onChange={(e) => setLocal((p) => ({ ...p, main: { ...(p.main || {}), layout: e.target.value as 'random' | 'simple' } }))}
+              onChange={(e) => setLocal((p) => ({ ...p, main: { title: p.main?.title ?? "", layout: e.target.value as 'random' | 'simple' } }))}
             >
               <option value="random">Random (masonry)</option>
               <option value="simple">Simple grid</option>
@@ -402,13 +438,13 @@ function GalleryTitlesEditor({ value, onSave, saving }: { value: NonNullable<Hom
         </div>
         <div>
           <Label>Location 1 Title</Label>
-          <Input value={local.location1?.title ?? ""} onChange={(e) => setLocal((p) => ({ ...p, location1: { ...(p.location1 || {}), title: e.target.value } }))} />
+          <Input value={local.location1?.title ?? ""} onChange={(e) => setLocal((p) => ({ ...p, location1: { title: e.target.value, layout: p.location1?.layout ?? 'random' } }))} />
           <div className="mt-2">
             <Label className="mr-2">Layout</Label>
             <select
               className="border rounded px-2 py-1 text-sm"
               value={local.location1?.layout ?? 'random'}
-              onChange={(e) => setLocal((p) => ({ ...p, location1: { ...(p.location1 || {}), layout: e.target.value as 'random' | 'simple' } }))}
+              onChange={(e) => setLocal((p) => ({ ...p, location1: { title: p.location1?.title ?? "", layout: e.target.value as 'random' | 'simple' } }))}
             >
               <option value="random">Random (masonry)</option>
               <option value="simple">Simple grid</option>
@@ -417,13 +453,13 @@ function GalleryTitlesEditor({ value, onSave, saving }: { value: NonNullable<Hom
         </div>
         <div>
           <Label>Location 2 Title</Label>
-          <Input value={local.location2?.title ?? ""} onChange={(e) => setLocal((p) => ({ ...p, location2: { ...(p.location2 || {}), title: e.target.value } }))} />
+          <Input value={local.location2?.title ?? ""} onChange={(e) => setLocal((p) => ({ ...p, location2: { title: e.target.value, layout: p.location2?.layout ?? 'random' } }))} />
           <div className="mt-2">
             <Label className="mr-2">Layout</Label>
             <select
               className="border rounded px-2 py-1 text-sm"
               value={local.location2?.layout ?? 'random'}
-              onChange={(e) => setLocal((p) => ({ ...p, location2: { ...(p.location2 || {}), layout: e.target.value as 'random' | 'simple' } }))}
+              onChange={(e) => setLocal((p) => ({ ...p, location2: { title: p.location2?.title ?? "", layout: e.target.value as 'random' | 'simple' } }))}
             >
               <option value="random">Random (masonry)</option>
               <option value="simple">Simple grid</option>
