@@ -2113,9 +2113,9 @@ export default function Home() {
       {/* Homepage Vertical Video Section */}
       <section className="py-12">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-[auto,1fr] items-center gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-[auto,auto] items-center justify-center justify-items-center gap-8">
             {/* Left: Smaller video */}
-            <div className="justify-self-center md:justify-self-start">
+            <div className="justify-self-center">
               <div className="relative bg-black rounded-xl overflow-hidden shadow-lg w-full max-w-[220px] sm:max-w-[260px] md:max-w-[280px]">
                 <div className="w-full aspect-[9/16]">
                   <video
@@ -2132,12 +2132,12 @@ export default function Home() {
               </div>
             </div>
             {/* Right: Text */}
-            <div>
-              <div className="mb-3 flex items-center gap-3">
+            <div className="text-center">
+              <div className="mb-3 flex items-center gap-3 justify-center">
                 <div className="w-2 h-8 bg-yellow-600 rounded-full" />
                 <h2 className="text-2xl font-headline font-bold text-gray-900">{videoCopy.title}</h2>
               </div>
-              <p className="text-gray-700 leading-relaxed max-w-prose">{videoCopy.text}</p>
+              <p className="text-gray-700 leading-relaxed max-w-prose mx-auto">{videoCopy.text}</p>
             </div>
           </div>
         </div>
