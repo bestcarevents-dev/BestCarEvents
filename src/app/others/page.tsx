@@ -119,6 +119,8 @@ function OthersPageContent() {
     const [sortBy, setSortBy] = useState("name");
     const searchParams = useSearchParams();
     const [header, setHeader] = useState<PageHeader>(defaultPageContent.others);
+    const [currentPage, setCurrentPage] = useState(1);
+    const servicesPerPage = 12;
 
     useEffect(() => {
       (async () => {
@@ -210,6 +212,12 @@ function OthersPageContent() {
           return 0;
       }
     });
+
+    // Pagination for regular services
+    const totalPages = Math.ceil(sortedServices.length / servicesPerPage);
+    const startIndex = (currentPage - 1) * servicesPerPage;
+    const endIndex = startIndex + servicesPerPage;
+    const paginatedServices = sortedServices.slice(startIndex, endIndex);
 
     // Group services by type for better organization
     const serviceTypes = [
@@ -354,6 +362,7 @@ function OthersPageContent() {
                   setSearchTerm("");
                   setSelectedType("all");
                   setSortBy("name");
+                  setCurrentPage(1);
                 }}
                 variant="outline"
                 className="border-[#80A0A9]/50 text-[#80A0A9] hover:bg-[#80A0A9]/10"
@@ -448,7 +457,7 @@ function OthersPageContent() {
                      );
                    })}
 
-                   {/* All Other Services - Only show if there are services that don't fit into categories */}
+                   {/* All Other Services (paginated) */}
                    {sortedServices.length > 0 && (
                      <div className="mb-6">
                        <div className="flex items-center gap-3 mb-6">
@@ -457,14 +466,64 @@ function OthersPageContent() {
                          <div className="flex-1 h-px bg-gradient-to-r from-[#80A0A9]/50 to-transparent"></div>
                        </div>
                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                          {sortedServices.map((service) => (
+                          {paginatedServices.map((service) => (
                             <ServiceCard key={service.id} {...service} />
                           ))}
                        </div>
+                       {paginatedServices.length === 0 && (
+                         <div className="text-center py-12 text-gray-600">
+                           <p className="text-lg">No services found on this page.</p>
+                         </div>
+                       )}
+
+                       {/* Pagination */}
+                       {totalPages > 1 && (
+                         <div className="mt-12">
+                           <Pagination>
+                             <PaginationContent className="bg-white border border-[#80A0A9]/30 rounded-lg p-1">
+                               <PaginationItem>
+                                 <PaginationPrevious 
+                                   href="#"
+                                   className="text-[#80A0A9] hover:text-[#80A0A9]/80 hover:bg-[#80A0A9]/10"
+                                   onClick={(e) => {
+                                     e.preventDefault();
+                                     if (currentPage > 1) setCurrentPage(currentPage - 1);
+                                   }}
+                                 />
+                               </PaginationItem>
+                               {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                                 <PaginationItem key={page}>
+                                   <PaginationLink
+                                     href="#"
+                                     className={`text-[#80A0A9] hover:text-[#80A0A9]/80 hover:bg-[#80A0A9]/10 ${currentPage === page ? 'bg-[#80A0A9] text-white hover:bg-[#80A0A9]/90' : ''}`}
+                                     onClick={(e) => {
+                                       e.preventDefault();
+                                       setCurrentPage(page);
+                                       window.scrollTo({ top: 0, behavior: 'smooth' });
+                                     }}
+                                   >
+                                     {page}
+                                   </PaginationLink>
+                                 </PaginationItem>
+                               ))}
+                               <PaginationItem>
+                                 <PaginationNext
+                                   href="#"
+                                   className="text-[#80A0A9] hover:text-[#80A0A9]/80 hover:bg-[#80A0A9]/10"
+                                   onClick={(e) => {
+                                     e.preventDefault();
+                                     if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+                                   }}
+                                 />
+                               </PaginationItem>
+                             </PaginationContent>
+                           </Pagination>
+                         </div>
+                       )}
                      </div>
                    )}
                    
-                   {sortedServices.length === 0 && (
+                   {sortedServices.length === 0 && featuredServices.length === 0 && (
                      <div className="text-center py-12 text-gray-600">
                        <p className="text-lg">No services found.</p>
                        <p className="text-sm mt-2">Be the first to register a service in your area!</p>
@@ -472,27 +531,6 @@ function OthersPageContent() {
                    )}
                  </>
                  )}
-                 <div className="mt-12">
-                    <Pagination>
-                    <PaginationContent className="bg-white border border-[#80A0A9]/30 rounded-lg p-1">
-                        <PaginationItem>
-                        <PaginationPrevious href="#" className="text-[#80A0A9] hover:text-[#80A0A9]/80 hover:bg-[#80A0A9]/10" />
-                        </PaginationItem>
-                        <PaginationItem>
-                        <PaginationLink href="#" className="text-[#80A0A9] hover:text-[#80A0A9]/80 hover:bg-[#80A0A9]/10">1</PaginationLink>
-                        </PaginationItem>
-                        <PaginationItem>
-                        <PaginationLink href="#" isActive className="bg-[#80A0A9] text-white hover:bg-[#80A0A9]/90">2</PaginationLink>
-                        </PaginationItem>
-                        <PaginationItem>
-                        <PaginationLink href="#" className="text-[#80A0A9] hover:text-[#80A0A9]/80 hover:bg-[#80A0A9]/10">3</PaginationLink>
-                        </PaginationItem>
-                        <PaginationItem>
-                        <PaginationNext href="#" className="text-[#80A0A9] hover:text-[#80A0A9]/80 hover:bg-[#80A0A9]/10" />
-                        </PaginationItem>
-                    </PaginationContent>
-                    </Pagination>
-                </div>
             </TabsContent>
           </Tabs>
         </div>

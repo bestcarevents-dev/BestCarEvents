@@ -119,9 +119,6 @@ function CarsPageContent() {
         const matchesMake = selectedMake === "all" || 
           car.make?.toLowerCase() === selectedMake.toLowerCase();
         
-        const matchesBodyStyle = selectedBodyStyle === "all" || 
-          car.bodyStyle?.toLowerCase().includes(selectedBodyStyle.toLowerCase());
-        
         const matchesTransmission = selectedTransmission === "all" || 
           car.transmission?.toLowerCase() === selectedTransmission.toLowerCase();
         
@@ -135,7 +132,7 @@ function CarsPageContent() {
           (selectedPriceRange === "50k-100k" && parseFloat(car.price) >= 50000 && parseFloat(car.price) < 100000) ||
           (selectedPriceRange === "over-100k" && parseFloat(car.price) >= 100000);
         
-        return matchesSearch && matchesMake && matchesBodyStyle && matchesTransmission && matchesDrivetrain && matchesPriceRange;
+        return matchesSearch && matchesMake && matchesTransmission && matchesDrivetrain && matchesPriceRange;
       });
 
       // Sort cars
@@ -167,7 +164,7 @@ function CarsPageContent() {
       });
 
       return filtered;
-    }, [cars, searchQuery, selectedMake, selectedBodyStyle, selectedTransmission, selectedDrivetrain, selectedPriceRange, sortBy]);
+    }, [cars, searchQuery, selectedMake, selectedTransmission, selectedDrivetrain, selectedPriceRange, sortBy]);
 
     // Separate featured and regular cars
     const featuredCars = filteredAndSortedCars.filter(car => car.featured === true);
@@ -179,21 +176,33 @@ function CarsPageContent() {
     const endIndex = startIndex + carsPerPage;
     const paginatedCars = regularCars.slice(startIndex, endIndex);
 
-    // Get unique filter options from cars
-    const makes = useMemo(() => {
-      const carMakes = cars
-        .map(car => car.make)
-        .filter(Boolean)
-        .filter((value, index, self) => self.indexOf(value) === index);
-      return carMakes;
+    // Get unique filter options from cars with counts
+    const makeCounts = useMemo(() => {
+      const counts: Record<string, number> = {};
+      for (const car of cars) {
+        const mk = (car.make || '').toString();
+        if (!mk) continue;
+        counts[mk] = (counts[mk] || 0) + 1;
+      }
+      return counts;
     }, [cars]);
 
-    const bodyStyles = useMemo(() => {
-      const styles = cars
-        .map(car => car.bodyStyle)
-        .filter(Boolean)
-        .filter((value, index, self) => self.indexOf(value) === index);
-      return styles;
+    const makes = useMemo(() => Object.keys(makeCounts).sort((a, b) => a.localeCompare(b)), [makeCounts]);
+
+    const transmissionCounts = useMemo(() => {
+      return {
+        automatic: cars.filter(c => c.transmission?.toLowerCase() === 'automatic').length,
+        manual: cars.filter(c => c.transmission?.toLowerCase() === 'manual').length,
+      };
+    }, [cars]);
+
+    const drivetrainCounts = useMemo(() => {
+      return {
+        fwd: cars.filter(c => c.drivetrain?.toLowerCase() === 'fwd').length,
+        rwd: cars.filter(c => c.drivetrain?.toLowerCase() === 'rwd').length,
+        awd: cars.filter(c => c.drivetrain?.toLowerCase() === 'awd').length,
+        '4wd': cars.filter(c => c.drivetrain?.toLowerCase() === '4wd').length,
+      } as Record<string, number>;
     }, [cars]);
 
     const handleSearch = () => {
@@ -306,7 +315,7 @@ function CarsPageContent() {
           
           {/* Filters Section - Hidden on mobile by default */}
           <div className={`${showFilters ? 'block' : 'hidden'} md:block`}>
-            <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
               <Select value={selectedMake} onValueChange={setSelectedMake}>
                 <SelectTrigger className="bg-white border-gray-300 text-gray-900">
                   <SelectValue placeholder="Make: Any" />
@@ -315,20 +324,7 @@ function CarsPageContent() {
                   <SelectItem value="all">Any Make</SelectItem>
                   {makes.map((make) => (
                     <SelectItem key={make} value={make}>
-                      {make}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <Select value={selectedBodyStyle} onValueChange={setSelectedBodyStyle}>
-                <SelectTrigger className="bg-white border-gray-300 text-gray-900">
-                  <SelectValue placeholder="Body: Any" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Any Body Style</SelectItem>
-                  {bodyStyles.map((style) => (
-                    <SelectItem key={style} value={style}>
-                      {style}
+                      {make} ({makeCounts[make] || 0})
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -339,8 +335,8 @@ function CarsPageContent() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Any Transmission</SelectItem>
-                  <SelectItem value="automatic">Automatic</SelectItem>
-                  <SelectItem value="manual">Manual</SelectItem>
+                  <SelectItem value="automatic">Automatic ({transmissionCounts.automatic})</SelectItem>
+                  <SelectItem value="manual">Manual ({transmissionCounts.manual})</SelectItem>
                 </SelectContent>
               </Select>
               <Select value={selectedDrivetrain} onValueChange={setSelectedDrivetrain}>
@@ -349,10 +345,10 @@ function CarsPageContent() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Any Drivetrain</SelectItem>
-                  <SelectItem value="fwd">FWD</SelectItem>
-                  <SelectItem value="rwd">RWD</SelectItem>
-                  <SelectItem value="awd">AWD</SelectItem>
-                  <SelectItem value="4wd">4WD</SelectItem>
+                  <SelectItem value="fwd">FWD ({drivetrainCounts.fwd || 0})</SelectItem>
+                  <SelectItem value="rwd">RWD ({drivetrainCounts.rwd || 0})</SelectItem>
+                  <SelectItem value="awd">AWD ({drivetrainCounts.awd || 0})</SelectItem>
+                  <SelectItem value="4wd">4WD ({drivetrainCounts['4wd'] || 0})</SelectItem>
                 </SelectContent>
               </Select>
               <Select value={selectedPriceRange} onValueChange={setSelectedPriceRange}>
@@ -395,7 +391,7 @@ function CarsPageContent() {
           <div className="text-center text-lg py-12 text-gray-600">Loading...</div>
         ) : filteredAndSortedCars.length === 0 ? (
           <div className="text-center py-12 text-gray-600">
-            {searchQuery || selectedMake !== "all" || selectedBodyStyle !== "all" || selectedTransmission !== "all" || selectedDrivetrain !== "all" || selectedPriceRange !== "all" ? "No cars found matching your criteria." : "No cars found."}
+            {searchQuery || selectedMake !== "all" || selectedTransmission !== "all" || selectedDrivetrain !== "all" || selectedPriceRange !== "all" ? "No cars found matching your criteria." : "No cars found."}
           </div>
         ) : (
           <>
@@ -450,7 +446,6 @@ function CarsPageContent() {
               {paginatedCars.length === 0 && (
                 <div className="text-center py-12 text-gray-600">
                   <p className="text-lg">No cars found on this page.</p>
-                  <p className="text-sm mt-2">Try adjusting your search criteria or check other pages.</p>
                 </div>
               )}
             </div>

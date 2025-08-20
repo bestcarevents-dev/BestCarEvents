@@ -491,7 +491,6 @@ function AuctionsPageContent() {
               {paginatedAuctions.length === 0 && (
                 <div className="text-center py-12 text-gray-600">
                   <p className="text-lg">No auctions found on this page.</p>
-                  <p className="text-sm mt-2">Try adjusting your search criteria or check other pages.</p>
                 </div>
               )}
             </div>

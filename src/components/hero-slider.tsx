@@ -37,8 +37,8 @@ const defaultSlides: HeroSlide[] = [
 export default function HeroSlider({ slides }: { slides?: HeroSlide[] }) {
     const [api, setApi] = useState<any>()
     const [current, setCurrent] = useState(0)
-
     const resolvedSlides = slides && slides.length > 0 ? slides : defaultSlides;
+    const [loaded, setLoaded] = useState<boolean[]>(() => new Array(resolvedSlides.length).fill(false))
 
     React.useEffect(() => {
         if (!api) {
@@ -54,6 +54,10 @@ export default function HeroSlider({ slides }: { slides?: HeroSlide[] }) {
         }
     }, [api])
 
+    React.useEffect(() => {
+        setLoaded(new Array(resolvedSlides.length).fill(false))
+    }, [resolvedSlides.length])
+
     return (
         <div className="relative w-full text-white pt-1 lg:pt-0">
             <Carousel
@@ -65,14 +69,38 @@ export default function HeroSlider({ slides }: { slides?: HeroSlide[] }) {
                 <CarouselContent>
                     {resolvedSlides.map((slide, index) => (
                         <CarouselItem key={index} className="relative w-full h-screen min-h-[700px]">
+                            {/* Fallback image shown while the main image loads */}
+                            <Image
+                                src="/home_slide.jpg"
+                                alt="Hero fallback"
+                                fill
+                                priority={index === 0}
+                                quality={90}
+                                className="object-cover"
+                            />
+                            {/* Main slide image fades in when loaded */}
                             <Image
                                 src={slide.image}
                                 alt={slide.headline}
                                 fill
                                 priority={index === 0}
                                 quality={100}
-                                className="object-cover"
+                                className={cn("object-cover transition-opacity duration-500", loaded[index] ? "opacity-100" : "opacity-0")}
                                 data-ai-hint={slide.hint}
+                                onLoadingComplete={() => {
+                                    setLoaded(prev => {
+                                        const next = [...prev];
+                                        next[index] = true;
+                                        return next;
+                                    });
+                                }}
+                                onError={() => {
+                                    setLoaded(prev => {
+                                        const next = [...prev];
+                                        next[index] = false;
+                                        return next;
+                                    });
+                                }}
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-amber-950/70 via-black/40 to-transparent"></div>
                             {/* Warm blend into page background */}

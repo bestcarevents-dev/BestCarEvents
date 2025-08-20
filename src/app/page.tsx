@@ -2107,6 +2107,34 @@ export default function Home() {
       ) : (
         <SimpleGallerySection title={copy.galleries?.main?.title ?? defaultHomepageContent.galleries!.main!.title} collectionName="gallery" max={12} />
       )}
+
+      {/* Homepage Vertical Video Section */}
+      <section className="py-12">
+        <div className="container mx-auto px-4">
+          <div className="mb-6 flex items-center gap-3">
+            <div className="w-2 h-8 bg-yellow-600 rounded-full"></div>
+            <h2 className="text-2xl font-headline font-bold text-gray-900">Behind the Scenes</h2>
+            <div className="flex-1 h-px bg-gradient-to-r from-yellow-600/50 to-transparent"></div>
+          </div>
+          <div className="mx-auto max-w-md sm:max-w-lg md:max-w-2xl">
+            <div className="relative bg-black rounded-xl overflow-hidden shadow-lg">
+              <div className="w-full aspect-[9/16]">
+                <video
+                  src="https://firebasestorage.googleapis.com/v0/b/bestcarevents-dev.firebasestorage.app/o/constants%2FAE662F4F-BCCB-40C8-B3E7-AF6C77BDB44A.mov?alt=media&token=5aa24a27-3c8e-4fd3-aacb-d862e37e0ec1"
+                  className="w-full h-full object-contain bg-black"
+                  controls
+                  playsInline
+                  autoPlay
+                  muted
+                  loop
+                  preload="metadata"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <FeaturedCarsSection copy={copy.featuredCars ?? defaultHomepageContent.featuredCars!} />
       <FeaturedEventsSection copy={copy.featuredEvents ?? defaultHomepageContent.featuredEvents!} />
       {(copy.galleries?.location1?.layout ?? 'random') === 'random' ? (
@@ -2116,9 +2144,9 @@ export default function Home() {
       )}
       <FeaturedAuctionsSection copy={copy.featuredAuctions ?? defaultHomepageContent.featuredAuctions!} />
       <FeaturedHotelsSection copy={copy.featuredHotels ?? defaultHomepageContent.featuredHotels!} />
-      {(copy.galleries?.location2?.layout ?? 'random') === 'random' ? (
+      {(copy.galleries?.location2?.layout ?? 'random') === 'random' ?
         <GallerySection title={copy.galleries?.location2?.title ?? defaultHomepageContent.galleries!.location2!.title} collectionName="gallery_location2" bgClass="bg-white" />
-      ) : (
+      : (
         <SimpleGallerySection title={copy.galleries?.location2?.title ?? defaultHomepageContent.galleries!.location2!.title} collectionName="gallery_location2" max={12} />
       )}
       <FeaturedClubsSection copy={copy.featuredClubs ?? defaultHomepageContent.featuredClubs!} />

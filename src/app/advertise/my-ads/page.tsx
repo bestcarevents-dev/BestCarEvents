@@ -125,12 +125,13 @@ export default function MyAdsPage() {
     }
   };
 
-  // Ad validation function
+  // Ad validation function (accept multiple shapes)
   const validateAd = (ad: any) => {
-    if (!ad.title && !ad.productName && !ad.type) return false;
-    if (!ad.description) return false;
-    if (!ad.imageUrls || ad.imageUrls.length === 0) return false;
-    return true;
+    const hasTitle = Boolean(ad.title || ad.productName || ad.type);
+    const hasDescription = Boolean(ad.description);
+    const hasImages = Array.isArray(ad.imageUrls) && ad.imageUrls.length > 0;
+    const hasAdType = Boolean(ad.adType || ad.type);
+    return hasTitle && hasDescription && hasImages && hasAdType;
   };
 
   // Handle ad type selection
@@ -138,7 +139,7 @@ export default function MyAdsPage() {
     if (!validateAd(ad)) {
       toast({
         title: "Ad Validation Failed",
-        description: "Please ensure your ad has a title, description, and at least one image.",
+        description: "Please ensure your ad has a title, description, ad type, and at least one image.",
         variant: "destructive",
       });
       return;
@@ -675,7 +676,7 @@ export default function MyAdsPage() {
                     <div className="text-sm text-muted-foreground mb-2">{ad.adType || ad.type}</div>
                     <div className="text-sm line-clamp-2 mb-2">{ad.description}</div>
                     {ad.imageUrls && ad.imageUrls.length > 0 && (
-                      <img src={ad.imageUrls[0]} alt="Ad" className="w-full h-32 object-cover rounded mt-2" />
+                      <img src={ad.imageUrls[0]} alt="Ad" className="w-full h-40 object-contain bg-muted rounded mt-2" />
                     )}
                   </div>
                   
