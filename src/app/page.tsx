@@ -2116,7 +2116,7 @@ export default function Home() {
             <h2 className="text-2xl font-headline font-bold text-gray-900">Behind the Scenes</h2>
             <div className="flex-1 h-px bg-gradient-to-r from-yellow-600/50 to-transparent"></div>
           </div>
-          <div className="mx-auto max-w-md sm:max-w-lg md:max-w-2xl">
+          <div className="mx-auto max-w-xs sm:max-w-sm md:max-w-md">
             <div className="relative bg-black rounded-xl overflow-hidden shadow-lg">
               <div className="w-full aspect-[9/16]">
                 <video
