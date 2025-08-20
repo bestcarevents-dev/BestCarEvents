@@ -441,32 +441,34 @@ function EventsPageContent() {
                    )}
 
                    {/* Regular Events Grid */}
-                   <div className="mb-6">
-                     <div className="flex items-center gap-3 mb-6">
-                       <div className="w-2 h-8 bg-yellow-600 rounded-full"></div>
-                       <h2 className="text-2xl font-headline font-bold text-gray-900">All Events</h2>
-                       <div className="flex-1 h-px bg-gradient-to-r from-yellow-600/50 to-transparent"></div>
-                     </div>
-                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                        {paginatedEvents.map((event, index) => (
-                          <EventCard 
-                            key={event.id} 
-                            {...event} 
-                            featured={false} 
-                            name={event.eventName || event.name || `Event #${index + 1}`} 
-                            date={event.eventDate ? new Date(event.eventDate.seconds * 1000).toLocaleDateString() : event.date} 
-                            location={event.location} 
-                            image={event.imageUrl || event.image} 
-                            hint={event.eventType || event.hint} 
-                          />
-                        ))}
-                     </div>
-                     {paginatedEvents.length === 0 && (
-                       <div className="text-center py-12 text-gray-600">
-                         <p className="text-lg">No events found on this page.</p>
+                   {regularEvents.length > 0 && (
+                     <div className="mb-6">
+                       <div className="flex items-center gap-3 mb-6">
+                         <div className="w-2 h-8 bg-yellow-600 rounded-full"></div>
+                         <h2 className="text-2xl font-headline font-bold text-gray-900">All Events</h2>
+                         <div className="flex-1 h-px bg-gradient-to-r from-yellow-600/50 to-transparent"></div>
                        </div>
-                     )}
-                   </div>
+                       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                         {paginatedEvents.map((event, index) => (
+                           <EventCard 
+                             key={event.id} 
+                             {...event} 
+                             featured={false} 
+                             name={event.eventName || event.name || `Event #${index + 1}`} 
+                             date={event.eventDate ? new Date(event.eventDate.seconds * 1000).toLocaleDateString() : event.date} 
+                             location={event.location} 
+                             image={event.imageUrl || event.image} 
+                             hint={event.eventType || event.hint} 
+                           />
+                         ))}
+                       </div>
+                       {paginatedEvents.length === 0 && (
+                         <div className="text-center py-12 text-gray-600">
+                           <p className="text-lg">No events found on this page.</p>
+                         </div>
+                       )}
+                     </div>
+                   )}
                  </>
                  )}
                  

@@ -468,32 +468,34 @@ function AuctionsPageContent() {
             )}
 
             {/* Regular Auctions Grid */}
-            <div className="mb-6">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-2 h-8 bg-[#80A0A9] rounded-full"></div>
-                <h2 className="text-2xl font-headline font-bold text-gray-900">All Auctions</h2>
-                <div className="flex-1 h-px bg-gradient-to-r from-[#80A0A9]/50 to-transparent"></div>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {paginatedAuctions.map((auction, index) => (
-                  <CarCard
-                    key={auction.documentId || index}
-                    id={auction.documentId}
-                    name={auction.auctionName || "Auction"}
-                    price={`${auction.auctionHouse || "Auction House"}`}
-                    location={`${auction.city}, ${auction.state}`}
-                    image={auction.imageUrl || "https://via.placeholder.com/600x400?text=No+Image"}
-                    hint={auction.auctionType || "auction"}
-                    featured={false}
-                  />
-                ))}
-              </div>
-              {paginatedAuctions.length === 0 && (
-                <div className="text-center py-12 text-gray-600">
-                  <p className="text-lg">No auctions found on this page.</p>
+            {regularAuctions.length > 0 && (
+              <div className="mb-6">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-2 h-8 bg-[#80A0A9] rounded-full"></div>
+                  <h2 className="text-2xl font-headline font-bold text-gray-900">All Auctions</h2>
+                  <div className="flex-1 h-px bg-gradient-to-r from-[#80A0A9]/50 to-transparent"></div>
                 </div>
-              )}
-            </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                  {paginatedAuctions.map((auction, index) => (
+                    <CarCard
+                      key={auction.documentId || index}
+                      id={auction.documentId}
+                      name={auction.auctionName || "Auction"}
+                      price={`${auction.auctionHouse || "Auction House"}`}
+                      location={`${auction.city}, ${auction.state}`}
+                      image={auction.imageUrl || "https://via.placeholder.com/600x400?text=No+Image"}
+                      hint={auction.auctionType || "auction"}
+                      featured={false}
+                    />
+                  ))}
+                </div>
+                {paginatedAuctions.length === 0 && (
+                  <div className="text-center py-12 text-gray-600">
+                    <p className="text-lg">No auctions found on this page.</p>
+                  </div>
+                )}
+              </div>
+            )}
           </>
         )}
 

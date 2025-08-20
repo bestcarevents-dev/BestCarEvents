@@ -481,48 +481,50 @@ function CarHotelsPageContent() {
             )}
 
             {/* Regular Hotels Grid */}
-            <div className="mb-6">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-2 h-8 bg-[#80A0A9] rounded-full"></div>
-                <h2 className="text-2xl font-headline font-bold text-gray-900">All Hotels</h2>
-                <div className="flex-1 h-px bg-gradient-to-r from-[#80A0A9]/50 to-transparent"></div>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {paginatedHotels.map(hotel => (
-                  <Card key={hotel.documentId} className="flex flex-col bg-white border border-gray-200">
-                    <CardHeader className="p-0 relative">
-                      <Link href={`/hotels/${hotel.documentId}`} className="block relative aspect-video">
-                        <Image src={hotel.imageUrls?.[0] || hotel.imageUrl || "https://via.placeholder.com/800x500?text=No+Image"} alt={hotel.hotelName} layout="fill" objectFit="cover" data-ai-hint={hotel.hotelName}/>
-                      </Link>
-                    </CardHeader>
-                    <CardContent className="p-6 flex-grow">
-                      <CardTitle className="font-headline text-gray-900">
-                        <Link href={`/hotels/${hotel.documentId}`} className="hover:text-[#80A0A9] transition-colors">{hotel.hotelName}</Link>
-                      </CardTitle>
-                      <CardDescription className="text-gray-600">{hotel.city}, {hotel.state}</CardDescription>
-                      <ul className="mt-4 space-y-2 text-sm text-gray-600">
-                        {(hotel.features || []).map((feature: string) => (
-                          <li key={feature} className="flex items-center">
-                            <svg className="w-4 h-4 mr-2 text-[#80A0A9]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>
-                            {feature}
-                          </li>
-                        ))}
-                      </ul>
-                    </CardContent>
-                    <CardFooter className="p-6 pt-0">
-                      <Button asChild variant="outline" className="w-full border-[#80A0A9] text-[#80A0A9] hover:bg-[#80A0A9]/10">
-                        <Link href={`/hotels/${hotel.documentId}`}>View Services</Link>
-                      </Button>
-                    </CardFooter>
-                  </Card>
-                ))}
-              </div>
-              {paginatedHotels.length === 0 && (
-                <div className="text-center py-12 text-gray-600">
-                  <p className="text-lg">No hotels found on this page.</p>
+            {regularHotels.length > 0 && (
+              <div className="mb-6">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-2 h-8 bg-[#80A0A9] rounded-full"></div>
+                  <h2 className="text-2xl font-headline font-bold text-gray-900">All Hotels</h2>
+                  <div className="flex-1 h-px bg-gradient-to-r from-[#80A0A9]/50 to-transparent"></div>
                 </div>
-              )}
-            </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                  {paginatedHotels.map(hotel => (
+                    <Card key={hotel.documentId} className="flex flex-col bg-white border border-gray-200">
+                      <CardHeader className="p-0 relative">
+                        <Link href={`/hotels/${hotel.documentId}`} className="block relative aspect-video">
+                          <Image src={hotel.imageUrls?.[0] || hotel.imageUrl || "https://via.placeholder.com/800x500?text=No+Image"} alt={hotel.hotelName} layout="fill" objectFit="cover" data-ai-hint={hotel.hotelName}/>
+                        </Link>
+                      </CardHeader>
+                      <CardContent className="p-6 flex-grow">
+                        <CardTitle className="font-headline text-gray-900">
+                          <Link href={`/hotels/${hotel.documentId}`} className="hover:text-[#80A0A9] transition-colors">{hotel.hotelName}</Link>
+                        </CardTitle>
+                        <CardDescription className="text-gray-600">{hotel.city}, {hotel.state}</CardDescription>
+                        <ul className="mt-4 space-y-2 text-sm text-gray-600">
+                          {(hotel.features || []).map((feature: string) => (
+                            <li key={feature} className="flex items-center">
+                              <svg className="w-4 h-4 mr-2 text-[#80A0A9]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>
+                              {feature}
+                            </li>
+                          ))}
+                        </ul>
+                      </CardContent>
+                      <CardFooter className="p-6 pt-0">
+                        <Button asChild variant="outline" className="w-full border-[#80A0A9] text-[#80A0A9] hover:bg-[#80A0A9]/10">
+                          <Link href={`/hotels/${hotel.documentId}`}>View Services</Link>
+                        </Button>
+                      </CardFooter>
+                    </Card>
+                  ))}
+                </div>
+                {paginatedHotels.length === 0 && (
+                  <div className="text-center py-12 text-gray-600">
+                    <p className="text-lg">No hotels found on this page.</p>
+                  </div>
+                )}
+              </div>
+            )}
           </>
         )}
 

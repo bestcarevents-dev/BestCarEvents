@@ -486,58 +486,60 @@ function ClubsPageContent() {
               )}
 
               {/* Regular Clubs Grid */}
-              <div className="mt-16">
-                <div className="flex items-center gap-3 mb-8">
-                  <div className="w-2 h-8 bg-[#80A0A9] rounded-full"></div>
-                  <h2 className="text-3xl font-bold font-headline text-center md:text-left text-gray-900">Discover the Community</h2>
-                  <div className="flex-1 h-px bg-gradient-to-r from-[#80A0A9]/50 to-transparent"></div>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-                  {paginatedClubs.map((club, idx) => (
-                    <Link
-                      key={club.documentId || idx}
-                      href={`/clubs/${club.documentId}`}
-                      className="group relative bg-white border border-gray-200 rounded-2xl shadow-lg p-6 flex flex-col items-center transition-transform duration-300 hover:-translate-y-2 hover:shadow-2xl hover:border-[#80A0A9]/60 animate-fade-in cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#80A0A9]"
-                      tabIndex={0}
-                      aria-label={`View details for ${club.clubName}`}
-                    >
-                      <div className="absolute -top-6 left-1/2 -translate-x-1/2 z-10">
-                        <div className="rounded-full border-4 border-white shadow-lg bg-white w-20 h-20 flex items-center justify-center overflow-hidden animate-fade-in">
-                          <Image src={club.logoUrl || "/placeholder.jpg"} alt={club.clubName} width={80} height={80} className="object-contain w-full h-full" />
-                        </div>
-                      </div>
-                      <div className="mt-12 w-full flex flex-col items-center">
-                        <h3 className="text-xl font-bold font-headline text-[#80A0A9] mb-1 text-center group-hover:underline transition-all">{club.clubName}</h3>
-                        <div className="flex items-center gap-2 mb-2 text-gray-600">
-                          <Users className="w-4 h-4" />
-                          <span>{club.city}, {club.country}</span>
-                        </div>
-                        <p className="text-sm text-gray-600 mb-4 text-center line-clamp-3">{club.description}</p>
-                        <div className="flex gap-3 mt-auto">
-                          {club.website && (
-                            <a href={club.website} target="_blank" rel="noopener noreferrer" className="text-[#80A0A9] hover:text-[#80A0A9]/80 transition-colors" title="Website">
-                              <Globe className="w-5 h-5" />
-                            </a>
-                          )}
-                          {club.socialMediaLink && (
-                            <a href={club.socialMediaLink} target="_blank" rel="noopener noreferrer" className="text-[#80A0A9] hover:text-[#80A0A9]/80 transition-colors" title="Social Media">
-                              <LinkIcon className="w-5 h-5" />
-                            </a>
-                          )}
-                        </div>
-                      </div>
-                      <div className="absolute top-4 right-4">
-                        <span className="inline-block bg-gradient-to-r from-[#80A0A9] to-[#80A0A9]/90 text-white text-xs font-bold px-3 py-1 rounded-full shadow">{club.createdAt?.seconds ? new Date(club.createdAt.seconds * 1000).toLocaleDateString() : "New"}</span>
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-                {paginatedClubs.length === 0 && (
-                  <div className="text-center py-12 text-gray-600">
-                    <p className="text-lg">No clubs found on this page.</p>
+              {regularClubs.length > 0 && (
+                <div className="mt-16">
+                  <div className="flex items-center gap-3 mb-8">
+                    <div className="w-2 h-8 bg-[#80A0A9] rounded-full"></div>
+                    <h2 className="text-3xl font-bold font-headline text-center md:text-left text-gray-900">Discover the Community</h2>
+                    <div className="flex-1 h-px bg-gradient-to-r from-[#80A0A9]/50 to-transparent"></div>
                   </div>
-                )}
-              </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                    {paginatedClubs.map((club, idx) => (
+                      <Link
+                        key={club.documentId || idx}
+                        href={`/clubs/${club.documentId}`}
+                        className="group relative bg-white border border-gray-200 rounded-2xl shadow-lg p-6 flex flex-col items-center transition-transform duration-300 hover:-translate-y-2 hover:shadow-2xl hover:border-[#80A0A9]/60 animate-fade-in cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#80A0A9]"
+                        tabIndex={0}
+                        aria-label={`View details for ${club.clubName}`}
+                      >
+                        <div className="absolute -top-6 left-1/2 -translate-x-1/2 z-10">
+                          <div className="rounded-full border-4 border-white shadow-lg bg-white w-20 h-20 flex items-center justify-center overflow-hidden animate-fade-in">
+                            <Image src={club.logoUrl || "/placeholder.jpg"} alt={club.clubName} width={80} height={80} className="object-contain w-full h-full" />
+                          </div>
+                        </div>
+                        <div className="mt-12 w-full flex flex-col items-center">
+                          <h3 className="text-xl font-bold font-headline text-[#80A0A9] mb-1 text-center group-hover:underline transition-all">{club.clubName}</h3>
+                          <div className="flex items-center gap-2 mb-2 text-gray-600">
+                            <Users className="w-4 h-4" />
+                            <span>{club.city}, {club.country}</span>
+                          </div>
+                          <p className="text-sm text-gray-600 mb-4 text-center line-clamp-3">{club.description}</p>
+                          <div className="flex gap-3 mt-auto">
+                            {club.website && (
+                              <a href={club.website} target="_blank" rel="noopener noreferrer" className="text-[#80A0A9] hover:text-[#80A0A9]/80 transition-colors" title="Website">
+                                <Globe className="w-5 h-5" />
+                              </a>
+                            )}
+                            {club.socialMediaLink && (
+                              <a href={club.socialMediaLink} target="_blank" rel="noopener noreferrer" className="text-[#80A0A9] hover:text-[#80A0A9]/80 transition-colors" title="Social Media">
+                                <LinkIcon className="w-5 h-5" />
+                              </a>
+                            )}
+                          </div>
+                        </div>
+                        <div className="absolute top-4 right-4">
+                          <span className="inline-block bg-gradient-to-r from-[#80A0A9] to-[#80A0A9]/90 text-white text-xs font-bold px-3 py-1 rounded-full shadow">{club.createdAt?.seconds ? new Date(club.createdAt.seconds * 1000).toLocaleDateString() : "New"}</span>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                  {paginatedClubs.length === 0 && (
+                    <div className="text-center py-12 text-gray-600">
+                      <p className="text-lg">No clubs found on this page.</p>
+                    </div>
+                  )}
+                </div>
+              )}
             </>
           )}
 

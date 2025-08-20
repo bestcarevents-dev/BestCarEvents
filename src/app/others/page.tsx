@@ -458,7 +458,7 @@ function OthersPageContent() {
                    })}
 
                    {/* All Other Services (paginated) */}
-                   {sortedServices.length > 0 && (
+                   {sortedServices.length > 0 && regularServices.length > 0 && (
                      <div className="mb-6">
                        <div className="flex items-center gap-3 mb-6">
                          <div className="w-2 h-8 bg-[#80A0A9] rounded-full"></div>
