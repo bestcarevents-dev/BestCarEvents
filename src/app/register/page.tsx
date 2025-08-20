@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
-import { getFirestore, doc, setDoc } from "firebase/firestore"; // Import Firestore functions
+import { getAuth, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { getFirestore, doc, setDoc, getDoc } from "firebase/firestore"; // Import Firestore functions
 import { app } from "@/lib/firebase";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -61,6 +61,30 @@ export default function RegisterPage() {
             errorMessage = "Password is too weak. Please choose a stronger password.";
         }
         setError(errorMessage);
+    }
+  };
+
+  const handleGoogleSignup = async () => {
+    setError(null);
+    try {
+      const provider = new GoogleAuthProvider();
+      const result = await signInWithPopup(auth, provider);
+      const u = result.user;
+      if (u) {
+        const userRef = doc(db, "users", u.uid);
+        const snap = await getDoc(userRef);
+        if (!snap.exists()) {
+          await setDoc(userRef, {
+            name: u.displayName || "",
+            email: u.email,
+            userType: "regular",
+            createdAt: new Date(),
+          });
+        }
+      }
+      router.push("/onboarding");
+    } catch (e: any) {
+      setError(e?.message || "Google sign-up failed.");
     }
   };
 
@@ -130,7 +154,7 @@ export default function RegisterPage() {
             <Button type="submit" className="w-full font-semibold">
               Create Account
             </Button>
-            <Button variant="outline" className="w-full">
+            <Button type="button" variant="outline" className="w-full" onClick={handleGoogleSignup}>
               Sign up with Google
             </Button>
           </form>
