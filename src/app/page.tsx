@@ -2127,7 +2127,7 @@ export default function Home() {
       <section className="relative h-screen w-full -mt-20 overflow-hidden">
         <video
           ref={videoRef}
-          src="https://firebasestorage.googleapis.com/v0/b/bestcarevents-dev.firebasestorage.app/o/constants%2FAE662F4F-BCCB-40C8-B3E7-AF6C77BDB44A.mov?alt=media&token=5aa24a27-3c8e-4fd3-aacb-d862e37e0ec1"
+          src="https://firebasestorage.googleapis.com/v0/b/bestcarevents-dev.firebasestorage.app/o/homepage%2Fhero%2Fhomepage_video.mp4?alt=media&token=3a1fee0e-e09d-4900-a097-327b112a1c93"
           className="absolute inset-0 h-full w-full object-cover"
           playsInline
           autoPlay
