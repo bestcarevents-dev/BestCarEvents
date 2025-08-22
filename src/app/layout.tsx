@@ -43,7 +43,7 @@ export default function RootLayout({
           <GlobalNewsletterProvider>
             <FreeListingsProvider>
               <Header />
-              <main className="flex-1 mt-24">{children}</main>
+              <main className="flex-1 mt-20">{children}</main>
               <Footer />
               <Toaster />
             </FreeListingsProvider>

@@ -692,7 +692,7 @@ export default function MyAdsPage() {
                   
                   {/* Ad Type Selection */}
                   <div className="mt-2">
-                    <label className="block text-xs font-semibold mb-1">Ad Type:</label>
+                    <label className="block text-xs font-semibold mb-1">Choose Ad Type:</label>
                     {!ad.bannerType ? (
                       <div className="space-y-2">
                         <div className="flex items-center gap-2">
