@@ -36,11 +36,17 @@ export default function SimpleGallerySection({ title, collectionName, max = 12 }
     <section className="py-12 bg-white">
       <div className="container mx-auto px-4">
         <h2 className="text-2xl font-headline font-bold text-gray-900 mb-6">{title}</h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-0">
           {images.map((url, i) => (
-            <a key={i} href={url} target="_blank" rel="noreferrer" className="block aspect-square overflow-hidden rounded-lg border">
+            <a key={i} href={url} target="_blank" rel="noreferrer" className="group relative block aspect-square overflow-hidden">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={url} alt="Gallery" className="w-full h-full object-cover" />
+              <img 
+                src={url} 
+                alt="Gallery" 
+                className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
+              />
+              {/* Vintage vignette highlight on hover */}
+              <div className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-[radial-gradient(circle_at_center,transparent_45%,rgba(0,0,0,0.55)_100%)]" />
             </a>
           ))}
         </div>
