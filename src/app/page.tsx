@@ -2101,6 +2101,23 @@ export default function Home() {
 
   return (
     <div className="bg-white">
+      {/* Fullscreen vertical video above hero; -mt-20 cancels global layout spacing on homepage only */}
+      <section className="relative h-screen w-full -mt-20">
+        <div className="absolute inset-0 bg-black" />
+        <div className="relative z-10 flex items-center justify-center h-full">
+          <div className="h-full aspect-[9/16]">
+            <video
+              src="https://firebasestorage.googleapis.com/v0/b/bestcarevents-dev.firebasestorage.app/o/constants%2FAE662F4F-BCCB-40C8-B3E7-AF6C77BDB44A.mov?alt=media&token=5aa24a27-3c8e-4fd3-aacb-d862e37e0ec1"
+              className="h-full w-full object-contain"
+              playsInline
+              autoPlay
+              muted
+              loop
+              preload="metadata"
+            />
+          </div>
+        </div>
+      </section>
       <HeroSlider slides={copy.hero?.slides} />
       <PromoAnnouncement copy={copy.promo ?? defaultHomepageContent.promo!} />
       <ValueProposition copy={copy.value ?? defaultHomepageContent.value!} />
@@ -2110,38 +2127,7 @@ export default function Home() {
         <SimpleGallerySection title={copy.galleries?.main?.title ?? defaultHomepageContent.galleries!.main!.title} collectionName="gallery" max={12} />
       )}
 
-      {/* Homepage Vertical Video Section */}
-      <section className="py-12">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-[auto,auto] items-center justify-center justify-items-center gap-8">
-            {/* Left: Smaller video */}
-            <div className="justify-self-center">
-              <div className="relative bg-black rounded-xl overflow-hidden shadow-lg w-full max-w-[220px] sm:max-w-[260px] md:max-w-[280px]">
-                <div className="w-full aspect-[9/16]">
-                  <video
-                    src="https://firebasestorage.googleapis.com/v0/b/bestcarevents-dev.firebasestorage.app/o/constants%2FAE662F4F-BCCB-40C8-B3E7-AF6C77BDB44A.mov?alt=media&token=5aa24a27-3c8e-4fd3-aacb-d862e37e0ec1"
-                    className="w-full h-full object-contain bg-black"
-                    controls
-                    playsInline
-                    autoPlay
-                    muted
-                    loop
-                    preload="metadata"
-                  />
-                </div>
-              </div>
-            </div>
-            {/* Right: Text */}
-            <div className="text-center">
-              <div className="mb-3 flex items-center gap-3 justify-center">
-                <div className="w-2 h-8 bg-yellow-600 rounded-full" />
-                <h2 className="text-2xl font-headline font-bold text-gray-900">{videoCopy.title}</h2>
-              </div>
-              <p className="text-gray-700 leading-relaxed max-w-prose mx-auto">{videoCopy.text}</p>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* Removed previous mid-page vertical video section */}
 
       <FeaturedCarsSection copy={copy.featuredCars ?? defaultHomepageContent.featuredCars!} />
       <FeaturedEventsSection copy={copy.featuredEvents ?? defaultHomepageContent.featuredEvents!} />
