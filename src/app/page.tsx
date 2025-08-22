@@ -2097,8 +2097,6 @@ export default function Home() {
     })();
   }, []);
 
-  const videoCopy = copy.video ?? defaultHomepageContent.video!;
-
   return (
     <div className="bg-white">
       {/* Fullscreen vertical video above hero; -mt-20 cancels global layout spacing on homepage only */}
