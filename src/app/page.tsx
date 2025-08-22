@@ -2119,6 +2119,8 @@ export default function Home() {
     };
   }, []);
 
+  const videoCopy = copy.video ?? defaultHomepageContent.video!;
+
   return (
     <div className="bg-white">
       {/* Fullscreen vertical video above hero; -mt-20 cancels global layout spacing on homepage only */}
@@ -2132,8 +2134,23 @@ export default function Home() {
           muted
           loop
           preload="auto"
-          poster="/home_slide.jpg"
+          poster="/video_fall.jpg"
         />
+        {/* Luxury text overlay in the lower third */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent" />
+          <div className="relative h-full flex items-end justify-center pb-16 md:pb-20">
+            <div className="container mx-auto px-4 text-center">
+              <h2 className="font-headline uppercase tracking-[0.2em] text-white drop-shadow-2xl text-3xl sm:text-4xl md:text-5xl lg:text-6xl">
+                {videoCopy.title}
+              </h2>
+              <div className="mx-auto mt-4 h-[2px] w-24 bg-gradient-to-r from-yellow-500 to-yellow-300" />
+              <p className="mt-6 text-neutral-200/95 text-base sm:text-lg md:text-xl max-w-3xl mx-auto leading-relaxed">
+                {videoCopy.text}
+              </p>
+            </div>
+          </div>
+        </div>
         {/* Optional subtle gradient to blend with header/hero below for a luxury feel */}
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-b from-transparent to-black/30" />
       </section>
