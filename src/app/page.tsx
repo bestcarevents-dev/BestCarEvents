@@ -2155,7 +2155,7 @@ export default function Home() {
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-b from-transparent to-black/30" />
       </section>
       {/* Spacer: subtle white blend before the hero slider */}
-      <div className="h-24 sm:h-16 bg-gradient-to-b from-white to-[#E0D8C1]" />
+      {/* <div className="h-24 sm:h-16 bg-gradient-to-b from-white to-[#E0D8C1]" /> */}
       <HeroSlider slides={copy.hero?.slides} />
       <PromoAnnouncement copy={copy.promo ?? defaultHomepageContent.promo!} />
       <ValueProposition copy={copy.value ?? defaultHomepageContent.value!} />
