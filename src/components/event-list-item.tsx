@@ -5,7 +5,8 @@ import { Card, CardContent } from './ui/card';
 import { Button } from './ui/button';
 
 export type EventListItemProps = {
-  id: number;
+  id?: string | number;
+  documentId?: string;
   name: string;
   date: string;
   location: string;
@@ -14,7 +15,9 @@ export type EventListItemProps = {
   description: string;
 };
 
-export default function EventListItem({ name, date, location, image, hint, description }: EventListItemProps) {
+export default function EventListItem({ id, documentId, name, date, location, image, hint, description }: EventListItemProps) {
+  const resolvedId = typeof documentId !== 'undefined' ? documentId : (typeof id !== 'undefined' ? String(id) : '');
+  const href = resolvedId ? `/events/${resolvedId}` : '/events';
   return (
     <Card className="w-full overflow-hidden shadow-lg transition-shadow duration-300 hover:shadow-2xl bg-white border-gray-200">
       <div className="flex flex-col md:flex-row">
@@ -40,13 +43,13 @@ export default function EventListItem({ name, date, location, image, hint, descr
               </div>
             </div>
             <h3 className="font-headline font-bold text-2xl text-gray-900 mb-3">
-              <Link href="/events" className="hover:text-yellow-600 transition-colors">{name}</Link>
+              <Link href={href} className="hover:text-yellow-600 transition-colors">{name}</Link>
             </h3>
             <p className="text-gray-600 line-clamp-2 leading-relaxed">{description}</p>
           </div>
           <div className="mt-6 flex justify-end">
             <Button asChild variant="outline" className="border-gray-300 text-gray-700 hover:bg-gray-50">
-              <Link href="/events">
+              <Link href={href}>
                 View Event <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
             </Button>

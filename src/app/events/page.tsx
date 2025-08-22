@@ -410,10 +410,11 @@ function EventsPageContent() {
                            >
                              <CarouselContent className="-ml-2 md:-ml-4">
                                {featuredEvents.map((event, index) => (
-                                 <CarouselItem key={event.id} className="pl-2 md:pl-4 basis-full md:basis-1/2 lg:basis-1/3 xl:basis-1/4">
+                                 <CarouselItem key={event.documentId || event.id || index} className="pl-2 md:pl-4 basis-full md:basis-1/2 lg:basis-1/3 xl:basis-1/4">
                                    <div className="p-2">
                                      <EventCard 
                                        {...event} 
+                                       documentId={event.documentId}
                                        featured={true} 
                                        name={event.eventName || event.name || `Event #${index + 1}`} 
                                        date={event.eventDate ? new Date(event.eventDate.seconds * 1000).toLocaleDateString() : event.date} 
@@ -451,8 +452,9 @@ function EventsPageContent() {
                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                          {paginatedEvents.map((event, index) => (
                            <EventCard 
-                             key={event.id} 
+                             key={event.documentId || event.id || index} 
                              {...event} 
+                             documentId={event.documentId}
                              featured={false} 
                              name={event.eventName || event.name || `Event #${index + 1}`} 
                              date={event.eventDate ? new Date(event.eventDate.seconds * 1000).toLocaleDateString() : event.date} 

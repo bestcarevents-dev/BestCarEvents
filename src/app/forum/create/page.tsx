@@ -213,7 +213,7 @@ export default function CreatePostPage() {
                       <SelectTrigger className="bg-white border-gray-300 text-gray-900 focus:border-yellow-400 focus:ring-yellow-400">
                         <SelectValue placeholder="Select a category" />
                       </SelectTrigger>
-                      <SelectContent className="bg-white border border-gray-200">
+                      <SelectContent className="bg-white border border-gray-200 text-gray-900">
                         {categories.map(cat => (
                           <SelectItem key={cat.value} value={cat.value}>
                             {cat.label}

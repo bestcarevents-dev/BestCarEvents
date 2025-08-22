@@ -168,7 +168,7 @@ export default function HostEventPage() {
                                         {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
                                     </Button>
                                 </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0 bg-white border border-gray-200">
+                                <PopoverContent className="w-auto p-0 bg-white border border-gray-200 text-gray-900">
                                     <Calendar
                                         mode="single"
                                         selected={field.value}
@@ -204,7 +204,7 @@ export default function HostEventPage() {
                           render={({ field }) => (
                               <Select onValueChange={field.onChange} defaultValue={field.value}>
                                   <SelectTrigger className="bg-white border-gray-300 text-gray-900 focus:border-yellow-400 focus:ring-yellow-400"><SelectValue placeholder="Select event type" /></SelectTrigger>
-                                  <SelectContent className="bg-white border border-gray-200">
+                                  <SelectContent className="bg-white border border-gray-200 text-gray-900">
                                       <SelectItem value="Car Show">Car Show</SelectItem>
                                       <SelectItem value="Race">Race</SelectItem>
                                       <SelectItem value="Meetup">Meetup</SelectItem>

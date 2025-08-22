@@ -5,7 +5,8 @@ import { Calendar, MapPin, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 
 type EventCardProps = {
-  id: number; // Add id to props
+  documentId?: string;
+  id?: string | number;
   name: string;
   date: string;
   location: string;
@@ -14,9 +15,11 @@ type EventCardProps = {
   featured?: boolean;
 };
 
-export default function EventCard({ id, name, date, location, image, hint, featured }: EventCardProps) {
+export default function EventCard({ documentId, id, name, date, location, image, hint, featured }: EventCardProps) {
+  const resolvedId = typeof documentId !== 'undefined' ? documentId : (typeof id !== 'undefined' ? String(id) : '');
+  const href = resolvedId ? `/events/${resolvedId}` : '/events';
   return (
-    <Link href={`/events/${id}`} passHref>
+    <Link href={href} passHref>
       <Card className="overflow-hidden flex flex-col group bg-transparent border-0 shadow-none rounded-none cursor-pointer">
           <div className="relative overflow-hidden rounded-2xl">
             <Image src={image} alt={name} width={600} height={400} className="object-cover aspect-video w-full group-hover:scale-105 transition-transform duration-500 ease-in-out" data-ai-hint={hint}/>

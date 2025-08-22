@@ -181,7 +181,7 @@ export default function RegisterAuctionPage() {
                                     {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
                                   </Button>
                                 </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0 bg-white border border-gray-200">
+                                <PopoverContent className="w-auto p-0 bg-white border border-gray-200 text-gray-900">
                                   <Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus />
                                 </PopoverContent>
                               </Popover>
@@ -204,7 +204,7 @@ export default function RegisterAuctionPage() {
                                     {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
                                   </Button>
                                 </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0 bg-white border border-gray-200">
+                                <PopoverContent className="w-auto p-0 bg-white border border-gray-200 text-gray-900">
                                   <Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus />
                                 </PopoverContent>
                               </Popover>
@@ -255,7 +255,7 @@ export default function RegisterAuctionPage() {
                                 <SelectTrigger className="bg-white border-gray-300 text-gray-900 focus:border-yellow-400 focus:ring-yellow-400">
                                   <SelectValue placeholder="Select..." />
                                 </SelectTrigger>
-                                <SelectContent className="bg-white border border-gray-200">
+                                <SelectContent className="bg-white border border-gray-200 text-gray-900">
                                   <SelectItem value="Online">Online</SelectItem>
                                   <SelectItem value="In-Person">In-Person</SelectItem>
                                   <SelectItem value="Hybrid">Hybrid</SelectItem>

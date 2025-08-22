@@ -127,7 +127,17 @@ export default function MyAdsPage() {
 
   // Ad validation function (accept multiple shapes)
   const validateAd = (ad: any) => {
-    const hasTitle = Boolean(ad.title || ad.productName || ad.type);
+    const hasTitle = Boolean(
+      ad.title ||
+      ad.productName ||
+      ad.type ||
+      ad.shopName ||
+      ad.providerName ||
+      ad.experienceName ||
+      ad.serviceName ||
+      ad.websiteName ||
+      ad.businessName
+    );
     const hasDescription = Boolean(ad.description);
     const hasImages = Array.isArray(ad.imageUrls) && ad.imageUrls.length > 0;
     const hasAdType = Boolean(ad.adType || ad.type);
