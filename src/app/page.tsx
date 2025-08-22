@@ -2137,6 +2137,8 @@ export default function Home() {
         {/* Optional subtle gradient to blend with header/hero below for a luxury feel */}
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-b from-transparent to-black/30" />
       </section>
+      {/* Spacer: subtle white blend before the hero slider */}
+      <div className="h-12 sm:h-16 bg-gradient-to-b from-transparent to-white" />
       <HeroSlider slides={copy.hero?.slides} />
       <PromoAnnouncement copy={copy.promo ?? defaultHomepageContent.promo!} />
       <ValueProposition copy={copy.value ?? defaultHomepageContent.value!} />
