@@ -182,7 +182,7 @@ const AuthButtons = ({ inMobileNav = false, user, onMobileMenuClose }: { inMobil
     return (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <button className="flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium text-white ring-1 ring-white/10 hover:bg-white/5 hover:ring-[#E0D8C1]/40 focus:outline-none focus:ring-2 focus:ring-white/20 transition-all duration-200">
+          <button className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-white hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/20 transition-all duration-200">
             <UserIcon className="w-4 h-4" />
             {user.email}
             <ChevronDown className="w-4 h-4 ml-1 transition-transform duration-200" />
@@ -373,23 +373,20 @@ const NavMenu = ({ onLinkClick, isMobile = false }: { onLinkClick?: () => void, 
             <Link
               href={link.href}
               className={cn(
-                "font-medium transition-colors duration-200 px-3 py-1.5 rounded-full ring-1 ring-white/10 tracking-[0.02em]",
-                active 
-                  ? "text-[#E0D8C1] bg-[#E0D8C1]/10 ring-[#E0D8C1]/30" 
-                  : "text-white hover:text-[#E0D8C1] hover:ring-[#E0D8C1]/40 hover:bg-white/5"
+                "font-medium transition-colors duration-200",
+                active ? "text-yellow-300" : "text-white hover:text-yellow-300"
               )}
               onClick={onLinkClick}
             >
               {link.label}
             </Link>
             <span
-               aria-hidden
+              aria-hidden
               className={cn(
-                "pointer-events-none absolute -bottom-1 left-1/2 -translate-x-1/2 h-0.5 rounded-full bg-[#E0D8C1] transition-all duration-200",
-                active ? "w-8 opacity-100" : "w-0 opacity-0 group-hover:w-8 group-hover:opacity-80"
+                "pointer-events-none absolute -bottom-1 left-1/2 -translate-x-1/2 h-0.5 rounded-full bg-yellow-300 transition-all duration-200",
+                active ? "w-6 opacity-100" : "w-0 opacity-0 group-hover:w-6 group-hover:opacity-80"
               )}
             />
-            <span aria-hidden className="hidden xl:block pointer-events-none absolute right-0 top-1/2 -translate-y-1/2 h-5 w-px bg-white/10" />
           </div>
         );
       })}
@@ -398,10 +395,10 @@ const NavMenu = ({ onLinkClick, isMobile = false }: { onLinkClick?: () => void, 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button
-               className={cn(
-                "flex items-center gap-1 font-medium px-3 py-1.5 rounded-full ring-1 ring-white/10 transition-colors duration-200 hover:ring-[#E0D8C1]/40 hover:bg-white/5",
-                isAutomotiveActive ? "text-[#E0D8C1] ring-[#E0D8C1]/30 bg-[#E0D8C1]/10" : "text-white"
-               )}
+              className={cn(
+                "flex items-center gap-1 font-medium transition-colors duration-200",
+                isAutomotiveActive ? "text-yellow-300" : "text-white hover:text-yellow-300"
+              )}
             >
               Automotive
               <ChevronDown className="w-4 h-4" />
@@ -462,7 +459,7 @@ export default function Header() {
       <div className="container mx-auto flex items-center justify-between h-20">
         <Link href="/" className="flex items-center gap-2 text-xl font-bold font-headline tracking-tighter">
             <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-br from-[#E0D8C1]/40 via-white/20 to-[#80A0A9]/30 rounded-full p-1 shadow-lg hidden lg:block"></div>
+                <div className="absolute inset-0 bg-gradient-to-br from-amber-50/50 via-white/30 to-orange-50/50 rounded-full p-1 shadow-lg hidden lg:block"></div>
                 <div className="relative z-10 p-2">
                     <Image src="/logo.png" alt="BestCarEvents Logo" width={70} height={70} />
                 </div>
@@ -478,7 +475,7 @@ export default function Header() {
             {/* Language Dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="flex items-center gap-1 px-2.5 py-1 rounded-full ring-1 ring-white/10 hover:bg-white/5 focus:outline-none">
+                <button className="flex items-center gap-1 px-2 py-1 rounded hover:bg-muted/20 focus:outline-none">
                   <Image 
                     src={language === 'it' ? FLAG_IT : FLAG_UK} 
                     alt={language === 'it' ? "Italiano" : "English (UK)"} 
@@ -577,8 +574,6 @@ export default function Header() {
           </SheetContent>
         </Sheet>
       </div>
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-[#E0D8C1]/40 to-transparent" />
-      <div className="pointer-events-none absolute inset-x-0 bottom-[3px] h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
     </header>
   );
 }
