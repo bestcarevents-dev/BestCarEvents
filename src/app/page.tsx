@@ -2138,32 +2138,20 @@ export default function Home() {
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-b from-transparent to-black/30" />
       </section>
       {/* Spacer: subtle white blend before the hero slider */}
-      <div className="h-12 sm:h-16 bg-gradient-to-b from-transparent to-white" />
+      <div className="h-24 sm:h-16 bg-gradient-to-b from-white to-[#E0D8C1]" />
       <HeroSlider slides={copy.hero?.slides} />
       <PromoAnnouncement copy={copy.promo ?? defaultHomepageContent.promo!} />
       <ValueProposition copy={copy.value ?? defaultHomepageContent.value!} />
-      {(copy.galleries?.main?.layout ?? 'random') === 'random' ? (
-        <GallerySection title={copy.galleries?.main?.title ?? defaultHomepageContent.galleries!.main!.title} collectionName="gallery" bgClass="bg-white" />
-      ) : (
-        <SimpleGallerySection title={copy.galleries?.main?.title ?? defaultHomepageContent.galleries!.main!.title} collectionName="gallery" max={12} />
-      )}
+      <SimpleGallerySection title={copy.galleries?.main?.title ?? defaultHomepageContent.galleries!.main!.title} collectionName="gallery" max={12} />
 
       {/* Removed previous mid-page vertical video section */}
 
       <FeaturedCarsSection copy={copy.featuredCars ?? defaultHomepageContent.featuredCars!} />
       <FeaturedEventsSection copy={copy.featuredEvents ?? defaultHomepageContent.featuredEvents!} />
-      {(copy.galleries?.location1?.layout ?? 'random') === 'random' ? (
-        <GallerySection title={copy.galleries?.location1?.title ?? defaultHomepageContent.galleries!.location1!.title} collectionName="gallery_location1" bgClass="bg-[#E0D8C1]" />
-      ) : (
-        <SimpleGallerySection title={copy.galleries?.location1?.title ?? defaultHomepageContent.galleries!.location1!.title} collectionName="gallery_location1" max={12} />
-      )}
+      <SimpleGallerySection title={copy.galleries?.location1?.title ?? defaultHomepageContent.galleries!.location1!.title} collectionName="gallery_location1" max={12} />
       <FeaturedAuctionsSection copy={copy.featuredAuctions ?? defaultHomepageContent.featuredAuctions!} />
       <FeaturedHotelsSection copy={copy.featuredHotels ?? defaultHomepageContent.featuredHotels!} />
-      {(copy.galleries?.location2?.layout ?? 'random') === 'random' ?
-        <GallerySection title={copy.galleries?.location2?.title ?? defaultHomepageContent.galleries!.location2!.title} collectionName="gallery_location2" bgClass="bg-white" />
-      : (
-        <SimpleGallerySection title={copy.galleries?.location2?.title ?? defaultHomepageContent.galleries!.location2!.title} collectionName="gallery_location2" max={12} />
-      )}
+      <SimpleGallerySection title={copy.galleries?.location2?.title ?? defaultHomepageContent.galleries!.location2!.title} collectionName="gallery_location2" max={12} />
       <FeaturedClubsSection copy={copy.featuredClubs ?? defaultHomepageContent.featuredClubs!} />
       <FeaturedOtherServicesSection copy={copy.featuredServices ?? defaultHomepageContent.featuredServices!} />
     </div>
