@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, BadgeCheck, Trophy, Group, Clock, Star, Map, Shield, Package } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { getFirestore, collection, getDocs, query, orderBy, limit } from "firebase/firestore";
 import { app } from "@/lib/firebase";
 import HeroSlider from '@/components/hero-slider';
@@ -2085,6 +2085,7 @@ const FeaturedOtherServicesSection = ({ copy }: { copy: NonNullable<HomepageCont
 
 export default function Home() {
   const [copy, setCopy] = useState<HomepageContent>(defaultHomepageContent);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -2097,24 +2098,44 @@ export default function Home() {
     })();
   }, []);
 
+  // Best-effort autoplay on load and after first user interaction
+  useEffect(() => {
+    const attemptPlay = () => {
+      const el = videoRef.current;
+      if (!el) return;
+      el.play().catch(() => {});
+    };
+    attemptPlay();
+    const onInteract = () => {
+      attemptPlay();
+      document.removeEventListener('click', onInteract);
+      document.removeEventListener('touchstart', onInteract);
+    };
+    document.addEventListener('click', onInteract, { once: true });
+    document.addEventListener('touchstart', onInteract, { once: true });
+    return () => {
+      document.removeEventListener('click', onInteract);
+      document.removeEventListener('touchstart', onInteract);
+    };
+  }, []);
+
   return (
     <div className="bg-white">
       {/* Fullscreen vertical video above hero; -mt-20 cancels global layout spacing on homepage only */}
-      <section className="relative h-screen w-full -mt-20">
-        <div className="absolute inset-0 bg-black" />
-        <div className="relative z-10 flex items-center justify-center h-full">
-          <div className="h-full aspect-[9/16]">
-            <video
-              src="https://firebasestorage.googleapis.com/v0/b/bestcarevents-dev.firebasestorage.app/o/constants%2FAE662F4F-BCCB-40C8-B3E7-AF6C77BDB44A.mov?alt=media&token=5aa24a27-3c8e-4fd3-aacb-d862e37e0ec1"
-              className="h-full w-full object-contain"
-              playsInline
-              autoPlay
-              muted
-              loop
-              preload="metadata"
-            />
-          </div>
-        </div>
+      <section className="relative h-screen w-full -mt-20 overflow-hidden">
+        <video
+          ref={videoRef}
+          src="https://firebasestorage.googleapis.com/v0/b/bestcarevents-dev.firebasestorage.app/o/constants%2FAE662F4F-BCCB-40C8-B3E7-AF6C77BDB44A.mov?alt=media&token=5aa24a27-3c8e-4fd3-aacb-d862e37e0ec1"
+          className="absolute inset-0 h-full w-full object-cover"
+          playsInline
+          autoPlay
+          muted
+          loop
+          preload="auto"
+          poster="/home_slide.jpg"
+        />
+        {/* Optional subtle gradient to blend with header/hero below for a luxury feel */}
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-b from-transparent to-black/30" />
       </section>
       <HeroSlider slides={copy.hero?.slides} />
       <PromoAnnouncement copy={copy.promo ?? defaultHomepageContent.promo!} />

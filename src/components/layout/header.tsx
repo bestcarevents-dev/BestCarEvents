@@ -432,6 +432,7 @@ export default function Header() {
   const [user, setUser] = useState<User | null>(null);
   const { language, setLanguage } = useLanguage();
   const auth = getAuth(app);
+  const pathname = usePathname();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -453,7 +454,11 @@ export default function Header() {
     <header
       className={cn(
         "fixed top-0 z-50 w-full text-white transition-all duration-300",
-        scrolled ? "bg-amber-950/40 backdrop-blur-md border-b border-yellow-200/30 shadow-lg" : "bg-slate-800/40 backdrop-blur-md border-b border-blue-200/30 shadow-lg"
+        pathname === "/" && !scrolled
+          ? "bg-transparent backdrop-blur-0 border-b-0 shadow-none"
+          : (scrolled
+              ? "bg-amber-950/40 backdrop-blur-md border-b border-yellow-200/30 shadow-lg"
+              : "bg-slate-800/40 backdrop-blur-md border-b border-blue-200/30 shadow-lg")
       )}
     >
       <div className="container mx-auto flex items-center justify-between h-20">
