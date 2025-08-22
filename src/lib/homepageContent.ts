@@ -98,8 +98,8 @@ export const defaultHomepageContent: HomepageContent = {
     ctaHref: "/others",
   },
   video: {
-    title: "Behind the Scenes",
-    text: "Get a quick peek into our world — vertical video highlights from recent shoots and events.",
+    title: "Best Car Events",
+    text: "Discover the best car events worldwide — free listings for cars, auctions, clubs, hotels, services.",
   },
   galleries: {
     main: { title: "Community Gallery", layout: 'random' },
