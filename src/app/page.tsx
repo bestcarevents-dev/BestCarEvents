@@ -152,7 +152,9 @@ const PromoAnnouncement = ({ copy }: { copy: NonNullable<HomepageContent["promo"
               <Button 
                 asChild 
                 size="lg" 
-                className="bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-bold text-lg md:text-xl px-12 py-6 rounded-full shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300"
+                className="group relative overflow-hidden text-gray-900 font-semibold text-lg md:text-xl px-10 md:px-12 py-5 md:py-6 rounded-full shadow-lg ring-1 ring-yellow-500/40 transition-all duration-300
+                           bg-gradient-to-b from-yellow-400 via-yellow-400 to-yellow-500 hover:from-yellow-500 hover:via-yellow-500 hover:to-yellow-600
+                           hover:-translate-y-0.5"
               >
                 <Link href={copy.ctaHref}>{copy.ctaLabel}</Link>
               </Button>
@@ -593,7 +595,7 @@ const FeaturedCarsSection = ({ copy }: { copy: NonNullable<HomepageContent["feat
                                 <Button
                                     variant="outline"
                                     size="icon"
-                                    className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-white/90 backdrop-blur-sm border-gray-300 hover:bg-white transition-all duration-200 shadow-lg"
+                                    className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-white/90 backdrop-blur-sm border border-yellow-500/40 hover:bg-white transition-all duration-200 shadow-lg rounded-full"
                                     onClick={prevSlide}
                                 >
                                     <ChevronLeft className="h-6 w-6" />
@@ -601,7 +603,7 @@ const FeaturedCarsSection = ({ copy }: { copy: NonNullable<HomepageContent["feat
                                 <Button
                                     variant="outline"
                                     size="icon"
-                                    className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-white/90 backdrop-blur-sm border-gray-300 hover:bg-white transition-all duration-200 shadow-lg"
+                                    className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-white/90 backdrop-blur-sm border border-yellow-500/40 hover:bg-white transition-all duration-200 shadow-lg rounded-full"
                                     onClick={nextSlide}
                                 >
                                     <ChevronRight className="h-6 w-6" />
@@ -630,7 +632,9 @@ const FeaturedCarsSection = ({ copy }: { copy: NonNullable<HomepageContent["feat
                     </div>
                 )}
                 <div className="text-center mt-16">
-                    <Button size="lg" asChild className="font-bold rounded-full">
+                    <Button size="lg" asChild className="rounded-full px-8 py-5 font-semibold text-gray-900 shadow-lg ring-1 ring-yellow-500/40
+                                                  bg-gradient-to-b from-yellow-400 via-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600
+                                                  transition-all duration-300 hover:-translate-y-0.5">
                         <Link href={copy.ctaHref}>{copy.ctaLabel} <ArrowRight className="w-5 h-5 ml-2" /></Link>
                     </Button>
                 </div>
@@ -819,7 +823,7 @@ const FeaturedEventsSection = ({ copy }: { copy: NonNullable<HomepageContent["fe
                 <Button
                   variant="outline"
                   size="icon"
-                  className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-white/90 backdrop-blur-sm border-gray-300 hover:bg-white transition-all duration-200 shadow-lg"
+                  className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-white/90 backdrop-blur-sm border border-yellow-500/40 hover:bg-white transition-all duration-200 shadow-lg rounded-full"
                   onClick={prevSlide}
                 >
                   <ChevronLeft className="h-6 w-6 text-gray-700" />
@@ -827,7 +831,7 @@ const FeaturedEventsSection = ({ copy }: { copy: NonNullable<HomepageContent["fe
                 <Button
                   variant="outline"
                   size="icon"
-                  className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-white/90 backdrop-blur-sm border-gray-300 hover:bg-white transition-all duration-200 shadow-lg"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-white/90 backdrop-blur-sm border border-yellow-500/40 hover:bg-white transition-all duration-200 shadow-lg rounded-full"
                   onClick={nextSlide}
                 >
                   <ChevronRight className="h-6 w-6 text-gray-700" />
@@ -856,7 +860,9 @@ const FeaturedEventsSection = ({ copy }: { copy: NonNullable<HomepageContent["fe
           </div>
         )}
         <div className="text-center mt-16">
-          <Button size="lg" asChild className="font-bold rounded-full">
+          <Button size="lg" asChild className="rounded-full px-8 py-5 font-semibold text-gray-900 shadow-lg ring-1 ring-yellow-500/40
+                                            bg-gradient-to-b from-yellow-400 via-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600
+                                            transition-all duration-300 hover:-translate-y-0.5">
             <Link href={copy.ctaHref}>
               {copy.ctaLabel} <ArrowRight className="w-5 h-5 ml-2" />
             </Link>
@@ -1060,7 +1066,7 @@ const FeaturedAuctionsSection = ({ copy }: { copy: NonNullable<HomepageContent["
                 <Button
                   variant="outline"
                   size="icon"
-                  className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-white/90 backdrop-blur-sm border-gray-300 hover:bg-white transition-all duration-200 shadow-lg"
+                  className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-white/90 backdrop-blur-sm border border-yellow-500/40 hover:bg-white transition-all duration-200 shadow-lg rounded-full"
                   onClick={prevSlide}
                 >
                   <ChevronLeft className="h-6 w-6" />
@@ -1068,7 +1074,7 @@ const FeaturedAuctionsSection = ({ copy }: { copy: NonNullable<HomepageContent["
                 <Button
                   variant="outline"
                   size="icon"
-                  className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-white/90 backdrop-blur-sm border-gray-300 hover:bg-white transition-all duration-200 shadow-lg"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-white/90 backdrop-blur-sm border border-yellow-500/40 hover:bg-white transition-all duration-200 shadow-lg rounded-full"
                   onClick={nextSlide}
                 >
                   <ChevronRight className="h-6 w-6" />
@@ -1097,7 +1103,9 @@ const FeaturedAuctionsSection = ({ copy }: { copy: NonNullable<HomepageContent["
           </div>
         )}
         <div className="text-center mt-16">
-          <Button size="lg" asChild className="font-bold rounded-full">
+          <Button size="lg" asChild className="rounded-full px-8 py-5 font-semibold text-gray-900 shadow-lg ring-1 ring-yellow-500/40
+                                            bg-gradient-to-b from-yellow-400 via-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600
+                                            transition-all duration-300 hover:-translate-y-0.5">
             <Link href={copy.ctaHref}>
               {copy.ctaLabel} <ArrowRight className="w-5 h-5 ml-2" />
             </Link>
@@ -1272,7 +1280,7 @@ const FeaturedHotelsSection = ({ copy }: { copy: NonNullable<HomepageContent["fe
                               </ul>
                             </CardContent>
                             <CardFooter className="p-6 pt-0">
-                              <Button asChild variant="outline" className="w-full border-gray-300 text-gray-700 hover:bg-gray-50">
+                              <Button asChild variant="outline" className="w-full rounded-full border border-yellow-500/40 text-gray-900 hover:bg-white shadow-sm">
                                 <Link href={`/hotels/${hotel.id}`}>View Services</Link>
                               </Button>
                             </CardFooter>
@@ -1324,7 +1332,7 @@ const FeaturedHotelsSection = ({ copy }: { copy: NonNullable<HomepageContent["fe
                             </ul>
                           </CardContent>
                           <CardFooter className="p-6 pt-0">
-                            <Button asChild variant="outline" className="w-full border-gray-300 text-gray-700 hover:bg-gray-50">
+                            <Button asChild variant="outline" className="w-full rounded-full border border-yellow-500/40 text-gray-900 hover:bg-white shadow-sm">
                               <Link href={`/hotels/${hotel.id}`}>View Services</Link>
                             </Button>
                           </CardFooter>
@@ -1343,7 +1351,7 @@ const FeaturedHotelsSection = ({ copy }: { copy: NonNullable<HomepageContent["fe
                 <Button
                   variant="outline"
                   size="icon"
-                  className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-white/90 backdrop-blur-sm border-gray-300 hover:bg-white transition-all duration-200 shadow-lg"
+                  className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-white/90 backdrop-blur-sm border border-yellow-500/40 hover:bg-white transition-all duration-200 shadow-lg rounded-full"
                   onClick={prevSlide}
                 >
                   <ChevronLeft className="h-6 w-6" />
@@ -1351,7 +1359,7 @@ const FeaturedHotelsSection = ({ copy }: { copy: NonNullable<HomepageContent["fe
                 <Button
                   variant="outline"
                   size="icon"
-                  className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-white/90 backdrop-blur-sm border-gray-300 hover:bg-white transition-all duration-200 shadow-lg"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-white/90 backdrop-blur-sm border border-yellow-500/40 hover:bg-white transition-all duration-200 shadow-lg rounded-full"
                   onClick={nextSlide}
                 >
                   <ChevronRight className="h-6 w-6" />
@@ -1380,7 +1388,9 @@ const FeaturedHotelsSection = ({ copy }: { copy: NonNullable<HomepageContent["fe
           </div>
         )}
         <div className="text-center mt-16">
-          <Button size="lg" asChild className="font-bold rounded-full">
+          <Button size="lg" asChild className="rounded-full px-8 py-5 font-semibold text-gray-900 shadow-lg ring-1 ring-yellow-500/40
+                                            bg-gradient-to-b from-yellow-400 via-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600
+                                            transition-all duration-300 hover:-translate-y-0.5">
             <Link href={copy.ctaHref}>
               {copy.ctaLabel} <ArrowRight className="w-5 h-5 ml-2" />
             </Link>
@@ -1924,13 +1934,13 @@ const FeaturedOtherServicesSection = ({ copy }: { copy: NonNullable<HomepageCont
                               </div>
                               
                               <div className="flex items-center justify-between">
-                                <Button asChild size="sm" className="flex-1 mr-2 bg-yellow-600 hover:bg-yellow-700 text-white">
+                                <Button asChild size="sm" className="flex-1 mr-2 rounded-full text-gray-900 shadow-md ring-1 ring-yellow-500/40 bg-gradient-to-b from-yellow-400 via-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600">
                                   <Link href={`/others/${service.id}`}>
                                     View Details
                                   </Link>
                                 </Button>
                                 {service.contactInfo && (
-                                  <Button asChild variant="outline" size="sm" className="border-gray-300 text-gray-700 hover:bg-gray-50">
+                                  <Button asChild variant="outline" size="sm" className="rounded-full border border-yellow-500/40 text-gray-900 hover:bg-white shadow-sm">
                                     <a href={`mailto:${service.contactInfo}?subject=Inquiry about ${service.serviceName}`}>
                                       Contact
                                     </a>
@@ -2006,13 +2016,13 @@ const FeaturedOtherServicesSection = ({ copy }: { copy: NonNullable<HomepageCont
                             </div>
                             
                             <div className="flex items-center justify-between">
-                              <Button asChild size="sm" className="flex-1 mr-2 bg-yellow-600 hover:bg-yellow-700 text-white">
+                              <Button asChild size="sm" className="flex-1 mr-2 rounded-full text-gray-900 shadow-md ring-1 ring-yellow-500/40 bg-gradient-to-b from-yellow-400 via-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600">
                                 <Link href={`/others/${service.id}`}>
                                   View Details
                                 </Link>
                               </Button>
                               {service.contactInfo && (
-                                <Button asChild variant="outline" size="sm" className="border-gray-300 text-gray-700 hover:bg-gray-50">
+                                <Button asChild variant="outline" size="sm" className="rounded-full border border-yellow-500/40 text-gray-900 hover:bg-white shadow-sm">
                                   <a href={`mailto:${service.contactInfo}?subject=Inquiry about ${service.serviceName}`}>
                                     Contact
                                   </a>
