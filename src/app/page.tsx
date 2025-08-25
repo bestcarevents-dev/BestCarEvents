@@ -163,7 +163,7 @@ const PromoAnnouncement = ({ copy }: { copy: NonNullable<HomepageContent["promo"
         </div>
         
         {/* Newsletter Section */}
-        <div className="text-center pt-8 mt-8 md:pt-12 md:mt-12 border-t border-yellow-400/20">
+        <div className="text-center pt-6 mt-6 md:pt-8 md:mt-8 lg:pt-10 lg:mt-10 border-t border-yellow-400/20">
           <NewsletterSubscribe />
         </div>
       </div>
@@ -514,11 +514,11 @@ const FeaturedCarsSection = ({ copy }: { copy: NonNullable<HomepageContent["feat
     const isCarousel = featuredCars.length > 2;
 
     return (
-        <section className="py-12 sm:py-20 md:py-28 bg-[#E0D8C1]">
+        <section className="py-12 sm:py-16 md:py-20 lg:py-24 bg-[#E0D8C1]">
             <div className="container mx-auto px-4">
-                <div className="text-center max-w-3xl mx-auto mb-10 md:mb-16">
+                <div className="text-center max-w-3xl mx-auto mb-8 md:mb-12 lg:mb-14">
                     <h2 className="text-3xl sm:text-4xl md:text-5xl font-headline font-extrabold tracking-tight text-gray-900">{copy.title}</h2>
-                    <p className="mt-3 md:mt-4 text-base md:text-lg text-gray-700">{copy.description}</p>
+                    <p className="mt-2 md:mt-3 text-base md:text-lg text-gray-700">{copy.description}</p>
                 </div>
                 {loading ? (
                     <div className="text-center text-base md:text-lg py-8 md:py-12 text-gray-600">Loading featured cars...</div>
@@ -750,11 +750,11 @@ const FeaturedEventsSection = ({ copy }: { copy: NonNullable<HomepageContent["fe
   };
 
   return (
-    <section className="py-12 sm:py-20 md:py-28 bg-[#80A0A9]">
+    <section className="py-12 sm:py-16 md:py-20 lg:py-24 bg-[#80A0A9]">
       <div className="container mx-auto px-4">
-        <div className="text-center max-w-3xl mx-auto mb-10 md:mb-16">
+        <div className="text-center max-w-3xl mx-auto mb-8 md:mb-12 lg:mb-14">
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-headline font-extrabold tracking-tight text-white">{copy.title}</h2>
-          <p className="mt-3 md:mt-4 text-base md:text-lg text-white/90">{copy.description}</p>
+          <p className="mt-2 md:mt-3 text-base md:text-lg text-white/90">{copy.description}</p>
         </div>
         {loading ? (
           <div className="text-center text-base md:text-lg py-8 md:py-12 text-gray-600">Loading upcoming events...</div>
@@ -981,11 +981,11 @@ const FeaturedAuctionsSection = ({ copy }: { copy: NonNullable<HomepageContent["
   };
 
   return (
-    <section className="py-12 sm:py-20 md:py-28 bg-white">
+    <section className="py-12 sm:py-16 md:py-20 lg:py-24 bg-white">
       <div className="container mx-auto px-4">
-        <div className="text-center max-w-3xl mx-auto mb-10 md:mb-16">
+        <div className="text-center max-w-3xl mx-auto mb-8 md:mb-12 lg:mb-14">
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-headline font-extrabold tracking-tight text-gray-900">{copy.title}</h2>
-          <p className="mt-3 md:mt-4 text-base md:text-lg text-gray-600">{copy.description}</p>
+          <p className="mt-2 md:mt-3 text-base md:text-lg text-gray-600">{copy.description}</p>
         </div>
         {loading ? (
           <div className="text-center text-base md:text-lg py-8 md:py-12 text-gray-600">Loading live auctions...</div>
@@ -1212,11 +1212,11 @@ const FeaturedHotelsSection = ({ copy }: { copy: NonNullable<HomepageContent["fe
   const isCarousel = featuredHotels.length > 3;
 
   return (
-    <section className="py-12 sm:py-20 md:py-28 bg-white">
+    <section className="py-12 sm:py-16 md:py-20 lg:py-24 bg-white">
       <div className="container mx-auto px-4">
-        <div className="text-center max-w-3xl mx-auto mb-10 md:mb-16">
+        <div className="text-center max-w-3xl mx-auto mb-8 md:mb-12 lg:mb-14">
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-headline font-extrabold tracking-tight text-gray-900">{copy.title}</h2>
-          <p className="mt-3 md:mt-4 text-base md:text-lg text-gray-600">{copy.description}</p>
+          <p className="mt-2 md:mt-3 text-base md:text-lg text-gray-600">{copy.description}</p>
         </div>
         {loading ? (
           <div className="text-center text-base md:text-lg py-8 md:py-12 text-gray-600">Loading featured hotels...</div>
@@ -1509,11 +1509,11 @@ const FeaturedClubsSection = ({ copy }: { copy: NonNullable<HomepageContent["fea
   };
 
   return (
-    <section className="py-12 sm:py-20 md:py-28 bg-[#80A0A9]">
+    <section className="py-12 sm:py-16 md:py-20 lg:py-24 bg-[#80A0A9]">
       <div className="container mx-auto px-4">
-        <div className="text-center max-w-3xl mx-auto mb-10 md:mb-16">
+        <div className="text-center max-w-3xl mx-auto mb-8 md:mb-12 lg:mb-14">
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-headline font-extrabold tracking-tight text-white">{copy.title}</h2>
-          <p className="mt-3 md:mt-4 text-base md:text-lg text-white/90">{copy.description}</p>
+          <p className="mt-2 md:mt-3 text-base md:text-lg text-white/90">{copy.description}</p>
         </div>
         {loading ? (
           <div className="text-center text-base md:text-lg py-8 md:py-12 text-gray-600">Loading featured clubs...</div>
@@ -1848,11 +1848,11 @@ const FeaturedOtherServicesSection = ({ copy }: { copy: NonNullable<HomepageCont
   const isCarousel = featuredServices.length > 4;
 
   return (
-    <section className="py-12 sm:py-20 md:py-28 bg-white">
+    <section className="py-12 sm:py-16 md:py-20 lg:py-24 bg-white">
       <div className="container mx-auto px-4">
-        <div className="text-center max-w-3xl mx-auto mb-10 md:mb-16">
+        <div className="text-center max-w-3xl mx-auto mb-8 md:mb-12 lg:mb-14">
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-headline font-extrabold tracking-tight text-gray-900">{copy.title}</h2>
-          <p className="mt-3 md:mt-4 text-base md:text-lg text-gray-600">{copy.description}</p>
+          <p className="mt-2 md:mt-3 text-base md:text-lg text-gray-600">{copy.description}</p>
         </div>
         {loading ? (
           <div className="text-center text-base md:text-lg py-8 md:py-12 text-gray-600">Loading other services...</div>
