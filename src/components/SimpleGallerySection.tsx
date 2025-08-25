@@ -29,13 +29,13 @@ export default function SimpleGallerySection({ title, collectionName, max = 12 }
     run();
   }, [collectionName, max]);
 
-  if (loading) return <div className="container mx-auto px-4 py-12 text-center text-gray-600">Loading gallery...</div>;
+  if (loading) return <div className="container mx-auto px-4 py-8 md:py-12 text-center text-gray-600">Loading gallery...</div>;
   if (images.length === 0) return null;
 
   return (
-    <section className="py-12 bg-white">
+    <section className="py-8 md:py-12 bg-white">
       <div className="container mx-auto px-4">
-        <h2 className="text-2xl font-headline font-bold text-gray-900 mb-6">{title}</h2>
+        <h2 className="text-xl md:text-2xl font-headline font-bold text-gray-900 mb-4 md:mb-6">{title}</h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-0">
           {images.map((url, i) => (
             <a key={i} href={url} target="_blank" rel="noreferrer" className="group relative block aspect-square overflow-hidden">
