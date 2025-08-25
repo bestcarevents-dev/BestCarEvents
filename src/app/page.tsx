@@ -126,7 +126,7 @@ const PromoAnnouncement = ({ copy }: { copy: NonNullable<HomepageContent["promo"
           
           {/* Main content */}
           <div className="relative flex flex-col items-center text-center">
-            <div className="inline-flex items-center gap-2 bg-yellow-400/20 backdrop-blur-sm px-4 py-2 rounded-full mb-6">
+            <div className="inline-flex items-center gap-2 bg-yellow-400/20 backdrop-blur-sm px-4 py-2 rounded-full mb-4 md:mb-6">
               <span className="animate-pulse">🎉</span>
               <span className="font-semibold text-gray-900">{copy.badgeText}</span>
               <span className="animate-pulse">🎉</span>
@@ -136,7 +136,7 @@ const PromoAnnouncement = ({ copy }: { copy: NonNullable<HomepageContent["promo"
               {copy.mainHeading}
             </h2>
             
-            <div className="mt-8 flex flex-wrap justify-center gap-4 text-lg md:text-xl">
+            <div className="mt-6 md:mt-8 flex flex-wrap justify-center gap-3 md:gap-4 text-lg md:text-xl">
               {copy.chips.map((chip) => (
                 <div key={chip} className="bg-yellow-400/10 backdrop-blur-sm rounded-full px-6 py-2 border border-yellow-400/20 text-gray-900">
                   {chip}
@@ -144,11 +144,11 @@ const PromoAnnouncement = ({ copy }: { copy: NonNullable<HomepageContent["promo"
               ))}
             </div>
             
-            <p className="mt-6 text-xl md:text-2xl text-gray-800 max-w-2xl">
+            <p className="mt-4 md:mt-6 text-lg md:text-2xl text-gray-800 max-w-2xl">
               <span className="font-bold text-yellow-500">{copy.carsLinePrefix}</span> Enjoy <span className="font-bold text-yellow-500">{copy.carsLineHighlight}</span> listing period!
             </p>
 
-            <div className="mt-10 flex justify-center w-full">
+            <div className="mt-6 md:mt-10 flex justify-center w-full">
               <Button 
                 asChild 
                 size="lg" 
@@ -1735,7 +1735,9 @@ const FeaturedClubsSection = ({ copy }: { copy: NonNullable<HomepageContent["fea
           </div>
         )}
         <div className="text-center mt-16">
-          <Button size="lg" asChild className="font-bold rounded-full">
+          <Button size="lg" asChild className="rounded-full px-8 py-5 font-semibold text-gray-900 shadow-lg ring-1 ring-yellow-500/40
+                                            bg-gradient-to-b from-yellow-400 via-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600
+                                            transition-all duration-300 hover:-translate-y-0.5">
             <Link href={copy.ctaHref}>
               {copy.ctaLabel} <ArrowRight className="w-5 h-5 ml-2" />
             </Link>
@@ -2082,7 +2084,9 @@ const FeaturedOtherServicesSection = ({ copy }: { copy: NonNullable<HomepageCont
           </div>
         )}
         <div className="text-center mt-16">
-          <Button size="lg" asChild className="font-bold rounded-full">
+          <Button size="lg" asChild className="rounded-full px-8 py-5 font-semibold text-gray-900 shadow-lg ring-1 ring-yellow-500/40
+                                            bg-gradient-to-b from-yellow-400 via-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600
+                                            transition-all duration-300 hover:-translate-y-0.5">
             <Link href={copy.ctaHref}>
               {copy.ctaLabel} <ArrowRight className="w-5 h-5 ml-2" />
             </Link>
