@@ -164,41 +164,41 @@ export default function AccountPage() {
         <form onSubmit={onSave} className="grid gap-8">
           <AnimatePresence>
             <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.05 }}>
-              <Card className="shadow-lg">
+              <Card className="shadow-lg bg-white border border-yellow-400/20">
                 <CardHeader>
                   <CardTitle className="text-gray-900">Step 1 · Personal details</CardTitle>
                 </CardHeader>
                 <CardContent className="grid gap-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="grid gap-2">
-                      <Label htmlFor="firstName">First name</Label>
-                      <Input id="firstName" required value={firstName} onChange={(e) => setFirstName(e.target.value)} />
+                      <Label htmlFor="firstName" className="text-gray-900">First name</Label>
+                      <Input id="firstName" required value={firstName} onChange={(e) => setFirstName(e.target.value)} className="bg-white text-gray-900 placeholder:text-gray-500" />
                     </div>
                     <div className="grid gap-2">
-                      <Label htmlFor="lastName">Surname</Label>
-                      <Input id="lastName" required value={lastName} onChange={(e) => setLastName(e.target.value)} />
+                      <Label htmlFor="lastName" className="text-gray-900">Surname</Label>
+                      <Input id="lastName" required value={lastName} onChange={(e) => setLastName(e.target.value)} className="bg-white text-gray-900 placeholder:text-gray-500" />
                     </div>
                   </div>
                   <div className="grid gap-2">
-                    <Label htmlFor="nationality">Nationality</Label>
-                    <Input id="nationality" value={nationality} onChange={(e) => setNationality(e.target.value)} />
+                    <Label htmlFor="nationality" className="text-gray-900">Nationality</Label>
+                    <Input id="nationality" value={nationality} onChange={(e) => setNationality(e.target.value)} className="bg-white text-gray-900 placeholder:text-gray-500" />
                   </div>
                   <div className="grid gap-2">
-                    <Label>Profile picture</Label>
-                    <Input type="file" accept="image/*" onChange={(e) => handleProfilePick(e.target.files?.[0] || null)} />
+                    <Label className="text-gray-900">Profile picture</Label>
+                    <Input type="file" accept="image/*" onChange={(e) => handleProfilePick(e.target.files?.[0] || null)} className="bg-white text-gray-900" />
                     {photoURL && (
                       <div className="mt-2">
                         <Image src={photoURL} alt="Profile" width={96} height={96} className="rounded-full object-cover" />
                       </div>
                     )}
-                    <p className="text-xs text-muted-foreground">PNG or JPG recommended. Square images look best.</p>
+                    <p className="text-xs text-gray-700">PNG or JPG recommended. Square images look best.</p>
                   </div>
                 </CardContent>
               </Card>
             </motion.div>
 
             <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.1 }}>
-              <Card className="shadow-lg">
+              <Card className="shadow-lg bg-white border border-yellow-400/20">
                 <CardHeader>
                   <CardTitle className="text-gray-900">Step 2 · Fields of interest</CardTitle>
                 </CardHeader>
@@ -216,20 +216,20 @@ export default function AccountPage() {
                       </motion.button>
                     ))}
                   </div>
-                  <p className="text-xs text-muted-foreground mt-2">Selected: {interests.length}</p>
+                  <p className="text-xs text-gray-700 mt-2">Selected: {interests.length}</p>
                 </CardContent>
               </Card>
             </motion.div>
 
             <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.15 }}>
-              <Card className="shadow-lg">
+              <Card className="shadow-lg bg-white border border-yellow-400/20">
                 <CardHeader>
                   <CardTitle className="text-gray-900">Step 3 · Lifestyle & Networking</CardTitle>
                 </CardHeader>
                 <CardContent className="grid gap-4">
                   <div className="grid gap-2">
-                    <Label htmlFor="ln-search">Search</Label>
-                    <Input id="ln-search" placeholder="Search categories..." value={lifestyleSearch} onChange={(e) => setLifestyleSearch(e.target.value)} />
+                    <Label htmlFor="ln-search" className="text-gray-900">Search</Label>
+                    <Input id="ln-search" placeholder="Search categories..." value={lifestyleSearch} onChange={(e) => setLifestyleSearch(e.target.value)} className="bg-white text-gray-900 placeholder:text-gray-500" />
                   </div>
                   {(() => {
                     const filtered = availableLifestyleNetworking.filter(item => item.name.toLowerCase().includes(lifestyleSearch.toLowerCase()));
@@ -241,7 +241,7 @@ export default function AccountPage() {
                     }
                     const groups = Object.keys(byGroup).sort();
                     if (groups.length === 0) {
-                      return <p className="text-sm text-muted-foreground">No categories yet. Add them in Admin → Interests.</p>;
+                      return <p className="text-sm text-gray-700">No categories yet. Add them in Admin → Interests.</p>;
                     }
                     return (
                       <div className="grid gap-4">
@@ -266,7 +266,7 @@ export default function AccountPage() {
                       </div>
                     );
                   })()}
-                  <p className="text-xs text-muted-foreground">Selected: {lifestyleNetworkingNames.length} • No limits.</p>
+                  <p className="text-xs text-gray-700">Selected: {lifestyleNetworkingNames.length} • No limits.</p>
                 </CardContent>
               </Card>
             </motion.div>
