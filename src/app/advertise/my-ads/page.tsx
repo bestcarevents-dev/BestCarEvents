@@ -725,30 +725,26 @@ export default function MyAdsPage() {
                     {!ad.bannerType ? (
                       <div className="space-y-2">
                         <div className="flex items-center gap-2">
-                          <input
-                            type="radio"
-                            id={`category-${ad.id}`}
-                            name={`banner-type-${ad.id}`}
-                            value="category"
+                          <Button
+                            type="button"
+                            className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold px-3 py-1 h-auto disabled:opacity-50 disabled:cursor-not-allowed"
                             disabled={!validateAd(ad) || !validateCredits('category')}
-                            onChange={async () => {
+                            onClick={async () => {
                               await handleAdTypeSelection(ad, 'category');
                             }}
-                          />
-                          <Label htmlFor={`category-${ad.id}`} className="text-sm">Category Banner Ad</Label>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <input
-                            type="radio"
-                            id={`homepage-${ad.id}`}
-                            name={`banner-type-${ad.id}`}
-                            value="homepage"
+                          >
+                            Category Banner Ad
+                          </Button>
+                          <Button
+                            type="button"
+                            className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold px-3 py-1 h-auto disabled:opacity-50 disabled:cursor-not-allowed"
                             disabled={!validateAd(ad) || !validateCredits('homepage')}
-                            onChange={async () => {
+                            onClick={async () => {
                               await handleAdTypeSelection(ad, 'homepage');
                             }}
-                          />
-                          <Label htmlFor={`homepage-${ad.id}`} className="text-sm">Homepage Banner Ad</Label>
+                          >
+                            Homepage Banner Ad
+                          </Button>
                         </div>
                         <div className="text-[11px] text-muted-foreground">Note: Choosing an Ad Type will consume 1 credit of that type.</div>
                         {!validateAd(ad) && (
