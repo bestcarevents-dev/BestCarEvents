@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { app } from "@/lib/firebase";
 import { getFirestore, doc, updateDoc, getDoc } from "firebase/firestore";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -22,6 +22,14 @@ export default function AuctionEditDialog({ open, onOpenChange, documentId, init
   const [auctionHouse, setAuctionHouse] = useState<string>(initial.auctionHouse || "");
   const [saving, setSaving] = useState(false);
   const { toast } = useToast();
+
+  // Sync inputs when dialog opens for a specific document
+  useEffect(() => {
+    if (open) {
+      setAuctionName(initial.auctionName || "");
+      setAuctionHouse(initial.auctionHouse || "");
+    }
+  }, [open, documentId, initial.auctionName, initial.auctionHouse]);
 
   const handleSave = async () => {
     const payload: Record<string, string> = {};

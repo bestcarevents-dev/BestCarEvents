@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { app } from "@/lib/firebase";
 import { getFirestore, doc, updateDoc, getDoc } from "firebase/firestore";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -41,6 +41,22 @@ export default function ClubEditDialog({ open, onOpenChange, documentId, initial
   const [contactEmail, setContactEmail] = useState<string>(initial.contactEmail || "");
   const [saving, setSaving] = useState(false);
   const { toast } = useToast();
+
+  // Sync values on open or when switching doc
+  useEffect(() => {
+    if (open) {
+      setClubName(initial.clubName || "");
+      setDescription(initial.description || "");
+      setMembershipCriteria(initial.membershipCriteria || "");
+      setTypicalActivities(initial.typicalActivities || "");
+      setCity(initial.city || "");
+      setCountry(initial.country || "");
+      setWebsite(initial.website || "");
+      setSocialMediaLink(initial.socialMediaLink || "");
+      setContactName(initial.contactName || "");
+      setContactEmail(initial.contactEmail || "");
+    }
+  }, [open, documentId, initial]);
 
   const handleSave = async () => {
     const payload: Record<string, any> = {};

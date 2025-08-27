@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { app } from "@/lib/firebase";
 import { getFirestore, doc, updateDoc, getDoc } from "firebase/firestore";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -43,6 +43,27 @@ export default function HotelEditDialog({ open, onOpenChange, documentId, initia
   const [features, setFeatures] = useState<string>(initial.features || "");
   const [saving, setSaving] = useState(false);
   const { toast } = useToast();
+
+  // Ensure values are refreshed when opening
+  useEffect(() => {
+    if (open) {
+      setHotelName(initial.hotelName || "");
+      setAddress(initial.address || "");
+      setCity(initial.city || "");
+      setState(initial.state || "");
+      setCountry(initial.country || "");
+      setDescription(initial.description || "");
+      setStorageType(initial.storageType || "");
+      setWebsite(initial.website || "");
+      setContactName(initial.contactName || "");
+      setContactEmail(initial.contactEmail || "");
+      // Convert array to comma separated if consumer passed an array in initial.features
+      const feat = Array.isArray((initial as any).features)
+        ? ((initial as any).features as string[]).join(", ")
+        : initial.features || "";
+      setFeatures(feat);
+    }
+  }, [open, documentId, initial]);
 
   const handleSave = async () => {
     const payload: Record<string, any> = {};

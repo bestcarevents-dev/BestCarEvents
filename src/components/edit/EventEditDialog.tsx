@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { app } from "@/lib/firebase";
 import { getFirestore, doc, updateDoc, getDoc } from "firebase/firestore";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -51,6 +51,26 @@ export default function EventEditDialog({ open, onOpenChange, documentId, initia
   const [websiteUrl, setWebsiteUrl] = useState<string>(initial.websiteUrl || "");
   const [saving, setSaving] = useState(false);
   const { toast } = useToast();
+
+  // Sync all fields when opening or switching document
+  useEffect(() => {
+    if (open) {
+      setEventName(initial.eventName || "");
+      setLocation(initial.location || "");
+      setDescription(initial.description || "");
+      setOrganizerName(initial.organizerName || "");
+      setOrganizerContact(initial.organizerContact || "");
+      setEventType(initial.eventType || "");
+      setVehicleFocus(initial.vehicleFocus || "");
+      setExpectedAttendance(initial.expectedAttendance != null ? String(initial.expectedAttendance) : "");
+      setEntryFee(initial.entryFee != null ? String(initial.entryFee) : "");
+      setScheduleHighlights(initial.scheduleHighlights || "");
+      setActivities(initial.activities || "");
+      setRulesUrl(initial.rulesUrl || "");
+      setSponsors(initial.sponsors || "");
+      setWebsiteUrl(initial.websiteUrl || "");
+    }
+  }, [open, documentId, initial]);
 
   const handleSave = async () => {
     const payload: Record<string, any> = {};
