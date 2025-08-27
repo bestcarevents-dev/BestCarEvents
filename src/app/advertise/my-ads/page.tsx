@@ -53,6 +53,7 @@ export default function MyAdsPage() {
   const [userDoc, setUserDoc] = useState<any>(null);
   const router = useRouter();
   const { toast } = useToast();
+  const anyNeedsType = ads.some((a) => !a.bannerType);
   
   // Payment modal state
   const [bannerPaymentModal, setBannerPaymentModal] = useState<{ open: boolean; type: 'homepage' | 'category' | null }>({ open: false, type: null });
@@ -695,6 +696,11 @@ export default function MyAdsPage() {
               Create New Ad
             </Button>
           </div>
+          {anyNeedsType && (
+            <div className="mb-4 rounded-lg border border-amber-300 bg-amber-50 text-amber-900 p-3">
+              <span className="font-semibold">Important:</span> One or more of your ads requires an Ad Type. Until an Ad Type is selected, the ad will not be displayed. Please select an Ad Type and then choose the pages where it should appear.
+            </div>
+          )}
           {adsLoading ? (
             <div className="text-center py-8 animate-pulse">Loading your ads...</div>
           ) : ads.length === 0 ? (
@@ -724,10 +730,10 @@ export default function MyAdsPage() {
                     <label className="block text-xs font-semibold mb-1">Choose Ad Type:</label>
                     {!ad.bannerType ? (
                       <div className="space-y-2">
-                        <div className="flex items-center gap-2">
+                        <div className="flex flex-wrap items-center gap-2">
                           <Button
                             type="button"
-                            className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold px-3 py-1 h-auto disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold px-3 py-1 h-auto disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto whitespace-normal break-words text-left max-w-full"
                             disabled={!validateAd(ad) || !validateCredits('category')}
                             onClick={async () => {
                               await handleAdTypeSelection(ad, 'category');
@@ -737,7 +743,7 @@ export default function MyAdsPage() {
                           </Button>
                           <Button
                             type="button"
-                            className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold px-3 py-1 h-auto disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold px-3 py-1 h-auto disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto whitespace-normal break-words text-left max-w-full"
                             disabled={!validateAd(ad) || !validateCredits('homepage')}
                             onClick={async () => {
                               await handleAdTypeSelection(ad, 'homepage');
