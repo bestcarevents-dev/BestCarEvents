@@ -34,7 +34,7 @@ import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { useToast } from "@/hooks/use-toast";
 import HowItWorksModal from "@/components/HowItWorksModal";
 import { Badge } from "@/components/ui/badge";
-import EditListingDialog from "@/components/EditListingDialog";
+import EventEditDialog from "@/components/edit/EventEditDialog";
 
 export default function EventsListingPage() {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
@@ -965,20 +965,15 @@ export default function EventsListingPage() {
         </DialogContent>
       </Dialog>
 
-      <EditListingDialog
+      <EventEditDialog
         open={!!editModal?.open}
         onOpenChange={(o) => {
           if (!o) setEditModal(null);
         }}
-        collectionName={editModal?.col || "events"}
         documentId={editModal?.id || ""}
-        fieldName={editModal?.fieldName || "eventName"}
-        label={editModal?.label || "Name"}
-        currentValue={editModal?.currentValue || ""}
-        placeholder="Enter new name"
-        helpText="Update the name shown to visitors."
-        onSaved={(newVal) => {
-          setEvents((prev) => prev.map((e) => (e.id === editModal?.id ? { ...e, [editModal!.fieldName]: newVal } : e)));
+        initial={{ eventName: events.find((e) => e.id === editModal?.id)?.eventName, location: events.find((e) => e.id === editModal?.id)?.location }}
+        onSaved={(update) => {
+          setEvents((prev) => prev.map((e) => (e.id === editModal?.id ? { ...e, ...update } : e)));
         }}
       />
     </div>

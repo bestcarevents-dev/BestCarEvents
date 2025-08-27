@@ -31,7 +31,7 @@ import { loadStripe } from "@stripe/stripe-js";
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
-import EditListingDialog from "@/components/EditListingDialog";
+import CarEditDialog from "@/components/edit/CarEditDialog";
 
 // Car listing pricing tiers
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
@@ -735,20 +735,19 @@ export default function CarsListingPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-      <EditListingDialog
+      <CarEditDialog
         open={!!editModal?.open}
         onOpenChange={(o) => {
           if (!o) setEditModal(null);
         }}
-        collectionName={editModal?.col || "cars"}
         documentId={editModal?.id || ""}
-        fieldName={editModal?.fieldName || "location"}
-        label={editModal?.label || "Location"}
-        currentValue={editModal?.currentValue || ""}
-        placeholder="Enter new location"
-        helpText="Update where the car is located."
-        onSaved={(newVal) => {
-          setCars((prev) => prev.map((c) => (c.id === editModal?.id ? { ...c, [editModal!.fieldName]: newVal } : c)));
+        initial={{
+          location: cars.find((c) => c.id === editModal?.id)?.location,
+          price: cars.find((c) => c.id === editModal?.id)?.price,
+          currency: cars.find((c) => c.id === editModal?.id)?.currency,
+        }}
+        onSaved={(update) => {
+          setCars((prev) => prev.map((c) => (c.id === editModal?.id ? { ...c, ...update } : c)));
         }}
       />
     </div>

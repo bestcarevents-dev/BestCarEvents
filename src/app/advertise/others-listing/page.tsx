@@ -34,7 +34,7 @@ import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { useToast } from "@/hooks/use-toast";
 import HowItWorksModal from "@/components/HowItWorksModal";
 import { Badge } from "@/components/ui/badge";
-import EditListingDialog from "@/components/EditListingDialog";
+import ServiceEditDialog from "@/components/edit/ServiceEditDialog";
 
 export default function OthersListingPage() {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
@@ -910,20 +910,15 @@ export default function OthersListingPage() {
           </CardContent>
         </Card>
       )}
-      <EditListingDialog
+      <ServiceEditDialog
         open={!!editModal?.open}
         onOpenChange={(o) => {
           if (!o) setEditModal(null);
         }}
-        collectionName={editModal?.col || "others"}
         documentId={editModal?.id || ""}
-        fieldName={editModal?.fieldName || "serviceName"}
-        label={editModal?.label || "Name"}
-        currentValue={editModal?.currentValue || ""}
-        placeholder="Enter new name"
-        helpText="Update the name of your service."
-        onSaved={(newVal) => {
-          setServices((prev) => prev.map((s) => (s.id === editModal?.id ? { ...s, [editModal!.fieldName]: newVal } : s)));
+        initial={{ serviceName: services.find((s) => s.id === editModal?.id)?.serviceName, location: services.find((s) => s.id === editModal?.id)?.location }}
+        onSaved={(update) => {
+          setServices((prev) => prev.map((s) => (s.id === editModal?.id ? { ...s, ...update } : s)));
         }}
       />
     </div>

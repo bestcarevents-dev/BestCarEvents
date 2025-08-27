@@ -34,7 +34,7 @@ import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { useToast } from "@/hooks/use-toast";
 import HowItWorksModal from "@/components/HowItWorksModal";
 import { Badge } from "@/components/ui/badge";
-import EditListingDialog from "@/components/EditListingDialog";
+import ClubEditDialog from "@/components/edit/ClubEditDialog";
 
 export default function ClubListingPage() {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
@@ -911,20 +911,15 @@ export default function ClubListingPage() {
           </CardContent>
         </Card>
       )}
-      <EditListingDialog
+      <ClubEditDialog
         open={!!editModal?.open}
         onOpenChange={(o) => {
           if (!o) setEditModal(null);
         }}
-        collectionName={editModal?.col || "clubs"}
         documentId={editModal?.id || ""}
-        fieldName={editModal?.fieldName || "clubName"}
-        label={editModal?.label || "Name"}
-        currentValue={editModal?.currentValue || ""}
-        placeholder="Enter new name"
-        helpText="Update your club name."
-        onSaved={(newVal) => {
-          setClubs((prev) => prev.map((c) => (c.id === editModal?.id ? { ...c, [editModal!.fieldName]: newVal } : c)));
+        initial={{ clubName: clubs.find((c) => c.id === editModal?.id)?.clubName, location: clubs.find((c) => c.id === editModal?.id)?.location }}
+        onSaved={(update) => {
+          setClubs((prev) => prev.map((c) => (c.id === editModal?.id ? { ...c, ...update } : c)));
         }}
       />
     </div>

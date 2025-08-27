@@ -34,7 +34,7 @@ import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { useToast } from "@/hooks/use-toast";
 import HowItWorksModal from "@/components/HowItWorksModal";
 import { Badge } from "@/components/ui/badge";
-import EditListingDialog from "@/components/EditListingDialog";
+import HotelEditDialog from "@/components/edit/HotelEditDialog";
 
 export default function HotelListingPage() {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
@@ -899,20 +899,19 @@ export default function HotelListingPage() {
           </CardContent>
         </Card>
       )}
-      <EditListingDialog
+      <HotelEditDialog
         open={!!editModal?.open}
         onOpenChange={(o) => {
           if (!o) setEditModal(null);
         }}
-        collectionName={editModal?.col || "hotels"}
         documentId={editModal?.id || ""}
-        fieldName={editModal?.fieldName || "hotelName"}
-        label={editModal?.label || "Name"}
-        currentValue={editModal?.currentValue || ""}
-        placeholder="Enter new name"
-        helpText="Update the name your guests see."
-        onSaved={(newVal) => {
-          setHotels((prev) => prev.map((h) => (h.id === editModal?.id ? { ...h, [editModal!.fieldName]: newVal } : h)));
+        initial={{
+          hotelName: hotels.find((h) => h.id === editModal?.id)?.hotelName,
+          city: hotels.find((h) => h.id === editModal?.id)?.city,
+          state: hotels.find((h) => h.id === editModal?.id)?.state,
+        }}
+        onSaved={(update) => {
+          setHotels((prev) => prev.map((h) => (h.id === editModal?.id ? { ...h, ...update } : h)));
         }}
       />
     </div>

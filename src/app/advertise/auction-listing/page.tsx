@@ -34,7 +34,7 @@ import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { useToast } from "@/hooks/use-toast";
 import HowItWorksModal from "@/components/HowItWorksModal";
 import { Badge } from "@/components/ui/badge";
-import EditListingDialog from "@/components/EditListingDialog";
+import AuctionEditDialog from "@/components/edit/AuctionEditDialog";
 
 export default function AuctionListingPage() {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
@@ -974,21 +974,15 @@ export default function AuctionListingPage() {
           </div>
         )}
       </div>
-      <EditListingDialog
+      <AuctionEditDialog
         open={!!editModal?.open}
         onOpenChange={(o) => {
           if (!o) setEditModal(null);
         }}
-        collectionName={editModal?.col || "auctions"}
         documentId={editModal?.id || ""}
-        fieldName={editModal?.fieldName || "auctionName"}
-        label={editModal?.label || "Name"}
-        currentValue={editModal?.currentValue || ""}
-        placeholder="Enter new name"
-        helpText="Update the name shown to buyers."
-        onSaved={async (newVal) => {
-          // update local state to reflect change immediately
-          setAuctions((prev) => prev.map((a) => (a.id === editModal?.id ? { ...a, [editModal!.fieldName]: newVal } : a)));
+        initial={{ auctionName: auctions.find((a) => a.id === editModal?.id)?.auctionName, auctionHouse: auctions.find((a) => a.id === editModal?.id)?.auctionHouse }}
+        onSaved={(update) => {
+          setAuctions((prev) => prev.map((a) => (a.id === editModal?.id ? { ...a, ...update } : a)));
         }}
       />
     </div>
