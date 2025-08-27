@@ -733,7 +733,7 @@ export default function MyAdsPage() {
                               await handleAdTypeSelection(ad, 'category');
                             }}
                           >
-                            Category Banner Ad
+                            {`Category Banner Ad (${userDoc?.categoryBannerRemaining ?? 0})`}
                           </Button>
                           <Button
                             type="button"
@@ -743,7 +743,7 @@ export default function MyAdsPage() {
                               await handleAdTypeSelection(ad, 'homepage');
                             }}
                           >
-                            Homepage Banner Ad
+                            {`Homepage Banner Ad (${userDoc?.homepageBannerRemaining ?? 0})`}
                           </Button>
                         </div>
                         <div className="text-[11px] text-muted-foreground">Note: Choosing an Ad Type will consume 1 credit of that type.</div>
