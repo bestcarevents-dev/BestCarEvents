@@ -971,7 +971,22 @@ export default function EventsListingPage() {
           if (!o) setEditModal(null);
         }}
         documentId={editModal?.id || ""}
-        initial={{ eventName: events.find((e) => e.id === editModal?.id)?.eventName, location: events.find((e) => e.id === editModal?.id)?.location }}
+        initial={{
+          eventName: events.find((e) => e.id === editModal?.id)?.eventName,
+          location: events.find((e) => e.id === editModal?.id)?.location,
+          description: events.find((e) => e.id === editModal?.id)?.description,
+          organizerName: events.find((e) => e.id === editModal?.id)?.organizerName,
+          organizerContact: events.find((e) => e.id === editModal?.id)?.organizerContact,
+          eventType: events.find((e) => e.id === editModal?.id)?.eventType,
+          vehicleFocus: events.find((e) => e.id === editModal?.id)?.vehicleFocus,
+          expectedAttendance: events.find((e) => e.id === editModal?.id)?.expectedAttendance,
+          entryFee: events.find((e) => e.id === editModal?.id)?.entryFee,
+          scheduleHighlights: events.find((e) => e.id === editModal?.id)?.scheduleHighlights,
+          activities: events.find((e) => e.id === editModal?.id)?.activities,
+          rulesUrl: events.find((e) => e.id === editModal?.id)?.rulesUrl,
+          sponsors: events.find((e) => e.id === editModal?.id)?.sponsors,
+          websiteUrl: events.find((e) => e.id === editModal?.id)?.websiteUrl,
+        }}
         onSaved={(update) => {
           setEvents((prev) => prev.map((e) => (e.id === editModal?.id ? { ...e, ...update } : e)));
         }}

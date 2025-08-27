@@ -917,7 +917,18 @@ export default function ClubListingPage() {
           if (!o) setEditModal(null);
         }}
         documentId={editModal?.id || ""}
-        initial={{ clubName: clubs.find((c) => c.id === editModal?.id)?.clubName, location: clubs.find((c) => c.id === editModal?.id)?.location }}
+        initial={{
+          clubName: clubs.find((c) => c.id === editModal?.id)?.clubName,
+          description: clubs.find((c) => c.id === editModal?.id)?.description,
+          membershipCriteria: clubs.find((c) => c.id === editModal?.id)?.membershipCriteria,
+          typicalActivities: clubs.find((c) => c.id === editModal?.id)?.typicalActivities,
+          city: clubs.find((c) => c.id === editModal?.id)?.city,
+          country: clubs.find((c) => c.id === editModal?.id)?.country,
+          website: clubs.find((c) => c.id === editModal?.id)?.website,
+          socialMediaLink: clubs.find((c) => c.id === editModal?.id)?.socialMediaLink,
+          contactName: clubs.find((c) => c.id === editModal?.id)?.contactName,
+          contactEmail: clubs.find((c) => c.id === editModal?.id)?.contactEmail,
+        }}
         onSaved={(update) => {
           setClubs((prev) => prev.map((c) => (c.id === editModal?.id ? { ...c, ...update } : c)));
         }}

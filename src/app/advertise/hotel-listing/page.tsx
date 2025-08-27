@@ -907,8 +907,16 @@ export default function HotelListingPage() {
         documentId={editModal?.id || ""}
         initial={{
           hotelName: hotels.find((h) => h.id === editModal?.id)?.hotelName,
+          address: hotels.find((h) => h.id === editModal?.id)?.address,
           city: hotels.find((h) => h.id === editModal?.id)?.city,
           state: hotels.find((h) => h.id === editModal?.id)?.state,
+          country: hotels.find((h) => h.id === editModal?.id)?.country,
+          description: hotels.find((h) => h.id === editModal?.id)?.description,
+          storageType: hotels.find((h) => h.id === editModal?.id)?.storageType,
+          website: hotels.find((h) => h.id === editModal?.id)?.website,
+          contactName: hotels.find((h) => h.id === editModal?.id)?.contactName,
+          contactEmail: hotels.find((h) => h.id === editModal?.id)?.contactEmail,
+          features: hotels.find((h) => h.id === editModal?.id)?.features,
         }}
         onSaved={(update) => {
           setHotels((prev) => prev.map((h) => (h.id === editModal?.id ? { ...h, ...update } : h)));

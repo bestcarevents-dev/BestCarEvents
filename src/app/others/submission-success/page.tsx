@@ -73,7 +73,7 @@ export default function SubmissionSuccessPage() {
               <div className="text-center pt-4 border-t border-gray-200">
                 <p className="text-gray-600 text-sm mb-2">Have questions about your submission?</p>
                 <Button asChild variant="link" className="text-yellow-600 hover:text-yellow-700 p-0">
-                  <a href="mailto:support@bestcarsales.com?subject=Service Registration Question" className="flex items-center justify-center">
+                  <a href="mailto:info@bestcarevents.com?subject=Service Registration Question" className="flex items-center justify-center">
                     <Mail className="w-4 h-4 mr-1" />
                     Contact Support
                   </a>
