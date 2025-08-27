@@ -34,6 +34,7 @@ import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { useToast } from "@/hooks/use-toast";
 import HowItWorksModal from "@/components/HowItWorksModal";
 import { Badge } from "@/components/ui/badge";
+import EditListingDialog from "@/components/EditListingDialog";
 
 export default function HotelListingPage() {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
@@ -46,6 +47,14 @@ export default function HotelListingPage() {
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
+  const [editModal, setEditModal] = useState<{
+    open: boolean;
+    col: string;
+    id: string;
+    fieldName: string;
+    label: string;
+    currentValue?: string;
+  } | null>(null);
   // Payment modal state
   const [paymentModal, setPaymentModal] = useState<{ open: boolean; col: string; id: string } | null>(null);
   const [paymentStep, setPaymentStep] = useState<'selectType' | 'selectPayment' | 'pay'>('selectType');
@@ -711,6 +720,21 @@ export default function HotelListingPage() {
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
+                            <DropdownMenuItem
+                              className="text-foreground"
+                              onClick={() =>
+                                setEditModal({
+                                  open: true,
+                                  col: "hotels",
+                                  id: hotel.id,
+                                  fieldName: "hotelName",
+                                  label: "Hotel Name",
+                                  currentValue: hotel.hotelName || "",
+                                })
+                              }
+                            >
+                              Edit
+                            </DropdownMenuItem>
                             <DropdownMenuItem asChild>
                               <Link href={`/hotels/${hotel.id}`}>
                                 <Eye className="w-4 h-4 mr-2" />
@@ -875,6 +899,22 @@ export default function HotelListingPage() {
           </CardContent>
         </Card>
       )}
+      <EditListingDialog
+        open={!!editModal?.open}
+        onOpenChange={(o) => {
+          if (!o) setEditModal(null);
+        }}
+        collectionName={editModal?.col || "hotels"}
+        documentId={editModal?.id || ""}
+        fieldName={editModal?.fieldName || "hotelName"}
+        label={editModal?.label || "Name"}
+        currentValue={editModal?.currentValue || ""}
+        placeholder="Enter new name"
+        helpText="Update the name your guests see."
+        onSaved={(newVal) => {
+          setHotels((prev) => prev.map((h) => (h.id === editModal?.id ? { ...h, [editModal!.fieldName]: newVal } : h)));
+        }}
+      />
     </div>
   );
 }

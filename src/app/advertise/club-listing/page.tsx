@@ -34,6 +34,7 @@ import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { useToast } from "@/hooks/use-toast";
 import HowItWorksModal from "@/components/HowItWorksModal";
 import { Badge } from "@/components/ui/badge";
+import EditListingDialog from "@/components/EditListingDialog";
 
 export default function ClubListingPage() {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
@@ -46,6 +47,14 @@ export default function ClubListingPage() {
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
+  const [editModal, setEditModal] = useState<{
+    open: boolean;
+    col: string;
+    id: string;
+    fieldName: string;
+    label: string;
+    currentValue?: string;
+  } | null>(null);
   // Payment modal state
   const [paymentModal, setPaymentModal] = useState<{ open: boolean; col: string; id: string } | null>(null);
   const [paymentStep, setPaymentStep] = useState<'selectType' | 'selectPayment' | 'pay'>('selectType');
@@ -723,6 +732,21 @@ export default function ClubListingPage() {
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
+                            <DropdownMenuItem
+                              className="text-foreground"
+                              onClick={() =>
+                                setEditModal({
+                                  open: true,
+                                  col: "clubs",
+                                  id: club.id,
+                                  fieldName: "clubName",
+                                  label: "Club Name",
+                                  currentValue: club.clubName || "",
+                                })
+                              }
+                            >
+                              Edit
+                            </DropdownMenuItem>
                             <DropdownMenuItem asChild>
                               <Link href={`/clubs/${club.id}`}>
                                 <Eye className="w-4 h-4 mr-2" />
@@ -887,6 +911,22 @@ export default function ClubListingPage() {
           </CardContent>
         </Card>
       )}
+      <EditListingDialog
+        open={!!editModal?.open}
+        onOpenChange={(o) => {
+          if (!o) setEditModal(null);
+        }}
+        collectionName={editModal?.col || "clubs"}
+        documentId={editModal?.id || ""}
+        fieldName={editModal?.fieldName || "clubName"}
+        label={editModal?.label || "Name"}
+        currentValue={editModal?.currentValue || ""}
+        placeholder="Enter new name"
+        helpText="Update your club name."
+        onSaved={(newVal) => {
+          setClubs((prev) => prev.map((c) => (c.id === editModal?.id ? { ...c, [editModal!.fieldName]: newVal } : c)));
+        }}
+      />
     </div>
   );
 } 

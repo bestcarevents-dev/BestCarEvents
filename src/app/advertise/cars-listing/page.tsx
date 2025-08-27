@@ -31,6 +31,7 @@ import { loadStripe } from "@stripe/stripe-js";
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
+import EditListingDialog from "@/components/EditListingDialog";
 
 // Car listing pricing tiers
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
@@ -114,6 +115,14 @@ export default function CarsListingPage() {
   const [creditPaymentError, setCreditPaymentError] = useState<string | null>(null);
 
   const { toast } = useToast();
+  const [editModal, setEditModal] = useState<{
+    open: boolean;
+    col: string;
+    id: string;
+    fieldName: string;
+    label: string;
+    currentValue?: string;
+  } | null>(null);
 
   useEffect(() => {
     const auth = getAuth(app);
@@ -417,6 +426,21 @@ export default function CarsListingPage() {
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
+                            <DropdownMenuItem
+                              className="text-foreground"
+                              onClick={() =>
+                                setEditModal({
+                                  open: true,
+                                  col: "cars",
+                                  id: car.id,
+                                  fieldName: "location",
+                                  label: "Location",
+                                  currentValue: car.location || "",
+                                })
+                              }
+                            >
+                              Edit
+                            </DropdownMenuItem>
                             <DropdownMenuItem asChild>
                               <Link href={`/cars/${car.id}`}>
                                 <Eye className="w-4 h-4 mr-2" />
@@ -711,6 +735,22 @@ export default function CarsListingPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      <EditListingDialog
+        open={!!editModal?.open}
+        onOpenChange={(o) => {
+          if (!o) setEditModal(null);
+        }}
+        collectionName={editModal?.col || "cars"}
+        documentId={editModal?.id || ""}
+        fieldName={editModal?.fieldName || "location"}
+        label={editModal?.label || "Location"}
+        currentValue={editModal?.currentValue || ""}
+        placeholder="Enter new location"
+        helpText="Update where the car is located."
+        onSaved={(newVal) => {
+          setCars((prev) => prev.map((c) => (c.id === editModal?.id ? { ...c, [editModal!.fieldName]: newVal } : c)));
+        }}
+      />
     </div>
   );
 } 

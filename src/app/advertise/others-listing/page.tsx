@@ -34,6 +34,7 @@ import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { useToast } from "@/hooks/use-toast";
 import HowItWorksModal from "@/components/HowItWorksModal";
 import { Badge } from "@/components/ui/badge";
+import EditListingDialog from "@/components/EditListingDialog";
 
 export default function OthersListingPage() {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
@@ -46,6 +47,14 @@ export default function OthersListingPage() {
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
+  const [editModal, setEditModal] = useState<{
+    open: boolean;
+    col: string;
+    id: string;
+    fieldName: string;
+    label: string;
+    currentValue?: string;
+  } | null>(null);
   // Payment modal state
   const [paymentModal, setPaymentModal] = useState<{ open: boolean; col: string; id: string } | null>(null);
   const [paymentStep, setPaymentStep] = useState<'selectType' | 'selectPayment' | 'pay'>('selectType');
@@ -722,6 +731,21 @@ export default function OthersListingPage() {
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
+                            <DropdownMenuItem
+                              className="text-foreground"
+                              onClick={() =>
+                                setEditModal({
+                                  open: true,
+                                  col: "others",
+                                  id: service.id,
+                                  fieldName: "serviceName",
+                                  label: "Service Name",
+                                  currentValue: service.serviceName || "",
+                                })
+                              }
+                            >
+                              Edit
+                            </DropdownMenuItem>
                             <DropdownMenuItem asChild>
                               <Link href={`/others/${service.id}`}>
                                 <Eye className="w-4 h-4 mr-2" />
@@ -886,6 +910,22 @@ export default function OthersListingPage() {
           </CardContent>
         </Card>
       )}
+      <EditListingDialog
+        open={!!editModal?.open}
+        onOpenChange={(o) => {
+          if (!o) setEditModal(null);
+        }}
+        collectionName={editModal?.col || "others"}
+        documentId={editModal?.id || ""}
+        fieldName={editModal?.fieldName || "serviceName"}
+        label={editModal?.label || "Name"}
+        currentValue={editModal?.currentValue || ""}
+        placeholder="Enter new name"
+        helpText="Update the name of your service."
+        onSaved={(newVal) => {
+          setServices((prev) => prev.map((s) => (s.id === editModal?.id ? { ...s, [editModal!.fieldName]: newVal } : s)));
+        }}
+      />
     </div>
   );
 } 

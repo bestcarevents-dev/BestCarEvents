@@ -34,6 +34,7 @@ import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { useToast } from "@/hooks/use-toast";
 import HowItWorksModal from "@/components/HowItWorksModal";
 import { Badge } from "@/components/ui/badge";
+import EditListingDialog from "@/components/EditListingDialog";
 
 export default function EventsListingPage() {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
@@ -54,6 +55,14 @@ export default function EventsListingPage() {
   const [stripeClientSecret, setStripeClientSecret] = useState<string | null>(null);
   const [paymentError, setPaymentError] = useState<string | null>(null);
   const [attendeesModal, setAttendeesModal] = useState<{ open: boolean; attendees: Array<{ uid?: string; email?: string }> } | null>(null);
+  const [editModal, setEditModal] = useState<{
+    open: boolean;
+    col: string;
+    id: string;
+    fieldName: string;
+    label: string;
+    currentValue?: string;
+  } | null>(null);
 
   useEffect(() => {
     const auth = getAuth(app);
@@ -724,6 +733,21 @@ export default function EventsListingPage() {
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
+                            <DropdownMenuItem
+                              className="text-foreground"
+                              onClick={() =>
+                                setEditModal({
+                                  open: true,
+                                  col: "events",
+                                  id: event.id,
+                                  fieldName: "eventName",
+                                  label: "Event Name",
+                                  currentValue: event.eventName || "",
+                                })
+                              }
+                            >
+                              Edit
+                            </DropdownMenuItem>
                             <DropdownMenuItem asChild>
                               <Link href={`/events/${event.id}`}>
                                 <Eye className="w-4 h-4 mr-2" />
@@ -940,6 +964,23 @@ export default function EventsListingPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <EditListingDialog
+        open={!!editModal?.open}
+        onOpenChange={(o) => {
+          if (!o) setEditModal(null);
+        }}
+        collectionName={editModal?.col || "events"}
+        documentId={editModal?.id || ""}
+        fieldName={editModal?.fieldName || "eventName"}
+        label={editModal?.label || "Name"}
+        currentValue={editModal?.currentValue || ""}
+        placeholder="Enter new name"
+        helpText="Update the name shown to visitors."
+        onSaved={(newVal) => {
+          setEvents((prev) => prev.map((e) => (e.id === editModal?.id ? { ...e, [editModal!.fieldName]: newVal } : e)));
+        }}
+      />
     </div>
   );
 } 

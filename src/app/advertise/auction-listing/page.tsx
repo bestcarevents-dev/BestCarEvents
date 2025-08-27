@@ -34,6 +34,7 @@ import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { useToast } from "@/hooks/use-toast";
 import HowItWorksModal from "@/components/HowItWorksModal";
 import { Badge } from "@/components/ui/badge";
+import EditListingDialog from "@/components/EditListingDialog";
 
 export default function AuctionListingPage() {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
@@ -46,6 +47,14 @@ export default function AuctionListingPage() {
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
+  const [editModal, setEditModal] = useState<{
+    open: boolean;
+    col: string;
+    id: string;
+    fieldName: string;
+    label: string;
+    currentValue?: string;
+  } | null>(null);
   // Payment modal state
   const [paymentModal, setPaymentModal] = useState<{ open: boolean; col: string; id: string } | null>(null);
   const [paymentStep, setPaymentStep] = useState<'selectType' | 'selectPayment' | 'pay'>('selectType');
@@ -784,6 +793,21 @@ export default function AuctionListingPage() {
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
+                            <DropdownMenuItem
+                              className="text-foreground"
+                              onClick={() =>
+                                setEditModal({
+                                  open: true,
+                                  col: "auctions",
+                                  id: auction.id,
+                                  fieldName: "auctionName",
+                                  label: "Auction Name",
+                                  currentValue: auction.auctionName || "",
+                                })
+                              }
+                            >
+                              Edit
+                            </DropdownMenuItem>
                             <DropdownMenuItem asChild>
                               <Link href={`/auctions/${auction.id}`}>
                                 <Eye className="w-4 h-4 mr-2" />
@@ -950,6 +974,23 @@ export default function AuctionListingPage() {
           </div>
         )}
       </div>
+      <EditListingDialog
+        open={!!editModal?.open}
+        onOpenChange={(o) => {
+          if (!o) setEditModal(null);
+        }}
+        collectionName={editModal?.col || "auctions"}
+        documentId={editModal?.id || ""}
+        fieldName={editModal?.fieldName || "auctionName"}
+        label={editModal?.label || "Name"}
+        currentValue={editModal?.currentValue || ""}
+        placeholder="Enter new name"
+        helpText="Update the name shown to buyers."
+        onSaved={async (newVal) => {
+          // update local state to reflect change immediately
+          setAuctions((prev) => prev.map((a) => (a.id === editModal?.id ? { ...a, [editModal!.fieldName]: newVal } : a)));
+        }}
+      />
     </div>
   );
 } 
