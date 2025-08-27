@@ -13,22 +13,50 @@ type HotelEditDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   documentId: string;
-  initial: { hotelName?: string; city?: string; state?: string };
-  onSaved?: (update: Partial<{ hotelName: string; city: string; state: string }>) => void;
+  initial: {
+    hotelName?: string;
+    address?: string;
+    city?: string;
+    state?: string;
+    country?: string;
+    description?: string;
+    storageType?: string;
+    website?: string;
+    contactName?: string;
+    contactEmail?: string;
+    features?: string;
+  };
+  onSaved?: (update: Partial<HotelEditDialogProps["initial"]>) => void;
 };
 
 export default function HotelEditDialog({ open, onOpenChange, documentId, initial, onSaved }: HotelEditDialogProps) {
   const [hotelName, setHotelName] = useState<string>(initial.hotelName || "");
+  const [address, setAddress] = useState<string>(initial.address || "");
   const [city, setCity] = useState<string>(initial.city || "");
   const [state, setState] = useState<string>(initial.state || "");
+  const [country, setCountry] = useState<string>(initial.country || "");
+  const [description, setDescription] = useState<string>(initial.description || "");
+  const [storageType, setStorageType] = useState<string>(initial.storageType || "");
+  const [website, setWebsite] = useState<string>(initial.website || "");
+  const [contactName, setContactName] = useState<string>(initial.contactName || "");
+  const [contactEmail, setContactEmail] = useState<string>(initial.contactEmail || "");
+  const [features, setFeatures] = useState<string>(initial.features || "");
   const [saving, setSaving] = useState(false);
   const { toast } = useToast();
 
   const handleSave = async () => {
-    const payload: Record<string, string> = {};
+    const payload: Record<string, any> = {};
     if (hotelName.trim() !== (initial.hotelName || "")) payload.hotelName = hotelName.trim();
+    if (address.trim() !== (initial.address || "")) payload.address = address.trim();
     if (city.trim() !== (initial.city || "")) payload.city = city.trim();
     if (state.trim() !== (initial.state || "")) payload.state = state.trim();
+    if (country.trim() !== (initial.country || "")) payload.country = country.trim();
+    if (description.trim() !== (initial.description || "")) payload.description = description.trim();
+    if (storageType.trim() !== (initial.storageType || "")) payload.storageType = storageType.trim();
+    if (website.trim() !== (initial.website || "")) payload.website = website.trim();
+    if (contactName.trim() !== (initial.contactName || "")) payload.contactName = contactName.trim();
+    if (contactEmail.trim() !== (initial.contactEmail || "")) payload.contactEmail = contactEmail.trim();
+    if (features.trim() !== (initial.features || "")) payload.features = features.split(",").map(s => s.trim()).filter(Boolean);
     if (Object.keys(payload).length === 0) {
       toast({ title: "No changes", description: "Nothing to update.", variant: "destructive" });
       return;
@@ -55,7 +83,7 @@ export default function HotelEditDialog({ open, onOpenChange, documentId, initia
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-foreground">Edit hotel</DialogTitle>
           <DialogDescription className="text-muted-foreground">Update basic details only.</DialogDescription>
@@ -65,7 +93,11 @@ export default function HotelEditDialog({ open, onOpenChange, documentId, initia
             <Label htmlFor="hotelName" className="text-foreground">Hotel name</Label>
             <Input id="hotelName" value={hotelName} onChange={(e) => setHotelName(e.target.value)} placeholder="e.g. Grand Resort" className="text-foreground" />
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="space-y-1">
+            <Label htmlFor="address" className="text-foreground">Address</Label>
+            <Input id="address" value={address} onChange={(e) => setAddress(e.target.value)} placeholder="Street and number" className="text-foreground" />
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div className="space-y-1">
               <Label htmlFor="city" className="text-foreground">City</Label>
               <Input id="city" value={city} onChange={(e) => setCity(e.target.value)} placeholder="City" className="text-foreground" />
@@ -74,6 +106,38 @@ export default function HotelEditDialog({ open, onOpenChange, documentId, initia
               <Label htmlFor="state" className="text-foreground">State</Label>
               <Input id="state" value={state} onChange={(e) => setState(e.target.value)} placeholder="State" className="text-foreground" />
             </div>
+            <div className="space-y-1">
+              <Label htmlFor="country" className="text-foreground">Country</Label>
+              <Input id="country" value={country} onChange={(e) => setCountry(e.target.value)} placeholder="Country" className="text-foreground" />
+            </div>
+          </div>
+          <div className="space-y-1">
+            <Label htmlFor="description" className="text-foreground">Description</Label>
+            <textarea id="description" value={description} onChange={(e) => setDescription(e.target.value)} className="w-full border rounded px-3 py-2 bg-background text-foreground min-h-[100px]" />
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="space-y-1">
+              <Label htmlFor="storageType" className="text-foreground">Storage type</Label>
+              <Input id="storageType" value={storageType} onChange={(e) => setStorageType(e.target.value)} placeholder="e.g. Climate Controlled" className="text-foreground" />
+            </div>
+            <div className="space-y-1">
+              <Label htmlFor="website" className="text-foreground">Website</Label>
+              <Input id="website" value={website} onChange={(e) => setWebsite(e.target.value)} placeholder="https://" className="text-foreground" />
+            </div>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="space-y-1">
+              <Label htmlFor="contactName" className="text-foreground">Contact name</Label>
+              <Input id="contactName" value={contactName} onChange={(e) => setContactName(e.target.value)} className="text-foreground" />
+            </div>
+            <div className="space-y-1">
+              <Label htmlFor="contactEmail" className="text-foreground">Contact email</Label>
+              <Input id="contactEmail" value={contactEmail} onChange={(e) => setContactEmail(e.target.value)} className="text-foreground" />
+            </div>
+          </div>
+          <div className="space-y-1">
+            <Label htmlFor="features" className="text-foreground">Features (comma separated)</Label>
+            <Input id="features" value={features} onChange={(e) => setFeatures(e.target.value)} placeholder="24/7 Security, Detailing Services" className="text-foreground" />
           </div>
         </div>
         <DialogFooter>

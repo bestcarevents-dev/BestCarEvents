@@ -13,20 +13,47 @@ type ClubEditDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   documentId: string;
-  initial: { clubName?: string; location?: string };
-  onSaved?: (update: Partial<{ clubName: string; location: string }>) => void;
+  initial: {
+    clubName?: string;
+    description?: string;
+    membershipCriteria?: string;
+    typicalActivities?: string;
+    city?: string;
+    country?: string;
+    website?: string;
+    socialMediaLink?: string;
+    contactName?: string;
+    contactEmail?: string;
+  };
+  onSaved?: (update: Partial<ClubEditDialogProps["initial"]>) => void;
 };
 
 export default function ClubEditDialog({ open, onOpenChange, documentId, initial, onSaved }: ClubEditDialogProps) {
   const [clubName, setClubName] = useState<string>(initial.clubName || "");
-  const [location, setLocation] = useState<string>(initial.location || "");
+  const [description, setDescription] = useState<string>(initial.description || "");
+  const [membershipCriteria, setMembershipCriteria] = useState<string>(initial.membershipCriteria || "");
+  const [typicalActivities, setTypicalActivities] = useState<string>(initial.typicalActivities || "");
+  const [city, setCity] = useState<string>(initial.city || "");
+  const [country, setCountry] = useState<string>(initial.country || "");
+  const [website, setWebsite] = useState<string>(initial.website || "");
+  const [socialMediaLink, setSocialMediaLink] = useState<string>(initial.socialMediaLink || "");
+  const [contactName, setContactName] = useState<string>(initial.contactName || "");
+  const [contactEmail, setContactEmail] = useState<string>(initial.contactEmail || "");
   const [saving, setSaving] = useState(false);
   const { toast } = useToast();
 
   const handleSave = async () => {
-    const payload: Record<string, string> = {};
+    const payload: Record<string, any> = {};
     if (clubName.trim() !== (initial.clubName || "")) payload.clubName = clubName.trim();
-    if (location.trim() !== (initial.location || "")) payload.location = location.trim();
+    if (description.trim() !== (initial.description || "")) payload.description = description.trim();
+    if (membershipCriteria.trim() !== (initial.membershipCriteria || "")) payload.membershipCriteria = membershipCriteria.trim();
+    if (typicalActivities.trim() !== (initial.typicalActivities || "")) payload.typicalActivities = typicalActivities.trim();
+    if (city.trim() !== (initial.city || "")) payload.city = city.trim();
+    if (country.trim() !== (initial.country || "")) payload.country = country.trim();
+    if (website.trim() !== (initial.website || "")) payload.website = website.trim();
+    if (socialMediaLink.trim() !== (initial.socialMediaLink || "")) payload.socialMediaLink = socialMediaLink.trim();
+    if (contactName.trim() !== (initial.contactName || "")) payload.contactName = contactName.trim();
+    if (contactEmail.trim() !== (initial.contactEmail || "")) payload.contactEmail = contactEmail.trim();
     if (Object.keys(payload).length === 0) {
       toast({ title: "No changes", description: "Nothing to update.", variant: "destructive" });
       return;
@@ -53,7 +80,7 @@ export default function ClubEditDialog({ open, onOpenChange, documentId, initial
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-foreground">Edit club</DialogTitle>
           <DialogDescription className="text-muted-foreground">Update basic details only.</DialogDescription>
@@ -64,8 +91,48 @@ export default function ClubEditDialog({ open, onOpenChange, documentId, initial
             <Input id="clubName" value={clubName} onChange={(e) => setClubName(e.target.value)} placeholder="e.g. Classic Riders Club" className="text-foreground" />
           </div>
           <div className="space-y-1">
-            <Label htmlFor="clubLocation" className="text-foreground">Location</Label>
-            <Input id="clubLocation" value={location} onChange={(e) => setLocation(e.target.value)} placeholder="City, Country" className="text-foreground" />
+            <Label htmlFor="description" className="text-foreground">Description</Label>
+            <textarea id="description" value={description} onChange={(e) => setDescription(e.target.value)} className="w-full border rounded px-3 py-2 bg-background text-foreground min-h-[100px]" />
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="space-y-1">
+              <Label htmlFor="membershipCriteria" className="text-foreground">Membership criteria</Label>
+              <textarea id="membershipCriteria" value={membershipCriteria} onChange={(e) => setMembershipCriteria(e.target.value)} className="w-full border rounded px-3 py-2 bg-background text-foreground min-h-[80px]" />
+            </div>
+            <div className="space-y-1">
+              <Label htmlFor="typicalActivities" className="text-foreground">Typical activities</Label>
+              <textarea id="typicalActivities" value={typicalActivities} onChange={(e) => setTypicalActivities(e.target.value)} className="w-full border rounded px-3 py-2 bg-background text-foreground min-h-[80px]" />
+            </div>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="space-y-1">
+              <Label htmlFor="city" className="text-foreground">City</Label>
+              <Input id="city" value={city} onChange={(e) => setCity(e.target.value)} className="text-foreground" />
+            </div>
+            <div className="space-y-1">
+              <Label htmlFor="country" className="text-foreground">Country</Label>
+              <Input id="country" value={country} onChange={(e) => setCountry(e.target.value)} className="text-foreground" />
+            </div>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="space-y-1">
+              <Label htmlFor="website" className="text-foreground">Website</Label>
+              <Input id="website" value={website} onChange={(e) => setWebsite(e.target.value)} className="text-foreground" />
+            </div>
+            <div className="space-y-1">
+              <Label htmlFor="socialMediaLink" className="text-foreground">Social link</Label>
+              <Input id="socialMediaLink" value={socialMediaLink} onChange={(e) => setSocialMediaLink(e.target.value)} className="text-foreground" />
+            </div>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="space-y-1">
+              <Label htmlFor="contactName" className="text-foreground">Contact name</Label>
+              <Input id="contactName" value={contactName} onChange={(e) => setContactName(e.target.value)} className="text-foreground" />
+            </div>
+            <div className="space-y-1">
+              <Label htmlFor="contactEmail" className="text-foreground">Contact email</Label>
+              <Input id="contactEmail" value={contactEmail} onChange={(e) => setContactEmail(e.target.value)} className="text-foreground" />
+            </div>
           </div>
         </div>
         <DialogFooter>
