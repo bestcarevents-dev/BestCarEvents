@@ -84,7 +84,21 @@ export default function MyAdsPage() {
       
       const adsQuery = query(collection(db, "partnerAds"), where("uploadedByUserId", "==", currentUser.uid));
       const snapshot = await getDocs(adsQuery);
-      setAds(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+      const items = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      const getTime = (ad: any) => {
+        const candidates = [ad.submittedAt, ad.createdAt, ad.uploadedAt, ad.created, ad.timestamp, ad.updatedAt];
+        for (const t of candidates) {
+          if (!t) continue;
+          if (typeof t === 'number') return t;
+          if (t?.seconds) return t.seconds * 1000 + (t.nanoseconds ? Math.floor(t.nanoseconds / 1e6) : 0);
+          const d = new Date(t);
+          if (!isNaN(d.getTime())) return d.getTime();
+        }
+        // Fallback: sort by id string (not perfect but stable)
+        return 0;
+      };
+      items.sort((a, b) => getTime(b) - getTime(a));
+      setAds(items);
       setAdsLoading(false);
     };
     fetchAds();
@@ -387,6 +401,14 @@ export default function MyAdsPage() {
   return (
     <PayPalScriptProvider options={paypalOptions}>
       <div className="container mx-auto px-4 py-12">
+        {/* Strong guidance callout */}
+        <div className="mb-6 rounded-lg border border-amber-300 bg-amber-50 text-amber-900 p-4">
+          <div className="font-semibold mb-1">Important</div>
+          <p className="text-sm">
+            Please choose an Ad Type for any ad you just submitted. Your ad will not be shown until you select an Ad Type. 
+            When you select an Ad Type, one credit of that type will be used.
+          </p>
+        </div>
         {/* Banner Remaining Cards */}
         {userDoc && (
           <div className="mb-8">
@@ -679,8 +701,15 @@ export default function MyAdsPage() {
             <div className="text-center py-8 text-muted-foreground">You have not created any ads yet.</div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {ads.map(ad => (
-                <div key={ad.id} className="bg-card border rounded-xl p-4 shadow hover:shadow-lg transition group flex flex-col gap-4">
+              {ads.map(ad => {
+                const needsType = !ad.bannerType;
+                return (
+                <div key={ad.id} className={`bg-card border rounded-xl p-4 shadow hover:shadow-lg transition group flex flex-col gap-4 ${needsType ? 'border-amber-400 ring-1 ring-amber-300 bg-amber-50/40' : ''}`}>
+                  {needsType && (
+                    <div className="text-xs text-amber-900 bg-amber-100 border border-amber-200 rounded px-2 py-1">
+                      This ad needs an Ad Type to be selected. It will not be shown until you choose one. Selecting an Ad Type will use 1 credit of that type.
+                    </div>
+                  )}
                   <div onClick={() => router.push(`/partners/ad/${ad.id}`)} className="cursor-pointer">
                     <h3 className="text-lg font-bold mb-2">{ad.title || ad.productName || ad.type}</h3>
                     <div className="text-sm text-muted-foreground mb-2">{ad.adType || ad.type}</div>
@@ -721,6 +750,7 @@ export default function MyAdsPage() {
                           />
                           <Label htmlFor={`homepage-${ad.id}`} className="text-sm">Homepage Banner Ad</Label>
                         </div>
+                        <div className="text-[11px] text-muted-foreground">Note: Choosing an Ad Type will consume 1 credit of that type.</div>
                         {!validateAd(ad) && (
                           <div className="flex items-center gap-2 text-xs text-destructive mt-2 bg-destructive/10 rounded px-2 py-1">
                             <AlertTriangle className="w-4 h-4" /> Ad validation failed - missing required fields
@@ -776,7 +806,7 @@ export default function MyAdsPage() {
                     </div>
                   )}
                 </div>
-              ))}
+              );})}
             </div>
           )}
         </div>

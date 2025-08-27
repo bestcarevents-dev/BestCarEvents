@@ -601,7 +601,7 @@ export default function AdvertisePage() {
                 </div>
               </fieldset>
               <Button type="submit" className="w-full text-lg py-6" disabled={isSubmitting}>
-                {isSubmitting ? "Submitting..." : "Submit Ad for Review"}
+                {isSubmitting ? "Submitting..." : "Submit Ad"}
               </Button>
               <Button className="mt-4 w-full" variant="secondary" type="button" onClick={() => setSelectedType(null)}>
                 Back to Ad Type Selection
@@ -993,7 +993,7 @@ function CarPartsAccessoriesForm({ isSubmitting, setIsSubmitting, images, setIma
         </div>
       </fieldset>
       <Button type="submit" className="w-full text-lg py-6" disabled={isSubmitting}>
-        {isSubmitting ? "Submitting..." : "Submit Ad for Review"}
+        {isSubmitting ? "Submitting..." : "Submit Ad"}
       </Button>
       <Button className="mt-4 w-full" variant="secondary" type="button" onClick={() => window.location.reload()}>
         Back to Ad Type Selection
@@ -1132,7 +1132,7 @@ function CarTransportLogisticsForm({ isSubmitting, setIsSubmitting, images, setI
         </div>
       </fieldset>
       <Button type="submit" className="w-full text-lg py-6" disabled={isSubmitting}>
-        {isSubmitting ? "Submitting..." : "Submit Ad for Review"}
+        {isSubmitting ? "Submitting..." : "Submit Ad"}
       </Button>
       <Button className="mt-4 w-full" variant="secondary" type="button" onClick={() => window.location.reload()}>
         Back to Ad Type Selection
@@ -1265,7 +1265,7 @@ function CarDetailingWrappingForm({ isSubmitting, setIsSubmitting, images, setIm
         </div>
       </fieldset>
       <Button type="submit" className="w-full text-lg py-6" disabled={isSubmitting}>
-        {isSubmitting ? "Submitting..." : "Submit Ad for Review"}
+        {isSubmitting ? "Submitting..." : "Submit Ad"}
       </Button>
       <Button className="mt-4 w-full" variant="secondary" type="button" onClick={() => window.location.reload()}>
         Back to Ad Type Selection
@@ -1404,7 +1404,7 @@ function RestorationCustomShopsForm({ isSubmitting, setIsSubmitting, images, set
         </div>
       </fieldset>
       <Button type="submit" className="w-full text-lg py-6" disabled={isSubmitting}>
-        {isSubmitting ? "Submitting..." : "Submit Ad for Review"}
+        {isSubmitting ? "Submitting..." : "Submit Ad"}
       </Button>
       <Button className="mt-4 w-full" variant="secondary" type="button" onClick={() => window.location.reload()}>
         Back to Ad Type Selection
@@ -1543,7 +1543,7 @@ function ClassicCarInsuranceForm({ isSubmitting, setIsSubmitting, images, setIma
         </div>
       </fieldset>
       <Button type="submit" className="w-full text-lg py-6" disabled={isSubmitting}>
-        {isSubmitting ? "Submitting..." : "Submit Ad for Review"}
+        {isSubmitting ? "Submitting..." : "Submit Ad"}
       </Button>
       <Button className="mt-4 w-full" variant="secondary" type="button" onClick={() => window.location.reload()}>
         Back to Ad Type Selection
@@ -1682,7 +1682,7 @@ function DrivingExperiencesForm({ isSubmitting, setIsSubmitting, images, setImag
         </div>
       </fieldset>
       <Button type="submit" className="w-full text-lg py-6" disabled={isSubmitting}>
-        {isSubmitting ? "Submitting..." : "Submit Ad for Review"}
+        {isSubmitting ? "Submitting..." : "Submit Ad"}
       </Button>
       <Button className="mt-4 w-full" variant="secondary" type="button" onClick={() => window.location.reload()}>
         Back to Ad Type Selection
@@ -1821,7 +1821,7 @@ function FinanceLeasingStorageForm({ isSubmitting, setIsSubmitting, images, setI
         </div>
       </fieldset>
       <Button type="submit" className="w-full text-lg py-6" disabled={isSubmitting}>
-        {isSubmitting ? "Submitting..." : "Submit Ad for Review"}
+        {isSubmitting ? "Submitting..." : "Submit Ad"}
       </Button>
       <Button className="mt-4 w-full" variant="secondary" type="button" onClick={() => window.location.reload()}>
         Back to Ad Type Selection
@@ -1961,7 +1961,7 @@ function WebshiteForm({ isSubmitting, setIsSubmitting, images, setImages, imageP
         </div>
       </fieldset>
       <Button type="submit" className="w-full text-lg py-6" disabled={isSubmitting}>
-        {isSubmitting ? "Submitting..." : "Submit Ad for Review"}
+        {isSubmitting ? "Submitting..." : "Submit Ad"}
       </Button>
       <Button className="mt-4 w-full" variant="secondary" type="button" onClick={() => window.location.reload()}>
         Back to Ad Type Selection
@@ -2101,7 +2101,7 @@ function GeneralBusinessForm({ isSubmitting, setIsSubmitting, images, setImages,
         </div>
       </fieldset>
       <Button type="submit" className="w-full text-lg py-6" disabled={isSubmitting}>
-        {isSubmitting ? "Submitting..." : "Submit Ad for Review"}
+        {isSubmitting ? "Submitting..." : "Submit Ad"}
       </Button>
       <Button className="mt-4 w-full" variant="secondary" type="button" onClick={() => window.location.reload()}>
         Back to Ad Type Selection
