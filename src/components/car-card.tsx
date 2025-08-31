@@ -40,11 +40,11 @@ export default function CarCard({ id, name, price, location, image, hint, type =
         {type !== 'auction' && <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-yellow-500 via-amber-400 to-yellow-600 opacity-80" />}
       </div>
       <CardContent className="p-5 sm:p-6 flex-grow flex flex-col">
-        <h3 className="text-xl sm:text-[1.35rem] font-headline font-extrabold leading-tight text-gray-900 tracking-tight">
-          <span className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-transparent group-hover:from-gray-900 group-hover:to-gray-700 transition-colors">{name}</span>
+        <h3 className="text-xl sm:text-[1.35rem] font-headline leading-tight tracking-[0.02em] text-[#1f1f1f]">
+          <span className="bg-gradient-to-r from-[#1d1d1d] via-[#2a2a2a] to-[#1d1d1d] bg-clip-text text-transparent group-hover:opacity-90 transition-opacity">{name}</span>
         </h3>
         <div className="flex justify-between items-center mt-auto pt-4">
-            <p className={`text-2xl font-mono font-bold ${type === 'auction' ? 'bg-gradient-to-r from-[#C3A76D] via-[#E7D08A] to-[#B98A2A] bg-clip-text text-transparent' : 'bg-gradient-to-r from-yellow-500 to-amber-400 bg-clip-text text-transparent drop-shadow-sm'}`}>{price}</p>
+            <p className={`text-2xl font-semibold ${type === 'auction' ? 'bg-gradient-to-r from-[#C3A76D] via-[#E7D08A] to-[#B98A2A] bg-clip-text text-transparent' : 'bg-gradient-to-r from-yellow-500 to-amber-400 bg-clip-text text-transparent'}`}>{price}</p>
             <Button variant="ghost" size="icon" asChild className={`${type === 'auction' ? 'rounded-full border border-[#D9CEB6] text-[#1f1f1f] hover:bg-[#F8F6F1]' : 'rounded-full border border-yellow-500/30 text-gray-800 hover:text-gray-900 bg-white/70 hover:bg-white shadow-sm hover:shadow-md'} transition-all`}>
               <Link href={`/${type === 'auction' ? 'auctions' : 'cars'}/${id}`}>
                 <ArrowRight className="w-6 h-6 transform transition-transform group-hover:translate-x-1"/>

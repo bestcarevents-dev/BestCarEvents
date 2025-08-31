@@ -523,8 +523,9 @@ const FeaturedCarsSection = ({ copy }: { copy: NonNullable<HomepageContent["feat
         <section className="py-12 sm:py-16 md:py-20 lg:py-24 bg-[#E0D8C1]">
             <div className="container mx-auto px-4">
                 <div className="text-center max-w-3xl mx-auto mb-8 md:mb-12 lg:mb-14">
-                    <h2 className="text-3xl sm:text-4xl md:text-5xl font-headline font-extrabold tracking-tight bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-transparent">{copy.title}</h2>
-                    <p className="mt-2 md:mt-3 text-base md:text-lg text-gray-700">{copy.description}</p>
+                    <h2 className="font-headline uppercase tracking-[0.2em] text-gray-900 text-3xl sm:text-4xl md:text-5xl">{copy.title}</h2>
+                    <div className="mx-auto mt-4 h-[2px] w-24 bg-gradient-to-r from-yellow-500 to-yellow-300" />
+                    <p className="mt-6 text-gray-700 text-base md:text-lg max-w-3xl mx-auto leading-relaxed">{copy.description}</p>
                 </div>
                 {loading ? (
                     <div className="text-center text-base md:text-lg py-8 md:py-12 text-gray-600">Loading featured cars...</div>

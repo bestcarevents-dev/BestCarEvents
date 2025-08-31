@@ -48,12 +48,12 @@ export default function EventListItem({ id, documentId, name, date, location, im
                 {location}
               </span>
             </div>
-            <h3 className="font-headline font-extrabold text-2xl md:text-3xl tracking-[-0.01em] mb-3">
+            <h3 className="font-headline text-2xl md:text-3xl tracking-[0.01em] mb-3 text-[#1f1f1f]">
               <Link href={href} className="bg-gradient-to-r from-[#1d1d1d] via-[#2a2a2a] to-[#1d1d1d] bg-clip-text text-transparent hover:opacity-90 transition">
                 {name}
               </Link>
             </h3>
-            <p className="text-gray-700 line-clamp-2 leading-relaxed">{description}</p>
+            <p className="text-gray-800 line-clamp-2 leading-relaxed">{description}</p>
           </div>
           <div className="mt-6 flex justify-end">
             <Button asChild className="rounded-full bg-[#C3A76D] hover:bg-[#B99754] text-black font-semibold shadow-sm hover:shadow transition-all">
