@@ -115,56 +115,57 @@ type GalleryImage = { id: string; url: string };
 
 const PromoAnnouncement = ({ copy }: { copy: NonNullable<HomepageContent["promo"]> }) => {
   return (
-    <div className="bg-gradient-to-b from-white to-[#E0D8C1]">
+    <div className="bg-[#F8F6F1]">
       <div className="container mx-auto px-4 py-12">
         <div className="relative">
-          {/* Background decorative elements */}
-          <div className="absolute inset-0 overflow-hidden">
-            <div className="absolute -top-4 -left-4 w-32 h-32 bg-yellow-400/20 rounded-full blur-2xl"></div>
-            <div className="absolute -bottom-4 -right-4 w-32 h-32 bg-yellow-400/20 rounded-full blur-2xl"></div>
-          </div>
-          
-          {/* Main content */}
-          <div className="relative flex flex-col items-center text-center">
-            <div className="inline-flex items-center gap-2 bg-yellow-400/20 backdrop-blur-sm px-4 py-2 rounded-full mb-4 md:mb-6">
-              <span className="animate-pulse">🎉</span>
-              <span className="font-semibold text-gray-900">{copy.badgeText}</span>
-              <span className="animate-pulse">🎉</span>
+          {/* Paper backdrop with brass studs */}
+          <div className="relative mx-auto max-w-4xl rounded-[18px] border border-[#C7BCA3]/60 bg-gradient-to-br from-[#FAF7EE] via-[#F3EADA] to-[#ECE3D1] shadow-[0_10px_30px_rgba(0,0,0,0.08)] px-6 sm:px-10 py-10">
+            <div className="pointer-events-none absolute top-2 left-2 h-2 w-2 rounded-full bg-[#B38E4A] shadow" />
+            <div className="pointer-events-none absolute top-2 right-2 h-2 w-2 rounded-full bg-[#B38E4A] shadow" />
+            <div className="pointer-events-none absolute bottom-2 left-2 h-2 w-2 rounded-full bg-[#B38E4A] shadow" />
+            <div className="pointer-events-none absolute bottom-2 right-2 h-2 w-2 rounded-full bg-[#B38E4A] shadow" />
+
+            {/* Badge */}
+            <div className="inline-flex items-center gap-2 rounded-full border border-[#D9CEB6] bg-[#F4F0E7] px-4 py-2 mb-5">
+              <span className="text-[#7A6E57] font-semibold text-sm">{copy.badgeText}</span>
             </div>
-            
-            <h2 className="text-4xl md:text-6xl lg:text-7xl font-extrabold font-headline text-amber-500 pb-2">
+
+            {/* Heading and divider */}
+            <h2 className="font-headline uppercase tracking-[0.2em] text-[#1f1f1f] text-3xl sm:text-4xl md:text-5xl text-center">
               {copy.mainHeading}
             </h2>
-            
-            <div className="mt-6 md:mt-8 flex flex-wrap justify-center gap-3 md:gap-4 text-lg md:text-xl">
+            <div className="mx-auto mt-4 h-[2px] w-24 bg-gradient-to-r from-[#C3A76D] to-[#E7D08A]" />
+
+            {/* Chips */}
+            <div className="mt-6 md:mt-8 flex flex-wrap justify-center gap-3 md:gap-4 text-sm md:text-base">
               {copy.chips.map((chip) => (
-                <div key={chip} className="bg-yellow-400/10 backdrop-blur-sm rounded-full px-6 py-2 border border-yellow-400/20 text-gray-900">
+                <div key={chip} className="rounded-full px-5 py-2 border border-[#D9CEB6] bg-[#F4F0E7] text-[#1f1f1f]">
                   {chip}
                 </div>
               ))}
             </div>
-            
-            <p className="mt-4 md:mt-6 text-lg md:text-2xl text-gray-800 max-w-2xl">
-              <span className="font-bold text-yellow-500">{copy.carsLinePrefix}</span> Enjoy <span className="font-bold text-yellow-500">{copy.carsLineHighlight}</span> listing period!
+
+            {/* Subcopy */}
+            <p className="mt-6 md:mt-8 text-[#2a2a2a] text-base md:text-lg max-w-2xl mx-auto text-center leading-relaxed">
+              <span className="font-bold text-[#C3A76D]">{copy.carsLinePrefix}</span> Enjoy <span className="font-bold text-[#C3A76D]">{copy.carsLineHighlight}</span> listing period!
             </p>
 
-            <div className="mt-6 md:mt-10 flex justify-center w-full">
+            {/* CTA Button */}
+            <div className="mt-8 flex justify-center w-full">
               <Button 
                 asChild 
                 size="lg" 
-                className="group relative overflow-hidden text-gray-900 font-semibold text-lg md:text-xl px-10 md:px-12 py-5 md:py-6 rounded-full shadow-lg ring-1 ring-yellow-500/40 transition-all duration-300
-                           bg-gradient-to-b from-yellow-400 via-yellow-400 to-yellow-500 hover:from-yellow-500 hover:via-yellow-500 hover:to-yellow-600
-                           hover:-translate-y-0.5"
+                className="rounded-full bg-[#C3A76D] hover:bg-[#B99754] text-black font-semibold text-base md:text-lg px-8 md:px-10 py-4 shadow-sm hover:shadow transition-all"
               >
                 <Link href={copy.ctaHref}>{copy.ctaLabel}</Link>
               </Button>
             </div>
           </div>
-        </div>
-        
-        {/* Newsletter Section */}
-        <div className="text-center pt-6 mt-6 md:pt-8 md:mt-8 lg:pt-10 lg:mt-10 border-t border-yellow-400/20">
-          <NewsletterSubscribe />
+
+          {/* Newsletter Section */}
+          <div className="text-center pt-6 mt-8 lg:pt-10 border-t border-[#D9CEB6]">
+            <NewsletterSubscribe />
+          </div>
         </div>
       </div>
     </div>

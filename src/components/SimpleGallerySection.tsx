@@ -35,7 +35,10 @@ export default function SimpleGallerySection({ title, collectionName, max = 12 }
   return (
     <section className="py-8 md:py-12 bg-white">
       <div className="container mx-auto px-4">
-        <h2 className="text-xl md:text-2xl font-headline font-extrabold tracking-tight bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-transparent mb-4 md:mb-6">{title}</h2>
+        <div className="text-center max-w-3xl mx-auto mb-4 md:mb-6">
+          <h2 className="font-headline uppercase tracking-[0.2em] text-gray-900 text-xl md:text-2xl">{title}</h2>
+          <div className="mx-auto mt-3 h-[2px] w-20 bg-gradient-to-r from-yellow-500 to-yellow-300" />
+        </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-0">
           {images.map((url, i) => (
             <a key={i} href={url} target="_blank" rel="noreferrer" className="group relative block aspect-square overflow-hidden">

@@ -32,54 +32,51 @@ export default function FreeCallout({
   const IconComp = icon === "gift" ? Gift : icon === "sparkles" ? Sparkles : Megaphone;
 
   return (
-    <Card className={`border-0 bg-gradient-to-b from-white to-[#E0D8C1]/30 shadow-lg ${className || ""}`}>
-      <CardContent className="p-4 md:p-6">
-        <div className="relative">
-          {/* Background decorative elements */}
-          <div className="absolute inset-0 overflow-hidden">
-            <div className="absolute -top-2 -left-2 w-16 h-16 bg-yellow-400/20 rounded-full blur-lg"></div>
-            <div className="absolute -bottom-2 -right-2 w-16 h-16 bg-yellow-400/20 rounded-full blur-lg"></div>
+    <Card className={`border border-[#C7BCA3]/60 bg-gradient-to-br from-[#FAF7EE] via-[#F3EADA] to-[#ECE3D1] shadow-[0_10px_30px_rgba(0,0,0,0.08)] rounded-[18px] ${className || ""}`}>
+      <CardContent className="p-6 md:p-8">
+        <div className="relative flex flex-col items-center text-center">
+          {/* Brass studs */}
+          <div className="pointer-events-none absolute top-2 left-2 h-2 w-2 rounded-full bg-[#B38E4A] shadow" />
+          <div className="pointer-events-none absolute top-2 right-2 h-2 w-2 rounded-full bg-[#B38E4A] shadow" />
+          <div className="pointer-events-none absolute bottom-2 left-2 h-2 w-2 rounded-full bg-[#B38E4A] shadow" />
+          <div className="pointer-events-none absolute bottom-2 right-2 h-2 w-2 rounded-full bg-[#B38E4A] shadow" />
+
+          {/* Badge */}
+          <div className="inline-flex items-center gap-2 rounded-full border border-[#D9CEB6] bg-[#F4F0E7] px-4 py-2 mb-4">
+            <IconComp className="h-4 w-4 text-[#7D8C91]" />
+            <span className="text-[#7A6E57] font-semibold text-sm">ZERO COST</span>
           </div>
-          
-          {/* Main content */}
-          <div className="relative flex flex-col items-center text-center">
-            {/* Badge */}
-            <div className="inline-flex items-center gap-2 bg-yellow-400/20 backdrop-blur-sm px-3 py-1.5 rounded-full mb-4">
-              <span className="animate-pulse">🎉</span>
-              <span className="font-semibold text-gray-900 text-sm">ZERO COST</span>
-              <span className="animate-pulse">🎉</span>
+
+          {/* Title and divider */}
+          <h2 className="font-headline uppercase tracking-[0.2em] text-[#1f1f1f] text-2xl md:text-3xl lg:text-4xl">
+            ALL LISTINGS ARE FREE
+          </h2>
+          <div className="mx-auto mt-3 h-[2px] w-24 bg-gradient-to-r from-[#C3A76D] to-[#E7D08A]" />
+
+          {/* Message */}
+          <p className="mt-4 text-base md:text-lg text-[#2a2a2a] max-w-xl">
+            <span className="font-bold text-[#C3A76D]">Cars:</span> Enjoy <span className="font-bold text-[#C3A76D]">2 months free</span> listing period!
+          </p>
+
+          {/* Description */}
+          <p className="text-sm text-[#4a4a4a] mb-6 leading-relaxed max-w-lg">
+            {selectedMessage}
+          </p>
+
+          {/* CTA Button */}
+          {ctaHref && (
+            <div className="flex justify-center w-full">
+              <Button 
+                asChild 
+                size="lg" 
+                className="rounded-full bg-[#C3A76D] hover:bg-[#B99754] text-black font-semibold text-base px-6 py-3 shadow-sm hover:shadow transition-all"
+              >
+                <Link href={ctaHref}>
+                  {ctaText}
+                </Link>
+              </Button>
             </div>
-            
-            {/* Animated gradient title */}
-            <h2 className="text-2xl md:text-3xl lg:text-4xl font-extrabold font-headline text-amber-500 pb-2 mb-3">
-              ALL LISTINGS ARE FREE
-            </h2>
-            
-            {/* Message */}
-            <p className="text-base md:text-lg text-gray-800 max-w-xl mb-4">
-              <span className="font-bold text-yellow-500">Cars:</span> Enjoy <span className="font-bold text-yellow-500">2 months free</span> listing period!
-            </p>
-
-            {/* Description */}
-            <p className="text-sm text-gray-700 mb-6 leading-relaxed max-w-lg">
-              {selectedMessage}
-            </p>
-
-            {/* CTA Button */}
-            {ctaHref && (
-              <div className="flex justify-center w-full">
-                <Button 
-                  asChild 
-                  size="lg" 
-                  className="bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-bold text-base px-6 py-3 rounded-full shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300"
-                >
-                  <Link href={ctaHref}>
-                    {ctaText}
-                  </Link>
-                </Button>
-              </div>
-            )}
-          </div>
+          )}
         </div>
       </CardContent>
     </Card>
