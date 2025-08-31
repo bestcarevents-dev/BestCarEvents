@@ -382,33 +382,37 @@ const GallerySection = ({
 
 const ValueProposition = ({ copy }: { copy: NonNullable<HomepageContent["value"]> }) => {
   return (
-    <div className="bg-[#E0D8C1]">
-        <div className="container mx-auto px-4 py-12 md:py-20">
-             <div className="text-center max-w-3xl mx-auto mb-10 md:mb-16">
-                <h2 className="text-4xl font-headline font-extrabold sm:text-5xl tracking-tight text-gray-900">{copy.heading}</h2>
-                <p className="mt-3 md:mt-4 text-base md:text-lg text-gray-700">{copy.description}</p>
+    <div className="relative bg-[#E0D8C1]">
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute -top-10 -left-10 h-40 w-40 rounded-full bg-yellow-400/20 blur-2xl" />
+          <div className="absolute -bottom-10 -right-10 h-40 w-40 rounded-full bg-yellow-400/20 blur-2xl" />
+        </div>
+        <div className="container mx-auto px-4 py-12 md:py-20 relative">
+             <div className="text-center max-w-4xl mx-auto mb-10 md:mb-16">
+                <h2 className="text-4xl font-headline font-extrabold sm:text-5xl tracking-tight text-gray-900 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-transparent">{copy.heading}</h2>
+                <p className="mt-3 md:mt-4 text-lg md:text-xl text-gray-800">{copy.description}</p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 text-center">
                 <div className="flex flex-col items-center">
-                    <div className="flex items-center justify-center h-14 w-14 md:h-16 md:w-16 rounded-full bg-white mb-4 md:mb-6">
+                    <div className="flex items-center justify-center h-16 w-16 md:h-18 md:w-18 rounded-full bg-white shadow-md ring-1 ring-black/5 mb-5">
                         <BadgeCheck className="h-8 w-8 text-yellow-600"/>
                     </div>
-                    <h3 className="text-lg md:text-xl font-headline font-semibold text-gray-900">{copy.items[0]?.title}</h3>
-                    <p className="mt-1 md:mt-2 text-sm md:text-base text-gray-700">{copy.items[0]?.description}</p>
+                    <h3 className="text-lg md:text-xl font-headline font-semibold text-gray-900 tracking-tight">{copy.items[0]?.title}</h3>
+                    <p className="mt-2 text-sm md:text-base text-gray-700">{copy.items[0]?.description}</p>
                 </div>
                 <div className="flex flex-col items-center">
-                     <div className="flex items-center justify-center h-14 w-14 md:h-16 md:w-16 rounded-full bg-white mb-4 md:mb-6">
+                     <div className="flex items-center justify-center h-16 w-16 md:h-18 md:w-18 rounded-full bg-white shadow-md ring-1 ring-black/5 mb-5">
                         <Trophy className="h-8 w-8 text-yellow-600"/>
                     </div>
-                    <h3 className="text-lg md:text-xl font-headline font-semibold text-gray-900">{copy.items[1]?.title}</h3>
-                    <p className="mt-1 md:mt-2 text-sm md:text-base text-gray-700">{copy.items[1]?.description}</p>
+                    <h3 className="text-lg md:text-xl font-headline font-semibold text-gray-900 tracking-tight">{copy.items[1]?.title}</h3>
+                    <p className="mt-2 text-sm md:text-base text-gray-700">{copy.items[1]?.description}</p>
                 </div>
                 <div className="flex flex-col items-center">
-                    <div className="flex items-center justify-center h-14 w-14 md:h-16 md:w-16 rounded-full bg-white mb-4 md:mb-6">
+                    <div className="flex items-center justify-center h-16 w-16 md:h-18 md:w-18 rounded-full bg-white shadow-md ring-1 ring-black/5 mb-5">
                         <Group className="h-8 w-8 text-yellow-600"/>
                     </div>
-                    <h3 className="text-lg md:text-xl font-headline font-semibold text-gray-900">{copy.items[2]?.title}</h3>
-                    <p className="mt-1 md:mt-2 text-sm md:text-base text-gray-700">{copy.items[2]?.description}</p>
+                    <h3 className="text-lg md:text-xl font-headline font-semibold text-gray-900 tracking-tight">{copy.items[2]?.title}</h3>
+                    <p className="mt-2 text-sm md:text-base text-gray-700">{copy.items[2]?.description}</p>
                 </div>
             </div>
             
@@ -517,7 +521,7 @@ const FeaturedCarsSection = ({ copy }: { copy: NonNullable<HomepageContent["feat
         <section className="py-12 sm:py-16 md:py-20 lg:py-24 bg-[#E0D8C1]">
             <div className="container mx-auto px-4">
                 <div className="text-center max-w-3xl mx-auto mb-8 md:mb-12 lg:mb-14">
-                    <h2 className="text-3xl sm:text-4xl md:text-5xl font-headline font-extrabold tracking-tight text-gray-900">{copy.title}</h2>
+                    <h2 className="text-3xl sm:text-4xl md:text-5xl font-headline font-extrabold tracking-tight bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-transparent">{copy.title}</h2>
                     <p className="mt-2 md:mt-3 text-base md:text-lg text-gray-700">{copy.description}</p>
                 </div>
                 {loading ? (
@@ -618,8 +622,8 @@ const FeaturedCarsSection = ({ copy }: { copy: NonNullable<HomepageContent["feat
                                             size="icon"
                                             className={`w-3 h-3 rounded-full transition-all duration-200 ${
                                                 index === currentSlide 
-                                                    ? 'bg-primary scale-125' 
-                                                    : 'bg-border hover:bg-border/80'
+                                                    ? 'bg-yellow-600 scale-125' 
+                                                    : 'bg-gray-300 hover:bg-gray-400'
                                             }`}
                                             onClick={() => goToSlide(index)}
                                         >
@@ -753,7 +757,7 @@ const FeaturedEventsSection = ({ copy }: { copy: NonNullable<HomepageContent["fe
     <section className="py-12 sm:py-16 md:py-20 lg:py-24 bg-[#80A0A9]">
       <div className="container mx-auto px-4">
         <div className="text-center max-w-3xl mx-auto mb-8 md:mb-12 lg:mb-14">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-headline font-extrabold tracking-tight text-white">{copy.title}</h2>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-headline font-extrabold tracking-tight bg-gradient-to-r from-white via-white/90 to-white bg-clip-text text-transparent">{copy.title}</h2>
           <p className="mt-2 md:mt-3 text-base md:text-lg text-white/90">{copy.description}</p>
         </div>
         {loading ? (
@@ -846,8 +850,8 @@ const FeaturedEventsSection = ({ copy }: { copy: NonNullable<HomepageContent["fe
                       size="icon"
                       className={`w-3 h-3 rounded-full transition-all duration-200 ${
                         index === currentSlide 
-                          ? 'bg-yellow-600 scale-125' 
-                          : 'bg-gray-300 hover:bg-gray-400'
+                          ? 'bg-yellow-400 scale-125' 
+                          : 'bg-white/60 hover:bg-white/80'
                       }`}
                       onClick={() => goToSlide(index)}
                     >
@@ -984,8 +988,8 @@ const FeaturedAuctionsSection = ({ copy }: { copy: NonNullable<HomepageContent["
     <section className="py-12 sm:py-16 md:py-20 lg:py-24 bg-white">
       <div className="container mx-auto px-4">
         <div className="text-center max-w-3xl mx-auto mb-8 md:mb-12 lg:mb-14">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-headline font-extrabold tracking-tight text-gray-900">{copy.title}</h2>
-          <p className="mt-2 md:mt-3 text-base md:text-lg text-gray-600">{copy.description}</p>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-headline font-extrabold tracking-tight bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-transparent">{copy.title}</h2>
+          <p className="mt-2 md:mt-3 text-base md:text-lg text-gray-700">{copy.description}</p>
         </div>
         {loading ? (
           <div className="text-center text-base md:text-lg py-8 md:py-12 text-gray-600">Loading live auctions...</div>
@@ -1089,8 +1093,8 @@ const FeaturedAuctionsSection = ({ copy }: { copy: NonNullable<HomepageContent["
                       size="icon"
                       className={`w-3 h-3 rounded-full transition-all duration-200 ${
                         index === currentSlide 
-                          ? 'bg-primary scale-125' 
-                          : 'bg-border hover:bg-border/80'
+                          ? 'bg-yellow-600 scale-125' 
+                          : 'bg-gray-300 hover:bg-gray-400'
                       }`}
                       onClick={() => goToSlide(index)}
                     >
@@ -1215,8 +1219,8 @@ const FeaturedHotelsSection = ({ copy }: { copy: NonNullable<HomepageContent["fe
     <section className="py-12 sm:py-16 md:py-20 lg:py-24 bg-white">
       <div className="container mx-auto px-4">
         <div className="text-center max-w-3xl mx-auto mb-8 md:mb-12 lg:mb-14">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-headline font-extrabold tracking-tight text-gray-900">{copy.title}</h2>
-          <p className="mt-2 md:mt-3 text-base md:text-lg text-gray-600">{copy.description}</p>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-headline font-extrabold tracking-tight bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-transparent">{copy.title}</h2>
+          <p className="mt-2 md:mt-3 text-base md:text-lg text-gray-700">{copy.description}</p>
         </div>
         {loading ? (
           <div className="text-center text-base md:text-lg py-8 md:py-12 text-gray-600">Loading featured hotels...</div>
@@ -1851,8 +1855,8 @@ const FeaturedOtherServicesSection = ({ copy }: { copy: NonNullable<HomepageCont
     <section className="py-12 sm:py-16 md:py-20 lg:py-24 bg-white">
       <div className="container mx-auto px-4">
         <div className="text-center max-w-3xl mx-auto mb-8 md:mb-12 lg:mb-14">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-headline font-extrabold tracking-tight text-gray-900">{copy.title}</h2>
-          <p className="mt-2 md:mt-3 text-base md:text-lg text-gray-600">{copy.description}</p>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-headline font-extrabold tracking-tight bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-transparent">{copy.title}</h2>
+          <p className="mt-2 md:mt-3 text-base md:text-lg text-gray-700">{copy.description}</p>
         </div>
         {loading ? (
           <div className="text-center text-base md:text-lg py-8 md:py-12 text-gray-600">Loading other services...</div>

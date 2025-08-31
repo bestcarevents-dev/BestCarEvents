@@ -35,7 +35,7 @@ export default function SimpleGallerySection({ title, collectionName, max = 12 }
   return (
     <section className="py-8 md:py-12 bg-white">
       <div className="container mx-auto px-4">
-        <h2 className="text-xl md:text-2xl font-headline font-bold text-gray-900 mb-4 md:mb-6">{title}</h2>
+        <h2 className="text-xl md:text-2xl font-headline font-extrabold tracking-tight bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-transparent mb-4 md:mb-6">{title}</h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-0">
           {images.map((url, i) => (
             <a key={i} href={url} target="_blank" rel="noreferrer" className="group relative block aspect-square overflow-hidden">
@@ -43,10 +43,11 @@ export default function SimpleGallerySection({ title, collectionName, max = 12 }
               <img 
                 src={url} 
                 alt="Gallery" 
-                className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
+                className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.05]"
               />
               {/* Vintage vignette highlight on hover */}
               <div className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-[radial-gradient(circle_at_center,transparent_45%,rgba(0,0,0,0.55)_100%)]" />
+              <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-yellow-500 via-amber-400 to-yellow-600 opacity-90" />
             </a>
           ))}
         </div>
