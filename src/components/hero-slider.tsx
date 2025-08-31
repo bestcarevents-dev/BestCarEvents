@@ -102,22 +102,28 @@ export default function HeroSlider({ slides }: { slides?: HeroSlide[] }) {
                                     });
                                 }}
                             />
-                            <div className="absolute inset-0 bg-gradient-to-t from-amber-950/70 via-black/40 to-transparent"></div>
-                            {/* Warm blend into page background */}
-                            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-b from-transparent to-[#E0D8C1]/70" />
+                            {/* Luxury vintage overlays */}
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent"></div>
+                            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-48 bg-gradient-to-b from-transparent to-[#F3EADA]/70" />
+                            {/* Brass top rail */}
+                            <div className="pointer-events-none absolute inset-x-0 top-0 h-[3px] bg-gradient-to-r from-[#C3A76D] via-[#E7D08A] to-[#B98A2A] opacity-90" />
                         </CarouselItem>
                     ))}
                 </CarouselContent>
-                 <div className="absolute inset-0 flex items-center justify-center">
+                {/* Center overlay with hero-style heading */}
+                <div className="absolute inset-0 flex items-center justify-center">
                     <div className="container mx-auto px-4 text-center">
-                        <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl font-headline text-shadow-lg">
+                        <h1 className="font-headline uppercase tracking-[0.2em] drop-shadow-2xl text-3xl sm:text-5xl md:text-6xl lg:text-7xl">
                             {resolvedSlides[current].headline}
                         </h1>
-                        <p className="mt-6 text-xl text-neutral-200 text-shadow-md max-w-3xl mx-auto">
+                        <div className="mx-auto mt-4 h-[2px] w-24 bg-gradient-to-r from-[#E7D08A] to-[#F1E3A5]" />
+                        <p className="mt-6 text-neutral-200/95 text-base sm:text-lg md:text-xl max-w-3xl mx-auto leading-relaxed">
                             {resolvedSlides[current].subheadline}
                         </p>
                         <div className="mt-10 max-w-2xl mx-auto px-4 sm:px-0">
-                            <HeroSearch />
+                            <div className="rounded-[16px] border border-[#D9CEB6] bg-[#F4F0E7]/60 backdrop-blur-sm p-3 sm:p-4 shadow-[0_8px_24px_rgba(0,0,0,0.12)]">
+                                <HeroSearch />
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -132,8 +138,8 @@ export default function HeroSlider({ slides }: { slides?: HeroSlide[] }) {
                     ))}
                 </div>
 
-                <CarouselPrevious className="absolute left-8 top-1/2 -translate-y-1/2 text-white bg-amber-900/30 hover:bg-amber-900/50 border-yellow-200/30 h-12 w-12" />
-                <CarouselNext className="absolute right-8 top-1/2 -translate-y-1/2 text-white bg-amber-900/30 hover:bg-amber-900/50 border-yellow-200/30 h-12 w-12" />
+                <CarouselPrevious className="absolute left-8 top-1/2 -translate-y-1/2 text-white bg-black/30 hover:bg-black/50 border-[#E7D08A]/30 h-12 w-12" />
+                <CarouselNext className="absolute right-8 top-1/2 -translate-y-1/2 text-white bg-black/30 hover:bg-black/50 border-[#E7D08A]/30 h-12 w-12" />
             </Carousel>
         </div>
     );

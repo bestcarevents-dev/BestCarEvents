@@ -390,8 +390,9 @@ const ValueProposition = ({ copy }: { copy: NonNullable<HomepageContent["value"]
         </div>
         <div className="container mx-auto px-4 py-12 md:py-20 relative">
              <div className="text-center max-w-4xl mx-auto mb-10 md:mb-16">
-                <h2 className="text-4xl font-headline font-extrabold sm:text-5xl tracking-tight text-gray-900 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-transparent">{copy.heading}</h2>
-                <p className="mt-3 md:mt-4 text-lg md:text-xl text-gray-800">{copy.description}</p>
+                <h2 className="font-headline uppercase tracking-[0.2em] text-gray-900 text-3xl sm:text-4xl md:text-5xl">{copy.heading}</h2>
+                <div className="mx-auto mt-4 h-[2px] w-24 bg-gradient-to-r from-yellow-500 to-yellow-300" />
+                <p className="mt-6 text-gray-800 text-lg md:text-xl max-w-3xl mx-auto leading-relaxed">{copy.description}</p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 text-center">
                 <div className="flex flex-col items-center">
