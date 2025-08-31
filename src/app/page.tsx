@@ -757,8 +757,9 @@ const FeaturedEventsSection = ({ copy }: { copy: NonNullable<HomepageContent["fe
     <section className="py-12 sm:py-16 md:py-20 lg:py-24 bg-[#80A0A9]">
       <div className="container mx-auto px-4">
         <div className="text-center max-w-3xl mx-auto mb-8 md:mb-12 lg:mb-14">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-headline font-extrabold tracking-tight bg-gradient-to-r from-white via-white/90 to-white bg-clip-text text-transparent">{copy.title}</h2>
-          <p className="mt-2 md:mt-3 text-base md:text-lg text-white/90">{copy.description}</p>
+          <h2 className="font-headline uppercase tracking-[0.2em] text-white drop-shadow-2xl text-3xl sm:text-4xl md:text-5xl">{copy.title}</h2>
+          <div className="mx-auto mt-4 h-[2px] w-24 bg-gradient-to-r from-yellow-500 to-yellow-300" />
+          <p className="mt-6 text-white/90 text-base md:text-lg max-w-3xl mx-auto leading-relaxed">{copy.description}</p>
         </div>
         {loading ? (
           <div className="text-center text-base md:text-lg py-8 md:py-12 text-gray-600">Loading upcoming events...</div>
@@ -988,8 +989,9 @@ const FeaturedAuctionsSection = ({ copy }: { copy: NonNullable<HomepageContent["
     <section className="py-12 sm:py-16 md:py-20 lg:py-24 bg-white">
       <div className="container mx-auto px-4">
         <div className="text-center max-w-3xl mx-auto mb-8 md:mb-12 lg:mb-14">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-headline font-extrabold tracking-tight bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-transparent">{copy.title}</h2>
-          <p className="mt-2 md:mt-3 text-base md:text-lg text-gray-700">{copy.description}</p>
+          <h2 className="font-headline uppercase tracking-[0.2em] text-gray-900 text-3xl sm:text-4xl md:text-5xl">{copy.title}</h2>
+          <div className="mx-auto mt-4 h-[2px] w-24 bg-gradient-to-r from-yellow-500 to-yellow-300" />
+          <p className="mt-6 text-gray-700 text-base md:text-lg max-w-3xl mx-auto leading-relaxed">{copy.description}</p>
         </div>
         {loading ? (
           <div className="text-center text-base md:text-lg py-8 md:py-12 text-gray-600">Loading live auctions...</div>
@@ -1219,8 +1221,9 @@ const FeaturedHotelsSection = ({ copy }: { copy: NonNullable<HomepageContent["fe
     <section className="py-12 sm:py-16 md:py-20 lg:py-24 bg-white">
       <div className="container mx-auto px-4">
         <div className="text-center max-w-3xl mx-auto mb-8 md:mb-12 lg:mb-14">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-headline font-extrabold tracking-tight bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-transparent">{copy.title}</h2>
-          <p className="mt-2 md:mt-3 text-base md:text-lg text-gray-700">{copy.description}</p>
+          <h2 className="font-headline uppercase tracking-[0.2em] text-gray-900 text-3xl sm:text-4xl md:text-5xl">{copy.title}</h2>
+          <div className="mx-auto mt-4 h-[2px] w-24 bg-gradient-to-r from-yellow-500 to-yellow-300" />
+          <p className="mt-6 text-gray-700 text-base md:text-lg max-w-3xl mx-auto leading-relaxed">{copy.description}</p>
         </div>
         {loading ? (
           <div className="text-center text-base md:text-lg py-8 md:py-12 text-gray-600">Loading featured hotels...</div>
@@ -1520,8 +1523,9 @@ const FeaturedClubsSection = ({ copy }: { copy: NonNullable<HomepageContent["fea
     <section className="py-12 sm:py-16 md:py-20 lg:py-24 bg-[#80A0A9]">
       <div className="container mx-auto px-4">
         <div className="text-center max-w-3xl mx-auto mb-8 md:mb-12 lg:mb-14">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-headline font-extrabold tracking-tight text-white">{copy.title}</h2>
-          <p className="mt-2 md:mt-3 text-base md:text-lg text-white/90">{copy.description}</p>
+          <h2 className="font-headline uppercase tracking-[0.2em] text-white drop-shadow-2xl text-3xl sm:text-4xl md:text-5xl">{copy.title}</h2>
+          <div className="mx-auto mt-4 h-[2px] w-24 bg-gradient-to-r from-yellow-500 to-yellow-300" />
+          <p className="mt-6 text-white/90 text-base md:text-lg max-w-3xl mx-auto leading-relaxed">{copy.description}</p>
         </div>
         {loading ? (
           <div className="text-center text-base md:text-lg py-8 md:py-12 text-gray-600">Loading featured clubs...</div>
@@ -1859,8 +1863,9 @@ const FeaturedOtherServicesSection = ({ copy }: { copy: NonNullable<HomepageCont
     <section className="py-12 sm:py-16 md:py-20 lg:py-24 bg-white">
       <div className="container mx-auto px-4">
         <div className="text-center max-w-3xl mx-auto mb-8 md:mb-12 lg:mb-14">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-headline font-extrabold tracking-tight bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-transparent">{copy.title}</h2>
-          <p className="mt-2 md:mt-3 text-base md:text-lg text-gray-700">{copy.description}</p>
+          <h2 className="font-headline uppercase tracking-[0.2em] text-gray-900 text-3xl sm:text-4xl md:text-5xl">{copy.title}</h2>
+          <div className="mx-auto mt-4 h-[2px] w-24 bg-gradient-to-r from-yellow-500 to-yellow-300" />
+          <p className="mt-6 text-gray-700 text-base md:text-lg max-w-3xl mx-auto leading-relaxed">{copy.description}</p>
         </div>
         {loading ? (
           <div className="text-center text-base md:text-lg py-8 md:py-12 text-gray-600">Loading other services...</div>
