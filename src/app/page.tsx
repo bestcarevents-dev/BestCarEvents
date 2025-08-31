@@ -1026,8 +1026,8 @@ const FeaturedAuctionsSection = ({ copy }: { copy: NonNullable<HomepageContent["
                               type="auction"
                               featured={auction.featured === true}
                             />
-                            <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm text-gray-900 px-3 py-1.5 rounded-full flex items-center gap-2 text-sm font-semibold shadow-lg">
-                              <Clock className="w-4 h-4 text-yellow-600" />
+                            <div className="absolute top-4 right-4 bg-[#F4F0E7]/95 border border-[#D9CEB6] text-[#1f1f1f] px-3 py-1.5 rounded-full flex items-center gap-2 text-sm font-semibold shadow">
+                              <Clock className="w-4 h-4 text-[#7D8C91]" />
                               <span>{formatDate(auction.startDate)}</span>
                             </div>
                           </div>
@@ -1051,8 +1051,8 @@ const FeaturedAuctionsSection = ({ copy }: { copy: NonNullable<HomepageContent["
                             type="auction"
                             featured={auction.featured === true}
                           />
-                          <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm text-gray-900 px-3 py-1.5 rounded-full flex items-center gap-2 text-sm font-semibold shadow-lg">
-                            <Clock className="w-4 h-4 text-yellow-600" />
+                          <div className="absolute top-4 right-4 bg-[#F4F0E7]/95 border border-[#D9CEB6] text-[#1f1f1f] px-3 py-1.5 rounded-full flex items-center gap-2 text-sm font-semibold shadow">
+                            <Clock className="w-4 h-4 text-[#7D8C91]" />
                             <span>{formatDate(auction.startDate)}</span>
                           </div>
                         </div>
@@ -1246,36 +1246,40 @@ const FeaturedHotelsSection = ({ copy }: { copy: NonNullable<HomepageContent["fe
                     <div key={slideIndex} className="w-full flex-shrink-0 px-4">
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {featuredHotels.slice(slideIndex * 3, slideIndex * 3 + 3).map((hotel) => (
-                          <Card key={hotel.id} className="flex flex-col bg-white border border-gray-200 shadow-lg hover:shadow-xl transition-shadow duration-300">
+                          <Card key={hotel.id} className="flex flex-col overflow-hidden rounded-[18px] border border-[#C7BCA3]/50 bg-[#F8F6F1] shadow-[0_6px_24px_rgba(0,0,0,0.08)] hover:shadow-[0_12px_36px_rgba(0,0,0,0.14)] transition-all duration-500">
                             <CardHeader className="p-0 relative">
-                              <Link href={`/hotels/${hotel.id}`} className="block relative aspect-video">
-                                <Image 
-                                  src={hotel.imageUrls?.[0] || hotel.imageUrl || "https://via.placeholder.com/800x500?text=No+Image"} 
-                                  alt={hotel.hotelName || "Hotel"} 
-                                  fill
-                                  className="object-cover"
-                                  data-ai-hint={hotel.hotelName}
-                                />
+                              <Link href={`/hotels/${hotel.id}`} className="block relative aspect-video bg-[#EDE7DA]">
+                                <div className="absolute inset-0 m-4 rounded-[12px] border border-[#B49A6A]/50 overflow-hidden shadow-inner">
+                                  <Image 
+                                    src={hotel.imageUrls?.[0] || hotel.imageUrl || "https://via.placeholder.com/800x500?text=No+Image"} 
+                                    alt={hotel.hotelName || "Hotel"} 
+                                    fill
+                                    className="object-cover transition-transform duration-[900ms] ease-out group-hover:scale-[1.05]"
+                                    data-ai-hint={hotel.hotelName}
+                                  />
+                                  <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(80%_60%_at_70%_20%,rgba(255,255,255,0.18)_0%,rgba(255,255,255,0)_60%)]" />
+                                  <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-[#C3A76D] via-[#E7D08A] to-[#B98A2A] opacity-90" />
+                                </div>
                               </Link>
                               {hotel.listing_type === "featured" && (
                                 <div className="absolute top-3 left-3 z-10">
-                                  <span className="inline-flex items-center rounded-full bg-yellow-400 text-black px-3 py-1 text-xs font-bold shadow-lg animate-pulse">Featured</span>
+                                  <span className="inline-flex items-center rounded-full bg-[#E7D08A] text-black px-3 py-1 text-xs font-bold shadow ring-1 ring-black/10">Featured</span>
                                 </div>
                               )}
                             </CardHeader>
                             <CardContent className="p-6 flex-grow">
-                              <CardTitle className="font-headline text-gray-900">
-                                <Link href={`/hotels/${hotel.id}`} className="hover:text-yellow-600 transition-colors">
+                              <CardTitle className="font-headline tracking-[-0.01em] bg-gradient-to-r from-[#1d1d1d] via-[#2a2a2a] to-[#1d1d1d] bg-clip-text text-transparent">
+                                <Link href={`/hotels/${hotel.id}`} className="hover:opacity-90 transition">
                                   {hotel.hotelName || "Hotel"}
                                 </Link>
                               </CardTitle>
-                              <CardDescription className="text-gray-600">
+                              <CardDescription className="text-[#7A6E57]">
                                 {hotel.city || ""}, {hotel.state || ""}
                               </CardDescription>
                               <ul className="mt-4 space-y-2 text-sm text-gray-600">
                                 {(hotel.features || []).slice(0, 3).map((feature: string) => (
                                   <li key={feature} className="flex items-center">
-                                    <svg className="w-4 h-4 mr-2 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <svg className="w-4 h-4 mr-2 text-[#C3A76D]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
                                     </svg>
                                     {feature}
@@ -1284,7 +1288,7 @@ const FeaturedHotelsSection = ({ copy }: { copy: NonNullable<HomepageContent["fe
                               </ul>
                             </CardContent>
                             <CardFooter className="p-6 pt-0">
-                              <Button asChild variant="outline" className="w-full rounded-full border border-yellow-500/40 text-gray-900 hover:bg-white shadow-sm">
+                              <Button asChild className="w-full rounded-full bg-[#C3A76D] hover:bg-[#B99754] text-black font-semibold shadow-sm hover:shadow transition-all">
                                 <Link href={`/hotels/${hotel.id}`}>View Services</Link>
                               </Button>
                             </CardFooter>
@@ -1928,10 +1932,10 @@ const FeaturedOtherServicesSection = ({ copy }: { copy: NonNullable<HomepageCont
                                   <span>{service.location || "Location TBD"}</span>
                                 </div>
                                 {service.coverageArea && (
-                                  <div className="flex items-center">
-                                    <Shield className="w-4 h-4 mr-2 text-gray-400" />
-                                    <span>Coverage: {service.coverageArea}</span>
-                                  </div>
+                                <div className="flex items-center">
+                                  <Shield className="w-4 h-4 mr-2 text-gray-400" />
+                                  <span>Coverage: {service.coverageArea}</span>
+                                </div>
                                 )}
                                 <div className="flex items-center">
                                   <Package className="w-4 h-4 mr-2 text-gray-400" />
