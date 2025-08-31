@@ -7,17 +7,17 @@ import GlobalNewsletterProvider from '@/components/GlobalNewsletterProvider';
 import FreeListingsProvider from '@/components/FreeListingsProvider';
 import { LanguageProvider } from '@/contexts/LanguageContext';
 import { cn } from '@/lib/utils';
-import { Montserrat } from 'next/font/google';
+import { Cinzel, Lora } from 'next/font/google';
 
-const fontHeadline = Montserrat({
+const fontHeadline = Cinzel({
   subsets: ['latin'],
   weight: ['400', '600', '700', '800'],
   variable: '--font-headline',
 });
 
-const fontBody = Montserrat({
+const fontBody = Lora({
   subsets: ['latin'],
-  weight: ['300', '400', '500', '600', '700'],
+  weight: ['400', '500', '600', '700'],
   variable: '--font-body',
 });
 
