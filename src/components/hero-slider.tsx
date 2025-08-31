@@ -113,15 +113,15 @@ export default function HeroSlider({ slides }: { slides?: HeroSlide[] }) {
                 {/* Center overlay with hero-style heading */}
                 <div className="absolute inset-0 flex items-center justify-center">
                     <div className="container mx-auto px-4 text-center">
-                        <h1 className="font-headline uppercase tracking-[0.2em] drop-shadow-2xl text-3xl sm:text-5xl md:text-6xl lg:text-7xl">
+                        <h1 className="font-headline uppercase tracking-[0.2em] drop-shadow-2xl text-2xl sm:text-4xl md:text-5xl lg:text-6xl">
                             {resolvedSlides[current].headline}
                         </h1>
-                        <div className="mx-auto mt-4 h-[2px] w-24 bg-gradient-to-r from-[#E7D08A] to-[#F1E3A5]" />
-                        <p className="mt-6 text-neutral-200/95 text-base sm:text-lg md:text-xl max-w-3xl mx-auto leading-relaxed">
+                        <div className="mx-auto mt-3 h-[2px] w-20 bg-gradient-to-r from-yellow-400 to-yellow-200" />
+                        <p className="mt-5 text-white/95 text-base sm:text-lg md:text-xl max-w-3xl mx-auto leading-relaxed">
                             {resolvedSlides[current].subheadline}
                         </p>
-                        <div className="mt-10 max-w-2xl mx-auto px-4 sm:px-0">
-                            <div className="rounded-[16px] border border-[#D9CEB6] bg-[#F4F0E7]/60 backdrop-blur-sm p-3 sm:p-4 shadow-[0_8px_24px_rgba(0,0,0,0.12)]">
+                        <div className="mt-8 max-w-2xl mx-auto px-4 sm:px-0">
+                            <div className="rounded-2xl border border-white/15 bg-black/65 backdrop-blur-md p-4 sm:p-5 shadow-[0_8px_30px_rgba(0,0,0,0.35)]">
                                 <HeroSearch />
                             </div>
                         </div>
