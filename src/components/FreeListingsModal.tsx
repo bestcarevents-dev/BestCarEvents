@@ -27,7 +27,7 @@ export default function FreeListingsModal({ isOpen, onClose }: FreeListingsModal
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="max-w-md w-[90vw] p-0 overflow-hidden bg-gradient-to-br from-white to-[#E0D8C1] mx-4 border border-yellow-400/20 shadow-xl">
+      <DialogContent className="max-w-md w-[92vw] p-0 overflow-hidden bg-gradient-to-br from-white to-[#E0D8C1] mx-auto sm:mx-4 border border-yellow-400/20 shadow-xl left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2">
         <AnimatePresence mode="wait">
           <motion.div
             key="modal"

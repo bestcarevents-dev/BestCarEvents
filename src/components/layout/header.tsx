@@ -299,10 +299,10 @@ const AuthButtons = ({ inMobileNav = false, user, onMobileMenuClose }: { inMobil
   return (
     <div className={cn("flex items-center", inMobileNav ? "flex-col w-full gap-4" : "flex-row gap-2")}> 
       <Button asChild variant={inMobileNav ? "outline" : "ghost"} className="w-full lg:w-auto justify-center">
-        <Link href="/login">Login</Link>
+        <Link href="/login" onClick={onMobileMenuClose}>Login</Link>
       </Button>
       <Button asChild className="w-full lg:w-auto">
-        <Link href="/register">Sign Up</Link>
+        <Link href="/register" onClick={onMobileMenuClose}>Sign Up</Link>
       </Button>
     </div>
   );
