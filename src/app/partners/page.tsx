@@ -48,9 +48,9 @@ export default function PartnersPage() {
 
   return (
     <div className="bg-white min-h-screen">
-      <main className="py-12 md:py-24 lg:py-32">
+      <main className="py-8">
         <div className="container px-4 md:px-6">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-12">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
             <div className="text-center md:text-left mb-4 md:mb-0">
               <h1 className="text-4xl md:text-5xl font-extrabold font-headline text-gray-900">{header.title}</h1>
               <p className="mt-4 text-lg text-gray-600 max-w-2xl mx-auto md:mx-0">
