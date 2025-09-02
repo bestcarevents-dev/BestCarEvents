@@ -173,6 +173,8 @@ export default function SellCarPage() {
   const [creditProcessing, setCreditProcessing] = useState(false);
   const [creditStripeClientSecret, setCreditStripeClientSecret] = useState<string | null>(null);
   const [creditPaymentError, setCreditPaymentError] = useState<string | null>(null);
+  // Track a listing type the user attempted to select without credit
+  const [pendingListingSelection, setPendingListingSelection] = useState<string | null>(null);
 
   const { toast } = useToast();
 
@@ -487,8 +489,21 @@ export default function SellCarPage() {
                         selectedListingType === tier.key 
                           ? 'border-primary bg-primary/5' 
                           : 'border-border hover:border-primary/50'
-                      } ${!hasQuota ? 'opacity-50 cursor-not-allowed' : ''}`}
-                      onClick={() => hasQuota && setSelectedListingType(tier.key)}
+                      }`}
+                      onClick={() => {
+                        if (hasQuota) {
+                          setSelectedListingType(tier.key);
+                        } else {
+                          // Open purchase modal for this tier and preselect it
+                          setPendingListingSelection(tier.key);
+                          setCreditPaymentModal({ open: true, tierKey: tier.key });
+                          setCreditSelectedTier(tier);
+                          setCreditPaymentStep('selectPayment');
+                          setCreditSelectedPayment(null);
+                          setCreditStripeClientSecret(null);
+                          setCreditPaymentError(null);
+                        }
+                      }}
                     >
                       <div className="flex items-center gap-3 mb-3">
                         <tier.icon className="w-6 h-6 text-primary" />
@@ -500,7 +515,7 @@ export default function SellCarPage() {
                         </div>
                       </div>
                       {!hasQuota && (
-                        <p className="text-xs text-red">No Credit available</p>
+                        <p className="text-xs text-red">No Credit available. Click to buy.</p>
                       )}
                     </div>
                   );
@@ -1052,6 +1067,11 @@ export default function SellCarPage() {
                         ...prev,
                         [quotaField]: (prev[quotaField] || 0) + 1
                       } : null);
+                      // If user initiated selection for this tier, apply it now
+                      if (pendingListingSelection === creditSelectedTier.key) {
+                        setSelectedListingType(creditSelectedTier.key);
+                        setPendingListingSelection(null);
+                      }
                       setCreditPaymentModal({ open: false, tierKey: null });
                       setCreditPaymentStep('selectTier');
                       setCreditSelectedTier(null);
@@ -1116,6 +1136,11 @@ export default function SellCarPage() {
                               ...prev,
                               [quotaField]: (prev[quotaField] || 0) + 1
                             } : null);
+                            // If user initiated selection for this tier, apply it now
+                            if (pendingListingSelection === creditSelectedTier.key) {
+                              setSelectedListingType(creditSelectedTier.key);
+                              setPendingListingSelection(null);
+                            }
                             setCreditPaymentModal({ open: false, tierKey: null });
                             setCreditPaymentStep('selectTier');
                             setCreditSelectedTier(null);

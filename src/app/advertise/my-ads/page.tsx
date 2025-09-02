@@ -62,6 +62,8 @@ export default function MyAdsPage() {
   const [bannerProcessing, setBannerProcessing] = useState(false);
   const [bannerStripeClientSecret, setBannerStripeClientSecret] = useState<string | null>(null);
   const [bannerPaymentError, setBannerPaymentError] = useState<string | null>(null);
+  // Pending selection that triggered a purchase flow
+  const [pendingBannerSelection, setPendingBannerSelection] = useState<{ adId: string; adType: 'homepage' | 'category' } | null>(null);
 
   useEffect(() => {
     const auth = getAuth();
@@ -171,11 +173,13 @@ export default function MyAdsPage() {
     }
     
     if (!validateCredits(adType)) {
-      toast({
-        title: "Insufficient Credits",
-        description: `You don't have enough ${adType === 'homepage' ? 'homepage' : 'category'} banner credits. Please purchase more credits.`,
-        variant: "destructive",
-      });
+      // Open purchase modal for the selected type and remember pending selection
+      setPendingBannerSelection({ adId: ad.id, adType });
+      setBannerPaymentModal({ open: true, type: adType });
+      setBannerSelectedPayment(null);
+      setBannerPaymentStep('selectPayment');
+      setBannerStripeClientSecret(null);
+      setBannerPaymentError(null);
       return;
     }
     
@@ -382,6 +386,18 @@ export default function MyAdsPage() {
         ...prev,
         categoryBannerRemaining: (prev.categoryBannerRemaining || 0) + 1
       } : null);
+    }
+    // If user initiated a selection that required purchase, apply it now
+    if (pendingBannerSelection && bannerPaymentModal.type === pendingBannerSelection.adType) {
+      const targetAd = ads.find(a => a.id === pendingBannerSelection.adId);
+      if (targetAd) {
+        try {
+          await handleAdTypeSelection(targetAd, pendingBannerSelection.adType);
+        } catch (e) {
+          // Error toasts are handled inside handleAdTypeSelection
+        }
+      }
+      setPendingBannerSelection(null);
     }
     setBannerPaymentModal({ open: false, type: null });
     setBannerSelectedPayment(null);
@@ -734,9 +750,18 @@ export default function MyAdsPage() {
                           <Button
                             type="button"
                             className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold px-3 py-1 h-auto disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto whitespace-normal break-words text-left max-w-full"
-                            disabled={!validateAd(ad) || !validateCredits('category')}
+                            disabled={!validateAd(ad)}
                             onClick={async () => {
-                              await handleAdTypeSelection(ad, 'category');
+                              if (validateCredits('category')) {
+                                await handleAdTypeSelection(ad, 'category');
+                              } else {
+                                setPendingBannerSelection({ adId: ad.id, adType: 'category' });
+                                setBannerPaymentModal({ open: true, type: 'category' });
+                                setBannerSelectedPayment(null);
+                                setBannerPaymentStep('selectPayment');
+                                setBannerStripeClientSecret(null);
+                                setBannerPaymentError(null);
+                              }
                             }}
                           >
                             {`Category Banner Ad (${userDoc?.categoryBannerRemaining ?? 0})`}
@@ -744,9 +769,18 @@ export default function MyAdsPage() {
                           <Button
                             type="button"
                             className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold px-3 py-1 h-auto disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto whitespace-normal break-words text-left max-w-full"
-                            disabled={!validateAd(ad) || !validateCredits('homepage')}
+                            disabled={!validateAd(ad)}
                             onClick={async () => {
-                              await handleAdTypeSelection(ad, 'homepage');
+                              if (validateCredits('homepage')) {
+                                await handleAdTypeSelection(ad, 'homepage');
+                              } else {
+                                setPendingBannerSelection({ adId: ad.id, adType: 'homepage' });
+                                setBannerPaymentModal({ open: true, type: 'homepage' });
+                                setBannerSelectedPayment(null);
+                                setBannerPaymentStep('selectPayment');
+                                setBannerStripeClientSecret(null);
+                                setBannerPaymentError(null);
+                              }
                             }}
                           >
                             {`Homepage Banner Ad (${userDoc?.homepageBannerRemaining ?? 0})`}
