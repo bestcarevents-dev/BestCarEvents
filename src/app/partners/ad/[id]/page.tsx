@@ -38,7 +38,7 @@ export default function PartnerAdDetailPage() {
     return <div className="flex items-center justify-center min-h-[60vh] text-lg text-gray-600 animate-pulse">Loading ad details...</div>;
   }
   if (!ad) {
-    return <div className="flex flex-col items-center justify-center min-h-[60vh] text-lg text-destructive">Ad not found.</div>;
+    return <div className="flex flex-col items-center justify-center min-h-[60vh] text-lg text-red">Ad not found.</div>;
   }
 
   const images: string[] = ad.imageUrls || (ad.imageUrl ? [ad.imageUrl] : []);

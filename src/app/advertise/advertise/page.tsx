@@ -592,7 +592,7 @@ export default function AdvertisePage() {
                       {imagePreviews.map((src, idx) => (
                         <div key={src} className="relative group">
                           <img src={src} alt={`Preview ${idx + 1}`} className="w-32 h-24 object-cover rounded shadow" />
-                          <button type="button" onClick={() => removeImage(idx)} className="absolute top-1 right-1 bg-white/80 rounded-full p-1 text-destructive hover:text-red-600 shadow"><X className="w-4 h-4" /></button>
+                          <button type="button" onClick={() => removeImage(idx)} className="absolute top-1 right-1 bg-white/80 rounded-full p-1 text-red hover:text-red-600 shadow"><X className="w-4 h-4" /></button>
                         </div>
                       ))}
                     </div>
@@ -984,7 +984,7 @@ function CarPartsAccessoriesForm({ isSubmitting, setIsSubmitting, images, setIma
               {imagePreviews.map((src: string, idx: number) => (
                 <div key={src} className="relative group">
                   <img src={src} alt={`Preview ${idx + 1}`} className="w-32 h-24 object-cover rounded shadow" />
-                  <button type="button" onClick={() => removeImage(idx)} className="absolute top-1 right-1 bg-white/80 rounded-full p-1 text-destructive hover:text-red-600 shadow"><X className="w-4 h-4" /></button>
+                  <button type="button" onClick={() => removeImage(idx)} className="absolute top-1 right-1 bg-white/80 rounded-full p-1 text-red hover:text-red-600 shadow"><X className="w-4 h-4" /></button>
                 </div>
               ))}
             </div>
@@ -1123,7 +1123,7 @@ function CarTransportLogisticsForm({ isSubmitting, setIsSubmitting, images, setI
               {imagePreviews.map((src: string, idx: number) => (
                 <div key={src} className="relative group">
                   <img src={src} alt={`Preview ${idx + 1}`} className="w-32 h-24 object-cover rounded shadow" />
-                  <button type="button" onClick={() => removeImage(idx)} className="absolute top-1 right-1 bg-white/80 rounded-full p-1 text-destructive hover:text-red-600 shadow"><X className="w-4 h-4" /></button>
+                  <button type="button" onClick={() => removeImage(idx)} className="absolute top-1 right-1 bg-white/80 rounded-full p-1 text-red hover:text-red-600 shadow"><X className="w-4 h-4" /></button>
                 </div>
               ))}
             </div>
@@ -1256,7 +1256,7 @@ function CarDetailingWrappingForm({ isSubmitting, setIsSubmitting, images, setIm
               {imagePreviews.map((src: string, idx: number) => (
                 <div key={src} className="relative group">
                   <img src={src} alt={`Preview ${idx + 1}`} className="w-32 h-24 object-cover rounded shadow" />
-                  <button type="button" onClick={() => removeImage(idx)} className="absolute top-1 right-1 bg-white/80 rounded-full p-1 text-destructive hover:text-red-600 shadow"><X className="w-4 h-4" /></button>
+                  <button type="button" onClick={() => removeImage(idx)} className="absolute top-1 right-1 bg-white/80 rounded-full p-1 text-red hover:text-red-600 shadow"><X className="w-4 h-4" /></button>
                 </div>
               ))}
             </div>
@@ -1395,7 +1395,7 @@ function RestorationCustomShopsForm({ isSubmitting, setIsSubmitting, images, set
               {imagePreviews.map((src: string, idx: number) => (
                 <div key={src} className="relative group">
                   <img src={src} alt={`Preview ${idx + 1}`} className="w-32 h-24 object-cover rounded shadow" />
-                  <button type="button" onClick={() => removeImage(idx)} className="absolute top-1 right-1 bg-white/80 rounded-full p-1 text-destructive hover:text-red-600 shadow"><X className="w-4 h-4" /></button>
+                  <button type="button" onClick={() => removeImage(idx)} className="absolute top-1 right-1 bg-white/80 rounded-full p-1 text-red hover:text-red-600 shadow"><X className="w-4 h-4" /></button>
                 </div>
               ))}
             </div>
@@ -1534,7 +1534,7 @@ function ClassicCarInsuranceForm({ isSubmitting, setIsSubmitting, images, setIma
               {imagePreviews.map((src: string, idx: number) => (
                 <div key={src} className="relative group">
                   <img src={src} alt={`Preview ${idx + 1}`} className="w-32 h-24 object-cover rounded shadow" />
-                  <button type="button" onClick={() => removeImage(idx)} className="absolute top-1 right-1 bg-white/80 rounded-full p-1 text-destructive hover:text-red-600 shadow"><X className="w-4 h-4" /></button>
+                  <button type="button" onClick={() => removeImage(idx)} className="absolute top-1 right-1 bg-white/80 rounded-full p-1 text-red hover:text-red-600 shadow"><X className="w-4 h-4" /></button>
                 </div>
               ))}
             </div>
@@ -1673,7 +1673,7 @@ function DrivingExperiencesForm({ isSubmitting, setIsSubmitting, images, setImag
               {imagePreviews.map((src: string, idx: number) => (
                 <div key={src} className="relative group">
                   <img src={src} alt={`Preview ${idx + 1}`} className="w-32 h-24 object-cover rounded shadow" />
-                  <button type="button" onClick={() => removeImage(idx)} className="absolute top-1 right-1 bg-white/80 rounded-full p-1 text-destructive hover:text-red-600 shadow"><X className="w-4 h-4" /></button>
+                  <button type="button" onClick={() => removeImage(idx)} className="absolute top-1 right-1 bg-white/80 rounded-full p-1 text-red hover:text-red-600 shadow"><X className="w-4 h-4" /></button>
                 </div>
               ))}
             </div>
@@ -1812,7 +1812,7 @@ function FinanceLeasingStorageForm({ isSubmitting, setIsSubmitting, images, setI
               {imagePreviews.map((src: string, idx: number) => (
                 <div key={src} className="relative group">
                   <img src={src} alt={`Preview ${idx + 1}`} className="w-32 h-24 object-cover rounded shadow" />
-                  <button type="button" onClick={() => removeImage(idx)} className="absolute top-1 right-1 bg-white/80 rounded-full p-1 text-destructive hover:text-red-600 shadow"><X className="w-4 h-4" /></button>
+                  <button type="button" onClick={() => removeImage(idx)} className="absolute top-1 right-1 bg-white/80 rounded-full p-1 text-red hover:text-red-600 shadow"><X className="w-4 h-4" /></button>
                 </div>
               ))}
             </div>
@@ -1952,7 +1952,7 @@ function WebshiteForm({ isSubmitting, setIsSubmitting, images, setImages, imageP
               {imagePreviews.map((src: string, idx: number) => (
                 <div key={src} className="relative group">
                   <img src={src} alt={`Preview ${idx + 1}`} className="w-32 h-24 object-cover rounded shadow" />
-                  <button type="button" onClick={() => removeImage(idx)} className="absolute top-1 right-1 bg-white/80 rounded-full p-1 text-destructive hover:text-red-600 shadow"><X className="w-4 h-4" /></button>
+                  <button type="button" onClick={() => removeImage(idx)} className="absolute top-1 right-1 bg-white/80 rounded-full p-1 text-red hover:text-red-600 shadow"><X className="w-4 h-4" /></button>
                 </div>
               ))}
             </div>
@@ -2092,7 +2092,7 @@ function GeneralBusinessForm({ isSubmitting, setIsSubmitting, images, setImages,
               {imagePreviews.map((src: string, idx: number) => (
                 <div key={src} className="relative group">
                   <img src={src} alt={`Preview ${idx + 1}`} className="w-32 h-24 object-cover rounded shadow" />
-                  <button type="button" onClick={() => removeImage(idx)} className="absolute top-1 right-1 bg-white/80 rounded-full p-1 text-destructive hover:text-red-600 shadow"><X className="w-4 h-4" /></button>
+                  <button type="button" onClick={() => removeImage(idx)} className="absolute top-1 right-1 bg-white/80 rounded-full p-1 text-red hover:text-red-600 shadow"><X className="w-4 h-4" /></button>
                 </div>
               ))}
             </div>

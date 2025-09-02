@@ -245,7 +245,7 @@ function CarHotelsPageContent() {
                     <DialogTitle>Login Required</DialogTitle>
                   </DialogHeader>
                   <div className="py-4 text-center">
-                    <p className="text-lg font-semibold mb-2 text-destructive">You must be logged in to list your hotel.</p>
+                    <p className="text-lg font-semibold mb-2 text-red">You must be logged in to list your hotel.</p>
                     <DialogFooter>
                       <DialogClose asChild>
                         <Button variant="outline">Close</Button>
@@ -269,7 +269,7 @@ function CarHotelsPageContent() {
                     <DialogTitle>Login Required</DialogTitle>
                   </DialogHeader>
                   <div className="py-4 text-center">
-                    <p className="text-lg font-semibold mb-2 text-destructive">You must be logged in to feature your hotel.</p>
+                    <p className="text-lg font-semibold mb-2 text-red">You must be logged in to feature your hotel.</p>
                     <DialogFooter>
                       <DialogClose asChild>
                         <Button variant="outline">Close</Button>

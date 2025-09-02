@@ -58,7 +58,7 @@ export default function CarDetailsPage() {
     return <div className="container mx-auto py-24 text-center text-2xl font-bold animate-pulse">Loading car details...</div>;
   }
   if (!car) {
-    return <div className="container mx-auto py-24 text-center text-destructive text-2xl font-bold flex flex-col items-center"><AlertCircle className="w-12 h-12 mb-4" />Car not found.</div>;
+    return <div className="container mx-auto py-24 text-center text-red text-2xl font-bold flex flex-col items-center"><AlertCircle className="w-12 h-12 mb-4" />Car not found.</div>;
   }
 
   // Highlight badges

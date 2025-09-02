@@ -439,7 +439,7 @@ export default function PartnerDashboard() {
                   <Card key={sub.name} className="flex flex-col p-6 h-full">
                     <div className="flex items-center justify-between mb-2">
                       <span className="font-bold text-lg">{sub.name}</span>
-                      <span className={`font-bold text-2xl ${userDoc && userDoc[sub.key] === 0 ? 'text-destructive' : 'text-primary'}`}>
+                      <span className={`font-bold text-2xl ${userDoc && userDoc[sub.key] === 0 ? 'text-red' : 'text-primary'}`}>
                         {userDoc && userDoc[sub.key] !== undefined ? userDoc[sub.key] : 0} Remaining
                       </span>
                     </div>

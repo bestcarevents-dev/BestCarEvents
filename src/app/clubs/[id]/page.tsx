@@ -33,7 +33,7 @@ export default function ClubDetailPage() {
     return <div className="container mx-auto py-24 text-center text-2xl font-bold animate-pulse">Loading club details...</div>;
   }
   if (!club) {
-    return <div className="container mx-auto py-24 text-center text-destructive text-2xl font-bold flex flex-col items-center">Club not found.</div>;
+    return <div className="container mx-auto py-24 text-center text-red text-2xl font-bold flex flex-col items-center">Club not found.</div>;
   }
 
   return (

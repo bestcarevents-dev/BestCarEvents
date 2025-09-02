@@ -274,7 +274,7 @@ export default function ListHotelPage() {
                                   }}
                                 />
                                 <Label htmlFor={amenity} className="font-normal ml-2 mr-1 text-gray-700">{amenity}</Label>
-                                <button type="button" onClick={() => removeCustomAmenity(amenity)} className="ml-1 text-destructive hover:text-red-600"><X className="w-4 h-4" /></button>
+                                <button type="button" onClick={() => removeCustomAmenity(amenity)} className="ml-1 text-red hover:text-red-600"><X className="w-4 h-4" /></button>
                               </div>
                             ))}
                           </div>
@@ -309,7 +309,7 @@ export default function ListHotelPage() {
                             {imagePreviews.map((src, idx) => (
                               <div key={src} className="relative group">
                                 <img src={src} alt={`Preview ${idx + 1}`} className="w-32 h-24 object-cover rounded shadow border border-gray-200" />
-                                <button type="button" onClick={() => removeImage(idx)} className="absolute top-1 right-1 bg-white/80 rounded-full p-1 text-destructive hover:text-red-600 shadow"><X className="w-4 h-4" /></button>
+                                <button type="button" onClick={() => removeImage(idx)} className="absolute top-1 right-1 bg-white/80 rounded-full p-1 text-red hover:text-red-600 shadow"><X className="w-4 h-4" /></button>
                               </div>
                             ))}
                           </div>

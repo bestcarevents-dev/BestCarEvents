@@ -459,7 +459,7 @@ export default function AdminNewsletterPage() {
                 {loading ? (
                   <div className="text-muted-foreground">Loading subscribers...</div>
                 ) : error ? (
-                  <div className="text-destructive">{error}</div>
+                  <div className="text-red">{error}</div>
                 ) : subscribers.length === 0 ? (
                   <div className="text-muted-foreground">No subscribers found.</div>
                 ) : (

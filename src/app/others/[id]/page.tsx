@@ -68,7 +68,7 @@ export default function ServiceDetailsPage({ params }: { params: { id: string } 
         return <div className="container mx-auto py-12 sm:py-24 text-center text-xl sm:text-2xl font-bold animate-pulse">Loading service details...</div>;
     }
     if (!service) {
-        return <div className="container mx-auto py-12 sm:py-24 text-center text-destructive text-xl sm:text-2xl font-bold flex flex-col items-center"><Car className="w-8 h-8 sm:w-12 sm:h-12 mb-4 animate-spin" />Service not found.</div>;
+        return <div className="container mx-auto py-12 sm:py-24 text-center text-red text-xl sm:text-2xl font-bold flex flex-col items-center"><Car className="w-8 h-8 sm:w-12 sm:h-12 mb-4 animate-spin" />Service not found.</div>;
     }
 
     const ServiceTypeIcon = getServiceTypeIcon(service.serviceType);

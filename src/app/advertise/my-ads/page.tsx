@@ -754,12 +754,12 @@ export default function MyAdsPage() {
                         </div>
                         <div className="text-[11px] text-muted-foreground">Note: Choosing an Ad Type will consume 1 credit of that type.</div>
                         {!validateAd(ad) && (
-                          <div className="flex items-center gap-2 text-xs text-destructive mt-2 bg-destructive/10 rounded px-2 py-1">
+                          <div className="flex items-center gap-2 text-xs text-red mt-2 bg-destructive/10 rounded px-2 py-1">
                             <AlertTriangle className="w-4 h-4" /> Ad validation failed - missing required fields
                           </div>
                         )}
                         {validateAd(ad) && !validateCredits('category') && !validateCredits('homepage') && (
-                          <div className="flex items-center gap-2 text-xs text-destructive mt-2 bg-destructive/10 rounded px-2 py-1">
+                          <div className="flex items-center gap-2 text-xs text-red mt-2 bg-destructive/10 rounded px-2 py-1">
                             <AlertTriangle className="w-4 h-4" /> Insufficient credits - please purchase more banner credits
                           </div>
                         )}
@@ -801,7 +801,7 @@ export default function MyAdsPage() {
                         </SelectContent>
                       </Select>
                       {!ad.page && (
-                        <div className="flex items-center gap-2 text-xs text-destructive mt-2 bg-destructive/10 rounded px-2 py-1">
+                        <div className="flex items-center gap-2 text-xs text-red mt-2 bg-destructive/10 rounded px-2 py-1">
                           <AlertTriangle className="w-4 h-4" /> No page selected
                         </div>
                       )}

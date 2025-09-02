@@ -34,7 +34,7 @@ export default function AuctionDetailsPage() {
     return <div className="container mx-auto py-24 text-center text-2xl font-bold animate-pulse">Loading auction details...</div>;
   }
   if (!auction) {
-    return <div className="container mx-auto py-24 text-center text-destructive text-2xl font-bold flex flex-col items-center"><Star className="w-12 h-12 mb-4 animate-spin" />Auction not found.</div>;
+    return <div className="container mx-auto py-24 text-center text-red text-2xl font-bold flex flex-col items-center"><Star className="w-12 h-12 mb-4 animate-spin" />Auction not found.</div>;
   }
 
   // Format dates

@@ -57,7 +57,7 @@ export default function PartnerDetailPage() {
     return <div className="container mx-auto py-24 text-center text-2xl font-bold animate-pulse">Loading partner details...</div>;
   }
   if (!partner) {
-    return <div className="container mx-auto py-24 text-center text-destructive text-2xl font-bold flex flex-col items-center">Partner not found.</div>;
+    return <div className="container mx-auto py-24 text-center text-red text-2xl font-bold flex flex-col items-center">Partner not found.</div>;
   }
 
   return (

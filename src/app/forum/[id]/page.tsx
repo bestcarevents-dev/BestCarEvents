@@ -409,7 +409,7 @@ export default function PostDetailPage() {
     }
 
     if (!post) {
-      return <div className="container mx-auto py-24 text-center text-destructive text-2xl font-bold flex flex-col items-center"><MessageCircle className="w-12 h-12 mb-4 animate-spin" />Post not found.</div>;
+      return <div className="container mx-auto py-24 text-center text-red text-2xl font-bold flex flex-col items-center"><MessageCircle className="w-12 h-12 mb-4 animate-spin" />Post not found.</div>;
     }
 
     return (

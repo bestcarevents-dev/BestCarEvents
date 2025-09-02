@@ -240,7 +240,7 @@ export default function RegisterClubPage() {
                               <button
                                 type="button"
                                 onClick={removeLogo}
-                                className="absolute top-1 right-1 bg-white/80 rounded-full p-1 text-destructive hover:text-red-600 shadow"
+                                className="absolute top-1 right-1 bg-white/80 rounded-full p-1 text-red hover:text-red-600 shadow"
                                 aria-label="Remove logo"
                               >
                                 <X className="w-5 h-5" />

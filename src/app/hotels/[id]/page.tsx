@@ -48,7 +48,7 @@ export default function HotelDetailPage() {
     return <div className="flex items-center justify-center min-h-[60vh] text-lg animate-pulse">Loading hotel details...</div>;
   }
   if (!hotel) {
-    return <div className="flex flex-col items-center justify-center min-h-[60vh] text-lg text-destructive">Hotel not found.</div>;
+    return <div className="flex flex-col items-center justify-center min-h-[60vh] text-lg text-red">Hotel not found.</div>;
   }
 
   const images: string[] = hotel.imageUrls || (hotel.imageUrl ? [hotel.imageUrl] : []);
