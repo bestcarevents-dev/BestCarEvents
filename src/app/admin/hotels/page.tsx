@@ -36,6 +36,10 @@ interface HotelRequest {
   imageUrls?: string[];
   status: "pending" | "approved" | "rejected";
   createdAt?: any;
+  featured?: boolean;
+  listing_type?: string;
+  feature_start?: any;
+  feature_end?: any;
 }
 
 export default function AdminHotelsPage() {
@@ -146,6 +150,8 @@ export default function AdminHotelsPage() {
             <TableHead>Location</TableHead>
             <TableHead>Contact</TableHead>
             <TableHead>Status</TableHead>
+            <TableHead>Featured</TableHead>
+            <TableHead>Feature End</TableHead>
             <TableHead className="text-right">Actions</TableHead>
           </TableRow>
         </TableHeader>
@@ -160,6 +166,18 @@ export default function AdminHotelsPage() {
               <TableCell>{request.contactName}</TableCell>
               <TableCell>
                 <Badge variant={status === 'pending' ? 'default' : status === 'approved' ? 'secondary' : 'outline'}>{status.charAt(0).toUpperCase() + status.slice(1)}</Badge>
+              </TableCell>
+              <TableCell>
+                <Badge variant={(request.featured || request.listing_type === 'featured') ? 'default' : 'outline'}>
+                  {(request.featured || request.listing_type === 'featured') ? 'Yes' : 'No'}
+                </Badge>
+              </TableCell>
+              <TableCell>
+                {request.feature_end?.seconds
+                  ? new Date(request.feature_end.seconds * 1000).toLocaleString()
+                  : (request.feature_end
+                      ? (new Date(request.feature_end as any)).toLocaleString()
+                      : '-')}
               </TableCell>
               <TableCell className="text-right">
                 <div className="flex items-center justify-end gap-2">

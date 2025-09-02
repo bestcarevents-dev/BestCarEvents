@@ -500,7 +500,7 @@ export default function SellCarPage() {
                         </div>
                       </div>
                       {!hasQuota && (
-                        <p className="text-xs text-rose-200">No Credit available</p>
+                        <p className="text-xs text-red-800">No Credit available</p>
                       )}
                     </div>
                   );

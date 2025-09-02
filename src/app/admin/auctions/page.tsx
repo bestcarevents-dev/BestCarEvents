@@ -39,6 +39,9 @@ interface AuctionRequest {
   organizerContact: string;
   imageUrl: string;
   status: "pending" | "approved" | "rejected";
+  featured?: boolean;
+  feature_start?: any;
+  feature_end?: any;
 }
 
 export default function AdminAuctionsPage() {
@@ -196,6 +199,8 @@ export default function AdminAuctionsPage() {
                   <TableHead>Dates</TableHead>
                   <TableHead>Location</TableHead>
                   <TableHead>Status</TableHead>
+                  <TableHead>Featured</TableHead>
+                  <TableHead>Feature End</TableHead>
                   <TableHead>Actions</TableHead>
                 </TableRow>
               </TableHeader>
@@ -211,6 +216,18 @@ export default function AdminAuctionsPage() {
                     <TableCell>{request.city}, {request.state}</TableCell>
                     <TableCell>
                       <Badge variant="secondary">Approved</Badge>
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant={request.featured ? 'default' : 'outline'}>
+                        {request.featured ? 'Yes' : 'No'}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      {request.feature_end?.seconds
+                        ? new Date(request.feature_end.seconds * 1000).toLocaleString()
+                        : (request.feature_end
+                            ? (new Date(request.feature_end as any)).toLocaleString()
+                            : '-')}
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">

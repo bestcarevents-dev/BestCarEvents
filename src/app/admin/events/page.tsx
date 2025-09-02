@@ -40,6 +40,11 @@ interface EventRequest {
   rulesUrl?: string;
   sponsors?: string;
   websiteUrl?: string;
+  // Feature fields
+  featured?: boolean;
+  feature_type?: string;
+  feature_start?: any;
+  feature_end?: any;
 }
 
 export default function PendingEventsPage() {
@@ -243,6 +248,8 @@ export default function PendingEventsPage() {
                   <TableHead>Date</TableHead>
                   <TableHead>Location</TableHead>
                   <TableHead>Status</TableHead>
+                  <TableHead>Featured</TableHead>
+                  <TableHead>Feature End</TableHead>
                   <TableHead>Actions</TableHead>
                 </TableRow>
               </TableHeader>
@@ -259,6 +266,18 @@ export default function PendingEventsPage() {
                     <TableCell>{request.location}</TableCell>
                     <TableCell>
                       <Badge variant="secondary">Approved</Badge>
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant={(request.featured || request.feature_type === 'featured') ? 'default' : 'outline'}>
+                        {(request.featured || request.feature_type === 'featured') ? 'Yes' : 'No'}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      {request.feature_end?.seconds
+                        ? new Date(request.feature_end.seconds * 1000).toLocaleString()
+                        : (request.feature_end
+                            ? (new Date(request.feature_end as any)).toLocaleString()
+                            : '-')}
                     </TableCell>
                     <TableCell onClick={e => e.stopPropagation()}>
                       <div className="flex items-center gap-2">

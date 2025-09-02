@@ -34,6 +34,10 @@ interface ClubRequest {
   logoUrl: string;
   status: "pending" | "approved" | "rejected";
   createdAt?: any;
+  featured?: boolean;
+  listing_type?: string;
+  feature_start?: any;
+  feature_end?: any;
 }
 
 export default function AdminClubsPage() {
@@ -191,6 +195,8 @@ export default function AdminClubsPage() {
                   <TableHead>Contact</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Created At</TableHead>
+                  <TableHead>Featured</TableHead>
+                  <TableHead>Feature End</TableHead>
                   <TableHead>Actions</TableHead>
                 </TableRow>
               </TableHeader>
@@ -207,6 +213,18 @@ export default function AdminClubsPage() {
                       <Badge variant="secondary">Approved</Badge>
                     </TableCell>
                     <TableCell>{request.createdAt?.seconds ? new Date(request.createdAt.seconds * 1000).toLocaleString() : (request.createdAt ? request.createdAt.toString() : "-")}</TableCell>
+                    <TableCell>
+                      <Badge variant={(request.featured || request.listing_type === 'featured') ? 'default' : 'outline'}>
+                        {(request.featured || request.listing_type === 'featured') ? 'Yes' : 'No'}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      {request.feature_end?.seconds
+                        ? new Date(request.feature_end.seconds * 1000).toLocaleString()
+                        : (request.feature_end
+                            ? (new Date(request.feature_end as any)).toLocaleString()
+                            : '-')}
+                    </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">
                         <Button variant="outline" size="sm" onClick={e => { e.stopPropagation(); openFeatureDialog(request.id); }}>Feature</Button>
