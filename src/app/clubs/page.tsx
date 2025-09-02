@@ -15,7 +15,7 @@ import { Globe, Users, Link as LinkIcon } from "lucide-react";
 import PartnerAdRotator from '@/components/PartnerAdRotator';
 import { getAuth, onAuthStateChanged, User } from 'firebase/auth';
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from '@/components/ui/dialog';
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+ 
 import { useSearchParams } from "next/navigation";
 import FreeCallout from "@/components/free-callout";
 import SimpleGallerySection from "@/components/SimpleGallerySection";
@@ -405,7 +405,7 @@ function ClubsPageContent() {
             </div>
           ) : (
             <>
-              {/* Featured Clubs Carousel */}
+              {/* Featured Clubs Grid */}
               {featuredClubs.length > 0 ? (
                 <div className="mb-12">
                   <div className="flex items-center gap-3 mb-6">
@@ -420,59 +420,46 @@ function ClubsPageContent() {
                     <div className="absolute inset-0 bg-gradient-to-r from-[#E0D8C1]/30 via-[#80A0A9]/20 to-[#E0D8C1]/30 rounded-3xl border-2 border-[#80A0A9]/40 shadow-lg group-hover:shadow-xl transition-shadow duration-300"></div>
                     <div className="absolute inset-0 bg-gradient-to-r from-[#E0D8C1]/10 via-transparent to-[#E0D8C1]/10 rounded-3xl"></div>
                     <div className="relative bg-white/90 backdrop-blur-sm rounded-3xl border-2 border-[#80A0A9]/60 p-6 shadow-inner">
-                      <Carousel
-                        opts={{
-                          align: "start",
-                          loop: false,
-                        }}
-                        className="w-full"
-                      >
-                        <CarouselContent className="-ml-2 md:-ml-4">
-                          {featuredClubs.map((club) => (
-                            <CarouselItem key={club.documentId} className="pl-2 md:pl-4 basis-full md:basis-1/2 lg:basis-1/3 xl:basis-1/4">
-                              <div className="p-2">
-                                <Link
-                                  href={`/clubs/${club.documentId}`}
-                                  className="group relative bg-white border border-gray-200 rounded-2xl shadow-lg p-6 flex flex-col items-center transition-transform duration-300 hover:-translate-y-2 hover:shadow-2xl hover:border-[#80A0A9]/60 animate-fade-in cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#80A0A9] block"
-                                  tabIndex={0}
-                                  aria-label={`View details for ${club.clubName}`}
-                                >
-                                  <div className="absolute -top-6 left-1/2 -translate-x-1/2 z-10">
-                                    <div className="rounded-full border-4 border-white shadow-lg bg-white w-20 h-20 flex items-center justify-center overflow-hidden animate-fade-in">
-                                      <Image src={club.logoUrl || "/placeholder.jpg"} alt={club.clubName} width={80} height={80} className="object-contain w-full h-full" />
-                                    </div>
-                                  </div>
-                                  <div className="mt-12 w-full flex flex-col items-center">
-                                    <h3 className="text-xl font-bold font-headline text-[#80A0A9] mb-1 text-center group-hover:underline transition-all">{club.clubName}</h3>
-                                    <div className="flex items-center gap-2 mb-2 text-gray-600">
-                                      <Users className="w-4 h-4" />
-                                      <span>{club.city}, {club.country}</span>
-                                    </div>
-                                    <p className="text-sm text-gray-600 mb-4 text-center line-clamp-3">{club.description}</p>
-                                    <div className="flex gap-3 mt-auto">
-                                      {club.website && (
-                                        <a href={club.website} target="_blank" rel="noopener noreferrer" className="text-[#80A0A9] hover:text-[#80A0A9]/80 transition-colors" title="Website">
-                                          <Globe className="w-5 h-5" />
-                                        </a>
-                                      )}
-                                      {club.socialMediaLink && (
-                                        <a href={club.socialMediaLink} target="_blank" rel="noopener noreferrer" className="text-[#80A0A9] hover:text-[#80A0A9]/80 transition-colors" title="Social Media">
-                                          <LinkIcon className="w-5 h-5" />
-                                        </a>
-                                      )}
-                                    </div>
-                                  </div>
-                                  <div className="absolute top-4 right-4">
-                                    <span className="inline-block bg-gradient-to-r from-[#80A0A9] to-[#80A0A9]/90 text-white text-xs font-bold px-3 py-1 rounded-full shadow">{club.createdAt?.seconds ? new Date(club.createdAt.seconds * 1000).toLocaleDateString() : "New"}</span>
-                                  </div>
-                                </Link>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                        {featuredClubs.map((club, idx) => (
+                          <Link
+                            key={club.documentId || idx}
+                            href={`/clubs/${club.documentId}`}
+                            className="group relative bg-white border border-gray-200 rounded-2xl shadow-lg p-6 flex flex-col items-center transition-transform duration-300 hover:-translate-y-2 hover:shadow-2xl hover:border-[#80A0A9]/60 animate-fade-in cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#80A0A9]"
+                            tabIndex={0}
+                            aria-label={`View details for ${club.clubName}`}
+                          >
+                            <div className="absolute -top-6 left-1/2 -translate-x-1/2 z-10">
+                              <div className="rounded-full border-4 border-white shadow-lg bg-white w-20 h-20 flex items-center justify-center overflow-hidden animate-fade-in">
+                                <Image src={club.logoUrl || "/placeholder.jpg"} alt={club.clubName} width={80} height={80} className="object-contain w-full h-full" />
                               </div>
-                            </CarouselItem>
-                          ))}
-                        </CarouselContent>
-                        <CarouselPrevious className="absolute -left-4 top-1/2 -translate-y-1/2 bg-[#80A0A9] hover:bg-[#80A0A9]/90 text-white border-[#80A0A9] h-10 w-10 shadow-lg transition-all duration-200 hover:scale-110" />
-                        <CarouselNext className="absolute -right-4 top-1/2 -translate-y-1/2 bg-[#80A0A9] hover:bg-[#80A0A9]/90 text-white border-[#80A0A9] h-10 w-10 shadow-lg transition-all duration-200 hover:scale-110" />
-                      </Carousel>
+                            </div>
+                            <div className="mt-12 w-full flex flex-col items-center">
+                              <h3 className="text-xl font-bold font-headline text-[#80A0A9] mb-1 text-center group-hover:underline transition-all">{club.clubName}</h3>
+                              <div className="flex items-center gap-2 mb-2 text-gray-600">
+                                <Users className="w-4 h-4" />
+                                <span>{club.city}, {club.country}</span>
+                              </div>
+                              <p className="text-sm text-gray-600 mb-4 text-center line-clamp-3">{club.description}</p>
+                              <div className="flex gap-3 mt-auto">
+                                {club.website && (
+                                  <a href={club.website} target="_blank" rel="noopener noreferrer" className="text-[#80A0A9] hover:text-[#80A0A9]/80 transition-colors" title="Website">
+                                    <Globe className="w-5 h-5" />
+                                  </a>
+                                )}
+                                {club.socialMediaLink && (
+                                  <a href={club.socialMediaLink} target="_blank" rel="noopener noreferrer" className="text-[#80A0A9] hover:text-[#80A0A9]/80 transition-colors" title="Social Media">
+                                    <LinkIcon className="w-5 h-5" />
+                                  </a>
+                                )}
+                              </div>
+                            </div>
+                            <div className="absolute top-4 right-4">
+                              <span className="inline-block bg-gradient-to-r from-[#80A0A9] to-[#80A0A9]/90 text-white text-xs font-bold px-3 py-1 rounded-full shadow">{club.createdAt?.seconds ? new Date(club.createdAt.seconds * 1000).toLocaleDateString() : "New"}</span>
+                            </div>
+                          </Link>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 </div>

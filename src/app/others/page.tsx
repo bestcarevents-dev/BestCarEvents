@@ -14,7 +14,6 @@ import { app } from "@/lib/firebase";
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from '@/components/ui/dialog';
 import { getAuth, onAuthStateChanged, User } from 'firebase/auth';
 import PartnerAdRotator from '@/components/PartnerAdRotator';
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { Badge } from "@/components/ui/badge";
 import { useSearchParams } from "next/navigation";
 import FreeCallout from "@/components/free-callout";
@@ -384,7 +383,7 @@ function OthersPageContent() {
                       <PartnerAdRotator page="Others" maxVisible={4} />
                    </div>
 
-                   {/* Featured Services Carousel */}
+                   {/* Featured Services Grid */}
                    {featuredServices.length > 0 ? (
                      <div className="mb-12">
                        <div className="flex items-center gap-3 mb-6">
@@ -394,41 +393,27 @@ function OthersPageContent() {
                          <h2 className="text-2xl font-headline font-bold text-gray-900">Featured Services</h2>
                          <div className="flex-1 h-px bg-gradient-to-r from-[#80A0A9]/50 to-transparent"></div>
                        </div>
-                       
-                       <div className="relative group">
-                         <div className="absolute inset-0 bg-gradient-to-r from-[#E0D8C1]/30 via-[#80A0A9]/20 to-[#E0D8C1]/30 rounded-3xl border-2 border-[#80A0A9]/40 shadow-lg group-hover:shadow-xl transition-shadow duration-300"></div>
-                         <div className="absolute inset-0 bg-gradient-to-r from-[#E0D8C1]/10 via-transparent to-[#E0D8C1]/10 rounded-3xl"></div>
-                         <div className="relative bg-white/95 backdrop-blur-sm rounded-3xl border-2 border-[#80A0A9]/60 p-6 shadow-inner">
-                           <Carousel
-                             opts={{
-                               align: "start",
-                               loop: false,
-                             }}
-                             className="w-full"
-                           >
-                             <CarouselContent className="-ml-2 md:-ml-4">
-                               {featuredServices.map((service, index) => (
-                                 <CarouselItem key={service.id} className="pl-2 md:pl-4 basis-full md:basis-1/2 lg:basis-1/3 xl:basis-1/4">
-                                   <div className="p-2">
-                                     <ServiceCard {...service} />
-                                   </div>
-                                 </CarouselItem>
-                               ))}
-                             </CarouselContent>
-                             <CarouselPrevious className="absolute -left-4 top-1/2 -translate-y-1/2 bg-[#80A0A9] hover:bg-[#80A0A9]/90 text-white border-[#80A0A9] h-10 w-10 shadow-lg transition-all duration-200 hover:scale-110" />
-                             <CarouselNext className="absolute -right-4 top-1/2 -translate-y-1/2 bg-[#80A0A9] hover:bg-[#80A0A9]/90 text-white border-[#80A0A9] h-10 w-10 shadow-lg transition-all duration-200 hover:scale-110" />
-                           </Carousel>
-                         </div>
-                       </div>
-                     </div>
-                   ) : (
-                     <div className="mb-8 p-6 bg-[#E0D8C1]/20 rounded-lg border border-dashed border-[#80A0A9]/30">
-                       <div className="text-center text-gray-600">
-                         <Star className="w-8 h-8 mx-auto mb-2 text-[#80A0A9]/50" />
-                         <p className="text-sm">No featured services at the moment. Check back soon for premium services!</p>
-                       </div>
-                     </div>
-                   )}
+                        
+                      <div className="relative group">
+                        <div className="absolute inset-0 bg-gradient-to-r from-[#E0D8C1]/30 via-[#80A0A9]/20 to-[#E0D8C1]/30 rounded-3xl border-2 border-[#80A0A9]/40 shadow-lg group-hover:shadow-xl transition-shadow duration-300"></div>
+                        <div className="absolute inset-0 bg-gradient-to-r from-[#E0D8C1]/10 via-transparent to-[#E0D8C1]/10 rounded-3xl"></div>
+                        <div className="relative bg-white/95 backdrop-blur-sm rounded-3xl border-2 border-[#80A0A9]/60 p-6 shadow-inner">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                            {featuredServices.map((service) => (
+                              <ServiceCard key={service.id} {...service} />
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="mb-8 p-6 bg-[#E0D8C1]/20 rounded-lg border border-dashed border-[#80A0A9]/30">
+                      <div className="text-center text-gray-600">
+                        <Star className="w-8 h-8 mx-auto mb-2 text-[#80A0A9]/50" />
+                        <p className="text-sm">No featured services at the moment. Check back soon for premium services!</p>
+                      </div>
+                    </div>
+                  )}
 
                    {/* Service Categories */}
                    {serviceTypes.map(type => {

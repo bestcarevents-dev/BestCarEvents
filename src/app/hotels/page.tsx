@@ -13,7 +13,7 @@ import { PlusCircle, Star } from "lucide-react";
 import PartnerAdRotator from '@/components/PartnerAdRotator';
 import { getAuth, onAuthStateChanged, User } from 'firebase/auth';
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from '@/components/ui/dialog';
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+ 
 import { useSearchParams } from "next/navigation";
 import FreeCallout from "@/components/free-callout";
 import SimpleGallerySection from "@/components/SimpleGallerySection";
@@ -409,7 +409,7 @@ function CarHotelsPageContent() {
           </div>
         ) : (
           <>
-            {/* Featured Hotels Carousel */}
+            {/* Featured Hotels Grid */}
             {featuredHotels.length > 0 ? (
               <div className="mb-12">
                 <div className="flex items-center gap-3 mb-6">
@@ -424,50 +424,36 @@ function CarHotelsPageContent() {
                   <div className="absolute inset-0 bg-gradient-to-r from-[#E0D8C1]/30 via-[#80A0A9]/20 to-[#E0D8C1]/30 rounded-3xl border-2 border-[#80A0A9]/40 shadow-lg group-hover:shadow-xl transition-shadow duration-300"></div>
                   <div className="absolute inset-0 bg-gradient-to-r from-[#E0D8C1]/10 via-transparent to-[#E0D8C1]/10 rounded-3xl"></div>
                   <div className="relative bg-white/90 backdrop-blur-sm rounded-3xl border-2 border-[#80A0A9]/60 p-6 shadow-inner">
-                    <Carousel
-                      opts={{
-                        align: "start",
-                        loop: false,
-                      }}
-                      className="w-full"
-                    >
-                      <CarouselContent className="-ml-2 md:-ml-4">
-                        {featuredHotels.map((hotel) => (
-                          <CarouselItem key={hotel.documentId} className="pl-2 md:pl-4 basis-full md:basis-1/2 lg:basis-1/3">
-                            <div className="p-2">
-                              <Card className="flex flex-col h-full bg-white border border-gray-200">
-                                <CardHeader className="p-0 relative">
-                                  <Link href={`/hotels/${hotel.documentId}`} className="block relative aspect-video">
-                                    <Image src={hotel.imageUrls?.[0] || hotel.imageUrl || "https://via.placeholder.com/800x500?text=No+Image"} alt={hotel.hotelName} layout="fill" objectFit="cover" data-ai-hint={hotel.hotelName}/>
-                                  </Link>
-                                </CardHeader>
-                                <CardContent className="p-6 flex-grow">
-                                  <CardTitle className="font-headline text-gray-900">
-                                    <Link href={`/hotels/${hotel.documentId}`} className="hover:text-[#80A0A9] transition-colors">{hotel.hotelName}</Link>
-                                  </CardTitle>
-                                  <CardDescription className="text-gray-600">{hotel.city}, {hotel.state}</CardDescription>
-                                  <ul className="mt-4 space-y-2 text-sm text-gray-600">
-                                    {(hotel.features || []).slice(0, 3).map((feature: string) => (
-                                      <li key={feature} className="flex items-center">
-                                        <svg className="w-4 h-4 mr-2 text-[#80A0A9]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>
-                                        {feature}
-                                      </li>
-                                    ))}
-                                  </ul>
-                                </CardContent>
-                                <CardFooter className="p-6 pt-0">
-                                  <Button asChild variant="outline" className="w-full border-[#80A0A9] text-[#80A0A9] hover:bg-[#80A0A9]/10">
-                                    <Link href={`/hotels/${hotel.documentId}`}>View Services</Link>
-                                  </Button>
-                                </CardFooter>
-                              </Card>
-                            </div>
-                          </CarouselItem>
-                        ))}
-                      </CarouselContent>
-                      <CarouselPrevious className="absolute -left-4 top-1/2 -translate-y-1/2 bg-[#80A0A9] hover:bg-[#80A0A9]/90 text-white border-[#80A0A9] h-10 w-10 shadow-lg transition-all duration-200 hover:scale-110" />
-                      <CarouselNext className="absolute -right-4 top-1/2 -translate-y-1/2 bg-[#80A0A9] hover:bg-[#80A0A9]/90 text-white border-[#80A0A9] h-10 w-10 shadow-lg transition-all duration-200 hover:scale-110" />
-                    </Carousel>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                      {featuredHotels.map((hotel, index) => (
+                        <Card key={hotel.documentId || index} className="flex flex-col h-full bg-white border border-gray-200">
+                          <CardHeader className="p-0 relative">
+                            <Link href={`/hotels/${hotel.documentId}`} className="block relative aspect-video">
+                              <Image src={hotel.imageUrls?.[0] || hotel.imageUrl || "https://via.placeholder.com/800x500?text=No+Image"} alt={hotel.hotelName} layout="fill" objectFit="cover" data-ai-hint={hotel.hotelName}/>
+                            </Link>
+                          </CardHeader>
+                          <CardContent className="p-6 flex-grow">
+                            <CardTitle className="font-headline text-gray-900">
+                              <Link href={`/hotels/${hotel.documentId}`} className="hover:text-[#80A0A9] transition-colors">{hotel.hotelName}</Link>
+                            </CardTitle>
+                            <CardDescription className="text-gray-600">{hotel.city}, {hotel.state}</CardDescription>
+                            <ul className="mt-4 space-y-2 text-sm text-gray-600">
+                              {(hotel.features || []).slice(0, 3).map((feature: string) => (
+                                <li key={feature} className="flex items-center">
+                                  <svg className="w-4 h-4 mr-2 text-[#80A0A9]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>
+                                  {feature}
+                                </li>
+                              ))}
+                            </ul>
+                          </CardContent>
+                          <CardFooter className="p-6 pt-0">
+                            <Button asChild variant="outline" className="w-full border-[#80A0A9] text-[#80A0A9] hover:bg-[#80A0A9]/10">
+                              <Link href={`/hotels/${hotel.documentId}`}>View Services</Link>
+                            </Button>
+                          </CardFooter>
+                        </Card>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>

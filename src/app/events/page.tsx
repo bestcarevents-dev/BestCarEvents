@@ -15,7 +15,6 @@ import { app } from "@/lib/firebase";
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from '@/components/ui/dialog';
 import { getAuth, onAuthStateChanged, User } from 'firebase/auth';
 import PartnerAdRotator from '@/components/PartnerAdRotator';
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { useSearchParams } from "next/navigation";
 import FreeCallout from "@/components/free-callout";
 import SimpleGallerySection from "@/components/SimpleGallerySection";
@@ -386,7 +385,7 @@ function EventsPageContent() {
                       <PartnerAdRotator page="Events" maxVisible={4} />
                    </div>
 
-                   {/* Featured Events Carousel */}
+                   {/* Featured Events Grid */}
                    {featuredEvents.length > 0 ? (
                      <div className="mb-12">
                        <div className="flex items-center gap-3 mb-6">
@@ -401,34 +400,21 @@ function EventsPageContent() {
                          <div className="absolute inset-0 bg-gradient-to-r from-yellow-400/20 via-yellow-300/20 to-yellow-400/20 rounded-3xl border-2 border-yellow-400/40 shadow-lg group-hover:shadow-xl transition-shadow duration-300"></div>
                          <div className="absolute inset-0 bg-gradient-to-r from-yellow-400/5 via-transparent to-yellow-400/5 rounded-3xl"></div>
                          <div className="relative bg-white/90 backdrop-blur-sm rounded-3xl border-2 border-yellow-400/60 p-6 shadow-inner">
-                           <Carousel
-                             opts={{
-                               align: "start",
-                               loop: false,
-                             }}
-                             className="w-full"
-                           >
-                             <CarouselContent className="-ml-2 md:-ml-4">
-                               {featuredEvents.map((event, index) => (
-                                 <CarouselItem key={event.documentId || event.id || index} className="pl-2 md:pl-4 basis-full md:basis-1/2 lg:basis-1/3 xl:basis-1/4">
-                                   <div className="p-2">
-                                     <EventCard 
-                                       {...event} 
-                                       documentId={event.documentId}
-                                       featured={true} 
-                                       name={event.eventName || event.name || `Event #${index + 1}`} 
-                                       date={event.eventDate ? new Date(event.eventDate.seconds * 1000).toLocaleDateString() : event.date} 
-                                       location={event.location} 
-                                       image={event.imageUrl || event.image} 
-                                       hint={event.eventType || event.hint} 
-                                     />
-                                   </div>
-                                 </CarouselItem>
-                               ))}
-                             </CarouselContent>
-                             <CarouselPrevious className="absolute -left-4 top-1/2 -translate-y-1/2 bg-yellow-400 hover:bg-yellow-500 text-black border-yellow-400 h-10 w-10 shadow-lg transition-all duration-200 hover:scale-110" />
-                             <CarouselNext className="absolute -right-4 top-1/2 -translate-y-1/2 bg-yellow-400 hover:bg-yellow-500 text-black border-yellow-400 h-10 w-10 shadow-lg transition-all duration-200 hover:scale-110" />
-                           </Carousel>
+                           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                             {featuredEvents.map((event, index) => (
+                               <EventCard 
+                                 key={event.documentId || event.id || index}
+                                 {...event} 
+                                 documentId={event.documentId}
+                                 featured={true} 
+                                 name={event.eventName || event.name || `Event #${index + 1}`} 
+                                 date={event.eventDate ? new Date(event.eventDate.seconds * 1000).toLocaleDateString() : event.date} 
+                                 location={event.location} 
+                                 image={event.imageUrl || event.image} 
+                                 hint={event.eventType || event.hint} 
+                               />
+                             ))}
+                           </div>
                          </div>
                        </div>
                      </div>
