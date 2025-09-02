@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import Image from "next/image";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 interface EventRequest {
@@ -48,6 +49,11 @@ export default function PendingEventsPage() {
   const [selectedEvent, setSelectedEvent] = useState<EventRequest | null>(null);
   const [tab, setTab] = useState("pending");
   const db = getFirestore(app);
+
+  // Feature modal state
+  const [featureDialogOpen, setFeatureDialogOpen] = useState(false);
+  const [featureTargetId, setFeatureTargetId] = useState<string | null>(null);
+  const [featureEnd, setFeatureEnd] = useState<string>("");
 
   useEffect(() => {
     const fetchRequests = async () => {
@@ -131,6 +137,30 @@ export default function PendingEventsPage() {
       setSelectedEvent(null);
     } catch (error) {
       console.error("Error deleting approved event: ", error);
+    }
+  };
+
+  const openFeatureDialog = (id: string) => {
+    setFeatureTargetId(id);
+    setFeatureEnd("");
+    setFeatureDialogOpen(true);
+  };
+
+  const handleSetFeatured = async () => {
+    if (!featureTargetId || !featureEnd) return;
+    try {
+      const endDate = new Date(featureEnd);
+      await updateDoc(doc(db, "events", featureTargetId), {
+        featured: true,
+        feature_type: "featured",
+        feature_start: new Date(),
+        feature_end: endDate,
+      });
+      setFeatureDialogOpen(false);
+      setFeatureTargetId(null);
+      setFeatureEnd("");
+    } catch (error) {
+      console.error("Error setting featured event:", error);
     }
   };
 
@@ -231,7 +261,10 @@ export default function PendingEventsPage() {
                       <Badge variant="secondary">Approved</Badge>
                     </TableCell>
                     <TableCell onClick={e => e.stopPropagation()}>
-                      <Button variant="destructive" size="sm" onClick={() => handleDeleteApproved(request.id)}>Delete</Button>
+                      <div className="flex items-center gap-2">
+                        <Button variant="outline" size="sm" onClick={() => openFeatureDialog(request.id)}>Feature</Button>
+                        <Button variant="destructive" size="sm" onClick={() => handleDeleteApproved(request.id)}>Delete</Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -321,6 +354,24 @@ export default function PendingEventsPage() {
               <h3 className="font-semibold text-lg mb-2">Status</h3>
               <Badge variant={selectedEvent?.status === 'pending' ? 'default' : selectedEvent?.status === 'approved' ? 'secondary' : 'destructive'}>{selectedEvent?.status}</Badge>
             </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Feature Event Modal */}
+      <Dialog open={featureDialogOpen} onOpenChange={setFeatureDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Feature Event</DialogTitle>
+            <DialogDescription>Choose when the featured status should end.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-2">
+            <label htmlFor="featureEnd" className="text-sm">Feature end</label>
+            <Input id="featureEnd" type="datetime-local" value={featureEnd} onChange={(e) => setFeatureEnd(e.target.value)} />
+          </div>
+          <div className="mt-4 flex justify-end gap-2">
+            <Button variant="outline" onClick={() => setFeatureDialogOpen(false)}>Cancel</Button>
+            <Button onClick={handleSetFeatured} disabled={!featureEnd}>Set Featured</Button>
           </div>
         </DialogContent>
       </Dialog>

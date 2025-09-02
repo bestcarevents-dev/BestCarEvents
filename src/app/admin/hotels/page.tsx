@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { getFirestore, collection, getDocs, doc, deleteDoc, addDoc } from "firebase/firestore";
+import { getFirestore, collection, getDocs, doc, deleteDoc, addDoc, updateDoc } from "firebase/firestore";
 import { app } from "@/lib/firebase";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/dialog";
 import Image from "next/image";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Input } from "@/components/ui/input";
 import { X } from "lucide-react";
 
 interface HotelRequest {
@@ -44,6 +45,11 @@ export default function AdminHotelsPage() {
   const [selectedHotel, setSelectedHotel] = useState<HotelRequest | null>(null);
   const [tab, setTab] = useState("pending");
   const db = getFirestore(app);
+
+  // Feature modal state
+  const [featureDialogOpen, setFeatureDialogOpen] = useState(false);
+  const [featureTargetId, setFeatureTargetId] = useState<string | null>(null);
+  const [featureEnd, setFeatureEnd] = useState<string>("");
 
   useEffect(() => {
     const fetchRequests = async () => {
@@ -99,6 +105,30 @@ export default function AdminHotelsPage() {
     }
   };
 
+  const openFeatureDialog = (id: string) => {
+    setFeatureTargetId(id);
+    setFeatureEnd("");
+    setFeatureDialogOpen(true);
+  };
+
+  const handleSetFeatured = async () => {
+    if (!featureTargetId || !featureEnd) return;
+    try {
+      const endDate = new Date(featureEnd);
+      await updateDoc(doc(db, "hotels", featureTargetId), {
+        featured: true,
+        listing_type: "featured",
+        feature_start: new Date(),
+        feature_end: endDate,
+      });
+      setFeatureDialogOpen(false);
+      setFeatureTargetId(null);
+      setFeatureEnd("");
+    } catch (error) {
+      console.error("Error setting featured hotel:", error);
+    }
+  };
+
   const DetailItem = ({ label, value }: { label: string, value: any }) => (
     <div>
       <p className="text-sm font-semibold text-muted-foreground">{label}</p>
@@ -132,7 +162,12 @@ export default function AdminHotelsPage() {
                 <Badge variant={status === 'pending' ? 'default' : status === 'approved' ? 'secondary' : 'outline'}>{status.charAt(0).toUpperCase() + status.slice(1)}</Badge>
               </TableCell>
               <TableCell className="text-right">
-                <Button variant="outline" size="sm" onClick={e => { e.stopPropagation(); setSelectedHotel(request); }}>View Details</Button>
+                <div className="flex items-center justify-end gap-2">
+                  {status === 'approved' && (
+                    <Button variant="outline" size="sm" onClick={e => { e.stopPropagation(); openFeatureDialog(request.id); }}>Feature</Button>
+                  )}
+                  <Button variant="outline" size="sm" onClick={e => { e.stopPropagation(); setSelectedHotel(request); }}>View Details</Button>
+                </div>
               </TableCell>
             </TableRow>
           ))}
@@ -227,6 +262,24 @@ export default function AdminHotelsPage() {
           </DialogContent>
         </Dialog>
       )}
+
+      {/* Feature Hotel Modal */}
+      <Dialog open={featureDialogOpen} onOpenChange={setFeatureDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Feature Hotel</DialogTitle>
+            <DialogDescription>Choose when the featured status should end.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-2">
+            <label htmlFor="featureEndHotel" className="text-sm">Feature end</label>
+            <Input id="featureEndHotel" type="datetime-local" value={featureEnd} onChange={(e) => setFeatureEnd(e.target.value)} />
+          </div>
+          <div className="mt-4 flex justify-end gap-2">
+            <Button variant="outline" onClick={() => setFeatureDialogOpen(false)}>Cancel</Button>
+            <Button onClick={handleSetFeatured} disabled={!featureEnd}>Set Featured</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

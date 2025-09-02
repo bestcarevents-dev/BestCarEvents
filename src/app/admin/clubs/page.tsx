@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { getFirestore, collection, getDocs, doc, deleteDoc, addDoc } from "firebase/firestore";
+import { getFirestore, collection, getDocs, doc, deleteDoc, addDoc, updateDoc } from "firebase/firestore";
 import { app } from "@/lib/firebase";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/dialog";
 import Image from "next/image";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Input } from "@/components/ui/input";
 import { X } from "lucide-react";
 
 interface ClubRequest {
@@ -42,6 +43,11 @@ export default function AdminClubsPage() {
   const [selectedClub, setSelectedClub] = useState<ClubRequest | null>(null);
   const [tab, setTab] = useState("pending");
   const db = getFirestore(app);
+
+  // Feature modal state
+  const [featureDialogOpen, setFeatureDialogOpen] = useState(false);
+  const [featureTargetId, setFeatureTargetId] = useState<string | null>(null);
+  const [featureEnd, setFeatureEnd] = useState<string>("");
 
   useEffect(() => {
     const fetchRequests = async () => {
@@ -89,6 +95,30 @@ export default function AdminClubsPage() {
       setSelectedClub(null);
     } catch (error) {
       console.error("Error deleting approved club: ", error);
+    }
+  };
+
+  const openFeatureDialog = (id: string) => {
+    setFeatureTargetId(id);
+    setFeatureEnd("");
+    setFeatureDialogOpen(true);
+  };
+
+  const handleSetFeatured = async () => {
+    if (!featureTargetId || !featureEnd) return;
+    try {
+      const endDate = new Date(featureEnd);
+      await updateDoc(doc(db, "clubs", featureTargetId), {
+        featured: true,
+        listing_type: "featured",
+        feature_start: new Date(),
+        feature_end: endDate,
+      });
+      setFeatureDialogOpen(false);
+      setFeatureTargetId(null);
+      setFeatureEnd("");
+    } catch (error) {
+      console.error("Error setting featured club:", error);
     }
   };
 
@@ -178,7 +208,10 @@ export default function AdminClubsPage() {
                     </TableCell>
                     <TableCell>{request.createdAt?.seconds ? new Date(request.createdAt.seconds * 1000).toLocaleString() : (request.createdAt ? request.createdAt.toString() : "-")}</TableCell>
                     <TableCell>
-                      <Button variant="destructive" size="sm" onClick={e => { e.stopPropagation(); handleDeleteApproved(request.id); }}>Delete</Button>
+                      <div className="flex items-center gap-2">
+                        <Button variant="outline" size="sm" onClick={e => { e.stopPropagation(); openFeatureDialog(request.id); }}>Feature</Button>
+                        <Button variant="destructive" size="sm" onClick={e => { e.stopPropagation(); handleDeleteApproved(request.id); }}>Delete</Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -245,6 +278,24 @@ export default function AdminClubsPage() {
           </DialogContent>
         </Dialog>
       )}
+
+      {/* Feature Club Modal */}
+      <Dialog open={featureDialogOpen} onOpenChange={setFeatureDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Feature Club</DialogTitle>
+            <DialogDescription>Choose when the featured status should end.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-2">
+            <label htmlFor="featureEndClub" className="text-sm">Feature end</label>
+            <Input id="featureEndClub" type="datetime-local" value={featureEnd} onChange={(e) => setFeatureEnd(e.target.value)} />
+          </div>
+          <div className="mt-4 flex justify-end gap-2">
+            <Button variant="outline" onClick={() => setFeatureDialogOpen(false)}>Cancel</Button>
+            <Button onClick={handleSetFeatured} disabled={!featureEnd}>Set Featured</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }
