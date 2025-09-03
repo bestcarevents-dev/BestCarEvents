@@ -15,6 +15,7 @@ import PartnerAdRotator from '@/components/PartnerAdRotator';
  
 import { useSearchParams } from "next/navigation";
 import FreeCallout from "@/components/free-callout";
+import FreeCalloutDynamic from "@/components/FreeCalloutDynamic";
 import SimpleGallerySection from "@/components/SimpleGallerySection";
 import { defaultPageContent, fetchPageHeader, type PageHeader } from "@/lib/pageContent";
 
@@ -286,18 +287,7 @@ function AuctionsPageContent() {
             </div>
           )}
         </div>
-        <div className="mb-8">
-          <FreeCallout
-            title="Promote or Join Auctions — Free"
-            icon="megaphone"
-            messages={[
-              "Join a community of enthusiasts — No fees, no subscription.",
-              "Discover premium car auctions — Showcase or find auctions for free.",
-              "List your auction or bid — Free of charge.",
-              "Worldwide exposure. Zero fees.",
-            ]}
-          />
-        </div>
+        <FreeCalloutDynamic section="auctions" />
 
         <div className="bg-[#E0D8C1]/30 p-6 rounded-lg border border-[#E0D8C1]/50 mb-8">
           {/* Search Bar - Always Visible */}

@@ -1,10 +1,11 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { motion, AnimatePresence } from "framer-motion";
 import { Star, Car, X } from "lucide-react";
+import { fetchFreeListingsModal, defaultFreeListingsModal, type FreeListingsModalContent } from "@/lib/freeListingsModal";
 
 interface FreeListingsModalProps {
   isOpen: boolean;
@@ -12,6 +13,20 @@ interface FreeListingsModalProps {
 }
 
 export default function FreeListingsModal({ isOpen, onClose }: FreeListingsModalProps) {
+  const [copy, setCopy] = useState<FreeListingsModalContent>(defaultFreeListingsModal);
+
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      try {
+        const data = await fetchFreeListingsModal();
+        if (mounted) setCopy(data);
+      } catch {}
+    })();
+    return () => {
+      mounted = false;
+    };
+  }, []);
   const handleClose = () => {
     onClose();
   };
@@ -101,7 +116,7 @@ export default function FreeListingsModal({ isOpen, onClose }: FreeListingsModal
                   className="mb-3"
                 >
                   <h1 className="text-xl sm:text-2xl font-black text-gray-900 mb-1 drop-shadow-sm">
-                    ALL LISTINGS ARE
+                    {copy.headlineTop}
                   </h1>
                   <motion.h1 
                     className="text-3xl sm:text-4xl font-black text-amber-500"
@@ -114,7 +129,7 @@ export default function FreeListingsModal({ isOpen, onClose }: FreeListingsModal
                       ease: "easeInOut"
                     }}
                   >
-                    FREE!
+                    {copy.headlineEmphasis}
                   </motion.h1>
                 </motion.div>
 
@@ -125,12 +140,14 @@ export default function FreeListingsModal({ isOpen, onClose }: FreeListingsModal
                   transition={{ duration: 0.5, delay: 0.4, ease: "easeOut" }}
                   className="mb-5"
                 >
-                  <div className="flex items-center justify-center space-x-2 bg-yellow-400/20 backdrop-blur-sm rounded-full px-4 py-2 border border-yellow-400/30">
-                    <Car className="w-4 h-4 text-yellow-600" />
-                    <span className="text-base font-bold text-gray-900">
-                      Cars: Free for 2 months
-                    </span>
-                  </div>
+                  {copy.subline && (
+                    <div className="flex items-center justify-center space-x-2 bg-yellow-400/20 backdrop-blur-sm rounded-full px-4 py-2 border border-yellow-400/30">
+                      <Car className="w-4 h-4 text-yellow-600" />
+                      <span className="text-base font-bold text-gray-900">
+                        {copy.subline}
+                      </span>
+                    </div>
+                  )}
                 </motion.div>
 
                 {/* CTA Button with dramatic effect */}
@@ -143,7 +160,7 @@ export default function FreeListingsModal({ isOpen, onClose }: FreeListingsModal
                     onClick={handleClose}
                     className="bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-bold py-3 px-6 rounded-full text-base shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 transform border-2 border-yellow-500/20"
                   >
-                    START LISTING NOW! 🚀
+                    {copy.ctaLabel}
                   </Button>
                 </motion.div>
 

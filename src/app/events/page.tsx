@@ -17,6 +17,7 @@ import { getAuth, onAuthStateChanged, User } from 'firebase/auth';
 import PartnerAdRotator from '@/components/PartnerAdRotator';
 import { useSearchParams } from "next/navigation";
 import FreeCallout from "@/components/free-callout";
+import FreeCalloutDynamic from "@/components/FreeCalloutDynamic";
 import SimpleGallerySection from "@/components/SimpleGallerySection";
 import { defaultPageContent, fetchPageHeader, type PageHeader } from "@/lib/pageContent";
 
@@ -258,18 +259,7 @@ function EventsPageContent() {
                   </div>
                 )}
             </div>
-            <div className="mb-8">
-              <FreeCallout
-                title="List or Join Events — Always Free"
-                icon="sparkles"
-                messages={[
-                  "Join a community of enthusiasts — No fees, no subscription.",
-                  "Discover premium car events — Promote or find events for free.",
-                  "List your event or join one — Free of charge.",
-                  "Worldwide exposure. Zero fees.",
-                ]}
-              />
-            </div>
+            <FreeCalloutDynamic section="events" />
 
           <div className="bg-[#E0D8C1]/30 p-6 rounded-lg border border-[#E0D8C1]/50 mb-8">
             {/* Search Bar - Always Visible */}

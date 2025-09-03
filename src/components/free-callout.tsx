@@ -8,7 +8,7 @@ import { Gift, Megaphone, Sparkles } from "lucide-react";
 
 type FreeCalloutProps = {
   title?: string;
-  messages: string[];
+  messages?: string[];
   ctaHref?: string;
   ctaText?: string;
   className?: string;

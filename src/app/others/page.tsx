@@ -17,6 +17,7 @@ import PartnerAdRotator from '@/components/PartnerAdRotator';
 import { Badge } from "@/components/ui/badge";
 import { useSearchParams } from "next/navigation";
 import FreeCallout from "@/components/free-callout";
+import FreeCalloutDynamic from "@/components/FreeCalloutDynamic";
 import { defaultPageContent, fetchPageHeader, type PageHeader } from "@/lib/pageContent";
 
 interface ServiceCardProps {
@@ -313,19 +314,7 @@ function OthersPageContent() {
           )}
         </div>
 
-            <div className="mb-8">
-              <FreeCallout
-                title="Post Your Services — Always Free"
-                icon="sparkles"
-                messages={[
-                  "Posting all services is free.",
-                  "Reach car enthusiasts — No fees, no subscription.",
-                  "Register your service today at no cost.",
-                ]}
-                ctaHref="/others/register"
-                ctaText="Register Service"
-              />
-            </div>
+            <FreeCalloutDynamic section="others" />
 
           <div className="bg-[#E0D8C1]/30 p-6 rounded-lg border border-[#E0D8C1]/50 mb-8">
             <div className="grid grid-cols-1 md:grid-cols-5 gap-4">

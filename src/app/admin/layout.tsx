@@ -60,6 +60,8 @@ const navLinks = [
     { href: "/admin/newsletter", icon: Mail, label: "Newsletter" },
     { href: "/admin/newsletter-requests", icon: Mail, label: "Newsletter Requests" },
     { href: "/admin/payments", icon: CreditCard, label: "Payments" },
+    { href: "/admin/free-listings", icon: Settings, label: "Free Listings" },
+    { href: "/admin/forum", icon: Settings, label: "Forum Moderation" },
     { href: "/admin/homepage", icon: Settings, label: "Homepage Content" },
     { href: "/admin/section-galleries", icon: Settings, label: "Section Galleries" },
     { href: "/admin/page-content", icon: Settings, label: "Page Content" },

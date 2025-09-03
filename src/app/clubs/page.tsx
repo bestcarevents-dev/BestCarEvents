@@ -18,6 +18,7 @@ import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, Dialog
  
 import { useSearchParams } from "next/navigation";
 import FreeCallout from "@/components/free-callout";
+import FreeCalloutDynamic from "@/components/FreeCalloutDynamic";
 import SimpleGallerySection from "@/components/SimpleGallerySection";
 import { defaultPageContent, fetchPageHeader, type PageHeader } from "@/lib/pageContent";
 
@@ -292,18 +293,7 @@ function ClubsPageContent() {
               </div>
             )}
           </div>
-          <div className="mb-8">
-            <FreeCallout
-              title="Grow Your Club — Free to Register"
-              icon="sparkles"
-              messages={[
-                "Join a community of enthusiasts — No fees, no subscription.",
-                "Promote your car club — Get members for free.",
-                "Register your club or join one — Free of charge.",
-                "Worldwide exposure. Zero fees.",
-              ]}
-            />
-          </div>
+          <FreeCalloutDynamic section="clubs" />
 
           {/* Club Search Bar */}
           <div className="bg-[#E0D8C1]/30 p-6 rounded-lg border border-[#E0D8C1]/50 mb-8">
