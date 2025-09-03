@@ -11,6 +11,17 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuCheckboxItem,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
 
 export default function AdminInterestsPage() {
   const auth = getAuth(app);
@@ -43,6 +54,18 @@ export default function AdminInterestsPage() {
   const [userSearch, setUserSearch] = useState("");
   const [editId, setEditId] = useState<string | null>(null);
   const [editName, setEditName] = useState("");
+
+  // Users filters (marketing-friendly)
+  const [filterInterests, setFilterInterests] = useState<string[]>([]);
+  const [filterLn, setFilterLn] = useState<string[]>([]);
+  const [filterNationality, setFilterNationality] = useState<string>("");
+  const [filterFrom, setFilterFrom] = useState<string>("");
+  const [filterTo, setFilterTo] = useState<string>("");
+  const [flagHasPhoto, setFlagHasPhoto] = useState<boolean>(false);
+  const [flagHasInterests, setFlagHasInterests] = useState<boolean>(false);
+  const [flagHasLn, setFlagHasLn] = useState<boolean>(false);
+  const [filterEmailDomains, setFilterEmailDomains] = useState<string[]>([]);
+  const [filterWithinDays, setFilterWithinDays] = useState<number | null>(null);
 
   const fetchInterests = async () => {
     setLoading(true);
@@ -147,7 +170,7 @@ export default function AdminInterestsPage() {
       "id","email","firstName","lastName","nationality","createdAt","interests","interestIds","lifestyleNetworking","lifestyleNetworkingIds"
     ];
     const lines = [headers.join(",")];
-    for (const u of users) {
+    for (const u of filteredUsers) {
       const row = [
         u.id || "",
         u.email || "",
@@ -172,6 +195,23 @@ export default function AdminInterestsPage() {
     URL.revokeObjectURL(url);
   };
 
+  const copyEmails = async () => {
+    const emails = filteredUsers.map(u => u.email).filter(Boolean).join(", ");
+    try {
+      await navigator.clipboard.writeText(emails);
+      alert(`Copied ${filteredUsers.filter(u => u.email).length} emails to clipboard`);
+    } catch {
+      // Fallback
+      const ta = document.createElement('textarea');
+      ta.value = emails;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      alert(`Copied ${filteredUsers.filter(u => u.email).length} emails to clipboard`);
+    }
+  };
+
   const filteredUsers = users.filter(u => {
     const term = userSearch.trim().toLowerCase();
     if (!term) return true;
@@ -181,7 +221,56 @@ export default function AdminInterestsPage() {
       fullName.includes(term) ||
       (u.nationality || '').toLowerCase().includes(term)
     );
+  })
+  .filter(u => {
+    // Advanced filters
+    if (filterInterests.length > 0) {
+      const set = new Set(u.interests || []);
+      for (const i of filterInterests) if (!set.has(i)) return false;
+    }
+    if (filterLn.length > 0) {
+      const set = new Set(u.lifestyleNetworking || []);
+      for (const i of filterLn) if (!set.has(i)) return false;
+    }
+    if (filterNationality && (u.nationality || '') !== filterNationality) return false;
+    if (filterEmailDomains.length > 0) {
+      const domain = (u.email || '').split('@')[1] || '';
+      if (!filterEmailDomains.includes(domain)) return false;
+    }
+    if (flagHasPhoto && !u.photoURL) return false;
+    if (flagHasInterests && (!u.interests || (u.interests || []).length === 0)) return false;
+    if (flagHasLn && (!u.lifestyleNetworking || (u.lifestyleNetworking || []).length === 0)) return false;
+    if (filterFrom) {
+      const fromTs = new Date(filterFrom).getTime();
+      const created = u.createdAt?.seconds ? u.createdAt.seconds * 1000 : (u.createdAt ? new Date(u.createdAt).getTime() : NaN);
+      if (!isNaN(fromTs) && !isNaN(created) && created < fromTs) return false;
+    }
+    if (filterTo) {
+      const toTs = new Date(filterTo).getTime();
+      const created = u.createdAt?.seconds ? u.createdAt.seconds * 1000 : (u.createdAt ? new Date(u.createdAt).getTime() : NaN);
+      if (!isNaN(toTs) && !isNaN(created) && created > (toTs + 24*60*60*1000 - 1)) return false;
+    }
+    return true;
   });
+
+  const uniqueNationalities = Array.from(new Set(users.map(u => u.nationality).filter(Boolean) as string[])).sort();
+  const uniqueEmailDomains = Array.from(new Set(users.map(u => (u.email || '').split('@')[1]).filter(Boolean))).sort();
+
+  const setWithinPreset = (days: number | null) => {
+    setFilterWithinDays(days);
+    if (!days) {
+      setFilterFrom("");
+      setFilterTo("");
+      return;
+    }
+    const now = new Date();
+    const from = new Date(now.getTime() - days * 24 * 60 * 60 * 1000);
+    const to = now;
+    const toStr = to.toISOString().slice(0,10);
+    const fromStr = from.toISOString().slice(0,10);
+    setFilterFrom(fromStr);
+    setFilterTo(toStr);
+  };
 
   const formatDate = (ts: any) => {
     try {
@@ -301,9 +390,143 @@ export default function AdminInterestsPage() {
               <CardTitle>Users</CardTitle>
             </CardHeader>
             <CardContent className="grid gap-4">
-              <div className="grid gap-2 sm:grid-cols-[1fr_auto] items-center">
-                <Input placeholder="Search by name, email, nationality" value={userSearch} onChange={(e) => setUserSearch(e.target.value)} />
+              <div className="grid gap-2 sm:grid-cols-[1fr_auto_auto_auto] items-center">
+                <Input placeholder="Quick search: name, email, nationality" value={userSearch} onChange={(e) => setUserSearch(e.target.value)} />
+                <Button variant="outline" type="button" onClick={copyEmails}>Copy Emails</Button>
                 <Button type="button" onClick={exportUsersCsv}>Export CSV</Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="secondary">Filters</Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-80 max-h-[70vh] overflow-auto">
+                    <DropdownMenuLabel>Interests</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    {interests.map(it => (
+                      <DropdownMenuCheckboxItem
+                        key={`f-int-${it.id}`}
+                        checked={filterInterests.includes(it.name)}
+                        onCheckedChange={(v) => setFilterInterests(prev => v ? Array.from(new Set([...prev, it.name])) : prev.filter(x => x !== it.name))}
+                      >{it.name}</DropdownMenuCheckboxItem>
+                    ))}
+                    <DropdownMenuSeparator />
+                    <DropdownMenuLabel>Lifestyle & Networking</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    {lnItems.map(it => (
+                      <DropdownMenuCheckboxItem
+                        key={`f-ln-${it.id}`}
+                        checked={filterLn.includes(it.name)}
+                        onCheckedChange={(v) => setFilterLn(prev => v ? Array.from(new Set([...prev, it.name])) : prev.filter(x => x !== it.name))}
+                      >{it.name}{it.group ? ` (${it.group})` : ''}</DropdownMenuCheckboxItem>
+                    ))}
+                    <DropdownMenuSeparator />
+                    <DropdownMenuLabel>Nationality</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={() => setFilterNationality("")}>Any</DropdownMenuItem>
+                    {uniqueNationalities.map(n => (
+                      <DropdownMenuItem key={`f-n-${n}`} onClick={() => setFilterNationality(n)}>{n}</DropdownMenuItem>
+                    ))}
+                    <DropdownMenuSeparator />
+                    <DropdownMenuLabel>Email domain</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    {uniqueEmailDomains.map(d => (
+                      <DropdownMenuCheckboxItem
+                        key={`f-dom-${d}`}
+                        checked={filterEmailDomains.includes(d)}
+                        onCheckedChange={(v) => setFilterEmailDomains(prev => v ? Array.from(new Set([...prev, d])) : prev.filter(x => x !== d))}
+                      >{d}</DropdownMenuCheckboxItem>
+                    ))}
+                    <DropdownMenuSeparator />
+                    <DropdownMenuLabel>Quick flags</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuCheckboxItem checked={flagHasPhoto} onCheckedChange={v => setFlagHasPhoto(!!v)}>Has photo</DropdownMenuCheckboxItem>
+                    <DropdownMenuCheckboxItem checked={flagHasInterests} onCheckedChange={v => setFlagHasInterests(!!v)}>Has interests</DropdownMenuCheckboxItem>
+                    <DropdownMenuCheckboxItem checked={flagHasLn} onCheckedChange={v => setFlagHasLn(!!v)}>Has lifestyle</DropdownMenuCheckboxItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuLabel>Registered within</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={() => setWithinPreset(7)}>{filterWithinDays === 7 ? '✓ ' : ''}Last 7 days</DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setWithinPreset(30)}>{filterWithinDays === 30 ? '✓ ' : ''}Last 30 days</DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setWithinPreset(90)}>{filterWithinDays === 90 ? '✓ ' : ''}Last 90 days</DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setWithinPreset(null)}>{filterWithinDays === null ? '✓ ' : ''}Any time</DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+
+              {/* Marketing-friendly filter bar */}
+              <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" className="justify-between">Interests ({filterInterests.length})</Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="max-h-72 overflow-auto">
+                    <DropdownMenuLabel>Select interests</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    {interests.map(it => (
+                      <DropdownMenuCheckboxItem
+                        key={it.id}
+                        checked={filterInterests.includes(it.name)}
+                        onCheckedChange={(v) => {
+                          setFilterInterests(prev => v ? Array.from(new Set([...prev, it.name])) : prev.filter(x => x !== it.name));
+                        }}
+                      >{it.name}</DropdownMenuCheckboxItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" className="justify-between">Lifestyle & Networking ({filterLn.length})</Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="max-h-72 overflow-auto">
+                    <DropdownMenuLabel>Select categories</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    {lnItems.map(it => (
+                      <DropdownMenuCheckboxItem
+                        key={it.id}
+                        checked={filterLn.includes(it.name)}
+                        onCheckedChange={(v) => {
+                          setFilterLn(prev => v ? Array.from(new Set([...prev, it.name])) : prev.filter(x => x !== it.name));
+                        }}
+                      >{it.name}{it.group ? ` (${it.group})` : ''}</DropdownMenuCheckboxItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" className="justify-between">Nationality {filterNationality ? `(${filterNationality})` : ''}</Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="max-h-72 overflow-auto">
+                    <DropdownMenuLabel>Select nationality</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={() => setFilterNationality("")}>Any</DropdownMenuItem>
+                    {uniqueNationalities.map(n => (
+                      <DropdownMenuItem key={n} onClick={() => setFilterNationality(n)}>{n}</DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <Label className="text-xs">Registered from</Label>
+                    <Input type="date" value={filterFrom} onChange={(e) => setFilterFrom(e.target.value)} />
+                  </div>
+                  <div>
+                    <Label className="text-xs">to</Label>
+                    <Input type="date" value={filterTo} onChange={(e) => setFilterTo(e.target.value)} />
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-4">
+                  <label className="flex items-center gap-2 text-sm"><Checkbox checked={flagHasPhoto} onCheckedChange={v => setFlagHasPhoto(!!v)} />Has photo</label>
+                  <label className="flex items-center gap-2 text-sm"><Checkbox checked={flagHasInterests} onCheckedChange={v => setFlagHasInterests(!!v)} />Has interests</label>
+                  <label className="flex items-center gap-2 text-sm"><Checkbox checked={flagHasLn} onCheckedChange={v => setFlagHasLn(!!v)} />Has lifestyle</label>
+                </div>
+
+                <div className="flex items-end gap-2">
+                  <Button variant="outline" onClick={() => { setFilterInterests([]); setFilterLn([]); setFilterNationality(""); setFilterFrom(""); setFilterTo(""); setFlagHasPhoto(false); setFlagHasInterests(false); setFlagHasLn(false); setFilterEmailDomains([]); setFilterWithinDays(null); }}>Reset filters</Button>
+                  <div className="text-sm text-muted-foreground self-center">{filteredUsers.length} match</div>
+                </div>
               </div>
               {usersLoading ? (
                 <div className="text-sm text-muted-foreground">Loading users...</div>
@@ -363,7 +586,7 @@ export default function AdminInterestsPage() {
                   </Table>
                 </div>
               )}
-              <p className="text-xs text-muted-foreground">Tip: Use search to quickly find users. Badges show only the first 10 items for readability; export CSV to see all.</p>
+              <p className="text-xs text-muted-foreground">Tip: Use filters to segment your audience. Click Copy Emails to paste into your email tool. Export CSV for full data.</p>
             </CardContent>
           </Card>
         </TabsContent>
