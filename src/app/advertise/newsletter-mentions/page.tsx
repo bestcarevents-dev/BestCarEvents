@@ -20,7 +20,6 @@ import { Info, Plus, AlertTriangle, Upload, X } from "lucide-react";
 import { loadStripe } from "@stripe/stripe-js";
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 import { useToast } from "@/hooks/use-toast";
-import { Input } from "@/components/ui/input";
 import { usePricing } from "@/lib/usePricing";
 import { validateCoupon } from "@/lib/coupon";
 import { createNewsletterRequestNotification } from "@/lib/notifications";
