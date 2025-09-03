@@ -20,6 +20,9 @@ import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 import { Elements } from '@stripe/react-stripe-js';
 import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { useToast } from "@/hooks/use-toast";
+import { Input } from "@/components/ui/input";
+import { usePricing } from "@/lib/usePricing";
+import { validateCoupon } from "@/lib/coupon";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
 
 const adTypes = [
@@ -186,6 +189,10 @@ export default function AdvertisePage() {
   const [bannerProcessing, setBannerProcessing] = useState(false);
   const [bannerStripeClientSecret, setBannerStripeClientSecret] = useState<string | null>(null);
   const [bannerPaymentError, setBannerPaymentError] = useState<string | null>(null);
+  const { get: getPrice } = usePricing();
+  const [couponCode, setCouponCode] = useState<string>("");
+  const [couponInfo, setCouponInfo] = useState<string | null>(null);
+  const [couponDiscount, setCouponDiscount] = useState<number>(0);
   // Payment handlers
   const handleBannerPayment = async () => {
     setBannerProcessing(true);
@@ -193,10 +200,10 @@ export default function AdvertisePage() {
     let amount = 0;
     let description = '';
     if (bannerPaymentModal.type === 'homepage') {
-      amount = BANNER_PRICES.homepage;
+      amount = getPrice('banner.homepage', BANNER_PRICES.homepage);
       description = 'Homepage Banner Advertisement';
     } else if (bannerPaymentModal.type === 'category') {
-      amount = BANNER_PRICES.category;
+      amount = getPrice('banner.category', BANNER_PRICES.category);
       description = 'Category Page Banner Advertisement';
     }
     if (!amount || !description) {
@@ -204,16 +211,19 @@ export default function AdvertisePage() {
       setBannerProcessing(false);
       return;
     }
+    const finalAmount = Math.max(0, amount - (couponDiscount || 0));
     if (bannerSelectedPayment === 'stripe') {
       // Call API to create Stripe Checkout session
       const res = await fetch('/api/payment/stripe-checkout-session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
-          amount, 
+          amount: finalAmount, 
           description, 
           email: currentUser?.email,
-          returnUrl: window.location.href
+          returnUrl: window.location.href,
+          couponCode: couponCode || undefined,
+          category: 'banner'
         }),
       });
       const data = await res.json();
@@ -229,7 +239,7 @@ export default function AdvertisePage() {
       const res = await fetch('/api/payment/paypal-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ amount, description }),
+        body: JSON.stringify({ amount: finalAmount, description, couponCode: couponCode || undefined, category: 'banner' }),
       });
       const data = await res.json();
       if (data.orderId) {
@@ -245,10 +255,10 @@ export default function AdvertisePage() {
     let amount = 0;
     let description = '';
     if (bannerPaymentModal.type === 'homepage') {
-      amount = BANNER_PRICES.homepage;
+      amount = getPrice('banner.homepage', BANNER_PRICES.homepage);
       description = 'Homepage Banner Advertisement';
     } else if (bannerPaymentModal.type === 'category') {
-      amount = BANNER_PRICES.category;
+      amount = getPrice('banner.category', BANNER_PRICES.category);
       description = 'Category Page Banner Advertisement';
     }
     if (!amount || !description) {
@@ -257,7 +267,7 @@ export default function AdvertisePage() {
     const res = await fetch('/api/payment/paypal-order', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ amount, description }),
+      body: JSON.stringify({ amount: Math.max(0, amount - (couponDiscount || 0)), description, couponCode: couponCode || undefined, category: 'banner' }),
     });
     const orderData = await res.json();
     if (!orderData.orderId) {
@@ -773,6 +783,27 @@ export default function AdvertisePage() {
           {/* Step 1: Choose payment method */}
           {bannerPaymentStep === 'selectPayment' && (
             <div className="flex flex-col gap-4 py-4">
+              <div className="flex items-center gap-2">
+                <Input placeholder="Coupon code (optional)" value={couponCode} onChange={(e) => setCouponCode(e.target.value)} />
+                <Button
+                  variant="outline"
+                  onClick={async () => {
+                    let amt = 0;
+                    if (bannerPaymentModal.type === 'homepage') amt = getPrice('banner.homepage', BANNER_PRICES.homepage);
+                    if (bannerPaymentModal.type === 'category') amt = getPrice('banner.category', BANNER_PRICES.category);
+                    if (!couponCode || !amt) { setCouponInfo(''); setCouponDiscount(0); return; }
+                    const res = await validateCoupon(couponCode, 'banner', amt);
+                    if (res.valid) {
+                      setCouponDiscount(res.discount || 0);
+                      setCouponInfo(`Coupon applied: -€${(res.discount || 0).toFixed(2)}`);
+                    } else {
+                      setCouponDiscount(0);
+                      setCouponInfo(res.reason || 'Coupon not valid');
+                    }
+                  }}
+                >Apply</Button>
+              </div>
+              {couponInfo && <div className="text-sm text-muted-foreground">{couponInfo}</div>}
               <div className="flex items-center gap-4">
                 <input
                   type="radio"

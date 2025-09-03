@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { useEffect, useState } from "react";
 import { getFirestore, collection, getDocs, query, where, doc, getDoc, updateDoc } from "firebase/firestore";
 import { app } from "@/lib/firebase";
@@ -24,6 +25,8 @@ import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 import { Elements } from '@stripe/react-stripe-js';
 import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { useToast } from "@/hooks/use-toast";
+import { usePricing } from "@/lib/usePricing";
+import { validateCoupon } from "@/lib/coupon";
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
@@ -142,6 +145,10 @@ export default function PartnerDashboard() {
   const [paymentError, setPaymentError] = useState<string | null>(null);
   const [paymentStep, setPaymentStep] = useState<'select' | 'pay'>('select');
   const { toast } = useToast();
+  const { get: getPrice } = usePricing();
+  const [couponCode, setCouponCode] = useState<string>("");
+  const [couponInfo, setCouponInfo] = useState<string | null>(null);
+  const [couponDiscount, setCouponDiscount] = useState<number>(0);
 
   useEffect(() => {
     const auth = getAuth();
@@ -210,7 +217,7 @@ export default function PartnerDashboard() {
       for (const cat of AD_CATEGORIES) {
         const sub = cat.subcategories.find(s => s.key === paymentModal.key);
         if (sub) {
-          amount = getPriceEUR(sub.eurPrice);
+          amount = getPrice('listings.standard', getPriceEUR(sub.eurPrice));
           description = sub.name;
           break;
         }
@@ -218,7 +225,7 @@ export default function PartnerDashboard() {
     } else if (paymentModal?.type === 'package' && paymentModal.name) {
       const pkg = DASHBOARD_PACKAGES.find(p => p.name === paymentModal.name);
       if (pkg) {
-        amount = getPriceEUR(pkg.eurPrice);
+        amount = paymentModal.name === 'Gold Package' ? getPrice('dashboard.packages.Gold.eur', getPriceEUR(pkg.eurPrice)) : getPrice('dashboard.packages.Silver.eur', getPriceEUR(pkg.eurPrice));
         description = pkg.name;
       }
     }
@@ -227,16 +234,19 @@ export default function PartnerDashboard() {
       setProcessing(false);
       return;
     }
+    const finalAmount = Math.max(0, amount - (couponDiscount || 0));
     if (selectedPayment === 'stripe') {
       // Call API to create Stripe Checkout session
       const res = await fetch('/api/payment/stripe-checkout-session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
-          amount, 
+          amount: finalAmount, 
           description, 
           email: currentUser?.email,
-          returnUrl: window.location.href
+          returnUrl: window.location.href,
+          couponCode: couponCode || undefined,
+          category: paymentModal?.type === 'category' ? 'listings' : 'packages'
         }),
       });
       const data = await res.json();
@@ -252,7 +262,7 @@ export default function PartnerDashboard() {
       const res = await fetch('/api/payment/paypal-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ amount, description }),
+        body: JSON.stringify({ amount: finalAmount, description, couponCode: couponCode || undefined, category: paymentModal?.type === 'category' ? 'listings' : 'packages' }),
       });
       const data = await res.json();
       if (data.orderId) {
@@ -484,6 +494,37 @@ export default function PartnerDashboard() {
                                 />
                                 <Label htmlFor="pay-paypal">Pay with PayPal</Label>
                               </div>
+                              <div className="flex items-center gap-2">
+                                <Input placeholder="Coupon code (optional)" value={couponCode} onChange={(e) => setCouponCode(e.target.value)} />
+                                <Button
+                                  variant="outline"
+                                  onClick={async () => {
+                                    let amt = 0;
+                                    if (paymentModal?.type === 'category' && paymentModal.key && paymentModal.name) {
+                                      for (const cat of AD_CATEGORIES) {
+                                        const sub = cat.subcategories.find(s => s.key === paymentModal.key);
+                                        if (sub) {
+                                          amt = getPrice('listings.standard', getPriceEUR(sub.eurPrice));
+                                          break;
+                                        }
+                                      }
+                                    } else if (paymentModal?.type === 'package' && paymentModal.name) {
+                                      const pkg = DASHBOARD_PACKAGES.find(p => p.name === paymentModal.name);
+                                      if (pkg) amt = paymentModal.name === 'Gold Package' ? getPrice('dashboard.packages.Gold.eur', getPriceEUR(pkg.eurPrice)) : getPrice('dashboard.packages.Silver.eur', getPriceEUR(pkg.eurPrice));
+                                    }
+                                    if (!couponCode || !amt) { setCouponInfo(''); setCouponDiscount(0); return; }
+                                    const res = await validateCoupon(couponCode, paymentModal?.type === 'category' ? 'listings' : 'packages', amt);
+                                    if (res.valid) {
+                                      setCouponDiscount(res.discount || 0);
+                                      setCouponInfo(`Coupon applied: -€${(res.discount || 0).toFixed(2)}`);
+                                    } else {
+                                      setCouponDiscount(0);
+                                      setCouponInfo(res.reason || 'Coupon not valid');
+                                    }
+                                  }}
+                                >Apply</Button>
+                              </div>
+                              {couponInfo && <div className="text-sm text-muted-foreground">{couponInfo}</div>}
                               <Button 
                                 className="w-full mt-4" 
                                 onClick={async () => {

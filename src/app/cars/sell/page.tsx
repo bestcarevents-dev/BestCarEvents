@@ -175,6 +175,10 @@ export default function SellCarPage() {
   const [creditPaymentError, setCreditPaymentError] = useState<string | null>(null);
   // Track a listing type the user attempted to select without credit
   const [pendingListingSelection, setPendingListingSelection] = useState<string | null>(null);
+  const { get: getPrice } = usePricing();
+  const [couponCode, setCouponCode] = useState<string>("");
+  const [couponInfo, setCouponInfo] = useState<string | null>(null);
+  const [couponDiscount, setCouponDiscount] = useState<number>(0);
 
   const { toast } = useToast();
 
@@ -1022,13 +1026,18 @@ export default function SellCarPage() {
                   }
                   setCreditProcessing(true);
                   setCreditPaymentError(null);
-                  const amount = creditSelectedTier.priceEUR;
+                  let amount = creditSelectedTier.priceEUR;
+                  if (creditSelectedTier?.key === 'basicListing') amount = getPrice('cars.basic', amount);
+                  if (creditSelectedTier?.key === 'enhancedListing') amount = getPrice('cars.enhanced', amount);
+                  if (creditSelectedTier?.key === 'premiumListing') amount = getPrice('cars.premium', amount);
+                  if (creditSelectedTier?.key === 'exclusiveBanner') amount = getPrice('cars.exclusiveBanner', amount);
+                  const finalAmount = Math.max(0, amount - (couponDiscount || 0));
                   const description = creditSelectedTier.name;
                   if (creditSelectedPayment === 'stripe') {
                     const res = await fetch('/api/payment/stripe-checkout-session', {
                       method: 'POST',
                       headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify({ amount, description, email: currentUser?.email }),
+                      body: JSON.stringify({ amount: finalAmount, description, email: currentUser?.email, couponCode: couponCode || undefined, category: 'cars' }),
                     });
                     const data = await res.json();
                     if (data.clientSecret) {
@@ -1048,6 +1057,30 @@ export default function SellCarPage() {
                 Continue
               </Button>
               {creditPaymentError && <div className="text-red-500 text-sm mt-2">{creditPaymentError}</div>}
+              <div className="flex items-center gap-2">
+                <Input placeholder="Coupon code (optional)" value={couponCode} onChange={(e) => setCouponCode(e.target.value)} />
+                <Button
+                  variant="outline"
+                  onClick={async () => {
+                    if (!creditSelectedTier) return;
+                    let amt = creditSelectedTier.priceEUR;
+                    if (creditSelectedTier?.key === 'basicListing') amt = getPrice('cars.basic', amt);
+                    if (creditSelectedTier?.key === 'enhancedListing') amt = getPrice('cars.enhanced', amt);
+                    if (creditSelectedTier?.key === 'premiumListing') amt = getPrice('cars.premium', amt);
+                    if (creditSelectedTier?.key === 'exclusiveBanner') amt = getPrice('cars.exclusiveBanner', amt);
+                    if (!couponCode || !amt) { setCouponInfo(''); setCouponDiscount(0); return; }
+                    const res = await validateCoupon(couponCode, 'cars', amt);
+                    if (res.valid) {
+                      setCouponDiscount(res.discount || 0);
+                      setCouponInfo(`Coupon applied: -€${(res.discount || 0).toFixed(2)}`);
+                    } else {
+                      setCouponDiscount(0);
+                      setCouponInfo(res.reason || 'Coupon not valid');
+                    }
+                  }}
+                >Apply</Button>
+              </div>
+              {couponInfo && <div className="text-sm text-muted-foreground">{couponInfo}</div>}
             </div>
           )}
           {/* Step 3: Payment form */}

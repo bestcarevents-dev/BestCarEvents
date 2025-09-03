@@ -1,12 +1,44 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { db } from '@/lib/firebase';
+import { collection, getDocs, query, where } from 'firebase/firestore';
 
 export async function POST(req: NextRequest) {
-  const { amount, description } = await req.json();
+  const { amount, description, couponCode, category } = await req.json();
   if (!amount || !description) {
     return NextResponse.json({ error: 'Missing amount or description' }, { status: 400 });
   }
   
   try {
+    // Optional coupon validation on server side
+    let finalAmount = amount;
+    if (couponCode && category) {
+      try {
+        const couponsRef = collection(db, 'coupons');
+        const qy = query(couponsRef, where('code', '==', String(couponCode).toUpperCase()), where('active', '==', true));
+        const snap = await getDocs(qy);
+        if (!snap.empty) {
+          const c = snap.docs[0].data() as any;
+          const cats: string[] = Array.isArray(c.categories) ? c.categories : [];
+          const now = Date.now();
+          const ok = (!c.startsAt || now >= (c.startsAt.seconds ? c.startsAt.seconds * 1000 : Date.parse(c.startsAt)))
+            && (!c.expiresAt || now <= (c.expiresAt.seconds ? c.expiresAt.seconds * 1000 : Date.parse(c.expiresAt)))
+            && (typeof c.maxUses !== 'number' || (typeof c.used === 'number' ? c.used : 0) < c.maxUses)
+            && (typeof c.minimumAmount !== 'number' || amount >= c.minimumAmount)
+            && (cats.length === 0 || cats.includes(category));
+          if (ok) {
+            const type = c.type === 'percent' ? 'percent' : 'fixed';
+            const val = Number(c.value) || 0;
+            if (type === 'percent') {
+              const cap = Number(c.maxDiscount) || Infinity;
+              const discount = Math.min((amount * val) / 100, cap);
+              finalAmount = Math.max(0, amount - discount);
+            } else {
+              finalAmount = Math.max(0, amount - val);
+            }
+          }
+        }
+      } catch {}
+    }
     // Get PayPal access token
     const basicAuth = Buffer.from(`${process.env.PAYPAL_CLIENT_ID}:${process.env.PAYPAL_SECRET}`).toString('base64');
     const tokenRes = await fetch('https://api-m.sandbox.paypal.com/v1/oauth2/token', {
@@ -35,7 +67,7 @@ export async function POST(req: NextRequest) {
           {
             amount: {
               currency_code: 'EUR',
-              value: amount.toString(),
+              value: finalAmount.toString(),
             },
             description,
           },

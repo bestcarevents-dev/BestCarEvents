@@ -24,6 +24,9 @@ import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 import { Elements } from '@stripe/react-stripe-js';
 import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { useToast } from "@/hooks/use-toast";
+import { Input } from "@/components/ui/input";
+import { usePricing } from "@/lib/usePricing";
+import { validateCoupon } from "@/lib/coupon";
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
@@ -133,6 +136,10 @@ export default function CarsListingPage() {
   const [paymentError, setPaymentError] = useState<string | null>(null);
   const [paymentStep, setPaymentStep] = useState<'select' | 'pay'>('select');
   const { toast } = useToast();
+  const { get: getPrice } = usePricing();
+  const [couponCode, setCouponCode] = useState<string>("");
+  const [couponInfo, setCouponInfo] = useState<string | null>(null);
+  const [couponDiscount, setCouponDiscount] = useState<number>(0);
 
   useEffect(() => {
     const auth = getAuth();
@@ -200,7 +207,12 @@ export default function CarsListingPage() {
       return;
     }
 
-    const amount = paymentModal?.price || 0;
+    let amount = paymentModal?.price || 0;
+    // map by name for dynamic pricing
+    if (paymentModal?.name === 'Basic Listing') amount = getPrice('cars.basic', amount);
+    if (paymentModal?.name === 'Enhanced Listing') amount = getPrice('cars.enhanced', amount);
+    if (paymentModal?.name === 'Premium Listing') amount = getPrice('cars.premium', amount);
+    if (paymentModal?.name === 'Exclusive Banner Placement') amount = getPrice('cars.exclusiveBanner', amount);
     const description = paymentModal?.name || '';
 
     if (!amount || !description) {
@@ -209,16 +221,19 @@ export default function CarsListingPage() {
       return;
     }
 
+    const finalAmount = Math.max(0, amount - (couponDiscount || 0));
     if (selectedPayment === 'stripe') {
       // Call API to create Stripe Checkout session
       const res = await fetch('/api/payment/stripe-checkout-session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
-          amount, 
+          amount: finalAmount, 
           description, 
           email: currentUser?.email,
-          returnUrl: window.location.href
+          returnUrl: window.location.href,
+          couponCode: couponCode || undefined,
+          category: 'cars'
         }),
       });
       const data = await res.json();
@@ -234,7 +249,7 @@ export default function CarsListingPage() {
       const res = await fetch('/api/payment/paypal-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ amount, description }),
+        body: JSON.stringify({ amount: finalAmount, description, couponCode: couponCode || undefined, category: 'cars' }),
       });
       const data = await res.json();
       if (data.orderId) {
@@ -514,6 +529,29 @@ export default function CarsListingPage() {
                               />
                               <Label htmlFor="pay-paypal">Pay with PayPal</Label>
                             </div>
+                            <div className="flex items-center gap-2">
+                              <Input placeholder="Coupon code (optional)" value={couponCode} onChange={(e) => setCouponCode(e.target.value)} />
+                              <Button
+                                variant="outline"
+                                onClick={async () => {
+                                  let amt = paymentModal?.price || 0;
+                                  if (paymentModal?.name === 'Basic Listing') amt = getPrice('cars.basic', amt);
+                                  if (paymentModal?.name === 'Enhanced Listing') amt = getPrice('cars.enhanced', amt);
+                                  if (paymentModal?.name === 'Premium Listing') amt = getPrice('cars.premium', amt);
+                                  if (paymentModal?.name === 'Exclusive Banner Placement') amt = getPrice('cars.exclusiveBanner', amt);
+                                  if (!couponCode || !amt) { setCouponInfo(''); setCouponDiscount(0); return; }
+                                  const res = await validateCoupon(couponCode, 'cars', amt);
+                                  if (res.valid) {
+                                    setCouponDiscount(res.discount || 0);
+                                    setCouponInfo(`Coupon applied: -€${(res.discount || 0).toFixed(2)}`);
+                                  } else {
+                                    setCouponDiscount(0);
+                                    setCouponInfo(res.reason || 'Coupon not valid');
+                                  }
+                                }}
+                              >Apply</Button>
+                            </div>
+                            {couponInfo && <div className="text-sm text-muted-foreground">{couponInfo}</div>}
                             <Button 
                               className="w-full mt-4" 
                               onClick={async () => {

@@ -241,7 +241,7 @@ export default function OthersListingPage() {
     let amount = 0;
     let description = '';
     if (selectedFeatureType) {
-      amount = FEATURE_PRICES[selectedFeatureType];
+      amount = selectedFeatureType === 'featured' ? getPrice('listings.featured', FEATURE_PRICES.featured) : getPrice('listings.standard', FEATURE_PRICES.standard);
       description = selectedFeatureType === 'featured' ? 'Featured Listing' : 'Standard Listing';
     }
     if (!amount || !description) {
@@ -249,16 +249,19 @@ export default function OthersListingPage() {
       setProcessing(false);
       return;
     }
+    const finalAmount = Math.max(0, amount - (couponDiscount || 0));
     if (selectedPayment === 'stripe') {
       // Call API to create Stripe Checkout session
       const res = await fetch('/api/payment/stripe-checkout-session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
-          amount, 
+          amount: finalAmount, 
           description, 
           email: currentUser?.email,
-          returnUrl: window.location.href
+          returnUrl: window.location.href,
+          couponCode: couponCode || undefined,
+          category: 'listings'
         }),
       });
       const data = await res.json();
@@ -274,7 +277,7 @@ export default function OthersListingPage() {
       const res = await fetch('/api/payment/paypal-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ amount, description }),
+        body: JSON.stringify({ amount: finalAmount, description, couponCode: couponCode || undefined, category: 'listings' }),
       });
       const data = await res.json();
       if (data.orderId) {
@@ -426,6 +429,10 @@ export default function OthersListingPage() {
     featured: 4800, // EUR
     standard: 400, // EUR
   };
+  const { get: getPrice } = usePricing();
+  const [couponCode, setCouponCode] = useState<string>("");
+  const [couponInfo, setCouponInfo] = useState<string | null>(null);
+  const [couponDiscount, setCouponDiscount] = useState<number>(0);
 
   return (
     <div className="container mx-auto px-4 sm:px-6 py-4 sm:py-8">
@@ -577,6 +584,26 @@ export default function OthersListingPage() {
                     {/* Step 2: Choose payment method */}
                     {paymentStep === 'selectPayment' && (
                       <div className="flex flex-col gap-4 py-4">
+                        <div className="flex items-center gap-2">
+                          <Input placeholder="Coupon code (optional)" value={couponCode} onChange={(e) => setCouponCode(e.target.value)} />
+                          <Button
+                            variant="outline"
+                            onClick={async () => {
+                              let amt = 0;
+                              if (selectedFeatureType) amt = selectedFeatureType === 'featured' ? getPrice('listings.featured', FEATURE_PRICES.featured) : getPrice('listings.standard', FEATURE_PRICES.standard);
+                              if (!couponCode || !amt) { setCouponInfo(''); setCouponDiscount(0); return; }
+                              const res = await validateCoupon(couponCode, 'listings', amt);
+                              if (res.valid) {
+                                setCouponDiscount(res.discount || 0);
+                                setCouponInfo(`Coupon applied: -€${(res.discount || 0).toFixed(2)}`);
+                              } else {
+                                setCouponDiscount(0);
+                                setCouponInfo(res.reason || 'Coupon not valid');
+                              }
+                            }}
+                          >Apply</Button>
+                        </div>
+                        {couponInfo && <div className="text-sm text-muted-foreground">{couponInfo}</div>}
                         <div className="flex items-center gap-4">
                           <input
                             type="radio"

@@ -20,6 +20,9 @@ import { Info, Plus, AlertTriangle, Upload, X } from "lucide-react";
 import { loadStripe } from "@stripe/stripe-js";
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 import { useToast } from "@/hooks/use-toast";
+import { Input } from "@/components/ui/input";
+import { usePricing } from "@/lib/usePricing";
+import { validateCoupon } from "@/lib/coupon";
 import { createNewsletterRequestNotification } from "@/lib/notifications";
 
 interface NewsletterRequest {
@@ -79,6 +82,10 @@ export default function NewsletterMentionsPage() {
     premium: 600, // EUR
     standard: 400, // EUR
   };
+  const { get: getPrice } = usePricing();
+  const [couponCode, setCouponCode] = useState<string>("");
+  const [couponInfo, setCouponInfo] = useState<string | null>(null);
+  const [couponDiscount, setCouponDiscount] = useState<number>(0);
 
   useEffect(() => {
     const auth = getAuth();
@@ -268,24 +275,27 @@ export default function NewsletterMentionsPage() {
     let amount = 0;
     let description = '';
     if (selectedNewsletterType) {
-      amount = NEWSLETTER_PRICES[selectedNewsletterType];
-      description = selectedNewsletterType === 'premium' ? 'Premium Newsletter Mention' : 'Standard Newsletter Mention';
+      amount = selectedNewsletterType === 'premium' ? getPrice('newsletter.premium', NEWSLETTER_PRICES.premium) : getPrice('newsletter.standard', NEWSLETTER_PRICES.standard);
+      description = selectedNewsletterType === 'premium' ? 'Premium Mention' : 'Standard Mention';
     }
     if (!amount || !description) {
       setPaymentError('Invalid payment details.');
       setProcessing(false);
       return;
     }
+    const finalAmount = Math.max(0, amount - (couponDiscount || 0));
     if (selectedPayment === 'stripe') {
       // Call API to create Stripe Checkout session
       const res = await fetch('/api/payment/stripe-checkout-session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
-          amount, 
+          amount: finalAmount, 
           description, 
           email: currentUser?.email,
-          returnUrl: window.location.href
+          returnUrl: window.location.href,
+          couponCode: couponCode || undefined,
+          category: 'newsletter'
         }),
       });
       const data = await res.json();
@@ -301,7 +311,7 @@ export default function NewsletterMentionsPage() {
       const res = await fetch('/api/payment/paypal-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ amount, description }),
+        body: JSON.stringify({ amount: finalAmount, description, couponCode: couponCode || undefined, category: 'newsletter' }),
       });
       const data = await res.json();
       if (data.orderId) {
@@ -317,8 +327,8 @@ export default function NewsletterMentionsPage() {
     let amount = 0;
     let description = '';
     if (selectedNewsletterType) {
-      amount = NEWSLETTER_PRICES[selectedNewsletterType];
-      description = selectedNewsletterType === 'premium' ? 'Premium Newsletter Mention' : 'Standard Newsletter Mention';
+      amount = selectedNewsletterType === 'premium' ? getPrice('newsletter.premium', NEWSLETTER_PRICES.premium) : getPrice('newsletter.standard', NEWSLETTER_PRICES.standard);
+      description = selectedNewsletterType === 'premium' ? 'Premium Mention' : 'Standard Mention';
     }
     if (!amount || !description) {
       throw new Error('Invalid payment details');
@@ -499,6 +509,26 @@ export default function NewsletterMentionsPage() {
                   />
                   <Label htmlFor="pay-paypal">Pay with PayPal</Label>
                 </div>
+                <div className="flex items-center gap-2">
+                  <Input placeholder="Coupon code (optional)" value={couponCode} onChange={(e) => setCouponCode(e.target.value)} />
+                  <Button
+                    variant="outline"
+                    onClick={async () => {
+                      let amt = 0;
+                      if (selectedNewsletterType) amt = selectedNewsletterType === 'premium' ? getPrice('newsletter.premium', NEWSLETTER_PRICES.premium) : getPrice('newsletter.standard', NEWSLETTER_PRICES.standard);
+                      if (!couponCode || !amt) { setCouponInfo(''); setCouponDiscount(0); return; }
+                      const res = await validateCoupon(couponCode, 'newsletter', amt);
+                      if (res.valid) {
+                        setCouponDiscount(res.discount || 0);
+                        setCouponInfo(`Coupon applied: -€${(res.discount || 0).toFixed(2)}`);
+                      } else {
+                        setCouponDiscount(0);
+                        setCouponInfo(res.reason || 'Coupon not valid');
+                      }
+                    }}
+                  >Apply</Button>
+                </div>
+                {couponInfo && <div className="text-sm text-muted-foreground">{couponInfo}</div>}
                 <Button
                   className="w-full mt-4"
                   onClick={async () => {

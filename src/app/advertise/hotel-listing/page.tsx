@@ -32,6 +32,9 @@ import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 import { Elements } from '@stripe/react-stripe-js';
 import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { useToast } from "@/hooks/use-toast";
+import { Input } from "@/components/ui/input";
+import { usePricing } from "@/lib/usePricing";
+import { validateCoupon } from "@/lib/coupon";
 import HowItWorksModal from "@/components/HowItWorksModal";
 import { Badge } from "@/components/ui/badge";
 import HotelEditDialog from "@/components/edit/HotelEditDialog";
@@ -47,6 +50,10 @@ export default function HotelListingPage() {
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
+  const { get: getPrice } = usePricing();
+  const [couponCode, setCouponCode] = useState<string>("");
+  const [couponInfo, setCouponInfo] = useState<string | null>(null);
+  const [couponDiscount, setCouponDiscount] = useState<number>(0);
   const [editModal, setEditModal] = useState<{
     open: boolean;
     col: string;
@@ -264,7 +271,7 @@ export default function HotelListingPage() {
     let amount = 0;
     let description = '';
     if (selectedFeatureType) {
-      amount = FEATURE_PRICES[selectedFeatureType];
+      amount = selectedFeatureType === 'featured' ? getPrice('listings.featured', FEATURE_PRICES.featured) : getPrice('listings.standard', FEATURE_PRICES.standard);
       description = selectedFeatureType === 'featured' ? 'Featured Listing' : 'Standard Listing';
     }
     if (!amount || !description) {
@@ -272,16 +279,19 @@ export default function HotelListingPage() {
       setProcessing(false);
       return;
     }
+    const finalAmount = Math.max(0, amount - (couponDiscount || 0));
     if (selectedPayment === 'stripe') {
       // Call API to create Stripe Checkout session
       const res = await fetch('/api/payment/stripe-checkout-session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
-          amount, 
+          amount: finalAmount, 
           description, 
           email: currentUser?.email,
-          returnUrl: window.location.href
+          returnUrl: window.location.href,
+          couponCode: couponCode || undefined,
+          category: 'listings'
         }),
       });
       const data = await res.json();
@@ -297,7 +307,7 @@ export default function HotelListingPage() {
       const res = await fetch('/api/payment/paypal-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ amount, description }),
+        body: JSON.stringify({ amount: finalAmount, description, couponCode: couponCode || undefined, category: 'listings' }),
       });
       const data = await res.json();
       if (data.orderId) {
