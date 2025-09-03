@@ -34,6 +34,7 @@ import { Elements } from '@stripe/react-stripe-js';
 import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { useToast } from "@/hooks/use-toast";
 import { createCarRequestNotification } from "@/lib/notifications";
+import { usePricing } from "@/lib/usePricing";
 
 const carFeatures = ["Air Conditioning", "Power Steering", "Power Windows", "Sunroof/Moonroof", "Navigation System", "Bluetooth", "Backup Camera", "Leather Seats", "Heated Seats"] as const;
 

@@ -35,6 +35,7 @@ import { useToast } from "@/hooks/use-toast";
 import HowItWorksModal from "@/components/HowItWorksModal";
 import { Badge } from "@/components/ui/badge";
 import ServiceEditDialog from "@/components/edit/ServiceEditDialog";
+import { usePricing } from "@/lib/usePricing";
 
 export default function OthersListingPage() {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
