@@ -390,142 +390,82 @@ export default function AdminInterestsPage() {
               <CardTitle>Users</CardTitle>
             </CardHeader>
             <CardContent className="grid gap-4">
-              <div className="grid gap-2 sm:grid-cols-[1fr_auto_auto_auto] items-center">
+              <div className="grid gap-2 sm:grid-cols-[1fr_auto_auto] items-center">
                 <Input placeholder="Quick search: name, email, nationality" value={userSearch} onChange={(e) => setUserSearch(e.target.value)} />
                 <Button variant="outline" type="button" onClick={copyEmails}>Copy Emails</Button>
                 <Button type="button" onClick={exportUsersCsv}>Export CSV</Button>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="secondary">Filters</Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent className="w-80 max-h-[70vh] overflow-auto">
-                    <DropdownMenuLabel>Interests</DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    {interests.map(it => (
-                      <DropdownMenuCheckboxItem
-                        key={`f-int-${it.id}`}
-                        checked={filterInterests.includes(it.name)}
-                        onCheckedChange={(v) => setFilterInterests(prev => v ? Array.from(new Set([...prev, it.name])) : prev.filter(x => x !== it.name))}
-                      >{it.name}</DropdownMenuCheckboxItem>
-                    ))}
-                    <DropdownMenuSeparator />
-                    <DropdownMenuLabel>Lifestyle & Networking</DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    {lnItems.map(it => (
-                      <DropdownMenuCheckboxItem
-                        key={`f-ln-${it.id}`}
-                        checked={filterLn.includes(it.name)}
-                        onCheckedChange={(v) => setFilterLn(prev => v ? Array.from(new Set([...prev, it.name])) : prev.filter(x => x !== it.name))}
-                      >{it.name}{it.group ? ` (${it.group})` : ''}</DropdownMenuCheckboxItem>
-                    ))}
-                    <DropdownMenuSeparator />
-                    <DropdownMenuLabel>Nationality</DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={() => setFilterNationality("")}>Any</DropdownMenuItem>
-                    {uniqueNationalities.map(n => (
-                      <DropdownMenuItem key={`f-n-${n}`} onClick={() => setFilterNationality(n)}>{n}</DropdownMenuItem>
-                    ))}
-                    <DropdownMenuSeparator />
-                    <DropdownMenuLabel>Email domain</DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    {uniqueEmailDomains.map(d => (
-                      <DropdownMenuCheckboxItem
-                        key={`f-dom-${d}`}
-                        checked={filterEmailDomains.includes(d)}
-                        onCheckedChange={(v) => setFilterEmailDomains(prev => v ? Array.from(new Set([...prev, d])) : prev.filter(x => x !== d))}
-                      >{d}</DropdownMenuCheckboxItem>
-                    ))}
-                    <DropdownMenuSeparator />
-                    <DropdownMenuLabel>Quick flags</DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuCheckboxItem checked={flagHasPhoto} onCheckedChange={v => setFlagHasPhoto(!!v)}>Has photo</DropdownMenuCheckboxItem>
-                    <DropdownMenuCheckboxItem checked={flagHasInterests} onCheckedChange={v => setFlagHasInterests(!!v)}>Has interests</DropdownMenuCheckboxItem>
-                    <DropdownMenuCheckboxItem checked={flagHasLn} onCheckedChange={v => setFlagHasLn(!!v)}>Has lifestyle</DropdownMenuCheckboxItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuLabel>Registered within</DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={() => setWithinPreset(7)}>{filterWithinDays === 7 ? '✓ ' : ''}Last 7 days</DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setWithinPreset(30)}>{filterWithinDays === 30 ? '✓ ' : ''}Last 30 days</DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setWithinPreset(90)}>{filterWithinDays === 90 ? '✓ ' : ''}Last 90 days</DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setWithinPreset(null)}>{filterWithinDays === null ? '✓ ' : ''}Any time</DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
               </div>
 
-              {/* Marketing-friendly filter bar */}
-              <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="outline" className="justify-between">Interests ({filterInterests.length})</Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent className="max-h-72 overflow-auto">
-                    <DropdownMenuLabel>Select interests</DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    {interests.map(it => (
-                      <DropdownMenuCheckboxItem
-                        key={it.id}
-                        checked={filterInterests.includes(it.name)}
-                        onCheckedChange={(v) => {
-                          setFilterInterests(prev => v ? Array.from(new Set([...prev, it.name])) : prev.filter(x => x !== it.name));
-                        }}
-                      >{it.name}</DropdownMenuCheckboxItem>
-                    ))}
-                  </DropdownMenuContent>
-                </DropdownMenu>
-
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="outline" className="justify-between">Lifestyle & Networking ({filterLn.length})</Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent className="max-h-72 overflow-auto">
-                    <DropdownMenuLabel>Select categories</DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    {lnItems.map(it => (
-                      <DropdownMenuCheckboxItem
-                        key={it.id}
-                        checked={filterLn.includes(it.name)}
-                        onCheckedChange={(v) => {
-                          setFilterLn(prev => v ? Array.from(new Set([...prev, it.name])) : prev.filter(x => x !== it.name));
-                        }}
-                      >{it.name}{it.group ? ` (${it.group})` : ''}</DropdownMenuCheckboxItem>
-                    ))}
-                  </DropdownMenuContent>
-                </DropdownMenu>
-
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="outline" className="justify-between">Nationality {filterNationality ? `(${filterNationality})` : ''}</Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent className="max-h-72 overflow-auto">
-                    <DropdownMenuLabel>Select nationality</DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={() => setFilterNationality("")}>Any</DropdownMenuItem>
-                    {uniqueNationalities.map(n => (
-                      <DropdownMenuItem key={n} onClick={() => setFilterNationality(n)}>{n}</DropdownMenuItem>
-                    ))}
-                  </DropdownMenuContent>
-                </DropdownMenu>
-
-                <div className="grid grid-cols-2 gap-2">
-                  <div>
-                    <Label className="text-xs">Registered from</Label>
+              {/* Filter grid */}
+              <div className="grid gap-3 lg:grid-cols-12">
+                <div className="lg:col-span-3">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="outline" className="w-full justify-between">Interests ({filterInterests.length})</Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="max-h-72 overflow-auto">
+                      <DropdownMenuLabel>Select interests</DropdownMenuLabel>
+                      <DropdownMenuSeparator />
+                      {interests.map(it => (
+                        <DropdownMenuCheckboxItem
+                          key={it.id}
+                          checked={filterInterests.includes(it.name)}
+                          onCheckedChange={(v) => setFilterInterests(prev => v ? Array.from(new Set([...prev, it.name])) : prev.filter(x => x !== it.name))}
+                        >{it.name}</DropdownMenuCheckboxItem>
+                      ))}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+                <div className="lg:col-span-3">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="outline" className="w-full justify-between">Lifestyle & Networking ({filterLn.length})</Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="max-h-72 overflow-auto">
+                      <DropdownMenuLabel>Select categories</DropdownMenuLabel>
+                      <DropdownMenuSeparator />
+                      {lnItems.map(it => (
+                        <DropdownMenuCheckboxItem
+                          key={it.id}
+                          checked={filterLn.includes(it.name)}
+                          onCheckedChange={(v) => setFilterLn(prev => v ? Array.from(new Set([...prev, it.name])) : prev.filter(x => x !== it.name))}
+                        >{it.name}{it.group ? ` (${it.group})` : ''}</DropdownMenuCheckboxItem>
+                      ))}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+                <div className="lg:col-span-3">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="outline" className="w-full justify-between">Nationality {filterNationality ? `(${filterNationality})` : ''}</Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="max-h-72 overflow-auto">
+                      <DropdownMenuLabel>Select nationality</DropdownMenuLabel>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={() => setFilterNationality("")}>Any</DropdownMenuItem>
+                      {uniqueNationalities.map(n => (
+                        <DropdownMenuItem key={n} onClick={() => setFilterNationality(n)}>{n}</DropdownMenuItem>
+                      ))}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+                <div className="lg:col-span-3">
+                  <Label className="text-xs">Registered range</Label>
+                  <div className="flex gap-2">
                     <Input type="date" value={filterFrom} onChange={(e) => setFilterFrom(e.target.value)} />
-                  </div>
-                  <div>
-                    <Label className="text-xs">to</Label>
                     <Input type="date" value={filterTo} onChange={(e) => setFilterTo(e.target.value)} />
                   </div>
                 </div>
+              </div>
 
-                <div className="flex items-center gap-4">
-                  <label className="flex items-center gap-2 text-sm"><Checkbox checked={flagHasPhoto} onCheckedChange={v => setFlagHasPhoto(!!v)} />Has photo</label>
-                  <label className="flex items-center gap-2 text-sm"><Checkbox checked={flagHasInterests} onCheckedChange={v => setFlagHasInterests(!!v)} />Has interests</label>
-                  <label className="flex items-center gap-2 text-sm"><Checkbox checked={flagHasLn} onCheckedChange={v => setFlagHasLn(!!v)} />Has lifestyle</label>
-                </div>
-
-                <div className="flex items-end gap-2">
+              {/* Flags and actions */}
+              <div className="flex flex-wrap items-center gap-4">
+                <label className="flex items-center gap-2 text-sm"><Checkbox checked={flagHasPhoto} onCheckedChange={v => setFlagHasPhoto(!!v)} />Has photo</label>
+                <label className="flex items-center gap-2 text-sm"><Checkbox checked={flagHasInterests} onCheckedChange={v => setFlagHasInterests(!!v)} />Has interests</label>
+                <label className="flex items-center gap-2 text-sm"><Checkbox checked={flagHasLn} onCheckedChange={v => setFlagHasLn(!!v)} />Has lifestyle</label>
+                <div className="ml-auto flex items-center gap-2">
                   <Button variant="outline" onClick={() => { setFilterInterests([]); setFilterLn([]); setFilterNationality(""); setFilterFrom(""); setFilterTo(""); setFlagHasPhoto(false); setFlagHasInterests(false); setFlagHasLn(false); setFilterEmailDomains([]); setFilterWithinDays(null); }}>Reset filters</Button>
-                  <div className="text-sm text-muted-foreground self-center">{filteredUsers.length} match</div>
+                  <div className="text-sm text-muted-foreground self-center">{filteredUsers.length} match{filteredUsers.length === 1 ? '' : 'es'}</div>
                 </div>
               </div>
               {usersLoading ? (
