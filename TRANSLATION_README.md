@@ -1,55 +1,53 @@
-# Browser-Based Italian Translation Implementation
+# Server-Side Multilingual Translation via Google Cloud Translation v3
 
-This document explains how the Italian translation system has been implemented in the BestCarEvents website using **Google Translate's browser-based translation**.
+This document describes the server-side translation system that provides cached, glossary-correct translations for multiple locales (sv, da, ur, …) in Next.js. It translates on publish/update, never on first view, and stores results for fast retrieval.
 
 ## Overview
 
-The translation system uses:
-- **Google Translate Element** for automatic website translation
-- **React Context** for language state management
-- **Local storage** for language preference persistence
-- **Zero manual translation required** - translates entire website automatically
+The system uses:
+- Google Cloud Translation v3 (server-side) with optional glossary
+- Firestore-backed cache keyed by `sha256(text) + ':' + locale`
+- Webhook endpoint to translate content on publish/edit
+- i18n routes (`/en`, `/sv`, `/da`, `/ur`) with SEO-friendly `hreflang`
 
 ## How It Works
 
-### 1. Language Context (`src/contexts/LanguageContext.tsx`)
-- Manages the current language state (English/Italian)
-- Automatically loads Google Translate when Italian is selected
-- Removes Google Translate when switching back to English
-- Persists language preference in localStorage
-- Updates HTML lang attribute
+### 1) Translation Clients
+- `src/lib/translate/googleClient.ts` creates a single `TranslationServiceClient` using a service account JSON provided via `GOOGLE_APPLICATION_CREDENTIALS_JSON`.
+- Optional glossary configured via `GOOGLE_TRANSLATION_GLOSSARY_ID` and `GOOGLE_CLOUD_LOCATION`.
 
-### 2. Language Switcher
-- Located in the header with flag icons
-- UK flag: English (removes translation)
-- Italian flag: Italian (activates Google Translate)
-- Instant switching with no page reload
+### 2) Cache Keys
+- `src/lib/translate/cache.ts` computes `sha256(text)` and builds cache keys `{hash}:{locale}`.
+- Firestore collection `translations_cache` stores `{ value, updatedAt }` documents.
 
-### 3. Google Translate Integration
-- Uses Google Translate Element API (free)
-- Automatically translates ALL content on the website
-- No API keys required
-- Works with dynamic content
-- Maintains website functionality
+### 3) Batch Translation
+- `src/lib/translate/translator.ts` batches texts into ≤ 5000 characters per request.
+- Applies glossary when available.
+- Exponential backoff for rate limiting; logs character counts and request totals.
+
+### 4) Webhook: translate on publish
+- `POST /api/translate` accepts `{ sourceLocale, targetLocales, items: [{ id, text }] }`.
+- Immediately translates into all target locales and persists to cache.
+
+### 5) Serving localized routes
+- `next.config.ts` defines i18n locales. Use cached translations by key when rendering.
+- If a cache miss occurs, render default locale and call `ensureTranslationsAsync` to queue background translation.
 
 ## Features
 
 ### ✅ Implemented
-- [x] One-click language switching via header dropdown
-- [x] Automatic translation of entire website
-- [x] Language preference persistence
-- [x] HTML lang attribute updates
-- [x] No manual translation work required
-- [x] Works with all existing and future content
-- [x] Free to use (Google Translate Element)
-- [x] Responsive design maintained
+- [x] Server-side translations (no keys in the browser)
+- [x] Cache-first lookups; no duplicate API calls for identical text
+- [x] Batch translation with glossary support
+- [x] Webhook to translate on publish/edit
+- [x] i18n routes + hreflang helpers for SEO
+- [x] Background fallback on cache miss
 
-### 🔄 Automatic Translation
-- **Entire website** is translated automatically
-- **All pages** are translated without any code changes
-- **Dynamic content** is translated in real-time
-- **Future content** will be automatically translated
-- **No maintenance** required
+### 🔄 Operational Flow
+- Content publish/edit triggers the webhook.
+- Extract user-visible strings, call the webhook with all target locales.
+- Cache stores translations keyed by hash+locale.
+- Page render reads from cache; if missing, default locale rendered and async translate queued.
 
 ### 📱 Responsive Design
 - Language switcher works on both desktop and mobile
@@ -58,17 +56,46 @@ The translation system uses:
 
 ## Usage
 
-### For Users:
-1. Click the flag dropdown in the header
-2. Select "Italiano" to switch to Italian
-3. The entire website translates instantly
-4. Language preference is saved automatically
+### Environment Variables
+Add the following to `.env.local` (server-side only):
 
-### For Developers:
-- **No code changes needed** for new pages
-- **No translation files** to maintain
-- **No API keys** required
-- **Works automatically** with all content
+```
+GOOGLE_APPLICATION_CREDENTIALS_JSON={...service account JSON...}
+GOOGLE_CLOUD_PROJECT=titanium-link-466608-j7
+GOOGLE_CLOUD_LOCATION=us-central1
+GOOGLE_TRANSLATION_GLOSSARY_ID=bestcar-glossary   # optional
+
+# Firebase Admin (already used in project)
+FIREBASE_PROJECT_ID=
+FIREBASE_PRIVATE_KEY_ID=
+FIREBASE_PRIVATE_KEY=
+FIREBASE_CLIENT_EMAIL=
+FIREBASE_CLIENT_ID=
+FIREBASE_AUTH_URI=
+FIREBASE_TOKEN_URI=
+FIREBASE_AUTH_PROVIDER_X509_CERT_URL=
+FIREBASE_CLIENT_X509_CERT_URL=
+FIREBASE_UNIVERSE_DOMAIN=
+```
+
+### Webhook
+`POST /api/translate`
+
+Body:
+```json
+{
+  "sourceLocale": "en",
+  "targetLocales": ["sv", "da", "ur"],
+  "items": [
+    {"id": "title", "text": "Your premier destination for car events"},
+    {"id": "cta", "text": "Join now"}
+  ]
+}
+```
+
+### Rendering with cache
+- For each text block, compute `hash = sha256(text)` and lookup key `hash:locale` in Firestore.
+- If not present, render default locale; call `ensureTranslationsAsync([...], 'en', locale)`.
 
 ## File Structure
 
@@ -125,23 +152,21 @@ setLanguage('it'); // Loads Google Translate
 setLanguage('en'); // Removes Google Translate
 ```
 
-## Advantages Over Manual Translation
+## Advantages
 
-| Manual Translation | Browser Translation |
-|-------------------|-------------------|
-| ❌ Requires translating every page | ✅ Translates entire website automatically |
-| ❌ Need to maintain translation files | ✅ No files to maintain |
-| ❌ API costs for translation services | ✅ Completely free |
-| ❌ Manual work for new content | ✅ New content auto-translated |
-| ❌ Risk of missing translations | ✅ No missing content |
-| ❌ Time-consuming setup | ✅ Setup in minutes |
+| Concern | Solution |
+|--------|----------|
+| API cost | Cache-first; batch requests; only translate once per unique text |
+| Consistency | Glossary applied automatically |
+| Performance | Pre-translate on publish; fast cache reads at request time |
+| SEO | i18n routes, localized metadata, hreflang |
 
 ## Best Practices
 
-1. **Keep original content in English** - Google Translate works best with English source
-2. **Use semantic HTML** - Helps with translation accuracy
-3. **Test both languages** - Ensure layout works with translated text
-4. **Consider text length** - Italian text may be longer than English
+1. Keep canonical content in English for best MT quality
+2. Extract only user-visible strings for translation
+3. Avoid translating slugs more than once; store stable localized slugs
+4. Monitor logs to track character usage and cache hit rates
 
 ## Troubleshooting
 
@@ -156,17 +181,14 @@ setLanguage('en'); // Removes Google Translate
 2. Use responsive design principles
 3. Test with both languages during development
 
-### Performance concerns?
-1. Google Translate is loaded only when Italian is selected
-2. No performance impact when using English
-3. Translation is cached by Google Translate
+### Rate limits
+Automatic exponential backoff is implemented. If persistent, reduce batch size or throttle webhook triggers.
 
 ## Future Enhancements
 
-- [ ] Add more languages (Spanish, French, German)
-- [ ] Implement translation quality feedback
-- [ ] Add translation memory for better accuracy
-- [ ] Implement RTL language support
+- [ ] Add admin UI for glossary term management
+- [ ] Per-collection JSON bundles for CDN edge caching
+- [ ] Localized slug generation and storage
 
 ## Conclusion
 
