@@ -10,6 +10,7 @@ import { cn } from '@/lib/utils';
 import { Cinzel, Lora } from 'next/font/google';
 import AutoTranslate from '@/lib/translate/AutoTranslate';
 import { cookies } from 'next/headers';
+export const dynamic = 'force-dynamic';
 
 const fontHeadline = Cinzel({
   subsets: ['latin'],
