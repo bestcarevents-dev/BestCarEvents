@@ -1016,6 +1016,9 @@ export default function EventsListingPage() {
           rulesUrl: events.find((e) => e.id === editModal?.id)?.rulesUrl,
           sponsors: events.find((e) => e.id === editModal?.id)?.sponsors,
           websiteUrl: events.find((e) => e.id === editModal?.id)?.websiteUrl,
+          // Provide current image(s) to the dialog for preview
+          imageUrl: events.find((e) => e.id === editModal?.id)?.imageUrl || (events.find((e) => e.id === editModal?.id) as any)?.image,
+          imageUrls: (events.find((e) => e.id === editModal?.id) as any)?.imageUrls,
         }}
         onSaved={(update) => {
           setEvents((prev) => prev.map((e) => (e.id === editModal?.id ? { ...e, ...update } : e)));

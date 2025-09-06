@@ -25,6 +25,7 @@ type ClubEditDialogProps = {
     socialMediaLink?: string;
     contactName?: string;
     contactEmail?: string;
+    logoUrl?: string;
   };
   onSaved?: (update: Partial<ClubEditDialogProps["initial"]>) => void;
 };

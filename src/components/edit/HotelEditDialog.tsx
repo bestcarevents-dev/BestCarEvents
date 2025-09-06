@@ -26,6 +26,8 @@ type HotelEditDialogProps = {
     contactName?: string;
     contactEmail?: string;
     features?: string;
+    imageUrl?: string;
+    imageUrls?: string[];
   };
   onSaved?: (update: Partial<HotelEditDialogProps["initial"]>) => void;
 };

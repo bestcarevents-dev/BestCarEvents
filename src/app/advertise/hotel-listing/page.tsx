@@ -947,6 +947,9 @@ export default function HotelListingPage() {
           contactName: hotels.find((h) => h.id === editModal?.id)?.contactName,
           contactEmail: hotels.find((h) => h.id === editModal?.id)?.contactEmail,
           features: hotels.find((h) => h.id === editModal?.id)?.features,
+          // Provide current image(s) for preview
+          imageUrl: (hotels.find((h) => h.id === editModal?.id) as any)?.imageUrl,
+          imageUrls: (hotels.find((h) => h.id === editModal?.id) as any)?.imageUrls,
         }}
         onSaved={(update) => {
           setHotels((prev) => prev.map((h) => (h.id === editModal?.id ? { ...h, ...update } : h)));

@@ -958,6 +958,8 @@ export default function ClubListingPage() {
           socialMediaLink: clubs.find((c) => c.id === editModal?.id)?.socialMediaLink,
           contactName: clubs.find((c) => c.id === editModal?.id)?.contactName,
           contactEmail: clubs.find((c) => c.id === editModal?.id)?.contactEmail,
+          // Provide current image for preview
+          logoUrl: (clubs.find((c) => c.id === editModal?.id) as any)?.logoUrl,
         }}
         onSaved={(update) => {
           setClubs((prev) => prev.map((c) => (c.id === editModal?.id ? { ...c, ...update } : c)));

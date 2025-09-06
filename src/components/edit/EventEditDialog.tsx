@@ -29,6 +29,8 @@ type EventEditDialogProps = {
     rulesUrl?: string;
     sponsors?: string;
     websiteUrl?: string;
+    imageUrl?: string;
+    imageUrls?: string[];
   };
   onSaved?: (update: Partial<EventEditDialogProps["initial"]>) => void;
 };
