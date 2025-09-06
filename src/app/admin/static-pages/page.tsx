@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { fetchAllStaticPages, saveStaticPage } from "@/lib/staticPages";
 import type { StaticPageKey } from "@/types/staticPages";
+import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "firebase/storage";
 
 type EditorState = Record<StaticPageKey, ReturnType<typeof createDefaultState>>;
 
@@ -29,6 +30,8 @@ export default function AdminStaticPages() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState<StaticPageKey | null>(null);
   const [state, setState] = useState<EditorState>({ about: createDefaultState(), contact: createDefaultState() });
+  const [uploading, setUploading] = useState<Record<string, boolean>>({});
+  const storage = getStorage(app);
 
   useEffect(() => {
     const auth = getAuth(app);
@@ -88,6 +91,27 @@ export default function AdminStaticPages() {
     }
   };
 
+  const handleUpload = async (pageKey: StaticPageKey, idx: number, file?: File | null) => {
+    if (!file) return;
+    const key = `${pageKey}-${idx}`;
+    setUploading((u) => ({ ...u, [key]: true }));
+    try {
+      const path = `static-pages/${pageKey}/${Date.now()}_${file.name}`;
+      const objRef = storageRef(storage, path);
+      await uploadBytes(objRef, file);
+      const url = await getDownloadURL(objRef);
+      setState((prev) => {
+        const copy = { ...prev } as EditorState;
+        const images = [...copy[pageKey].images];
+        images[idx] = { ...images[idx], url };
+        copy[pageKey] = { ...copy[pageKey], images } as any;
+        return copy;
+      });
+    } finally {
+      setUploading((u) => ({ ...u, [key]: false }));
+    }
+  };
+
   if (!isAuthed) {
     return (
       <div className="container mx-auto py-12">
@@ -108,7 +132,7 @@ export default function AdminStaticPages() {
     <div className="space-y-3">
       <Label>Images</Label>
       {state[key].images.map((img, idx) => (
-        <div key={idx} className="grid grid-cols-1 md:grid-cols-6 gap-2 items-center">
+        <div key={idx} className="grid grid-cols-1 md:grid-cols-7 gap-2 items-center">
           <Input
             placeholder="Image URL"
             className="md:col-span-4"
@@ -137,18 +161,35 @@ export default function AdminStaticPages() {
               })
             }
           />
-          <Button
-            variant="destructive"
-            onClick={() =>
-              setState((prev) => {
-                const copy = { ...prev };
-                copy[key].images = copy[key].images.filter((_, i) => i !== idx);
-                return { ...copy };
-              })
-            }
-          >
-            Remove
-          </Button>
+          <div className="flex gap-2">
+            <input
+              type="file"
+              id={`file-${key}-${idx}`}
+              className="hidden"
+              accept="image/*"
+              onChange={(e) => handleUpload(key, idx, e.target.files?.[0] || null)}
+            />
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={() => document.getElementById(`file-${key}-${idx}`)?.click()}
+              disabled={!!uploading[`${key}-${idx}`]}
+            >
+              {uploading[`${key}-${idx}`] ? "Uploading..." : "Upload"}
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={() =>
+                setState((prev) => {
+                  const copy = { ...prev };
+                  copy[key].images = copy[key].images.filter((_, i) => i !== idx);
+                  return { ...copy };
+                })
+              }
+            >
+              Remove
+            </Button>
+          </div>
         </div>
       ))}
       <Button
@@ -158,6 +199,16 @@ export default function AdminStaticPages() {
         }
       >
         Add Image
+      </Button>
+      <Button
+        type="button"
+        onClick={() => {
+          setState((prev) => ({ ...prev, [key]: { ...prev[key], images: [...prev[key].images, { url: "", alt: "" }] } }));
+          const newIdx = state[key].images.length;
+          requestAnimationFrame(() => document.getElementById(`file-${key}-${newIdx}`)?.click());
+        }}
+      >
+        Upload New Image
       </Button>
     </div>
   );
