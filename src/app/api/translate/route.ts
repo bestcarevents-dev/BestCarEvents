@@ -1,4 +1,7 @@
 import {NextRequest, NextResponse} from 'next/server';
+
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
 import {translateBatch} from '@/lib/translate/translator';
 import {computeStableHash, cacheKeyFrom, cache as cacheProvider} from '@/lib/translate/cache';
 
@@ -39,6 +42,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ok: true, results});
   } catch (err: any) {
+    console.error('POST /api/translate error:', err);
     return NextResponse.json({error: err?.message || 'Internal error'}, {status: 500});
   }
 }
