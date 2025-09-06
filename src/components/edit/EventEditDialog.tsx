@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { app } from "@/lib/firebase";
 import { getFirestore, doc, updateDoc, getDoc } from "firebase/firestore";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -50,6 +51,8 @@ export default function EventEditDialog({ open, onOpenChange, documentId, initia
   const [sponsors, setSponsors] = useState<string>(initial.sponsors || "");
   const [websiteUrl, setWebsiteUrl] = useState<string>(initial.websiteUrl || "");
   const [saving, setSaving] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const { toast } = useToast();
 
   // Sync all fields when opening or switching document
@@ -69,6 +72,8 @@ export default function EventEditDialog({ open, onOpenChange, documentId, initia
       setRulesUrl(initial.rulesUrl || "");
       setSponsors(initial.sponsors || "");
       setWebsiteUrl(initial.websiteUrl || "");
+      setSelectedImage(null);
+      setPreviewUrl(null);
     }
   }, [open, documentId, initial]);
 
@@ -94,10 +99,7 @@ export default function EventEditDialog({ open, onOpenChange, documentId, initia
     if (rulesUrl.trim() !== (initial.rulesUrl || "")) payload.rulesUrl = rulesUrl.trim();
     if (sponsors.trim() !== (initial.sponsors || "")) payload.sponsors = sponsors.trim();
     if (websiteUrl.trim() !== (initial.websiteUrl || "")) payload.websiteUrl = websiteUrl.trim();
-    if (Object.keys(payload).length === 0) {
-      toast({ title: "No changes", description: "Nothing to update.", variant: "destructive" });
-      return;
-    }
+    const hasFieldChanges = Object.keys(payload).length > 0;
     try {
       setSaving(true);
       const db = getFirestore(app);
@@ -105,6 +107,22 @@ export default function EventEditDialog({ open, onOpenChange, documentId, initia
       const snap = await getDoc(ref);
       if (!snap.exists()) {
         toast({ title: "Not found", description: "This event no longer exists.", variant: "destructive" });
+        return;
+      }
+      if (selectedImage) {
+        const storage = getStorage(app);
+        const storageRef = ref(storage, `events/${documentId}/${Date.now()}_${selectedImage.name}`);
+        await uploadBytes(storageRef, selectedImage);
+        const url = await getDownloadURL(storageRef);
+        // Persist under imageUrl for existing UI and add to array if present
+        const data = snap.data() as any;
+        payload.imageUrl = url;
+        if (Array.isArray(data?.imageUrls)) {
+          payload.imageUrls = [url, ...data.imageUrls].slice(0, 10);
+        }
+      }
+      if (!hasFieldChanges && !selectedImage) {
+        toast({ title: "No changes", description: "Nothing to update.", variant: "destructive" });
         return;
       }
       await updateDoc(ref, payload);
@@ -126,6 +144,32 @@ export default function EventEditDialog({ open, onOpenChange, documentId, initia
           <DialogDescription className="text-muted-foreground">Update basic details only.</DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
+          <div className="space-y-2">
+            <Label className="text-foreground">Event image</Label>
+            <div className="flex items-center gap-4">
+              <div className="w-28 h-20 rounded-md overflow-hidden border bg-muted/40 flex items-center justify-center">
+                {previewUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={previewUrl} alt="Preview" className="object-cover w-full h-full" />
+                ) : (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={(initial as any)?.imageUrl || "/placeholder.jpg"} alt="Current" className="object-cover w-full h-full" />
+                )}
+              </div>
+              <div>
+                <Input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0] || null;
+                    setSelectedImage(file);
+                    setPreviewUrl(file ? URL.createObjectURL(file) : null);
+                  }}
+                />
+                <p className="text-xs text-muted-foreground mt-1">Upload a new image. JPG/PNG, up to 5MB.</p>
+              </div>
+            </div>
+          </div>
           <div className="space-y-1">
             <Label htmlFor="eventName" className="text-foreground">Event name</Label>
             <Input id="eventName" value={eventName} onChange={(e) => setEventName(e.target.value)} placeholder="e.g. Cars & Coffee" className="text-foreground" />

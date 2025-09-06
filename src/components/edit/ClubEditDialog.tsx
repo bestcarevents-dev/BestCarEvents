@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { app } from "@/lib/firebase";
 import { getFirestore, doc, updateDoc, getDoc } from "firebase/firestore";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -40,6 +41,8 @@ export default function ClubEditDialog({ open, onOpenChange, documentId, initial
   const [contactName, setContactName] = useState<string>(initial.contactName || "");
   const [contactEmail, setContactEmail] = useState<string>(initial.contactEmail || "");
   const [saving, setSaving] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const { toast } = useToast();
 
   // Sync values on open or when switching doc
@@ -55,6 +58,8 @@ export default function ClubEditDialog({ open, onOpenChange, documentId, initial
       setSocialMediaLink(initial.socialMediaLink || "");
       setContactName(initial.contactName || "");
       setContactEmail(initial.contactEmail || "");
+      setSelectedImage(null);
+      setPreviewUrl(null);
     }
   }, [open, documentId, initial]);
 
@@ -70,10 +75,7 @@ export default function ClubEditDialog({ open, onOpenChange, documentId, initial
     if (socialMediaLink.trim() !== (initial.socialMediaLink || "")) payload.socialMediaLink = socialMediaLink.trim();
     if (contactName.trim() !== (initial.contactName || "")) payload.contactName = contactName.trim();
     if (contactEmail.trim() !== (initial.contactEmail || "")) payload.contactEmail = contactEmail.trim();
-    if (Object.keys(payload).length === 0) {
-      toast({ title: "No changes", description: "Nothing to update.", variant: "destructive" });
-      return;
-    }
+    const hasFieldChanges = Object.keys(payload).length > 0;
     try {
       setSaving(true);
       const db = getFirestore(app);
@@ -81,6 +83,18 @@ export default function ClubEditDialog({ open, onOpenChange, documentId, initial
       const snap = await getDoc(ref);
       if (!snap.exists()) {
         toast({ title: "Not found", description: "This club no longer exists.", variant: "destructive" });
+        return;
+      }
+      // If a new image is selected, upload to storage and include in payload
+      if (selectedImage) {
+        const storage = getStorage(app);
+        const storageRef = ref(storage, `clubs/${documentId}/${Date.now()}_${selectedImage.name}`);
+        await uploadBytes(storageRef, selectedImage);
+        const url = await getDownloadURL(storageRef);
+        payload.logoUrl = url;
+      }
+      if (!hasFieldChanges && !selectedImage) {
+        toast({ title: "No changes", description: "Nothing to update.", variant: "destructive" });
         return;
       }
       await updateDoc(ref, payload);
@@ -102,6 +116,32 @@ export default function ClubEditDialog({ open, onOpenChange, documentId, initial
           <DialogDescription className="text-muted-foreground">Update basic details only.</DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
+          <div className="space-y-2">
+            <Label className="text-foreground">Club logo</Label>
+            <div className="flex items-center gap-4">
+              <div className="w-24 h-24 rounded-md overflow-hidden border bg-muted/40 flex items-center justify-center">
+                {previewUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={previewUrl} alt="Preview" className="object-cover w-full h-full" />
+                ) : (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={(initial as any)?.logoUrl || "/placeholder.jpg"} alt="Current" className="object-cover w-full h-full" />
+                )}
+              </div>
+              <div>
+                <Input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0] || null;
+                    setSelectedImage(file);
+                    setPreviewUrl(file ? URL.createObjectURL(file) : null);
+                  }}
+                />
+                <p className="text-xs text-muted-foreground mt-1">Upload a new logo. JPG/PNG, up to 5MB.</p>
+              </div>
+            </div>
+          </div>
           <div className="space-y-1">
             <Label htmlFor="clubName" className="text-foreground">Club name</Label>
             <Input id="clubName" value={clubName} onChange={(e) => setClubName(e.target.value)} placeholder="e.g. Classic Riders Club" className="text-foreground" />

@@ -10,10 +10,23 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import Image from "next/image";
+import { getFirestore, doc, getDoc } from "firebase/firestore";
 import { ShieldAlert } from "lucide-react";
 
 export default function RegisterPage() {
   const [email, setEmail] = useState("");
+  const [bgUrl, setBgUrl] = useState<string | null>(null);
+  useEffect(() => {
+    (async () => {
+      try {
+        const db = getFirestore(app);
+        const snap = await getDoc(doc(db, "settings", "authImages"));
+        if (snap.exists()) {
+          setBgUrl((snap.data() as any)?.signupImage || null);
+        }
+      } catch {}
+    })();
+  }, []);
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -168,7 +181,7 @@ export default function RegisterPage() {
       </div>
       <div className="relative flex-1 hidden w-full h-full lg:block">
         <Image
-          src="https://images.unsplash.com/photo-1553440569-bcc63803a83d?q=80&w=2700&auto=format&fit=crop"
+          src={bgUrl || "https://images.unsplash.com/photo-1553440569-bcc63803a83d?q=80&w=2700&auto=format&fit=crop"}
           alt="Sleek black sports car interior"
           layout="fill"
           objectFit="cover"

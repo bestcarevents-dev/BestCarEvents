@@ -2116,6 +2116,7 @@ const FeaturedOtherServicesSection = ({ copy }: { copy: NonNullable<HomepageCont
 export default function Home() {
   const [copy, setCopy] = useState<HomepageContent>(defaultHomepageContent);
   const videoRef = useRef<HTMLVideoElement | null>(null);
+  const [isMuted, setIsMuted] = useState(true);
 
   useEffect(() => {
     (async () => {
@@ -2137,6 +2138,12 @@ export default function Home() {
     };
     attemptPlay();
     const onInteract = () => {
+      const el = videoRef.current;
+      if (el) {
+        // Unmute on first user gesture to allow audio playback
+        el.muted = false;
+        setIsMuted(false);
+      }
       attemptPlay();
       document.removeEventListener('click', onInteract);
       document.removeEventListener('touchstart', onInteract);
@@ -2161,11 +2168,27 @@ export default function Home() {
           className="absolute inset-0 h-full w-full object-cover"
           playsInline
           autoPlay
-          muted
+          muted={isMuted}
           loop
           preload="auto"
           poster="/video_fall.jpg"
         />
+        {/* Mute/Unmute control */}
+        <button
+          type="button"
+          aria-label={isMuted ? 'Unmute background video' : 'Mute background video'}
+          onClick={() => {
+            const el = videoRef.current;
+            if (!el) return;
+            const next = !isMuted;
+            el.muted = next;
+            setIsMuted(next);
+            el.play().catch(() => {});
+          }}
+          className="absolute bottom-6 right-6 z-20 rounded-full bg-black/50 hover:bg-black/70 text-white px-3 py-2 backdrop-blur shadow-md"
+        >
+          {isMuted ? 'Unmute' : 'Mute'}
+        </button>
         {/* Luxury text overlay in the lower third */}
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent" />

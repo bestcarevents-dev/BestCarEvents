@@ -67,6 +67,7 @@ const navLinks = [
     { href: "/admin/homepage", icon: Settings, label: "Homepage Content" },
     { href: "/admin/section-galleries", icon: Settings, label: "Section Galleries" },
     { href: "/admin/page-content", icon: Settings, label: "Page Content" },
+    { href: "/admin/auth-images", icon: Settings, label: "Auth Images" },
     { href: "/admin/interests", icon: Settings, label: "Interests" },
     { href: "/admin/settings", icon: Settings, label: "Settings" },
 ];

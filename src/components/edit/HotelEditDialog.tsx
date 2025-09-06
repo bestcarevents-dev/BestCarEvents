@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { app } from "@/lib/firebase";
 import { getFirestore, doc, updateDoc, getDoc } from "firebase/firestore";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -42,6 +43,8 @@ export default function HotelEditDialog({ open, onOpenChange, documentId, initia
   const [contactEmail, setContactEmail] = useState<string>(initial.contactEmail || "");
   const [features, setFeatures] = useState<string>(initial.features || "");
   const [saving, setSaving] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const { toast } = useToast();
 
   // Ensure values are refreshed when opening
@@ -62,6 +65,8 @@ export default function HotelEditDialog({ open, onOpenChange, documentId, initia
         ? ((initial as any).features as string[]).join(", ")
         : initial.features || "";
       setFeatures(feat);
+      setSelectedImage(null);
+      setPreviewUrl(null);
     }
   }, [open, documentId, initial]);
 
@@ -78,10 +83,7 @@ export default function HotelEditDialog({ open, onOpenChange, documentId, initia
     if (contactName.trim() !== (initial.contactName || "")) payload.contactName = contactName.trim();
     if (contactEmail.trim() !== (initial.contactEmail || "")) payload.contactEmail = contactEmail.trim();
     if (features.trim() !== (initial.features || "")) payload.features = features.split(",").map(s => s.trim()).filter(Boolean);
-    if (Object.keys(payload).length === 0) {
-      toast({ title: "No changes", description: "Nothing to update.", variant: "destructive" });
-      return;
-    }
+    const hasFieldChanges = Object.keys(payload).length > 0;
     try {
       setSaving(true);
       const db = getFirestore(app);
@@ -89,6 +91,21 @@ export default function HotelEditDialog({ open, onOpenChange, documentId, initia
       const snap = await getDoc(ref);
       if (!snap.exists()) {
         toast({ title: "Not found", description: "This hotel no longer exists.", variant: "destructive" });
+        return;
+      }
+      if (selectedImage) {
+        const storage = getStorage(app);
+        const storageRef = ref(storage, `hotels/${documentId}/${Date.now()}_${selectedImage.name}`);
+        await uploadBytes(storageRef, selectedImage);
+        const url = await getDownloadURL(storageRef);
+        // Prefer multiple images field if exists; otherwise use imageUrl
+        payload.imageUrls = Array.isArray((snap.data() as any)?.imageUrls)
+          ? [url, ...((snap.data() as any).imageUrls as string[])].slice(0, 10)
+          : [url];
+        payload.imageUrl = url;
+      }
+      if (!hasFieldChanges && !selectedImage) {
+        toast({ title: "No changes", description: "Nothing to update.", variant: "destructive" });
         return;
       }
       await updateDoc(ref, payload);
@@ -110,6 +127,32 @@ export default function HotelEditDialog({ open, onOpenChange, documentId, initia
           <DialogDescription className="text-muted-foreground">Update basic details only.</DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
+          <div className="space-y-2">
+            <Label className="text-foreground">Main image</Label>
+            <div className="flex items-center gap-4">
+              <div className="w-28 h-20 rounded-md overflow-hidden border bg-muted/40 flex items-center justify-center">
+                {previewUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={previewUrl} alt="Preview" className="object-cover w-full h-full" />
+                ) : (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={(initial as any)?.imageUrl || (Array.isArray((initial as any)?.imageUrls) ? (initial as any).imageUrls[0] : "/placeholder.jpg")} alt="Current" className="object-cover w-full h-full" />
+                )}
+              </div>
+              <div>
+                <Input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0] || null;
+                    setSelectedImage(file);
+                    setPreviewUrl(file ? URL.createObjectURL(file) : null);
+                  }}
+                />
+                <p className="text-xs text-muted-foreground mt-1">Upload a new image. JPG/PNG, up to 5MB.</p>
+              </div>
+            </div>
+          </div>
           <div className="space-y-1">
             <Label htmlFor="hotelName" className="text-foreground">Hotel name</Label>
             <Input id="hotelName" value={hotelName} onChange={(e) => setHotelName(e.target.value)} placeholder="e.g. Grand Resort" className="text-foreground" />

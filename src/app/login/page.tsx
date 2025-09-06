@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import Image from "next/image";
+import { getFirestore, doc, getDoc } from "firebase/firestore";
 import { ShieldAlert } from "lucide-react";
 
 export default function LoginPage() {
@@ -17,6 +18,19 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
   const auth = getAuth(app);
+  const [bgUrl, setBgUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const db = getFirestore(app);
+        const snap = await getDoc(doc(db, "settings", "authImages"));
+        if (snap.exists()) {
+          setBgUrl((snap.data() as any)?.loginImage || null);
+        }
+      } catch {}
+    })();
+  }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,7 +51,7 @@ export default function LoginPage() {
     <div className="w-full h-screen lg:grid lg:grid-cols-2">
       <div className="relative flex-1 hidden w-full h-full lg:block">
           <Image
-              src="https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?q=80&w=2700&auto=format&fit=crop"
+              src={bgUrl || "https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?q=80&w=2700&auto=format&fit=crop"}
               alt="Stylish white sports car"
               layout="fill"
               objectFit="cover"
