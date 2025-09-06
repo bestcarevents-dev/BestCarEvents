@@ -76,7 +76,27 @@ async function translateChunk(texts: string[], source: string, target: string): 
     request.glossaryConfig = {glossary: glossaryName};
   }
 
-  const [response] = await translationClient.translateText(request);
+  let response;
+  try {
+    [response] = await translationClient.translateText(request);
+  } catch (e: any) {
+    // If glossary not found, retry without glossary
+    const code = e?.code;
+    const msg = String(e?.message || '');
+    const notFound = code === 5 || msg.includes('NOT_FOUND');
+    if (glossaryName && notFound) {
+      const fallbackReq: any = {
+        parent: request.parent,
+        contents: request.contents,
+        sourceLanguageCode: request.sourceLanguageCode,
+        targetLanguageCode: request.targetLanguageCode,
+        mimeType: request.mimeType,
+      };
+      [response] = await translationClient.translateText(fallbackReq);
+    } else {
+      throw e;
+    }
+  }
   const translations = response.glossaryTranslations?.length
     ? response.glossaryTranslations
     : response.translations || [];

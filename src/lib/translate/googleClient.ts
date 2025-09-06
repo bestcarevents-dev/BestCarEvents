@@ -28,8 +28,8 @@ export function getTranslationClients(): TranslationClients {
   if (cached) return cached;
 
   const {clientEmail, privateKey, projectId} = readServiceAccountFromEnv();
-  const location = process.env.GOOGLE_CLOUD_LOCATION || 'us-central1';
-  const glossaryId = process.env.GOOGLE_TRANSLATION_GLOSSARY_ID;
+  const location = process.env.GOOGLE_CLOUD_LOCATION || 'global';
+  const glossaryId = process.env.GOOGLE_TRANSLATION_GLOSSARY_ID || undefined;
 
   const translationClient = new v3.TranslationServiceClient({
     credentials: {
