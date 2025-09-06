@@ -2116,7 +2116,7 @@ const FeaturedOtherServicesSection = ({ copy }: { copy: NonNullable<HomepageCont
 export default function Home() {
   const [copy, setCopy] = useState<HomepageContent>(defaultHomepageContent);
   const videoRef = useRef<HTMLVideoElement | null>(null);
-  const [isMuted, setIsMuted] = useState(true);
+  const [isMuted, setIsMuted] = useState(false);
 
   useEffect(() => {
     (async () => {
