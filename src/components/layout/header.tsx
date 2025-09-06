@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { getAuth, onAuthStateChanged, signOut, type User } from "firebase/auth";
 import { app } from "@/lib/firebase";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
 import { useLanguage } from "@/contexts/LanguageContext";
 
@@ -433,6 +433,7 @@ export default function Header() {
   const { language, setLanguage } = useLanguage();
   const auth = getAuth(app);
   const pathname = usePathname();
+  const router = useRouter();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -494,14 +495,33 @@ export default function Header() {
               <DropdownMenuContent align="end">
                 <DropdownMenuItem 
                   className="flex items-center gap-2"
-                  onClick={() => setLanguage('en')}
+                  onClick={() => {
+                    setLanguage('en');
+                    document.cookie = `NEXT_LOCALE=en; path=/; max-age=31536000`;
+                    const parts = pathname.split('/').filter(Boolean);
+                    // If first segment is a known locale, drop it; else stay
+                    const locales = new Set(['en','sv','da','ur','it']);
+                    const first = parts[0];
+                    const rest = locales.has(first || '') ? parts.slice(1) : parts;
+                    const href = '/' + rest.join('/');
+                    router.push(href || '/');
+                  }}
                 >
                   <Image src={FLAG_UK} alt="English (UK)" width={24} height={16} className="rounded shadow" />
                   English
                 </DropdownMenuItem>
                 <DropdownMenuItem 
                   className="flex items-center gap-2"
-                  onClick={() => setLanguage('it')}
+                  onClick={() => {
+                    setLanguage('it');
+                    document.cookie = `NEXT_LOCALE=it; path=/; max-age=31536000`;
+                    const parts = pathname.split('/').filter(Boolean);
+                    const locales = new Set(['en','sv','da','ur','it']);
+                    const first = parts[0];
+                    const rest = locales.has(first || '') ? parts.slice(1) : parts;
+                    const href = '/it/' + rest.join('/');
+                    router.push(href.replace(/\/$/, ''));
+                  }}
                 >
                   <Image src={FLAG_IT} alt="Italiano" width={24} height={16} className="rounded shadow" />
                   Italiano

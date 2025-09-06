@@ -9,7 +9,7 @@ import { LanguageProvider } from '@/contexts/LanguageContext';
 import { cn } from '@/lib/utils';
 import { Cinzel, Lora } from 'next/font/google';
 import AutoTranslate from '@/lib/translate/AutoTranslate';
-import { headers } from 'next/headers';
+import { cookies } from 'next/headers';
 
 const fontHeadline = Cinzel({
   subsets: ['latin'],
@@ -29,17 +29,15 @@ export const metadata: Metadata = {
   description: 'Your premier destination for car events and the automotive marketplace.',
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const h = headers();
-  const path = h.get('x-invoke-path') || '';
-  // Next.js provides locale in the URL per i18n config, extract first segment
-  const seg = path.split('/').filter(Boolean)[0];
-  const locales = new Set(['en','sv','da','ur']);
-  const locale = locales.has(seg || '') ? (seg as string) : 'en';
+  const c = await cookies();
+  const locales = new Set(['en','sv','da','ur','it']);
+  const cookieLocale = c.get('NEXT_LOCALE')?.value || 'en';
+  const locale = locales.has(cookieLocale) ? cookieLocale : 'en';
   return (
     <html lang="en" className='dark'>
       <body className={cn(
