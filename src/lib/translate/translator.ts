@@ -62,45 +62,49 @@ function delay(ms: number) {
 
 async function translateChunk(texts: string[], source: string, target: string): Promise<string[]> {
   const {translationClient, projectId, location, glossaryName} = getTranslationClients();
-  const parent = `projects/${projectId}/locations/${location}`;
 
-  const request: any = {
-    parent,
-    contents: texts,
-    sourceLanguageCode: source,
-    targetLanguageCode: target,
-    mimeType: 'text/plain',
-  };
+  const locationsToTry: string[] = location === 'global' ? ['global', 'us-central1'] : [location, 'global'];
+  let lastError: any = null;
+  for (const loc of locationsToTry) {
+    const parent = `projects/${projectId}/locations/${loc}`;
+    const baseReq: any = {
+      parent,
+      contents: texts,
+      sourceLanguageCode: source,
+      targetLanguageCode: target,
+      mimeType: 'text/plain',
+    };
 
-  if (glossaryName) {
-    request.glossaryConfig = {glossary: glossaryName};
-  }
+    if (glossaryName) {
+      // Repoint glossary to the current location if a full path was provided
+      const glossaryId = glossaryName.split('/').pop() as string;
+      const reqWithGlossary = {...baseReq, glossaryConfig: {glossary: `projects/${projectId}/locations/${loc}/glossaries/${glossaryId}`}};
+      try {
+        const [resp] = await translationClient.translateText(reqWithGlossary as any);
+        const translations = resp.glossaryTranslations?.length ? resp.glossaryTranslations : resp.translations || [];
+        return translations.map((t) => t.translatedText || '');
+      } catch (e: any) {
+        const code = e?.code;
+        const msg = String(e?.message || '');
+        const notFound = code === 5 || msg.includes('NOT_FOUND');
+        if (!notFound) {
+          lastError = e;
+          continue;
+        }
+        // fall through to try without glossary
+      }
+    }
 
-  let response;
-  try {
-    [response] = await translationClient.translateText(request);
-  } catch (e: any) {
-    // If glossary not found, retry without glossary
-    const code = e?.code;
-    const msg = String(e?.message || '');
-    const notFound = code === 5 || msg.includes('NOT_FOUND');
-    if (glossaryName && notFound) {
-      const fallbackReq: any = {
-        parent: request.parent,
-        contents: request.contents,
-        sourceLanguageCode: request.sourceLanguageCode,
-        targetLanguageCode: request.targetLanguageCode,
-        mimeType: request.mimeType,
-      };
-      [response] = await translationClient.translateText(fallbackReq);
-    } else {
-      throw e;
+    try {
+      const [resp] = await translationClient.translateText(baseReq);
+      const translations = resp.translations || [];
+      return translations.map((t) => t.translatedText || '');
+    } catch (e: any) {
+      lastError = e;
+      continue;
     }
   }
-  const translations = response.glossaryTranslations?.length
-    ? response.glossaryTranslations
-    : response.translations || [];
-  return translations.map((t) => t.translatedText || '');
+  throw lastError;
 }
 
 export async function translateBatch({texts, sourceLocale, targetLocale}: TranslateInput): Promise<{translations: string[]; log: TranslateBatchLog;}> {

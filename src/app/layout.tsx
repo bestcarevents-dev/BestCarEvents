@@ -8,6 +8,8 @@ import FreeListingsProvider from '@/components/FreeListingsProvider';
 import { LanguageProvider } from '@/contexts/LanguageContext';
 import { cn } from '@/lib/utils';
 import { Cinzel, Lora } from 'next/font/google';
+import AutoTranslate from '@/lib/translate/AutoTranslate';
+import { headers } from 'next/headers';
 
 const fontHeadline = Cinzel({
   subsets: ['latin'],
@@ -32,6 +34,12 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const h = headers();
+  const path = h.get('x-invoke-path') || '';
+  // Next.js provides locale in the URL per i18n config, extract first segment
+  const seg = path.split('/').filter(Boolean)[0];
+  const locales = new Set(['en','sv','da','ur']);
+  const locale = locales.has(seg || '') ? (seg as string) : 'en';
   return (
     <html lang="en" className='dark'>
       <body className={cn(
@@ -43,7 +51,18 @@ export default function RootLayout({
           <GlobalNewsletterProvider>
             <FreeListingsProvider>
               <Header />
-              <main className="flex-1 mt-20">{children}</main>
+              <main className="flex-1 mt-20">
+                {/* Auto-translate all text nodes for non-default locales */}
+                {/* Default is en */}
+                {/* Server component ensures no creds leak client-side */}
+                {/* If cache-miss, it queues in background */}
+                {/* This is a best-effort sitewide pass */}
+                {/* Structured components with complex formatting may still need explicit wiring later */}
+                {/* But this provides broad coverage with zero manual work */}
+                {/* locale is derived from the URL per i18n */}
+                {/* eslint-disable-next-line react/no-children-prop */}
+                <AutoTranslate locale={locale} defaultLocale="en" children={children} />
+              </main>
               <Footer />
               <Toaster />
             </FreeListingsProvider>
