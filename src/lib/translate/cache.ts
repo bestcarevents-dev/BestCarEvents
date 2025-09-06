@@ -1,4 +1,4 @@
-import {admin} from '@/lib/firebase-admin';
+import {getAdmin} from '@/lib/firebase-admin';
 import crypto from 'crypto';
 
 export type CacheProvider = {
@@ -12,12 +12,14 @@ class FirestoreCache implements CacheProvider {
     this.collectionName = collectionName;
   }
   async get(key: string): Promise<string | null> {
+    const admin = getAdmin();
     const snap = await admin.firestore().collection(this.collectionName).doc(key).get();
     if (!snap.exists) return null;
     const data = snap.data() as {value: string} | undefined;
     return data?.value ?? null;
   }
   async set(key: string, value: string): Promise<void> {
+    const admin = getAdmin();
     await admin
       .firestore()
       .collection(this.collectionName)
