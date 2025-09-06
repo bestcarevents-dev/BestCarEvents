@@ -503,7 +503,8 @@ export default function Header() {
                     const first = parts[0];
                     const rest = locales.has(first || '') ? parts.slice(1) : parts;
                     const href = '/' + rest.join('/');
-                    router.replace(href || '/');
+                    const target = rest.length ? href : '/';
+                    router.replace(target);
                   }}
                 >
                   <Image src={FLAG_UK} alt="English (UK)" width={24} height={16} className="rounded shadow" />
@@ -518,8 +519,15 @@ export default function Header() {
                     const locales = new Set(['en','sv','da','ur','it']);
                     const first = parts[0];
                     const rest = locales.has(first || '') ? parts.slice(1) : parts;
-                    const href = '/it/' + rest.join('/');
-                    router.replace(href.replace(/\/$/, ''));
+                    if (rest.length === 0) {
+                      // Homepage: stay on '/', cookie drives Italian render
+                      router.replace('/');
+                      router.refresh();
+                    } else {
+                      const href = '/it/' + rest.join('/');
+                      const target = href.replace(/\/$/, '');
+                      router.replace(target);
+                    }
                   }}
                 >
                   <Image src={FLAG_IT} alt="Italiano" width={24} height={16} className="rounded shadow" />

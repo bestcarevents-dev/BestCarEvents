@@ -41,7 +41,7 @@ export default async function RootLayout({
   const cookieLocale = c.get('NEXT_LOCALE')?.value || 'en';
   const locale = locales.has(cookieLocale) ? cookieLocale : 'en';
   return (
-    <html lang="en" className='dark'>
+    <html lang={locale} className='dark'>
       <body className={cn(
         "font-body antialiased flex flex-col min-h-screen bg-muted/90",
         fontHeadline.variable,
