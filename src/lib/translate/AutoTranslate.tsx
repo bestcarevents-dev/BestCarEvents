@@ -1,5 +1,6 @@
 import React, {ReactElement, ReactNode} from 'react';
-import {getTranslationsOrDefault} from '@/lib/translate/runtime';
+import {cache, cacheKeyFrom, computeStableHash} from '@/lib/translate/cache';
+import {translateBatch} from '@/lib/translate/translator';
 
 type Props = {
   locale: string;
@@ -56,13 +57,32 @@ export default async function AutoTranslate({locale, defaultLocale, children}: P
 
   const uniqueTexts = new Set<string>();
   collectTexts(children, uniqueTexts);
-
   if (uniqueTexts.size === 0) return <>{children}</>;
 
   const texts = Array.from(uniqueTexts);
-  const translated = await getTranslationsOrDefault(texts, locale, defaultLocale);
+  const keys = texts.map((t) => cacheKeyFrom(computeStableHash(t), locale));
+  const existing = await Promise.all(keys.map((k) => cache.get(k)));
+
+  const missingTexts: string[] = [];
+  const missingIdx: number[] = [];
+  existing.forEach((val, i) => {
+    if (!val) {
+      missingTexts.push(texts[i]);
+      missingIdx.push(i);
+    }
+  });
+
+  if (missingTexts.length > 0) {
+    // Synchronously translate missing texts so first view is localized
+    await translateBatch({texts: missingTexts, sourceLocale: defaultLocale, targetLocale: locale});
+  }
+
+  // Read again (all should be present now)
+  const finalVals = await Promise.all(keys.map((k) => cache.get(k)));
   const map = new Map<string, string>();
-  for (let i = 0; i < texts.length; i++) map.set(texts[i], translated[i]);
+  for (let i = 0; i < texts.length; i++) {
+    map.set(texts[i], finalVals[i] || texts[i]);
+  }
 
   const out = replaceTexts(children, (s) => map.get(s) ?? s);
   return <>{out}</>;

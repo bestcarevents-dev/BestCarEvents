@@ -10,6 +10,7 @@ import { cn } from '@/lib/utils';
 import { Cinzel, Lora } from 'next/font/google';
 import AutoTranslate from '@/lib/translate/AutoTranslate';
 import { cookies } from 'next/headers';
+import { enhancePageTranslations } from '@/lib/translate/clientEnhancer';
 export const dynamic = 'force-dynamic';
 
 const fontHeadline = Cinzel({
@@ -61,6 +62,12 @@ export default async function RootLayout({
                 {/* locale is derived from the URL per i18n */}
                 {/* eslint-disable-next-line react/no-children-prop */}
                 <AutoTranslate locale={locale} defaultLocale="en" children={children} />
+                {/* Client enhancer to swap text after hydration if cache was just filled */}
+                <script
+                  dangerouslySetInnerHTML={{
+                    __html: `(()=>{try{var l='${locale}'; if(l!=='en'){import('${process.env.NEXT_PUBLIC_BASE_PATH || ''}/_next/static/chunks/translateEnhancer.js').catch(()=>{});} }catch(e){}})();`,
+                  }}
+                />
               </main>
               <Footer />
               <Toaster />
