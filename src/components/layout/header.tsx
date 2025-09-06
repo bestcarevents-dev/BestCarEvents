@@ -504,8 +504,9 @@ export default function Header() {
                     const rest = locales.has(first || '') ? parts.slice(1) : parts;
                     const href = '/' + rest.join('/');
                     const target = rest.length ? href : '/';
-                    router.replace(target);
-                    router.refresh();
+                    if (typeof window !== 'undefined') {
+                      window.location.assign(target);
+                    }
                   }}
                 >
                   <Image src={FLAG_UK} alt="English (UK)" width={24} height={16} className="rounded shadow" />

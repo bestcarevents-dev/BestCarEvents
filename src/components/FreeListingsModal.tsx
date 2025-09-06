@@ -42,7 +42,7 @@ export default function FreeListingsModal({ isOpen, onClose }: FreeListingsModal
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="max-w-md w-[92vw] p-0 overflow-hidden bg-gradient-to-br from-white to-[#E0D8C1] mx-auto sm:mx-4 border border-yellow-400/20 shadow-xl left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2">
+      <DialogContent className="max-w-md w-[92vw] p-0 max-h-[90vh] overflow-y-auto bg-gradient-to-br from-white to-[#E0D8C1] mx-auto sm:mx-4 border border-yellow-400/20 shadow-xl left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2">
         <AnimatePresence mode="wait">
           <motion.div
             key="modal"
@@ -115,11 +115,11 @@ export default function FreeListingsModal({ isOpen, onClose }: FreeListingsModal
                   transition={{ duration: 0.5, delay: 0.2, ease: "easeOut" }}
                   className="mb-3"
                 >
-                  <h1 className="text-xl sm:text-2xl font-black text-gray-900 mb-1 drop-shadow-sm">
+                  <h1 className="text-lg sm:text-2xl font-black text-gray-900 mb-1 drop-shadow-sm break-words hyphens-auto text-balance leading-tight">
                     {copy.headlineTop}
                   </h1>
                   <motion.h1 
-                    className="text-3xl sm:text-4xl font-black text-amber-500"
+                    className="text-2xl sm:text-4xl font-black text-amber-500 break-words hyphens-auto text-balance leading-tight"
                     animate={{ 
                       scale: [1, 1.05, 1],
                     }}
@@ -143,7 +143,7 @@ export default function FreeListingsModal({ isOpen, onClose }: FreeListingsModal
                   {copy.subline && (
                     <div className="flex items-center justify-center space-x-2 bg-yellow-400/20 backdrop-blur-sm rounded-full px-4 py-2 border border-yellow-400/30">
                       <Car className="w-4 h-4 text-yellow-600" />
-                      <span className="text-base font-bold text-gray-900">
+                      <span className="text-base font-bold text-gray-900 break-words hyphens-auto text-balance leading-snug">
                         {copy.subline}
                       </span>
                     </div>
@@ -158,7 +158,7 @@ export default function FreeListingsModal({ isOpen, onClose }: FreeListingsModal
                 >
                   <Button
                     onClick={handleClose}
-                    className="bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-bold py-3 px-6 rounded-full text-base shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 transform border-2 border-yellow-500/20"
+                    className="bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-bold py-3 px-6 rounded-full text-base shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 transform border-2 border-yellow-500/20 whitespace-normal break-words text-center"
                   >
                     {copy.ctaLabel}
                   </Button>

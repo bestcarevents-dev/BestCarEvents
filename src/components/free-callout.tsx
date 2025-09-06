@@ -48,18 +48,18 @@ export default function FreeCallout({
           </div>
 
           {/* Title and divider */}
-          <h2 className="font-headline uppercase tracking-[0.2em] text-[#1f1f1f] text-2xl md:text-3xl lg:text-4xl">
+          <h2 className="font-headline uppercase tracking-[0.2em] text-[#1f1f1f] text-2xl md:text-3xl lg:text-4xl break-words hyphens-auto text-balance leading-tight">
             ALL LISTINGS ARE FREE
           </h2>
           <div className="mx-auto mt-3 h-[2px] w-24 bg-gradient-to-r from-[#C3A76D] to-[#E7D08A]" />
 
           {/* Message */}
-          <p className="mt-4 text-base md:text-lg text-[#2a2a2a] max-w-xl">
+          <p className="mt-4 text-base md:text-lg text-[#2a2a2a] max-w-xl break-words hyphens-auto text-balance leading-snug">
             <span className="font-bold text-[#C3A76D]">Cars:</span> Enjoy <span className="font-bold text-[#C3A76D]">2 months free</span> listing period!
           </p>
 
           {/* Description */}
-          <p className="text-sm text-[#4a4a4a] mb-6 leading-relaxed max-w-lg">
+          <p className="text-sm text-[#4a4a4a] mb-6 leading-relaxed max-w-lg break-words hyphens-auto text-balance">
             {selectedMessage}
           </p>
 
