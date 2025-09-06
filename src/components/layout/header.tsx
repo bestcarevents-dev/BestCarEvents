@@ -505,6 +505,7 @@ export default function Header() {
                     const href = '/' + rest.join('/');
                     const target = rest.length ? href : '/';
                     router.replace(target);
+                    router.refresh();
                   }}
                 >
                   <Image src={FLAG_UK} alt="English (UK)" width={24} height={16} className="rounded shadow" />

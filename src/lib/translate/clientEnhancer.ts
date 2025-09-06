@@ -34,7 +34,10 @@ async function fetchTranslations(endpoint: string, payload: FetchPayload) {
 }
 
 export async function enhancePageTranslations(locale: string, defaultLocale = 'en') {
-  if (locale === defaultLocale) return;
+  if (locale === defaultLocale) {
+    // Restore original text by causing a full rerender fetch and skipping replacements
+    return;
+  }
   const textNodes = collectTextNodes(document.body);
   const unique = Array.from(new Set(textNodes.map((n) => n.textContent || '')));
   if (unique.length === 0) return;
