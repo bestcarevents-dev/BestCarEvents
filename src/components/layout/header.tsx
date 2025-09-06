@@ -503,7 +503,7 @@ export default function Header() {
                     const first = parts[0];
                     const rest = locales.has(first || '') ? parts.slice(1) : parts;
                     const href = '/' + rest.join('/');
-                    router.push(href || '/');
+                    router.replace(href || '/');
                   }}
                 >
                   <Image src={FLAG_UK} alt="English (UK)" width={24} height={16} className="rounded shadow" />
@@ -519,7 +519,7 @@ export default function Header() {
                     const first = parts[0];
                     const rest = locales.has(first || '') ? parts.slice(1) : parts;
                     const href = '/it/' + rest.join('/');
-                    router.push(href.replace(/\/$/, ''));
+                    router.replace(href.replace(/\/$/, ''));
                   }}
                 >
                   <Image src={FLAG_IT} alt="Italiano" width={24} height={16} className="rounded shadow" />

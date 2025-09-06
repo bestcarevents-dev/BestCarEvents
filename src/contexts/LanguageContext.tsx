@@ -80,24 +80,18 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   //   };
   // }, []);
 
-  // // Load language preference from localStorage on mount
-  // useEffect(() => {
-  //   try {
-  //     const savedLanguage = localStorage.getItem('language') as Language;
-  //     if (savedLanguage && (savedLanguage === 'en' || savedLanguage === 'it')) {
-  //       setLanguageState(savedLanguage);
-  //       
-  //       // If Italian is loaded from localStorage, trigger translation after a delay
-  //       if (savedLanguage === 'it') {
-  //         setTimeout(() => {
-  //           setLanguage('it');
-  //         }, 1000);
-  //       }
-  //     }
-  //   } catch (error) {
-  //     console.warn('Error loading language preference:', error);
-  //   }
-  // }, []);
+  // Load language preference on mount and apply cookie/html lang
+  useEffect(() => {
+    try {
+      const saved = (typeof window !== 'undefined' ? localStorage.getItem('language') : null) as Language | null;
+      const lang: Language = saved === 'it' ? 'it' : 'en';
+      setLanguageState(lang);
+      if (typeof document !== 'undefined') {
+        document.documentElement.lang = lang;
+        document.cookie = `NEXT_LOCALE=${lang}; path=/; max-age=31536000`;
+      }
+    } catch {}
+  }, []);
 
   // // Static CSS injection to hide Google Translate banner
   // useEffect(() => {
@@ -226,6 +220,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     // Update HTML lang attribute
     if (typeof document !== 'undefined') {
       document.documentElement.lang = lang;
+      document.cookie = `NEXT_LOCALE=${lang}; path=/; max-age=31536000`;
     }
     
     // // try {
