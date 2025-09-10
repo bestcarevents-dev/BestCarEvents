@@ -42,6 +42,8 @@ interface AuctionRequest {
   featured?: boolean;
   feature_start?: any;
   feature_end?: any;
+  uploadedByUserEmail?: string;
+  uploadedByUserId?: string;
 }
 
 export default function AdminAuctionsPage() {
@@ -73,6 +75,24 @@ export default function AdminAuctionsPage() {
     fetchRequests();
   }, [db]);
 
+  const sendApprovalEmail = async (
+    listingType: 'auction',
+    action: 'approved' | 'rejected',
+    to?: string | null,
+    listingName?: string
+  ) => {
+    try {
+      if (!to) return;
+      await fetch('/api/emails/approval', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ to, listingType, action, listingName })
+      });
+    } catch (e) {
+      console.error('Failed to send approval email:', e);
+    }
+  };
+
   const handleApprove = async (request: AuctionRequest) => {
     try {
       const auctionData = { ...request, status: "approved", createdAt: new Date() };
@@ -80,16 +100,18 @@ export default function AdminAuctionsPage() {
       await deleteDoc(doc(db, "pendingAuctions", request.id));
       setPendingRequests(pendingRequests.filter(r => r.id !== request.id));
       setSelectedAuction(null);
+      await sendApprovalEmail('auction', 'approved', request.uploadedByUserEmail || null, request.auctionName);
     } catch (error) {
       console.error("Error approving auction: ", error);
     }
   };
 
-  const handleReject = async (id: string) => {
+  const handleReject = async (request: AuctionRequest) => {
     try {
-      await deleteDoc(doc(db, "pendingAuctions", id));
-      setPendingRequests(pendingRequests.filter(r => r.id !== id));
+      await deleteDoc(doc(db, "pendingAuctions", request.id));
+      setPendingRequests(pendingRequests.filter(r => r.id !== request.id));
       setSelectedAuction(null);
+      await sendApprovalEmail('auction', 'rejected', request.uploadedByUserEmail || null, request.auctionName);
     } catch (error) {
       console.error("Error rejecting auction: ", error);
     }
@@ -299,7 +321,7 @@ export default function AdminAuctionsPage() {
                 <DialogClose asChild>
                   <Button variant="outline">Cancel</Button>
                 </DialogClose>
-                <Button variant="destructive" onClick={() => handleReject(selectedAuction.id)}>Reject</Button>
+                <Button variant="destructive" onClick={() => handleReject(selectedAuction)}>Reject</Button>
                 <Button onClick={() => handleApprove(selectedAuction)}>Approve</Button>
               </DialogFooter>
             )}

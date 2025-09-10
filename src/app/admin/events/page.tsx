@@ -29,6 +29,8 @@ interface EventRequest {
   imageUrl: string;
   status: "pending" | "approved" | "rejected";
   submittedAt: any;
+  uploadedByUserEmail?: string;
+  uploadedByUserId?: string;
   
   // New Fields
   eventType?: string;
@@ -78,6 +80,24 @@ export default function PendingEventsPage() {
     fetchRequests();
   }, [db]);
 
+  const sendApprovalEmail = async (
+    listingType: 'event',
+    action: 'approved' | 'rejected',
+    to?: string | null,
+    listingName?: string
+  ) => {
+    try {
+      if (!to) return;
+      await fetch('/api/emails/approval', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ to, listingType, action, listingName })
+      });
+    } catch (e) {
+      console.error('Failed to send approval email:', e);
+    }
+  };
+
   const handleApprove = async (request: EventRequest) => {
     try {
       // When approving, only transfer the relevant fields to the 'events' collection
@@ -103,18 +123,20 @@ export default function PendingEventsPage() {
       await deleteDoc(doc(db, "pendingEvents", request.id));
       setPendingRequests(pendingRequests.filter(r => r.id !== request.id));
       setSelectedEvent(null); // Close modal after action
+      await sendApprovalEmail('event', 'approved', request.uploadedByUserEmail || null, request.eventName);
     } catch (error) {
       console.error("Error approving event: ", error);
     }
   };
 
-  const handleReject = async (id: string) => {
+  const handleReject = async (request: EventRequest) => {
     try {
         // For rejection, you might want to move to a rejected collection
         // or simply delete. Here we delete.
-        await deleteDoc(doc(db, "pendingEvents", id));
-        setPendingRequests(pendingRequests.filter(r => r.id !== id));
+        await deleteDoc(doc(db, "pendingEvents", request.id));
+        setPendingRequests(pendingRequests.filter(r => r.id !== request.id));
         setSelectedEvent(null); // Close modal after action
+        await sendApprovalEmail('event', 'rejected', request.uploadedByUserEmail || null, request.eventName);
     } catch (error) {
         console.error("Error rejecting event: ", error);
     }
@@ -222,7 +244,7 @@ export default function PendingEventsPage() {
                           {request.status === 'pending' && (
                             <>
                               <DropdownMenuItem onClick={() => handleApprove(request)}>Approve</DropdownMenuItem>
-                              <DropdownMenuItem onClick={() => handleReject(request.id)}>Reject</DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => handleReject(request)}>Reject</DropdownMenuItem>
                             </>
                           )}
                         </DropdownMenuContent>

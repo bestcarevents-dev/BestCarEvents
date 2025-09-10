@@ -81,6 +81,24 @@ export default function PendingServicesPage() {
     fetchRequests();
   }, [db]);
 
+  const sendApprovalEmail = async (
+    listingType: 'service',
+    action: 'approved' | 'rejected',
+    to?: string | null,
+    listingName?: string
+  ) => {
+    try {
+      if (!to) return;
+      await fetch('/api/emails/approval', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ to, listingType, action, listingName })
+      });
+    } catch (e) {
+      console.error('Failed to send approval email:', e);
+    }
+  };
+
   const handleApprove = async (request: ServiceRequest) => {
     try {
       // When approving, transfer the relevant fields to the 'others' collection
@@ -106,18 +124,20 @@ export default function PendingServicesPage() {
       await deleteDoc(doc(db, "pendingOthers", request.id));
       setPendingRequests(pendingRequests.filter(r => r.id !== request.id));
       setSelectedService(null); // Close modal after action
+      await sendApprovalEmail('service', 'approved', request.userEmail || null, request.serviceName);
     } catch (error) {
       console.error("Error approving service: ", error);
     }
   };
 
-  const handleReject = async (id: string) => {
+  const handleReject = async (request: ServiceRequest) => {
     try {
         // For rejection, you might want to move to a rejected collection
         // or simply delete. Here we delete.
-        await deleteDoc(doc(db, "pendingOthers", id));
-        setPendingRequests(pendingRequests.filter(r => r.id !== id));
+        await deleteDoc(doc(db, "pendingOthers", request.id));
+        setPendingRequests(pendingRequests.filter(r => r.id !== request.id));
         setSelectedService(null); // Close modal after action
+        await sendApprovalEmail('service', 'rejected', request.userEmail || null, request.serviceName);
     } catch (error) {
         console.error("Error rejecting service: ", error);
     }
@@ -234,7 +254,7 @@ export default function PendingServicesPage() {
                             {request.status === 'pending' && (
                               <>
                                 <DropdownMenuItem onClick={() => handleApprove(request)}>Approve</DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => handleReject(request.id)}>Reject</DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => handleReject(request)}>Reject</DropdownMenuItem>
                               </>
                             )}
                           </DropdownMenuContent>

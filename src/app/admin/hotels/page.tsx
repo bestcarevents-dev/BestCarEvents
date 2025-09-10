@@ -40,6 +40,8 @@ interface HotelRequest {
   listing_type?: string;
   feature_start?: any;
   feature_end?: any;
+  uploadedByUserEmail?: string;
+  uploadedByUserId?: string;
 }
 
 export default function AdminHotelsPage() {
@@ -71,6 +73,24 @@ export default function AdminHotelsPage() {
     fetchRequests();
   }, [db]);
 
+  const sendApprovalEmail = async (
+    listingType: 'hotel',
+    action: 'approved' | 'rejected',
+    to?: string | null,
+    listingName?: string
+  ) => {
+    try {
+      if (!to) return;
+      await fetch('/api/emails/approval', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ to, listingType, action, listingName })
+      });
+    } catch (e) {
+      console.error('Failed to send approval email:', e);
+    }
+  };
+
   const handleApprove = async (request: HotelRequest) => {
     try {
       const hotelData = {
@@ -84,16 +104,18 @@ export default function AdminHotelsPage() {
       await deleteDoc(doc(db, "pendingHotels", request.id));
       setPendingRequests(pendingRequests.filter(r => r.id !== request.id));
       setSelectedHotel(null);
+      await sendApprovalEmail('hotel', 'approved', request.uploadedByUserEmail || null, request.hotelName);
     } catch (error) {
       console.error("Error approving hotel: ", error);
     }
   };
 
-  const handleReject = async (id: string) => {
+  const handleReject = async (request: HotelRequest) => {
     try {
-      await deleteDoc(doc(db, "pendingHotels", id));
-      setPendingRequests(pendingRequests.filter(r => r.id !== id));
+      await deleteDoc(doc(db, "pendingHotels", request.id));
+      setPendingRequests(pendingRequests.filter(r => r.id !== request.id));
       setSelectedHotel(null);
+      await sendApprovalEmail('hotel', 'rejected', request.uploadedByUserEmail || null, request.hotelName);
     } catch (error) {
       console.error("Error rejecting hotel: ", error);
     }
@@ -265,7 +287,7 @@ export default function AdminHotelsPage() {
                 <DialogClose asChild>
                   <Button variant="outline">Cancel</Button>
                 </DialogClose>
-                <Button variant="destructive" onClick={() => handleReject(selectedHotel.id)}>Reject</Button>
+                <Button variant="destructive" onClick={() => handleReject(selectedHotel)}>Reject</Button>
                 <Button onClick={() => handleApprove(selectedHotel)}>Approve</Button>
               </DialogFooter>
             )}

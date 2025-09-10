@@ -38,6 +38,8 @@ interface ClubRequest {
   listing_type?: string;
   feature_start?: any;
   feature_end?: any;
+  uploadedByUserEmail?: string;
+  uploadedByUserId?: string;
 }
 
 export default function AdminClubsPage() {
@@ -69,6 +71,24 @@ export default function AdminClubsPage() {
     fetchRequests();
   }, [db]);
 
+  const sendApprovalEmail = async (
+    listingType: 'club',
+    action: 'approved' | 'rejected',
+    to?: string | null,
+    listingName?: string
+  ) => {
+    try {
+      if (!to) return;
+      await fetch('/api/emails/approval', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ to, listingType, action, listingName })
+      });
+    } catch (e) {
+      console.error('Failed to send approval email:', e);
+    }
+  };
+
   const handleApprove = async (request: ClubRequest) => {
     try {
       const clubData = { ...request, status: "approved", createdAt: new Date() };
@@ -77,16 +97,18 @@ export default function AdminClubsPage() {
       await deleteDoc(doc(db, "pendingClubs", request.id));
       setPendingRequests(pendingRequests.filter(r => r.id !== request.id));
       setSelectedClub(null);
+      await sendApprovalEmail('club', 'approved', request.uploadedByUserEmail || null, request.clubName);
     } catch (error) {
       console.error("Error approving club: ", error);
     }
   };
 
-  const handleReject = async (id: string) => {
+  const handleReject = async (request: ClubRequest) => {
     try {
-      await deleteDoc(doc(db, "pendingClubs", id));
-      setPendingRequests(pendingRequests.filter(r => r.id !== id));
+      await deleteDoc(doc(db, "pendingClubs", request.id));
+      setPendingRequests(pendingRequests.filter(r => r.id !== request.id));
       setSelectedClub(null);
+      await sendApprovalEmail('club', 'rejected', request.uploadedByUserEmail || null, request.clubName);
     } catch (error) {
       console.error("Error rejecting club: ", error);
     }
@@ -289,7 +311,7 @@ export default function AdminClubsPage() {
                 <DialogClose asChild>
                   <Button variant="outline">Cancel</Button>
                 </DialogClose>
-                <Button variant="destructive" onClick={() => handleReject(selectedClub.id)}>Reject</Button>
+                <Button variant="destructive" onClick={() => handleReject(selectedClub)}>Reject</Button>
                 <Button onClick={() => handleApprove(selectedClub)}>Approve</Button>
               </DialogFooter>
             )}

@@ -42,6 +42,8 @@ interface CarRequest {
   sellerContact: string;
   images: string[];
   status: "pending" | "approved" | "rejected";
+  uploadedByUserEmail?: string;
+  uploadedByUserId?: string;
 }
 
 export default function PendingCarsPage() {
@@ -69,6 +71,24 @@ export default function PendingCarsPage() {
     fetchRequests();
   }, [db]);
 
+  const sendApprovalEmail = async (
+    listingType: 'car',
+    action: 'approved' | 'rejected',
+    to?: string | null,
+    listingName?: string
+  ) => {
+    try {
+      if (!to) return;
+      await fetch('/api/emails/approval', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ to, listingType, action, listingName })
+      });
+    } catch (e) {
+      console.error('Failed to send approval email:', e);
+    }
+  };
+
   const handleApprove = async (request: CarRequest) => {
     try {
       const carData = { ...request, status: "approved", createdAt: new Date() };
@@ -76,16 +96,20 @@ export default function PendingCarsPage() {
       await deleteDoc(doc(db, "pendingCars", request.id));
       setPendingRequests(pendingRequests.filter(r => r.id !== request.id));
       setSelectedCar(null);
+      const name = `${request.year} ${request.make} ${request.model}`;
+      await sendApprovalEmail('car', 'approved', request.uploadedByUserEmail || null, name);
     } catch (error) {
       console.error("Error approving car: ", error);
     }
   };
 
-  const handleReject = async (id: string) => {
+  const handleReject = async (request: CarRequest) => {
     try {
-        await deleteDoc(doc(db, "pendingCars", id));
-        setPendingRequests(pendingRequests.filter(r => r.id !== id));
+        await deleteDoc(doc(db, "pendingCars", request.id));
+        setPendingRequests(pendingRequests.filter(r => r.id !== request.id));
         setSelectedCar(null);
+        const name = `${request.year} ${request.make} ${request.model}`;
+        await sendApprovalEmail('car', 'rejected', request.uploadedByUserEmail || null, name);
     } catch (error) {
         console.error("Error rejecting car: ", error);
     }
@@ -264,7 +288,7 @@ export default function PendingCarsPage() {
                   <DialogClose asChild>
                     <Button variant="outline">Cancel</Button>
                   </DialogClose>
-                  <Button variant="destructive" onClick={() => handleReject(selectedCar.id)}>Reject</Button>
+                  <Button variant="destructive" onClick={() => handleReject(selectedCar)}>Reject</Button>
                   <Button onClick={() => handleApprove(selectedCar)}>Approve</Button>
                 </DialogFooter>
               )}
