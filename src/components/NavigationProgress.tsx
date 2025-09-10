@@ -9,6 +9,8 @@ export default function NavigationProgress() {
   const [active, setActive] = useState(false);
   const startedAtRef = useRef<number | null>(null);
   const stopTimeoutRef = useRef<number | null>(null);
+  const originalPushRef = useRef<typeof history.pushState | null>(null);
+  const originalReplaceRef = useRef<typeof history.replaceState | null>(null);
 
   // Start progress on internal link clicks for immediate feedback
   useEffect(() => {
@@ -65,6 +67,9 @@ export default function NavigationProgress() {
     }
     stopTimeoutRef.current = window.setTimeout(() => {
       setActive(false);
+      if (typeof document !== 'undefined') {
+        document.documentElement.classList.remove('nav-loading');
+      }
       startedAtRef.current = null;
       stopTimeoutRef.current = null;
     }, remaining) as unknown as number;
@@ -76,15 +81,50 @@ export default function NavigationProgress() {
     };
   }, [pathname, searchParams, active]);
 
+  // Start progress for programmatic navigations (router.push/replace, back/forward)
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (!originalPushRef.current) originalPushRef.current = history.pushState;
+    if (!originalReplaceRef.current) originalReplaceRef.current = history.replaceState;
+
+    const start = () => {
+      if (!active) {
+        setActive(true);
+        startedAtRef.current = Date.now();
+      }
+    };
+
+    const patchedPush: typeof history.pushState = function (...args) {
+      start();
+      return originalPushRef.current!.apply(history, args as any);
+    };
+    const patchedReplace: typeof history.replaceState = function (...args) {
+      start();
+      return originalReplaceRef.current!.apply(history, args as any);
+    };
+
+    const onPopState = () => start();
+
+    history.pushState = patchedPush;
+    history.replaceState = patchedReplace;
+    window.addEventListener('popstate', onPopState);
+
+    return () => {
+      if (originalPushRef.current) history.pushState = originalPushRef.current;
+      if (originalReplaceRef.current) history.replaceState = originalReplaceRef.current;
+      window.removeEventListener('popstate', onPopState);
+    };
+  }, [active]);
+
   if (!active) return null;
 
-  return (
-    <div className="fixed top-0 left-0 right-0 z-[70] pointer-events-none">
-      <div className="h-0.5 w-full overflow-hidden bg-transparent">
-        <div className="h-full w-1/3 animate-loading-bar rounded-full bg-yellow-400" />
-      </div>
-    </div>
-  );
+  // Also ensure <html> has a class so CSS can react instantly
+  if (typeof document !== 'undefined') {
+    document.documentElement.classList.add('nav-loading');
+    // Remove class when not active handled in stop effect below
+  }
+
+  return null;
 }
 
 

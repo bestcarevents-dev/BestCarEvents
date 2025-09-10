@@ -71,3 +71,20 @@
   background-size: 200% auto;
   animation: gradient 4s linear infinite;
 }
+
+/* Instant global nav feedback */
+html.nav-loading body {
+  cursor: progress;
+}
+html.nav-loading body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: hsl(var(--primary));
+  z-index: 9999;
+  pointer-events: none;
+  animation: loading-bar 1.2s ease infinite;
+}
