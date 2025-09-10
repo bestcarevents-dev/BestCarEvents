@@ -33,8 +33,6 @@ const navLinks = [
   { href: "/others", label: "Others" },
   { href: "/partners", label: "Partners" },
   { href: "/advertise-with-us", label: "Pricing" },
-  { href: "/about", label: "About" },
-  { href: "/contact", label: "Contact" },
 ];
 
 const automotiveLinks = [
