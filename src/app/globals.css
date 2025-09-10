@@ -76,15 +76,3 @@
 html.nav-loading body {
   cursor: progress;
 }
-html.nav-loading body::before {
-  content: "";
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: hsl(var(--primary));
-  z-index: 9999;
-  pointer-events: none;
-  animation: loading-bar 1.2s ease infinite;
-}
