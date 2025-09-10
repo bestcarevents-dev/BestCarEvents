@@ -10,6 +10,8 @@ export default function NavigationProgress() {
   const [progress, setProgress] = useState(0);
   const startedAtRef = useRef<number | null>(null);
   const stopTimeoutRef = useRef<number | null>(null);
+  const startPathRef = useRef<string | null>(null);
+  const startSearchRef = useRef<string | null>(null);
   const originalPushRef = useRef<typeof history.pushState | null>(null);
   const originalReplaceRef = useRef<typeof history.replaceState | null>(null);
   const inflightCountRef = useRef(0);
@@ -53,6 +55,8 @@ export default function NavigationProgress() {
       if (!active) {
         setActive(true);
         startedAtRef.current = Date.now();
+        startPathRef.current = pathname ?? window.location.pathname;
+        startSearchRef.current = searchParams?.toString?.() ?? (typeof window !== 'undefined' ? window.location.search.slice(1) : '');
         setProgress(0.03);
       }
     };
@@ -61,9 +65,16 @@ export default function NavigationProgress() {
     return () => document.removeEventListener("click", onClickCapture, { capture: true } as any);
   }, [active]);
 
-  // Stop progress when the route (path or query) changes
+  // Stop progress ONLY when the route (path or query) actually changes
   useEffect(() => {
     if (!active) return;
+    const currentPath = pathname ?? (typeof window !== 'undefined' ? window.location.pathname : '');
+    const currentSearch = searchParams?.toString?.() ?? (typeof window !== 'undefined' ? window.location.search.slice(1) : '');
+    const startedPath = startPathRef.current;
+    const startedSearch = startSearchRef.current;
+    const changed = startedPath !== null && startedSearch !== null && (currentPath !== startedPath || currentSearch !== startedSearch);
+    if (!changed) return;
+
     const MIN_VISIBLE_MS = 200;
     const startedAt = startedAtRef.current ?? Date.now();
     const elapsed = Date.now() - startedAt;
@@ -87,6 +98,8 @@ export default function NavigationProgress() {
           }
           startedAtRef.current = null;
           stopTimeoutRef.current = null;
+          startPathRef.current = null;
+          startSearchRef.current = null;
         }, 250);
       }, 350);
     }, remaining) as unknown as number;
@@ -108,6 +121,8 @@ export default function NavigationProgress() {
       if (!active) {
         setActive(true);
         startedAtRef.current = Date.now();
+        startPathRef.current = pathname ?? window.location.pathname;
+        startSearchRef.current = searchParams?.toString?.() ?? (typeof window !== 'undefined' ? window.location.search.slice(1) : '');
         setProgress(0.03);
       }
     };
