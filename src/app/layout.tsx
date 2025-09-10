@@ -11,6 +11,7 @@ import { Cinzel, Lora } from 'next/font/google';
 import AutoTranslate from '@/lib/translate/AutoTranslate';
 import { cookies } from 'next/headers';
 import EnhancerClient from '@/lib/translate/EnhancerClient';
+import NavigationProgress from '@/components/NavigationProgress';
 export const dynamic = 'force-dynamic';
 
 const fontHeadline = Cinzel({
@@ -50,6 +51,7 @@ export default async function RootLayout({
         <LanguageProvider>
           <GlobalNewsletterProvider>
             <FreeListingsProvider>
+              <NavigationProgress />
               <Header />
               <main className="flex-1 mt-20">
                 {/* Auto-translate all text nodes for non-default locales */}
