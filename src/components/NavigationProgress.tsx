@@ -53,7 +53,7 @@ export default function NavigationProgress() {
       if (!active) {
         setActive(true);
         startedAtRef.current = Date.now();
-        setProgress(0.06);
+        setProgress(0.03);
       }
     };
 
@@ -73,17 +73,22 @@ export default function NavigationProgress() {
       window.clearTimeout(stopTimeoutRef.current);
     }
     stopTimeoutRef.current = window.setTimeout(() => {
-      // Smoothly finish to 100%
+      // Smoothly finish to 100%, then fade out before cleanup
       setProgress(1);
-      // Slight delay to let users perceive completion
       window.setTimeout(() => {
-        setActive(false);
-        if (typeof document !== 'undefined') {
-          document.documentElement.classList.remove('nav-loading');
+        const el = document.getElementById('nav-progress-bar');
+        if (el) {
+          el.style.opacity = '0';
         }
-        startedAtRef.current = null;
-        stopTimeoutRef.current = null;
-      }, 120);
+        window.setTimeout(() => {
+          setActive(false);
+          if (typeof document !== 'undefined') {
+            document.documentElement.classList.remove('nav-loading');
+          }
+          startedAtRef.current = null;
+          stopTimeoutRef.current = null;
+        }, 250);
+      }, 350);
     }, remaining) as unknown as number;
 
     return () => {
@@ -103,7 +108,7 @@ export default function NavigationProgress() {
       if (!active) {
         setActive(true);
         startedAtRef.current = Date.now();
-        setProgress(0.06);
+        setProgress(0.03);
       }
     };
 
@@ -140,11 +145,11 @@ export default function NavigationProgress() {
     tickTimerRef.current = window.setInterval(() => {
       setProgress((p) => {
         if (p >= 0.9) return p;
-        // ease: smaller increments as we get closer
-        const delta = (1 - p) * 0.05; // 5% of remaining
-        return Math.min(0.9, p + Math.max(0.01, delta));
+        // Slower ease: smaller increments and slower timer
+        const delta = (0.9 - p) * 0.03; // 3% of remaining to 90
+        return Math.min(0.9, p + Math.max(0.005, delta));
       });
-    }, 200) as unknown as number;
+    }, 350) as unknown as number;
     return () => {
       if (tickTimerRef.current) window.clearInterval(tickTimerRef.current);
       tickTimerRef.current = null;
