@@ -311,6 +311,7 @@ const AuthButtons = ({ inMobileNav = false, user, onMobileMenuClose }: { inMobil
 
 const NavMenu = ({ onLinkClick, isMobile = false }: { onLinkClick?: () => void, isMobile?: boolean }) => {
   const pathname = usePathname();
+  const router = useRouter();
 
   // Check if any automotive link is active
   const isAutomotiveActive = automotiveLinks.some(link => isActiveLink(pathname, link.href));
@@ -329,6 +330,7 @@ const NavMenu = ({ onLinkClick, isMobile = false }: { onLinkClick?: () => void, 
                   : "hover:bg-white/5"
               )}
               onClick={onLinkClick}
+              onMouseEnter={() => router.prefetch(link.href)}
             >
               {link.label}
             </Link>
@@ -354,6 +356,7 @@ const NavMenu = ({ onLinkClick, isMobile = false }: { onLinkClick?: () => void, 
                       : "hover:bg-white/5"
                   )}
                   onClick={onLinkClick}
+                  onMouseEnter={() => router.prefetch(link.href)}
                 >
                   {link.label}
                 </Link>
@@ -378,6 +381,7 @@ const NavMenu = ({ onLinkClick, isMobile = false }: { onLinkClick?: () => void, 
                 active ? "text-yellow-300" : "text-white hover:text-yellow-300"
               )}
               onClick={onLinkClick}
+              onMouseEnter={() => router.prefetch(link.href)}
             >
               {link.label}
             </Link>
@@ -408,7 +412,7 @@ const NavMenu = ({ onLinkClick, isMobile = false }: { onLinkClick?: () => void, 
           <DropdownMenuContent align="end" className="w-48">
             {automotiveLinks.map((link) => (
               <DropdownMenuItem key={link.href} asChild>
-                <Link href={link.href} onClick={onLinkClick}>
+                <Link href={link.href} onClick={onLinkClick} onMouseEnter={() => router.prefetch(link.href)}>
                   {link.label}
                 </Link>
               </DropdownMenuItem>
