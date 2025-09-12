@@ -91,8 +91,8 @@ export default function CarDetailsPage() {
             {currentIndex + 1} / {images.length}
           </div>
         </Carousel>
-        {/* Thumbnails under main image on mobile */}
-        <div className="mt-3 md:mt-4 flex gap-2 overflow-x-auto pb-1 md:justify-center">
+        {/* Thumbnails under main image on mobile (hidden on desktop to avoid overlay collisions) */}
+        <div className="mt-3 md:mt-4 flex gap-2 overflow-x-auto pb-1 md:justify-center md:hidden">
           {images.map((thumb: string, tIdx: number) => (
             <button key={tIdx} onClick={() => emblaApi?.scrollTo(tIdx)} className={`relative h-16 w-24 flex-shrink-0 rounded-md overflow-hidden border ${currentIndex === tIdx ? 'border-yellow-500' : 'border-gray-200'}`} aria-label={`Go to image ${tIdx + 1}`}>
               <Image src={thumb} alt={`Thumbnail ${tIdx + 1}`} fill className="object-cover" />
@@ -121,20 +121,24 @@ export default function CarDetailsPage() {
         </div>
       </div>
 
-      {/* Desktop overlay actions (keep desktop as-is) */}
+      {/* Desktop overlay actions (structured, no overlap) */}
       <div className="hidden md:block relative -mt-24 mb-10 z-10">
-        <div className="flex items-end justify-between bg-gradient-to-t from-black/80 to-transparent p-8 rounded-b-3xl">
-          <div>
-            <h1 className="text-5xl font-extrabold font-headline text-white drop-shadow-lg">{car.year} {car.make} {car.model}</h1>
+        <div className="flex flex-wrap items-end justify-between gap-4 md:gap-6 bg-gradient-to-t from-black/80 to-transparent p-6 lg:p-8 rounded-b-3xl">
+          <div className="min-w-0 flex-1">
+            <h1 className="text-3xl lg:text-5xl font-extrabold font-headline text-white drop-shadow-lg leading-tight break-words">
+              {car.year} {car.make} {car.model}
+            </h1>
             <div className="flex flex-wrap gap-2 mt-2">
               {highlightBadges.map(badge => (
                 <Badge key={badge} className="bg-yellow-600 text-white">{badge}</Badge>
               ))}
             </div>
           </div>
-          <div className="flex flex-col items-end gap-2">
-            <span className="text-4xl font-mono font-bold text-yellow-400 drop-shadow-lg">{car.currency} {car.price}</span>
-            <Button size="lg" className="mt-2" onClick={() => setShowContact(true)}><Mail className="mr-2" />Contact Seller</Button>
+          <div className="flex flex-col items-end gap-2 shrink-0 max-w-full lg:max-w-[40%]">
+            <span className="text-3xl lg:text-4xl font-mono font-bold text-yellow-400 drop-shadow-lg whitespace-nowrap">
+              {car.currency} {car.price}
+            </span>
+            <Button size="lg" className="mt-1" onClick={() => setShowContact(true)}><Mail className="mr-2" />Contact Seller</Button>
           </div>
         </div>
       </div>
