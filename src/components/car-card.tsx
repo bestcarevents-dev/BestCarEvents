@@ -23,8 +23,10 @@ export default function CarCard({ id, name, price, location, image, hint, type =
           <div className="pointer-events-none absolute inset-0 z-[1] bg-[radial-gradient(65%_140%_at_85%_10%,rgba(255,255,255,0.65)_0%,rgba(255,255,255,0)_60%)]" />
         )}
         {type === 'auction' ? (
-          <div className="absolute inset-0 m-3 rounded-[14px] border border-[#B49A6A]/50 overflow-hidden shadow-inner aspect-video">
-            <Image src={image} alt={name} fill className="object-cover w-full h-full transition-transform duration-700 ease-out group-hover:scale-[1.06]" data-ai-hint={hint} />
+          <div className="m-3 rounded-[14px] border border-[#B49A6A]/50 overflow-hidden shadow-inner">
+            <div className="relative aspect-video">
+              <Image src={image} alt={name} fill className="object-cover w-full h-full transition-transform duration-700 ease-out group-hover:scale-[1.06]" data-ai-hint={hint} />
+            </div>
             <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(80%_60%_at_70%_20%,rgba(255,255,255,0.18)_0%,rgba(255,255,255,0)_60%)]" />
             <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-[#C3A76D] via-[#E7D08A] to-[#B98A2A] opacity-90" />
           </div>
