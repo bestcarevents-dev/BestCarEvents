@@ -105,8 +105,8 @@ export default function EventEditDialog({ open, onOpenChange, documentId, initia
     try {
       setSaving(true);
       const db = getFirestore(app);
-      const ref = doc(db, "events", documentId);
-      const snap = await getDoc(ref);
+      const docRef = doc(db, "events", documentId);
+      const snap = await getDoc(docRef);
       if (!snap.exists()) {
         toast({ title: "Not found", description: "This event no longer exists.", variant: "destructive" });
         return;
@@ -127,7 +127,7 @@ export default function EventEditDialog({ open, onOpenChange, documentId, initia
         toast({ title: "No changes", description: "Nothing to update.", variant: "destructive" });
         return;
       }
-      await updateDoc(ref, payload);
+      await updateDoc(docRef, payload);
       toast({ title: "Saved", description: "Event updated successfully." });
       onSaved?.(payload as any);
       onOpenChange(false);

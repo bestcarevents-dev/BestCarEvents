@@ -34,13 +34,13 @@ export default function ServiceEditDialog({ open, onOpenChange, documentId, init
     try {
       setSaving(true);
       const db = getFirestore(app);
-      const ref = doc(db, "others", documentId);
-      const snap = await getDoc(ref);
+      const docRef = doc(db, "others", documentId);
+      const snap = await getDoc(docRef);
       if (!snap.exists()) {
         toast({ title: "Not found", description: "This service no longer exists.", variant: "destructive" });
         return;
       }
-      await updateDoc(ref, payload);
+      await updateDoc(docRef, payload);
       toast({ title: "Saved", description: "Service updated successfully." });
       onSaved?.(payload as any);
       onOpenChange(false);

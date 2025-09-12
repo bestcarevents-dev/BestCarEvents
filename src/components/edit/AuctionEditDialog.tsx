@@ -42,13 +42,13 @@ export default function AuctionEditDialog({ open, onOpenChange, documentId, init
     try {
       setSaving(true);
       const db = getFirestore(app);
-      const ref = doc(db, "auctions", documentId);
-      const snap = await getDoc(ref);
+      const docRef = doc(db, "auctions", documentId);
+      const snap = await getDoc(docRef);
       if (!snap.exists()) {
         toast({ title: "Not found", description: "This auction no longer exists.", variant: "destructive" });
         return;
       }
-      await updateDoc(ref, payload);
+      await updateDoc(docRef, payload);
       toast({ title: "Saved", description: "Auction updated successfully." });
       onSaved?.(payload as any);
       onOpenChange(false);

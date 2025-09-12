@@ -89,8 +89,8 @@ export default function HotelEditDialog({ open, onOpenChange, documentId, initia
     try {
       setSaving(true);
       const db = getFirestore(app);
-      const ref = doc(db, "hotels", documentId);
-      const snap = await getDoc(ref);
+      const docRef = doc(db, "hotels", documentId);
+      const snap = await getDoc(docRef);
       if (!snap.exists()) {
         toast({ title: "Not found", description: "This hotel no longer exists.", variant: "destructive" });
         return;
@@ -110,7 +110,7 @@ export default function HotelEditDialog({ open, onOpenChange, documentId, initia
         toast({ title: "No changes", description: "Nothing to update.", variant: "destructive" });
         return;
       }
-      await updateDoc(ref, payload);
+      await updateDoc(docRef, payload);
       toast({ title: "Saved", description: "Hotel updated successfully." });
       onSaved?.(payload as any);
       onOpenChange(false);

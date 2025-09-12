@@ -80,8 +80,8 @@ export default function ClubEditDialog({ open, onOpenChange, documentId, initial
     try {
       setSaving(true);
       const db = getFirestore(app);
-      const ref = doc(db, "clubs", documentId);
-      const snap = await getDoc(ref);
+      const docRef = doc(db, "clubs", documentId);
+      const snap = await getDoc(docRef);
       if (!snap.exists()) {
         toast({ title: "Not found", description: "This club no longer exists.", variant: "destructive" });
         return;
@@ -98,7 +98,7 @@ export default function ClubEditDialog({ open, onOpenChange, documentId, initial
         toast({ title: "No changes", description: "Nothing to update.", variant: "destructive" });
         return;
       }
-      await updateDoc(ref, payload);
+      await updateDoc(docRef, payload);
       toast({ title: "Saved", description: "Club updated successfully." });
       onSaved?.(payload as any);
       onOpenChange(false);
