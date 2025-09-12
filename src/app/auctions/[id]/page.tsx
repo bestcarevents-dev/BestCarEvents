@@ -52,9 +52,11 @@ export default function AuctionDetailsPage() {
 
   return (
     <div className="container mx-auto px-4 py-10 bg-white animate-fade-in">
-      <Button variant="ghost" className="mb-4 flex items-center gap-2" onClick={() => router.push('/auctions')}>
-        <ArrowLeft className="w-4 h-4" /> Back to Auctions
-      </Button>
+      <div className="mb-4 flex justify-end">
+        <Button variant="outline" className="border-yellow-300 text-gray-900 hover:bg-yellow-50" onClick={() => router.push('/auctions')}>
+          <ArrowLeft className="mr-2 w-4 h-4" /> Back to Auctions
+        </Button>
+      </div>
 
       {/* Image Carousel */}
       <div className="relative w-full max-w-5xl mx-auto rounded-2xl overflow-hidden shadow-2xl aspect-video mb-6 group">
@@ -140,12 +142,6 @@ export default function AuctionDetailsPage() {
             </CardContent>
           </Card>
         </div>
-      </div>
-      {/* Bottom Back Button */}
-      <div className="mt-8 flex justify-center">
-        <Button onClick={() => router.push('/auctions')} variant="outline" className="border-yellow-300 text-gray-900 hover:bg-yellow-50">
-          <ArrowLeft className="mr-2 w-4 h-4" /> Back to Auctions
-        </Button>
       </div>
     </div>
   );

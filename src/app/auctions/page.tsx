@@ -425,7 +425,7 @@ function AuctionsPageContent() {
                           name={auction.auctionName || "Auction"}
                           price={`${auction.auctionHouse || "Auction House"}`}
                           location={`${auction.city}, ${auction.state}`}
-                          image={auction.imageUrl || "https://via.placeholder.com/600x400?text=No+Image"}
+                          image={(Array.isArray(auction.imageUrls) && auction.imageUrls.length > 0 ? auction.imageUrls[0] : auction.imageUrl) || "https://via.placeholder.com/600x400?text=No+Image"}
                           hint={auction.auctionType || "auction"}
                           type="auction"
                           featured={true}
@@ -460,7 +460,7 @@ function AuctionsPageContent() {
                       name={auction.auctionName || "Auction"}
                       price={`${auction.auctionHouse || "Auction House"}`}
                       location={`${auction.city}, ${auction.state}`}
-                      image={auction.imageUrl || "https://via.placeholder.com/600x400?text=No+Image"}
+                      image={(Array.isArray(auction.imageUrls) && auction.imageUrls.length > 0 ? auction.imageUrls[0] : auction.imageUrl) || "https://via.placeholder.com/600x400?text=No+Image"}
                       hint={auction.auctionType || "auction"}
                       type="auction"
                       featured={false}
