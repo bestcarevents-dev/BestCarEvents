@@ -123,7 +123,7 @@ export default function CarDetailsPage() {
 
       {/* Desktop overlay actions (structured, no overlap) */}
       <div className="hidden md:block relative -mt-24 mb-10 z-10">
-        <div className="flex flex-wrap items-end justify-between gap-4 md:gap-6 bg-gradient-to-t from-black/80 to-transparent p-6 lg:p-8 rounded-b-3xl">
+        <div className="flex flex-wrap items-end justify-between gap-4 md:gap-6 bg-gradient-to-t from-black/80 to-transparent px-6 lg:px-8 pt-12 lg:pt-16 pb-6 lg:pb-8 rounded-b-3xl">
           <div className="min-w-0 flex-1">
             <h1 className="text-3xl lg:text-5xl font-extrabold font-headline text-white drop-shadow-lg leading-tight break-words">
               {car.year} {car.make} {car.model}
