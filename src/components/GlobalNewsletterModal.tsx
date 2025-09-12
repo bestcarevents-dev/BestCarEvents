@@ -105,7 +105,7 @@ export default function GlobalNewsletterModal({ isOpen, onClose, onSubscribe }: 
                 <div className="relative p-4 sm:p-6 md:p-8">
                   <button
                     onClick={handleClose}
-                    className="absolute top-2 right-2 z-10 p-1.5 rounded-full bg-white/80 hover:bg-white shadow-sm transition-all duration-200 hover:scale-110"
+                    className="absolute top-2 right-2 z-10 p-1.5 rounded-full bg-black/70 hover:bg-black/80 text-white ring-1 ring-white/70 shadow-sm transition-all duration-200 hover:scale-110"
                     aria-label="Close"
                   >
                     ✕
