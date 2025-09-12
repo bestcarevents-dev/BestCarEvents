@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
   Bell,
@@ -47,9 +48,11 @@ import {
 } from "@/components/ui/sheet"
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { getFirestore, collection, getDocs, query, where } from "firebase/firestore";
+import { app } from "@/lib/firebase";
 
 const navLinks = [
-    { href: "/admin/events", icon: Calendar, label: "Event Requests", badge: 5 },
+    { href: "/admin/events", icon: Calendar, label: "Event Requests" },
     { href: "/admin/cars", icon: Car, label: "Cars for Sale" },
     { href: "/admin/auctions", icon: Gavel, label: "Auction Requests" },
     { href: "/admin/hotels", icon: Hotel, label: "Hotel Submissions" },
@@ -76,6 +79,74 @@ const navLinks = [
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const [counts, setCounts] = useState<{
+    events: number;
+    cars: number;
+    auctions: number;
+    clubs: number;
+    partners: number;
+    newsletters: number;
+    contact: number;
+  }>({ events: 0, cars: 0, auctions: 0, clubs: 0, partners: 0, newsletters: 0, contact: 0 });
+
+  useEffect(() => {
+    const db = getFirestore(app);
+    const fetchCounts = async () => {
+      try {
+        const [
+          pendingEventsSnapshot,
+          pendingCarsSnapshot,
+          pendingAuctionsSnapshot,
+          pendingClubsSnapshot,
+          pendingPartnersSnapshot,
+          newsletterPendingSnapshot,
+          contactRequestsSnapshot
+        ] = await Promise.all([
+          getDocs(collection(db, "pendingEvents")),
+          getDocs(collection(db, "pendingCars")),
+          getDocs(collection(db, "pendingAuctions")),
+          getDocs(collection(db, "pendingClubs")),
+          getDocs(collection(db, "pendingPartners")),
+          getDocs(query(collection(db, "newsletterrequests"), where("status", "==", "pending"))),
+          getDocs(collection(db, "contactRequests"))
+        ]);
+
+        setCounts({
+          events: pendingEventsSnapshot.size,
+          cars: pendingCarsSnapshot.size,
+          auctions: pendingAuctionsSnapshot.size,
+          clubs: pendingClubsSnapshot.size,
+          partners: pendingPartnersSnapshot.size,
+          newsletters: newsletterPendingSnapshot.size,
+          contact: contactRequestsSnapshot.size,
+        });
+      } catch (e) {
+        console.error("Failed to fetch admin sidebar counts", e);
+      }
+    };
+    fetchCounts();
+  }, []);
+
+  const getBadgeCount = (href: string) => {
+    switch (href) {
+      case "/admin/events":
+        return counts.events;
+      case "/admin/cars":
+        return counts.cars;
+      case "/admin/auctions":
+        return counts.auctions;
+      case "/admin/clubs":
+        return counts.clubs;
+      case "/admin/partners":
+        return counts.partners;
+      case "/admin/newsletter-requests":
+        return counts.newsletters;
+      case "/admin/contact-requests":
+        return counts.contact;
+      default:
+        return 0;
+    }
+  };
 
   return (
     <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
@@ -110,7 +181,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                   >
                     <link.icon className="h-4 w-4" />
                     {link.label}
-                    {link.badge && <Badge className="ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-full">{link.badge}</Badge>}
+                    {getBadgeCount(link.href) > 0 && (
+                      <Badge className="ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-full">
+                        {getBadgeCount(link.href)}
+                      </Badge>
+                    )}
                   </Link>
                ))}
               <Link
@@ -163,7 +238,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                   >
                     <link.icon className="h-5 w-5" />
                     {link.label}
-                     {link.badge && <Badge className="ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-full">{link.badge}</Badge>}
+                     {getBadgeCount(link.href) > 0 && (
+                       <Badge className="ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-full">
+                         {getBadgeCount(link.href)}
+                       </Badge>
+                     )}
                   </Link>
                ))}
                 <Link
