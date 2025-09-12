@@ -11,7 +11,7 @@ export default async function ContactPage() {
     <div className="min-h-screen bg-white">
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-amber-50 via-yellow-50 to-white pointer-events-none" />
-        <div className="container mx-auto px-4 py-24 relative">
+        <div className="container mx-auto px-4 py-16 md:py-20 relative">
           <div className="inline-flex items-center gap-2 rounded-full border border-amber-200/80 bg-amber-50/70 px-4 py-1 text-amber-800">
             <span className="h-1.5 w-1.5 rounded-full bg-amber-600" />
             <span className="uppercase tracking-[0.2em] text-[11px]">Get in touch</span>
@@ -26,7 +26,7 @@ export default async function ContactPage() {
         </div>
       </section>
 
-      <section className="container mx-auto px-4 pb-16 grid grid-cols-1 lg:grid-cols-3 gap-10">
+      <section className="container mx-auto px-4 pb-12 md:pb-16 grid grid-cols-1 lg:grid-cols-3 gap-8 md:gap-10">
         <div className="lg:col-span-2 space-y-6">
           <div className="rounded-2xl border border-amber-200 bg-white shadow-[0_8px_30px_rgba(191,146,42,0.12)] p-6">
             <article className="max-w-none text-[1.075rem] leading-8 text-slate-800">

@@ -36,12 +36,12 @@ export default function HomepageAdCarousel() {
     fetchAds();
   }, []);
 
-  // Auto-rotate ads
+  // Auto-rotate ads (2s on all screens)
   useEffect(() => {
     if (ads.length <= 1) return;
     const interval = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % ads.length);
-    }, isMobile ? 1000 : 5000); // 1s on mobile, 5s otherwise
+    }, 2000);
     return () => clearInterval(interval);
   }, [ads.length, isMobile]);
 

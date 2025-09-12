@@ -47,11 +47,11 @@ export default function ContactForm() {
   };
 
   return (
-    <Card className="border-amber-200 shadow-[0_8px_30px_rgba(191,146,42,0.12)]">
+    <Card className="bg-white border-amber-200 shadow-[0_8px_30px_rgba(191,146,42,0.12)]">
       <CardContent className="p-6">
         <h2 className="font-serif text-2xl md:text-3xl font-bold text-slate-900">Send us a message</h2>
         <p className="mt-1 text-amber-900/80">We typically respond within one business day.</p>
-        <form onSubmit={handleSubmit} className="mt-5 space-y-4">
+        <form onSubmit={handleSubmit} className="mt-4 space-y-4">
           <div className="space-y-2">
             <Label htmlFor="contact-email">Your Email</Label>
             <Input

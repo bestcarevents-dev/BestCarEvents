@@ -102,7 +102,7 @@ export default function EventDetailsPage({ params }: { params: { id: string } })
     return (
         <div className="container mx-auto px-4 py-6 sm:py-10 bg-white animate-fade-in">
             {/* Hero Section */}
-            <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl mb-6 sm:mb-10 group">
+            <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl mb-2 sm:mb-10 group">
                 <div className="relative w-full aspect-video bg-black">
                     {/* Mobile: enable image modal on tap */}
                     <Dialog open={showImageModal} onOpenChange={setShowImageModal}>
@@ -120,18 +120,35 @@ export default function EventDetailsPage({ params }: { params: { id: string } })
                     </Dialog>
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
                 </div>
-                <div className="absolute left-0 bottom-0 w-full bg-gradient-to-t from-black/80 to-transparent p-4 sm:p-8 flex flex-col gap-3 sm:gap-4">
+                {/* Desktop overlay content; mobile will show details below */}
+                <div className="hidden sm:flex absolute left-0 bottom-0 w-full bg-gradient-to-t from-black/80 to-transparent p-8 flex-col gap-4">
                     <div>
-                        <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold font-headline text-white drop-shadow-lg animate-pop-in leading-tight">{event.eventName}</h1>
+                        <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold font-headline text-white drop-shadow-lg animate-pop-in leading-tight">{event.eventName}</h1>
                         <div className="flex flex-wrap gap-2 mt-2">
-                            <Badge className="bg-yellow-600 text-white animate-bounce-in text-xs sm:text-sm">{event.eventType}</Badge>
-                            {event.vehicleFocus && <Badge className="bg-yellow-500 text-white animate-bounce-in text-xs sm:text-sm">{event.vehicleFocus}</Badge>}
+                            <Badge className="bg-yellow-600 text-white animate-bounce-in">{event.eventType}</Badge>
+                            {event.vehicleFocus && <Badge className="bg-yellow-500 text-white animate-bounce-in">{event.vehicleFocus}</Badge>}
                         </div>
                     </div>
-                    <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2 sm:gap-4">
-                        {event.location && <span className="text-lg sm:text-xl font-mono font-bold text-yellow-600 drop-shadow-lg">{event.location}</span>}
+                    <div className="flex items-end justify-between gap-4">
+                        {event.location && <span className="text-xl font-mono font-bold text-yellow-600 drop-shadow-lg">{event.location}</span>}
                         <Button size="sm" className="mt-2 animate-pop w-fit" onClick={() => router.push('/events')}><ArrowLeft className="mr-2 w-4 h-4" />Back to Events</Button>
                     </div>
+                </div>
+            </div>
+            {/* Mobile title and badges below image to avoid cramped overlay */}
+            <div className="sm:hidden mb-6">
+                <h1 className="text-2xl font-extrabold font-headline text-gray-900 leading-tight">{event.eventName}</h1>
+                <div className="flex flex-wrap gap-2 mt-2">
+                    <Badge className="bg-yellow-600 text-white text-xs">{event.eventType}</Badge>
+                    {event.vehicleFocus && (
+                        <Badge className="bg-yellow-500 text-white text-xs">{event.vehicleFocus}</Badge>
+                    )}
+                </div>
+                <div className="flex items-center justify-between mt-3">
+                    {event.location && <span className="text-sm font-mono font-semibold text-yellow-700">{event.location}</span>}
+                    <Button size="sm" variant="outline" className="border-gray-300 text-gray-700" onClick={() => router.push('/events')}>
+                        <ArrowLeft className="mr-2 w-4 h-4" />Back
+                    </Button>
                 </div>
             </div>
 
