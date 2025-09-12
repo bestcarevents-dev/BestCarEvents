@@ -55,7 +55,7 @@ export default function FreeCallout({
 
           {/* Message */}
           <p className="mt-4 text-base md:text-lg text-[#2a2a2a] max-w-xl break-words hyphens-auto text-balance leading-snug">
-            <span className="font-bold text-[#C3A76D]">Cars:</span> Enjoy <span className="font-bold text-[#C3A76D]">2 months free</span> listing period!
+            <span className="font-bold text-[#C3A76D]">Cars:</span> Free car listings until <span className="font-bold text-[#C3A76D]">31st November 2025</span>.
           </p>
 
           {/* Description */}

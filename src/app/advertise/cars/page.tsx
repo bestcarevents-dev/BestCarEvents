@@ -120,8 +120,8 @@ const OPTIONAL_ADDONS = [
 // Promotional offer info
 const PROMOTIONAL_OFFER = {
   title: "Introductory Offer",
-  description: "Free Listings: For the first two months (ending the 30th September 2025) car listings are free of charge as part of our promotional offer.",
-  endDate: "September 30, 2025"
+  description: "Free car listings until 31st November 2025 as part of our promotional offer.",
+  endDate: "31st November 2025"
 };
 
 export default function CarsListingPage() {

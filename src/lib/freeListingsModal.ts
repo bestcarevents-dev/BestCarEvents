@@ -13,7 +13,7 @@ const CONTENT_DOC_PATH = ["site", "freeListingsModal"] as const;
 export const defaultFreeListingsModal: FreeListingsModalContent = {
   headlineTop: "ALL LISTINGS ARE",
   headlineEmphasis: "FREE!",
-  subline: "Cars: Free for 2 months",
+  subline: "Cars: Free until 31st November 2025",
   ctaLabel: "START LISTING NOW! 🚀",
 };
 

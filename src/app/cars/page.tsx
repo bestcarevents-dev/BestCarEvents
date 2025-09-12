@@ -275,12 +275,12 @@ function CarsPageContent() {
         {isFreeCarListing && (
           <div className="mb-8">
             <FreeCallout
-              title="List Your Car — First 2 Months Free"
+              title="List Your Car — Free until 31st November 2025"
               icon="sparkles"
               messages={[
-                "Sell smarter. Pay nothing for the first 60 days.",
-                "Launch offer: List for free for the first two months.",
-                "Zero listing fees for 60 days — Get maximum exposure.",
+                "Sell smarter. Free car listings until 31st November 2025.",
+                "Launch offer: List for free until 31st November 2025.",
+                "Zero listing fees — Get maximum exposure.",
               ]}
             />
           </div>

@@ -208,7 +208,7 @@ const networks = [
 const carSalePricing = [
   {
     title: "Car Sale Listing Pricing",
-    subtitle: "Introductory Offer: Free Listings until September 30th, 2025",
+    subtitle: "Introductory Offer: Free Listings until 31st November 2025",
     plans: [
       {
         name: "Basic Listing",
@@ -599,7 +599,7 @@ export default function AdvertisePage() {
                 <CardTitle className="text-xl font-bold text-yellow-600 mb-2">🎉 Introductory Offer</CardTitle>
               </CardHeader>
               <CardContent className="p-0">
-                <p className="font-semibold text-gray-900">Free Listings: For the first two months (ending the 30th September 2025) car listings are free of charge as part of our promotional offer.</p>
+                <p className="font-semibold text-gray-900">Free car listings until 31st November 2025 as part of our promotional offer.</p>
               </CardContent>
             </Card>
           </div>
