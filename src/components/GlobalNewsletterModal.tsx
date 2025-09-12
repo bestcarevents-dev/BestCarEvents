@@ -87,7 +87,7 @@ export default function GlobalNewsletterModal({ isOpen, onClose, onSubscribe }: 
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="max-w-2xl w-[95vw] max-h-[90vh] p-0 overflow-hidden bg-white mx-4 sm:mx-auto sm:rounded-lg sm:translate-y-0 translate-y-[5vh]">
+      <DialogContent className="max-w-md w-[92vw] p-0 max-h-[90vh] overflow-y-auto bg-gradient-to-br from-white to-[#E0D8C1] mx-auto sm:mx-4 border border-yellow-400/20 shadow-xl left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 sm:max-w-2xl sm:w-[90vw]">
         <AnimatePresence mode="wait">
           {!subscribed ? (
             <motion.div
@@ -103,6 +103,13 @@ export default function GlobalNewsletterModal({ isOpen, onClose, onSubscribe }: 
                 <div className="absolute inset-0 bg-gradient-to-br from-yellow-400/10 via-orange-500/10 to-red-500/10 rounded-lg"></div>
                 
                 <div className="relative p-4 sm:p-6 md:p-8">
+                  <button
+                    onClick={handleClose}
+                    className="absolute top-2 right-2 z-10 p-1.5 rounded-full bg-white/80 hover:bg-white shadow-sm transition-all duration-200 hover:scale-110"
+                    aria-label="Close"
+                  >
+                    ✕
+                  </button>
                   <DialogHeader className="text-center mb-4 sm:mb-6">
                     <div className="flex justify-center mb-3 sm:mb-4">
                       <div className="p-2 sm:p-3 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full">

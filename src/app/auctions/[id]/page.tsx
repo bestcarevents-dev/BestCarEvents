@@ -127,7 +127,7 @@ export default function AuctionDetailsPage() {
 
         {/* Sticky Contact Card */}
         <div className="lg:sticky lg:top-28 h-fit">
-          <Card className="shadow-xl border-2 border-yellow-400/40 animate-fade-in-up">
+          <Card className="bg-white shadow-xl border border-yellow-300/70 animate-fade-in-up">
             <CardContent className="p-6 space-y-4">
               <h2 className="text-2xl font-headline font-bold text-gray-900">Contact Organizer</h2>
               <div className="flex items-center gap-2 text-gray-900"><Mail className="w-4 h-4 text-yellow-600" /><a href={`mailto:${auction.organizerContact}?subject=Inquiry about ${auction.auctionName}`} className="underline text-yellow-700">{auction.organizerContact}</a></div>
@@ -140,6 +140,12 @@ export default function AuctionDetailsPage() {
             </CardContent>
           </Card>
         </div>
+      </div>
+      {/* Bottom Back Button */}
+      <div className="mt-8 flex justify-center">
+        <Button onClick={() => router.push('/auctions')} variant="outline" className="border-yellow-300 text-gray-900 hover:bg-yellow-50">
+          <ArrowLeft className="mr-2 w-4 h-4" /> Back to Auctions
+        </Button>
       </div>
     </div>
   );
