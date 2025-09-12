@@ -66,7 +66,7 @@ export default async function ContactPage() {
               {content.contact?.instagram && (
                 <div>
                   <span className="font-medium">Instagram: </span>
-                  <a className="text-amber-800 hover:underline" href={content.contact.instagram} target="_blank" rel="noreferrer noopener">Instagram</a>
+                  <a className="text-amber-800 hover:underline" href={content.contact.instagram} target="_blank" rel="noreferrer noopener">BestCarEvents</a>
                 </div>
               )}
               {content.contact?.address && (
