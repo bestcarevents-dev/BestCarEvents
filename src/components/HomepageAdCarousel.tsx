@@ -41,9 +41,9 @@ export default function HomepageAdCarousel() {
     if (ads.length <= 1) return;
     const interval = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % ads.length);
-    }, 5000); // 5 seconds
+    }, isMobile ? 1000 : 5000); // 1s on mobile, 5s otherwise
     return () => clearInterval(interval);
-  }, [ads.length]);
+  }, [ads.length, isMobile]);
 
   if (!ads.length) return null;
 
@@ -156,7 +156,7 @@ export default function HomepageAdCarousel() {
       {/* Carousel Container */}
       <div className="relative">
         {/* Navigation Buttons */}
-        {totalSlides > 1 && (
+        {totalSlides > 1 && !isMobile && (
           <>
             <Button
               variant="outline"

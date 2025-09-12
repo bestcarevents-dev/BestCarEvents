@@ -76,7 +76,7 @@ export default function ServiceDetailsPage({ params }: { params: { id: string } 
     return (
         <div className="container mx-auto px-4 py-6 sm:py-10 bg-white animate-fade-in">
             {/* Hero Section */}
-            <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl mb-6 sm:mb-10 group">
+            <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl mb-2 sm:mb-10 group">
                 <div className="relative w-full aspect-video bg-black">
                     {service.imageUrls && service.imageUrls.length > 0 ? (
                         <Image 
@@ -92,23 +92,43 @@ export default function ServiceDetailsPage({ params }: { params: { id: string } 
                     )}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
                 </div>
-                <div className="absolute left-0 bottom-0 w-full bg-gradient-to-t from-black/80 to-transparent p-4 sm:p-8 flex flex-col gap-3 sm:gap-4">
+                {/* Keep overlay for desktop only; move content out on mobile */}
+                <div className="hidden sm:flex absolute left-0 bottom-0 w-full bg-gradient-to-t from-black/80 to-transparent p-8 flex-col gap-4">
                     <div>
-                        <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold font-headline text-white drop-shadow-lg animate-pop-in leading-tight">{service.serviceName}</h1>
+                        <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold font-headline text-white drop-shadow-lg animate-pop-in leading-tight">{service.serviceName}</h1>
                         <div className="flex flex-wrap gap-2 mt-2">
-                            <Badge className="bg-yellow-600 text-white animate-bounce-in text-xs sm:text-sm">{service.serviceType}</Badge>
+                            <Badge className="bg-yellow-600 text-white animate-bounce-in">{service.serviceType}</Badge>
                             {service.featured && (
-                                <Badge className="bg-yellow-500 text-white animate-bounce-in text-xs sm:text-sm">
+                                <Badge className="bg-yellow-500 text-white animate-bounce-in">
                                     <Star className="w-3 h-3 mr-1" />
                                     Featured
                                 </Badge>
                             )}
                         </div>
                     </div>
-                    <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2 sm:gap-4">
-                        {service.location && <span className="text-lg sm:text-xl font-mono font-bold text-yellow-600 drop-shadow-lg">{service.location}</span>}
+                    <div className="flex items-end justify-between gap-4">
+                        {service.location && <span className="text-xl font-mono font-bold text-yellow-600 drop-shadow-lg">{service.location}</span>}
                         <Button size="sm" className="mt-2 animate-pop w-fit" onClick={() => router.push('/others')}><ArrowLeft className="mr-2 w-4 h-4" />Back to Services</Button>
                     </div>
+                </div>
+            </div>
+            {/* Mobile title and badges below image to avoid cramped overlay */}
+            <div className="sm:hidden mb-6">
+                <h1 className="text-2xl font-extrabold font-headline text-gray-900 leading-tight">{service.serviceName}</h1>
+                <div className="flex flex-wrap gap-2 mt-2">
+                    <Badge className="bg-yellow-600 text-white text-xs">{service.serviceType}</Badge>
+                    {service.featured && (
+                        <Badge className="bg-yellow-500 text-white text-xs">
+                            <Star className="w-3 h-3 mr-1" />
+                            Featured
+                        </Badge>
+                    )}
+                </div>
+                <div className="flex items-center justify-between mt-3">
+                    {service.location && <span className="text-sm font-mono font-semibold text-yellow-700">{service.location}</span>}
+                    <Button size="sm" variant="outline" className="border-gray-300 text-gray-700" onClick={() => router.push('/others')}>
+                        <ArrowLeft className="mr-2 w-4 h-4" />Back
+                    </Button>
                 </div>
             </div>
 

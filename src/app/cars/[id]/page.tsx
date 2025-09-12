@@ -29,6 +29,7 @@ export default function CarDetailsPage() {
   const [loading, setLoading] = useState(true);
   const [showContact, setShowContact] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [showImageModal, setShowImageModal] = useState(false);
   const [emblaApi, setEmblaApi] = useState<any>(null);
   const images = car?.images || ["https://via.placeholder.com/800x500?text=No+Image"];
 
@@ -69,68 +70,83 @@ export default function CarDetailsPage() {
   return (
     <div className="container mx-auto px-4 py-10 bg-white animate-fade-in">
       {/* Hero Section */}
-      <div className="relative rounded-3xl overflow-hidden shadow-xl mb-10">
+      <div className="relative rounded-3xl overflow-hidden shadow-xl mb-6 md:mb-10">
         <Carousel className="w-full" setApi={setEmblaApi}>
           <CarouselContent>
             {images.map((img: string, idx: number) => (
               <CarouselItem key={idx} className="aspect-video flex items-center justify-center bg-black">
-                <Image src={img} alt={`Car image ${idx + 1}`} width={900} height={500} className="object-contain w-full h-full transition-transform duration-500 hover:scale-105" />
+                {/* Mobile: clicking image opens modal */}
+                <button className="block md:hidden w-full h-full" onClick={() => setShowImageModal(true)} aria-label={`Open image ${idx + 1}`}>
+                  <Image src={img} alt={`Car image ${idx + 1}`} width={900} height={500} className="object-contain w-full h-full" />
+                </button>
+                <div className="hidden md:block w-full h-full">
+                  <Image src={img} alt={`Car image ${idx + 1}`} width={900} height={500} className="object-contain w-full h-full" />
+                </div>
               </CarouselItem>
             ))}
           </CarouselContent>
-          <CarouselPrevious />
-          <CarouselNext />
-          {/* Custom Large Left/Right Buttons */}
-          <button
-            type="button"
-            className="absolute left-2 top-1/2 -translate-y-1/2 z-20 bg-white/80 hover:bg-yellow-600 text-black hover:text-white rounded-full p-3 shadow-lg text-3xl transition-colors"
-            onClick={() => emblaApi && emblaApi.scrollPrev()}
-            aria-label="Previous image"
-            style={{ minWidth: 48, minHeight: 48 }}
-          >
-            &#8592;
-          </button>
-          <button
-            type="button"
-            className="absolute right-2 top-1/2 -translate-y-1/2 z-20 bg-white/80 hover:bg-yellow-600 text-black hover:text-white rounded-full p-3 shadow-lg text-3xl transition-colors"
-            onClick={() => emblaApi && emblaApi.scrollNext()}
-            aria-label="Next image"
-            style={{ minWidth: 48, minHeight: 48 }}
-          >
-            &#8594;
-          </button>
+          <CarouselPrevious className="hidden md:flex" />
+          <CarouselNext className="hidden md:flex" />
           <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/60 text-white rounded-full px-4 py-1 text-sm font-semibold shadow">
             {currentIndex + 1} / {images.length}
           </div>
         </Carousel>
-        <div className="absolute left-0 bottom-0 w-full bg-gradient-to-t from-black/80 to-transparent p-8 flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+        {/* Thumbnails under main image on mobile */}
+        <div className="mt-3 md:mt-4 flex gap-2 overflow-x-auto pb-1 md:justify-center">
+          {images.map((thumb: string, tIdx: number) => (
+            <button key={tIdx} onClick={() => emblaApi?.scrollTo(tIdx)} className={`relative h-16 w-24 flex-shrink-0 rounded-md overflow-hidden border ${currentIndex === tIdx ? 'border-yellow-500' : 'border-gray-200'}`} aria-label={`Go to image ${tIdx + 1}`}>
+              <Image src={thumb} alt={`Thumbnail ${tIdx + 1}`} fill className="object-cover" />
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Title and price moved outside image on mobile */}
+      <div className="md:hidden mb-6">
+        <div className="flex items-start justify-between gap-3">
           <div>
-            <h1 className="text-4xl md:text-5xl font-extrabold font-headline text-white drop-shadow-lg">{car.year} {car.make} {car.model}</h1>
+            <h1 className="text-2xl font-extrabold font-headline text-gray-900">{car.year} {car.make} {car.model}</h1>
             <div className="flex flex-wrap gap-2 mt-2">
               {highlightBadges.map(badge => (
-                <Badge key={badge} className="bg-yellow-600 text-white animate-bounce-in">{badge}</Badge>
+                <Badge key={badge} className="bg-yellow-600 text-white">{badge}</Badge>
               ))}
             </div>
           </div>
-          <div className="flex flex-col md:items-end gap-2">
-            <span className="text-3xl font-mono font-bold text-yellow-600 drop-shadow-lg">{car.currency} {car.price}</span>
-            <Button size="lg" className="mt-2 animate-pop" onClick={() => setShowContact(true)}><Mail className="mr-2" />Contact Seller</Button>
+          <div className="text-right">
+            <span className="text-2xl font-mono font-bold text-yellow-700">{car.currency} {car.price}</span>
           </div>
         </div>
-        <div className="absolute top-4 right-4 flex gap-2 z-10">
-          <Button variant="ghost" size="icon" className="hover:text-yellow-600"><Share2 /></Button>
-          <Button variant="ghost" size="icon" className="hover:text-red-600"><Heart /></Button>
+        <div className="mt-3">
+          <Button size="sm" className="w-full" onClick={() => setShowContact(true)}><Mail className="mr-2" />Contact Seller</Button>
+        </div>
+      </div>
+
+      {/* Desktop overlay actions (keep desktop as-is) */}
+      <div className="hidden md:block relative -mt-24 mb-10 z-10">
+        <div className="flex items-end justify-between bg-gradient-to-t from-black/80 to-transparent p-8 rounded-b-3xl">
+          <div>
+            <h1 className="text-5xl font-extrabold font-headline text-white drop-shadow-lg">{car.year} {car.make} {car.model}</h1>
+            <div className="flex flex-wrap gap-2 mt-2">
+              {highlightBadges.map(badge => (
+                <Badge key={badge} className="bg-yellow-600 text-white">{badge}</Badge>
+              ))}
+            </div>
+          </div>
+          <div className="flex flex-col items-end gap-2">
+            <span className="text-4xl font-mono font-bold text-yellow-400 drop-shadow-lg">{car.currency} {car.price}</span>
+            <Button size="lg" className="mt-2" onClick={() => setShowContact(true)}><Mail className="mr-2" />Contact Seller</Button>
+          </div>
         </div>
       </div>
 
       {/* Details Section */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
         {/* Specs & Features */}
-        <div className="md:col-span-2 space-y-8">
-          <Card className="p-6 animate-fade-in-up bg-white border border-gray-200">
+        <div className="md:col-span-2 space-y-6 md:space-y-8">
+          <Card className="p-4 md:p-6 animate-fade-in-up bg-white border border-gray-200">
             <CardContent className="p-0">
-              <h2 className="text-2xl font-bold font-headline mb-4 text-yellow-600">Specifications</h2>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+              <h2 className="text-xl md:text-2xl font-bold font-headline mb-4 text-yellow-600">Specifications</h2>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 md:gap-4 mb-6">
                 <div className="flex items-center gap-2"><span className="font-semibold text-gray-900">Body:</span> <span className="text-gray-900">{car.bodyStyle}</span></div>
                 <div className="flex items-center gap-2"><span className="font-semibold text-gray-900">Engine:</span> <span className="text-gray-900">{car.engine}</span></div>
                 <div className="flex items-center gap-2"><span className="font-semibold text-gray-900">Transmission:</span> <span className="text-gray-900">{car.transmission}</span></div>
@@ -141,7 +157,7 @@ export default function CarDetailsPage() {
                 {car.vin && <div className="flex items-center gap-2"><span className="font-semibold text-gray-900">VIN:</span> <span className="text-gray-900">{car.vin}</span></div>}
                 <div className="flex items-center gap-2"><span className="font-semibold text-gray-900">Location:</span> <MapPin className="w-4 h-4 inline-block mr-1 text-yellow-600" /><span className="text-gray-900">{car.location}</span></div>
               </div>
-              <h3 className="text-xl font-bold font-headline mb-2 text-yellow-600">Features</h3>
+              <h3 className="text-lg md:text-xl font-bold font-headline mb-2 text-yellow-600">Features</h3>
               <div className="flex flex-wrap gap-2">
                 {(car.features || []).map((feature: string) => (
                   <Badge key={feature} className="flex items-center gap-1 px-3 py-1 bg-yellow-100 text-yellow-800 border border-gray-200 animate-fade-in-up">
@@ -151,10 +167,10 @@ export default function CarDetailsPage() {
               </div>
             </CardContent>
           </Card>
-          <Card className="p-6 animate-fade-in-up bg-white border border-gray-200">
+          <Card className="p-4 md:p-6 animate-fade-in-up bg-white border border-gray-200">
             <CardContent className="p-0">
-              <h2 className="text-2xl font-bold font-headline mb-4 text-yellow-600">Condition & Description</h2>
-              <div className="prose max-w-none text-lg text-gray-600 mb-2 whitespace-pre-line">{car.description}</div>
+              <h2 className="text-xl md:text-2xl font-bold font-headline mb-4 text-yellow-600">Condition & Description</h2>
+              <div className="prose max-w-none text-base md:text-lg text-gray-600 mb-2 whitespace-pre-line">{car.description}</div>
               <div className="text-base text-gray-900 mt-4"><span className="font-semibold text-gray-900">Condition:</span> <span className="text-gray-900">{car.conditionDetails}</span></div>
             </CardContent>
           </Card>
@@ -183,8 +199,8 @@ export default function CarDetailsPage() {
           )}
         </div>
         {/* Seller Info */}
-        <div className="space-y-8">
-          <Card className="p-6 animate-fade-in-up bg-white border border-gray-200">
+        <div className="space-y-6 md:space-y-8">
+          <Card className="p-4 md:p-6 animate-fade-in-up bg-white border border-gray-200">
             <CardContent className="p-0">
               <h2 className="text-xl font-bold font-headline mb-4 text-yellow-600">Seller Information</h2>
               <div className="mb-2"><span className="font-semibold text-gray-900">Name:</span> <span className="text-gray-900">{car.sellerName}</span></div>
@@ -211,6 +227,15 @@ export default function CarDetailsPage() {
                 <a href={`mailto:${car.sellerContact}?subject=Inquiry about ${car.year} ${car.make} ${car.model}`}>Email Seller</a>
               </Button>
             </DialogFooter>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Image Modal for mobile */}
+      <Dialog open={showImageModal} onOpenChange={setShowImageModal}>
+        <DialogContent className="sm:hidden max-w-3xl w-[95vw] p-0 bg-transparent border-0 shadow-none">
+          <div className="relative w-full aspect-video">
+            <Image src={images[currentIndex]} alt={`Car image ${currentIndex + 1}`} fill className="object-contain bg-black" />
           </div>
         </DialogContent>
       </Dialog>

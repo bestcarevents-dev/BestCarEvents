@@ -58,6 +58,8 @@ export default function HeroSlider({ slides }: { slides?: HeroSlide[] }) {
         setLoaded(new Array(resolvedSlides.length).fill(false))
     }, [resolvedSlides.length])
 
+    
+
     return (
         <div className="relative w-full text-white pt-1 lg:pt-0">
             <Carousel

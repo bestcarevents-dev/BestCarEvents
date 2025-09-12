@@ -427,6 +427,7 @@ function AuctionsPageContent() {
                           location={`${auction.city}, ${auction.state}`}
                           image={auction.imageUrl || "https://via.placeholder.com/600x400?text=No+Image"}
                           hint={auction.auctionType || "auction"}
+                          type="auction"
                           featured={true}
                         />
                       ))}
@@ -461,6 +462,7 @@ function AuctionsPageContent() {
                       location={`${auction.city}, ${auction.state}`}
                       image={auction.imageUrl || "https://via.placeholder.com/600x400?text=No+Image"}
                       hint={auction.auctionType || "auction"}
+                      type="auction"
                       featured={false}
                     />
                   ))}

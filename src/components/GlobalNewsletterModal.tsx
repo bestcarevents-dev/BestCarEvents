@@ -87,7 +87,7 @@ export default function GlobalNewsletterModal({ isOpen, onClose, onSubscribe }: 
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="max-w-2xl w-[95vw] max-h-[90vh] p-0 overflow-hidden bg-white mx-4">
+      <DialogContent className="max-w-2xl w-[95vw] max-h-[90vh] p-0 overflow-hidden bg-white mx-4 sm:mx-auto sm:rounded-lg sm:translate-y-0 translate-y-[5vh]">
         <AnimatePresence mode="wait">
           {!subscribed ? (
             <motion.div

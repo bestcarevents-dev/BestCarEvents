@@ -56,6 +56,7 @@ const navLinks = [
     { href: "/admin/clubs", icon: Users, label: "Club Registrations" },
     { href: "/admin/others", icon: Settings, label: "Service Requests" },
     { href: "/admin/partners", icon: Handshake, label: "Partner Applications" },
+    { href: "/admin/contact-requests", icon: Mail, label: "Contact Requests" },
     { href: "/admin/users", icon: Users, label: "Manage Users" },
     { href: "/admin/newsletter", icon: Mail, label: "Newsletter" },
     { href: "/admin/newsletter-requests", icon: Mail, label: "Newsletter Requests" },

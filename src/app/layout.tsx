@@ -30,6 +30,11 @@ const fontBody = Lora({
 export const metadata: Metadata = {
   title: 'BestCarEvents',
   description: 'Your premier destination for car events and the automotive marketplace.',
+  icons: {
+    icon: '/logo.png',
+    shortcut: '/logo.png',
+    apple: '/logo.png',
+  },
 };
 
 export default async function RootLayout({

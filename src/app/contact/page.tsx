@@ -1,5 +1,6 @@
 import { fetchStaticPage } from "@/lib/staticPages";
 import Link from "next/link";
+import ContactForm from "@/components/ContactForm";
 
 export const revalidate = 60;
 
@@ -26,7 +27,7 @@ export default async function ContactPage() {
       </section>
 
       <section className="container mx-auto px-4 pb-16 grid grid-cols-1 lg:grid-cols-3 gap-10">
-        <div className="lg:col-span-2">
+        <div className="lg:col-span-2 space-y-6">
           <div className="rounded-2xl border border-amber-200 bg-white shadow-[0_8px_30px_rgba(191,146,42,0.12)] p-6">
             <article className="max-w-none text-[1.075rem] leading-8 text-slate-800">
               {content.body.split(/\n\n+/).map((para, i) => (
@@ -44,6 +45,7 @@ export default async function ContactPage() {
               </div>
             ) : null}
           </div>
+          <ContactForm />
         </div>
         <aside className="space-y-4">
           <div className="rounded-2xl border border-amber-200 bg-amber-50/60 p-6">

@@ -20,6 +20,7 @@ export default function EventDetailsPage({ params }: { params: { id: string } })
     const [event, setEvent] = useState<any | null>(null);
     const [loading, setLoading] = useState(true);
     const [showDialog, setShowDialog] = useState(false);
+    const [showImageModal, setShowImageModal] = useState(false);
     const [currentUser, setCurrentUser] = useState<User | null>(null);
     const [registering, setRegistering] = useState(false);
     const [registerSuccess, setRegisterSuccess] = useState(false);
@@ -103,7 +104,20 @@ export default function EventDetailsPage({ params }: { params: { id: string } })
             {/* Hero Section */}
             <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl mb-6 sm:mb-10 group">
                 <div className="relative w-full aspect-video bg-black">
-                    <Image src={event.imageUrl || 'https://via.placeholder.com/900x500?text=No+Image'} alt={event.eventName} fill className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-700" />
+                    {/* Mobile: enable image modal on tap */}
+                    <Dialog open={showImageModal} onOpenChange={setShowImageModal}>
+                        <button className="block sm:hidden w-full h-full" onClick={() => setShowImageModal(true)} aria-label="Open image">
+                            <Image src={event.imageUrl || 'https://via.placeholder.com/900x500?text=No+Image'} alt={event.eventName} fill className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-700" />
+                        </button>
+                        <div className="hidden sm:block w-full h-full">
+                            <Image src={event.imageUrl || 'https://via.placeholder.com/900x500?text=No+Image'} alt={event.eventName} fill className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-700" />
+                        </div>
+                        <DialogContent className="sm:hidden max-w-3xl w-[95vw] p-0 bg-transparent border-0 shadow-none">
+                            <div className="relative w-full aspect-video">
+                                <Image src={event.imageUrl || 'https://via.placeholder.com/900x500?text=No+Image'} alt={event.eventName} fill className="object-contain bg-black" />
+                            </div>
+                        </DialogContent>
+                    </Dialog>
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
                 </div>
                 <div className="absolute left-0 bottom-0 w-full bg-gradient-to-t from-black/80 to-transparent p-4 sm:p-8 flex flex-col gap-3 sm:gap-4">
