@@ -19,7 +19,7 @@ export const defaultStaticPages: StaticPagesDocument = {
     body: "Send us a message and we'll get back to you shortly.",
     images: [],
     contact: {
-      email: "hello@bestcarevents.com",
+      email: "info@bestcarevents.com",
       instagram: "https://instagram.com/bestcarevents",
     },
     updatedAt: Date.now(),
