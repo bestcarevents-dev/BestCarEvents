@@ -140,7 +140,7 @@ export default function HeroSearch() {
   const filterOptions = getFilterOptions();
 
   return (
-    <div className="bg-black/30 backdrop-blur-md rounded-xl p-4 lg:p-6 border border-white/10 shadow-2xl">
+    <div className="bg-secondary/30 backdrop-blur-md rounded-xl p-4 lg:p-6 border border-primary/30 shadow-2xl">
       <form onSubmit={handleSearch}>
         <div className="flex flex-wrap items-center gap-2 mx-auto mb-6 justify-center">
           <Button
@@ -228,7 +228,7 @@ export default function HeroSearch() {
           <div className="relative">
             <Input
               placeholder={getPlaceholderText()}
-              className="bg-white/10 border-white/20 text-white placeholder:text-gray-300 h-14"
+              className="h-14 bg-secondary/40 border-primary/40 text-foreground placeholder:text-foreground/70 focus-visible:ring-2 focus-visible:ring-primary"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -238,7 +238,7 @@ export default function HeroSearch() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Filter 1 */}
             <Select value={filter1} onValueChange={setFilter1}>
-              <SelectTrigger className="bg-white/10 border-white/20 text-white placeholder:text-gray-300 h-14">
+              <SelectTrigger className="h-14 bg-secondary/40 border-primary/40 text-foreground placeholder:text-foreground/70 focus:ring-primary">
                 <SelectValue placeholder={`${filterOptions.filter1.label}...`} />
               </SelectTrigger>
               <SelectContent>
@@ -253,7 +253,7 @@ export default function HeroSearch() {
 
             {/* Filter 2 */}
             <Select value={filter2} onValueChange={setFilter2}>
-              <SelectTrigger className="bg-white/10 border-white/20 text-white placeholder:text-gray-300 h-14">
+              <SelectTrigger className="h-14 bg-secondary/40 border-primary/40 text-foreground placeholder:text-foreground/70 focus:ring-primary">
                 <SelectValue placeholder={`${filterOptions.filter2.label}...`} />
               </SelectTrigger>
               <SelectContent>
@@ -270,7 +270,7 @@ export default function HeroSearch() {
           <Button 
             type="submit"
             size="lg" 
-            className="w-full h-16 text-lg font-bold bg-primary text-primary-foreground hover:bg-primary/90"
+            className="w-full h-16 text-lg font-bold bg-primary text-primary-foreground hover:bg-primary/90 border border-primary/50 shadow-[0_8px_30px_rgba(217,180,85,0.45)]"
           >
             <Search className="mr-2 h-5 w-5" />
             Search Now
