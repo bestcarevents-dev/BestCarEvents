@@ -85,8 +85,8 @@ export default function CarDetailsPage() {
               </CarouselItem>
             ))}
           </CarouselContent>
-          <CarouselPrevious className="hidden md:flex" />
-          <CarouselNext className="hidden md:flex" />
+          <CarouselPrevious className="hidden md:flex left-4 -translate-y-1/2" />
+          <CarouselNext className="hidden md:flex right-4 -translate-y-1/2" />
           <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/60 text-white rounded-full px-4 py-1 text-sm font-semibold shadow">
             {currentIndex + 1} / {images.length}
           </div>
