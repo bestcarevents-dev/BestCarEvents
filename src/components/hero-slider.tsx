@@ -123,7 +123,7 @@ export default function HeroSlider({ slides }: { slides?: HeroSlide[] }) {
                             {resolvedSlides[current].subheadline}
                         </p>
                         <div className="mt-8 max-w-2xl mx-auto px-4 sm:px-0">
-                            <div className="rounded-2xl border border-primary/30 bg-secondary/20 backdrop-blur-md p-4 sm:p-5 shadow-[0_8px_30px_rgba(0,0,0,0.35)]">
+                            <div className="rounded-2xl border border-primary/30 bg-secondary/15 backdrop-blur-md p-4 sm:p-5 shadow-[0_8px_30px_rgba(0,0,0,0.35)]">
                                 <HeroSearch />
                             </div>
                         </div>

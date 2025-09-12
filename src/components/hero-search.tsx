@@ -140,7 +140,7 @@ export default function HeroSearch() {
   const filterOptions = getFilterOptions();
 
   return (
-    <div className="bg-secondary/30 backdrop-blur-md rounded-xl p-4 lg:p-6 border border-primary/30 shadow-2xl">
+    <div className="">
       <form onSubmit={handleSearch}>
         <div className="flex flex-wrap items-center gap-2 mx-auto mb-6 justify-center">
           <Button
