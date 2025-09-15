@@ -59,6 +59,7 @@ export default function RegisterPage() {
           name: name,
           email: user.email,
           userType: "regular", // Default user type
+          onboarded: false,
           createdAt: new Date(),
         });
       }
@@ -91,6 +92,7 @@ export default function RegisterPage() {
             name: u.displayName || "",
             email: u.email,
             userType: "regular",
+            onboarded: false,
             createdAt: new Date(),
           });
         }

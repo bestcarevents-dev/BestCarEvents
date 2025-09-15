@@ -12,6 +12,7 @@ import AutoTranslate from '@/lib/translate/AutoTranslate';
 import { cookies } from 'next/headers';
 import EnhancerClient from '@/lib/translate/EnhancerClient';
 import NavigationProgress from '@/components/NavigationProgress';
+import OnboardingGuard from '@/components/OnboardingGuard';
 export const dynamic = 'force-dynamic';
 
 const fontHeadline = Cinzel({
@@ -59,6 +60,7 @@ export default async function RootLayout({
               <NavigationProgress />
               <Header />
               <main className="flex-1 mt-20">
+                <OnboardingGuard />
                 {/* Auto-translate all text nodes for non-default locales */}
                 {/* Default is en */}
                 {/* Server component ensures no creds leak client-side */}
