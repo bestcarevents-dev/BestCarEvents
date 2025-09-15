@@ -96,8 +96,10 @@ export default function LocationPicker({ label = "Location", placeholder = "Sear
   const markerRef = useRef<google.maps.Marker | null>(null);
   const mapInstanceRef = useRef<google.maps.Map | null>(null);
   const geocoderRef = useRef<google.maps.Geocoder | null>(null);
-  const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
   const [textValue, setTextValue] = useState<string>(initialValue?.formattedAddress || "");
+  const [suggestions, setSuggestions] = useState<Array<{ placeId: string; text: string }>>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [sessionToken] = useState<string>(() => crypto?.randomUUID ? crypto.randomUUID() : String(Date.now()));
 
   // Initialize map and autocomplete
   useEffect(() => {
@@ -136,25 +138,6 @@ export default function LocationPicker({ label = "Location", placeholder = "Sear
       markerRef.current!.setPosition(e.latLng);
       reverseGeocode(e.latLng.lat(), e.latLng.lng());
     });
-
-    // Autocomplete setup
-    if (inputRef.current) {
-      const options: google.maps.places.AutocompleteOptions = {
-        fields: ["place_id", "geometry", "formatted_address", "address_components", "name"],
-        types: ["geocode"],
-      };
-      autocompleteRef.current = new google.maps.places.Autocomplete(inputRef.current, options);
-      autocompleteRef.current.addListener("place_changed", () => {
-        const place = autocompleteRef.current!.getPlace();
-        if (!place || !place.geometry || !place.geometry.location) return;
-        const lat = place.geometry.location.lat();
-        const lng = place.geometry.location.lng();
-        const formatted = place.formatted_address || place.name || "";
-        setTextValue(formatted);
-        updateMap(lat, lng);
-        onChange(buildLocationData(formatted, place.place_id, lat, lng, place.address_components));
-      });
-    }
 
     // Initialize with initial value
     if (initialValue) {
@@ -215,6 +198,67 @@ export default function LocationPicker({ label = "Location", placeholder = "Sear
     });
   }
 
+  async function fetchAutocomplete(query: string) {
+    if (!query || query.length < 2) {
+      setSuggestions([]);
+      return;
+    }
+    try {
+      setIsLoading(true);
+      const res = await fetch("https://places.googleapis.com/v1/places:autocomplete", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Goog-Api-Key": process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
+          "X-Goog-FieldMask": "suggestions.placePrediction.placeId,suggestions.placePrediction.text",
+        },
+        body: JSON.stringify({
+          input: query,
+          languageCode: "en",
+          sessionToken,
+        }),
+      });
+      const data = await res.json();
+      const list: Array<{ placeId: string; text: string }> = (data?.suggestions || [])
+        .map((s: any) => ({ placeId: s?.placePrediction?.placeId, text: s?.placePrediction?.text?.text || "" }))
+        .filter((s: any) => s.placeId && s.text);
+      setSuggestions(list);
+    } catch (e) {
+      setSuggestions([]);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  async function fetchPlaceDetails(placeId: string) {
+    const url = `https://places.googleapis.com/v1/places/${encodeURIComponent(placeId)}`;
+    const res = await fetch(url, {
+      headers: {
+        "X-Goog-Api-Key": process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
+        "X-Goog-FieldMask": "id,displayName,formattedAddress,location,addressComponents",
+      },
+    });
+    if (!res.ok) return null;
+    return res.json();
+  }
+
+  async function handleSelectSuggestion(s: { placeId: string; text: string }) {
+    setTextValue(s.text);
+    setSuggestions([]);
+    const details = await fetchPlaceDetails(s.placeId);
+    const lat = details?.location?.latitude;
+    const lng = details?.location?.longitude;
+    if (typeof lat === "number" && typeof lng === "number") {
+      updateMap(lat, lng);
+      const comps = (details?.addressComponents || []).map((c: any) => ({
+        long_name: c.longText,
+        short_name: c.shortText,
+        types: [c.types?.[0]].filter(Boolean),
+      }));
+      onChange(buildLocationData(details?.formattedAddress || s.text, details?.id, lat, lng, comps as any));
+    }
+  }
+
   return (
     <div className="space-y-2 w-full">
       {label && (
@@ -222,13 +266,32 @@ export default function LocationPicker({ label = "Location", placeholder = "Sear
           {label} {required ? "*" : ""}
         </Label>
       )}
-      <Input
-        ref={inputRef}
-        placeholder={placeholder}
-        value={textValue}
-        onChange={(e) => setTextValue(e.target.value)}
-        className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400 w-full"
-      />
+      <div className="relative">
+        <Input
+          ref={inputRef}
+          placeholder={placeholder}
+          value={textValue}
+          onChange={(e) => {
+            setTextValue(e.target.value);
+            fetchAutocomplete(e.target.value);
+          }}
+          className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400 w-full"
+        />
+        {suggestions.length > 0 && (
+          <div className="absolute z-50 mt-1 w-full bg-white border border-gray-200 rounded shadow">
+            {suggestions.map((s) => (
+              <button
+                key={s.placeId}
+                type="button"
+                className="w-full text-left px-3 py-2 hover:bg-gray-50"
+                onClick={() => handleSelectSuggestion(s)}
+              >
+                {s.text}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
       <Card className="overflow-hidden">
         <div ref={mapRef} style={{ width: "100%", height }} />
       </Card>
