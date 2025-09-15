@@ -36,6 +36,7 @@ import { useToast } from "@/hooks/use-toast";
 import { createCarRequestNotification } from "@/lib/notifications";
 import { usePricing } from "@/lib/usePricing";
 import LocationPicker, { type LocationData } from "@/components/LocationPicker";
+import { Switch } from "@/components/ui/switch";
 
 const carFeatures = ["Air Conditioning", "Power Steering", "Power Windows", "Sunroof/Moonroof", "Navigation System", "Bluetooth", "Backup Camera", "Leather Seats", "Heated Seats"] as const;
 
@@ -134,6 +135,7 @@ const carSchema = z.object({
   region: z.string().min(1, "Region/State is required"),
   country: z.string().min(1, "Country is required"),
   postalCode: z.string().min(1, "ZIP/Postal code is required"),
+  privacyMode: z.boolean().optional().default(false),
   
   // Description & Condition
   description: z.string().min(20, "Description must be at least 20 characters"),
@@ -197,6 +199,7 @@ export default function SellCarPage() {
     defaultValues: {
         features: [],
         currency: "USD",
+        privacyMode: false,
     }
   });
   const [customFeature, setCustomFeature] = useState("");
@@ -381,6 +384,7 @@ export default function SellCarPage() {
         region: (data as any).region,
         country: (data as any).country,
         postalCode: (data as any).postalCode,
+        privacyMode: !!(data as any).privacyMode,
         listing_type: isFreeListing ? "free" : selectedListingType,
         status: "pending",
         submittedAt: new Date(),
@@ -750,6 +754,12 @@ export default function SellCarPage() {
                   {errors.location && <p className="text-red-500 text-sm">{errors.location.message}</p>}
                   {errors.locationData && <p className="text-red-500 text-sm">{String((errors as any).locationData?.message || "Location selection required")}</p>}
                 </div>
+                <div className="flex items-center gap-3">
+                  <Switch id="privacyMode" checked={!!watch("privacyMode")}
+                    onCheckedChange={(val) => setValue("privacyMode", !!val)} />
+                  <Label htmlFor="privacyMode">Privacy mode</Label>
+                </div>
+                <p className="text-xs text-muted-foreground -mt-2">If enabled, your exact address will be hidden on the public page. Only your city/state will be shown.</p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <Label htmlFor="addressLine">Address</Label>

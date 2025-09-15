@@ -130,7 +130,7 @@ export default function EventDetailsPage({ params }: { params: { id: string } })
                         </div>
                     </div>
                     <div className="flex items-end justify-between gap-4">
-                        {event.location && <span className="text-xl font-mono font-bold text-yellow-600 drop-shadow-lg">{event.location}</span>}
+                        {event.location && <span className="text-xl font-mono font-bold text-yellow-600 drop-shadow-lg">{event.privacyMode ? [event.city, event.region].filter(Boolean).join(", ") : event.location}</span>}
                         <Button size="sm" className="mt-2 animate-pop w-fit" onClick={() => router.push('/events')}><ArrowLeft className="mr-2 w-4 h-4" />Back to Events</Button>
                     </div>
                 </div>
@@ -145,7 +145,7 @@ export default function EventDetailsPage({ params }: { params: { id: string } })
                     )}
                 </div>
                 <div className="flex items-center justify-between mt-3">
-                    {event.location && <span className="text-sm font-mono font-semibold text-yellow-700">{event.location}</span>}
+                    {event.location && <span className="text-sm font-mono font-semibold text-yellow-700">{event.privacyMode ? [event.city, event.region].filter(Boolean).join(", ") : event.location}</span>}
                     <Button size="sm" variant="outline" className="border-gray-300 text-gray-700" onClick={() => router.push('/events')}>
                         <ArrowLeft className="mr-2 w-4 h-4" />Back
                     </Button>
@@ -243,8 +243,11 @@ export default function EventDetailsPage({ params }: { params: { id: string } })
                           {event.location && (
                             <div className="flex items-center gap-2 text-gray-700 text-sm sm:text-base">
                               <MapPin className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-600" />
-                              <span className="font-medium break-words">{event.location}</span>
+                              <span className="font-medium break-words">{event.privacyMode ? [event.city, event.region].filter(Boolean).join(", ") : event.location}</span>
                             </div>
+                          )}
+                          {event.privacyMode && (
+                            <p className="text-sm text-yellow-700">The organizer enabled privacy mode. Contact them for the exact location.</p>
                           )}
                           <div className="w-full overflow-hidden rounded-lg border">
                             {event.locationData?.latitude && event.locationData?.longitude ? (

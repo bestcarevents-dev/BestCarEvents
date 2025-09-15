@@ -119,10 +119,23 @@ export default function HotelDetailPage() {
         <div className="lg:col-span-2 space-y-8">
           <div>
             <h1 className="text-4xl md:text-5xl font-extrabold font-headline text-primary mb-2">{hotel.hotelName}</h1>
-            <div className="flex flex-wrap items-center gap-2 mb-4">
+            <div className="flex flex-wrap items-center gap-2 mb-1">
               <MapPin className="w-5 h-5 text-muted-foreground" />
-              <span className="text-lg text-muted-foreground">{hotel.address}, {hotel.city}, {hotel.state}, {hotel.country}</span>
+              <span className="text-lg text-muted-foreground">
+                {hotel.privacyMode ? (
+                  <>
+                    {hotel.city}{hotel.state ? ", " + hotel.state : ""}{hotel.country ? ", " + hotel.country : ""}
+                  </>
+                ) : (
+                  <>
+                    {hotel.address}{hotel.city ? ", " + hotel.city : ""}{hotel.state ? ", " + hotel.state : ""}{hotel.country ? ", " + hotel.country : ""}
+                  </>
+                )}
+              </span>
             </div>
+            {hotel.privacyMode && (
+              <p className="text-sm text-yellow-700 mb-4">The lister enabled privacy mode. Contact them for the exact location.</p>
+            )}
             <p className="text-lg text-muted-foreground mb-4 max-w-2xl">{hotel.description}</p>
             <div className="flex flex-wrap gap-2 mb-4">
               <Badge variant="secondary" className="text-base px-3 py-1 font-semibold animate-pulse">{hotel.storageType}</Badge>
@@ -160,8 +173,21 @@ export default function HotelDetailPage() {
               <h2 className="text-2xl font-bold font-headline mb-3">Location</h2>
               <div className="flex items-center gap-2 mb-3 text-gray-700">
                 <MapPin className="w-5 h-5 text-primary" />
-                <span className="text-base">{hotel.address}{hotel.city ? ", " + hotel.city : ""}{hotel.state ? ", " + hotel.state : ""}{hotel.country ? ", " + hotel.country : ""}</span>
+                <span className="text-base">
+                  {hotel.privacyMode ? (
+                    <>
+                      {hotel.city}{hotel.state ? ", " + hotel.state : ""}{hotel.country ? ", " + hotel.country : ""}
+                    </>
+                  ) : (
+                    <>
+                      {hotel.address}{hotel.city ? ", " + hotel.city : ""}{hotel.state ? ", " + hotel.state : ""}{hotel.country ? ", " + hotel.country : ""}
+                    </>
+                  )}
+                </span>
               </div>
+              {hotel.privacyMode && (
+                <p className="text-sm text-yellow-700 mb-2">Privacy mode is on. Exact address hidden.</p>
+              )}
               <div className="w-full overflow-hidden rounded-lg border">
                 {(hotel as any)?.locationData?.latitude && (hotel as any)?.locationData?.longitude ? (
                   <iframe

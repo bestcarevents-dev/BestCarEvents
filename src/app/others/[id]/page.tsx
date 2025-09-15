@@ -107,7 +107,7 @@ export default function ServiceDetailsPage({ params }: { params: { id: string } 
                         </div>
                     </div>
                     <div className="flex items-end justify-between gap-4">
-                        {service.location && <span className="text-xl font-mono font-bold text-yellow-600 drop-shadow-lg">{service.location}</span>}
+                        {service.location && <span className="text-xl font-mono font-bold text-yellow-600 drop-shadow-lg">{(service as any).privacyMode ? [ (service as any).city, (service as any).region].filter(Boolean).join(", ") : service.location}</span>}
                         <Button size="sm" className="mt-2 animate-pop w-fit" onClick={() => router.push('/others')}><ArrowLeft className="mr-2 w-4 h-4" />Back to Services</Button>
                     </div>
                 </div>
@@ -125,7 +125,7 @@ export default function ServiceDetailsPage({ params }: { params: { id: string } 
                     )}
                 </div>
                 <div className="flex items-center justify-between mt-3">
-                    {service.location && <span className="text-sm font-mono font-semibold text-yellow-700">{service.location}</span>}
+                    {service.location && <span className="text-sm font-mono font-semibold text-yellow-700">{(service as any).privacyMode ? [ (service as any).city, (service as any).region].filter(Boolean).join(", ") : service.location}</span>}
                     <Button size="sm" variant="outline" className="border-gray-300 text-gray-700" onClick={() => router.push('/others')}>
                         <ArrowLeft className="mr-2 w-4 h-4" />Back
                     </Button>
@@ -142,7 +142,7 @@ export default function ServiceDetailsPage({ params }: { params: { id: string } 
                 <div className="flex flex-col items-center bg-white border border-gray-200 rounded-xl shadow-lg px-4 sm:px-6 py-4 sm:py-6 animate-pop-in">
                     <MapPin className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-600 mb-2" />
                     <div className="text-sm sm:text-lg font-semibold text-yellow-600 mb-1">Location</div>
-                    <div className="text-base sm:text-xl font-bold text-gray-900 text-center">{service.location}</div>
+                    <div className="text-base sm:text-xl font-bold text-gray-900 text-center">{(service as any).privacyMode ? [ (service as any).city, (service as any).region].filter(Boolean).join(", ") : service.location}</div>
                 </div>
                 <div className="flex flex-col items-center bg-white border border-gray-200 rounded-xl shadow-lg px-4 sm:px-6 py-4 sm:py-6 animate-pop-in">
                     <DollarSign className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-600 mb-2" />
@@ -267,8 +267,11 @@ export default function ServiceDetailsPage({ params }: { params: { id: string } 
                                 {service.location && (
                                     <div className="flex items-center gap-2 text-gray-700 text-sm sm:text-base">
                                         <MapPin className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-600" />
-                                        <span className="font-medium break-words">{service.location}</span>
+                                        <span className="font-medium break-words">{(service as any).privacyMode ? [ (service as any).city, (service as any).region].filter(Boolean).join(", ") : service.location}</span>
                                     </div>
+                                )}
+                                {(service as any).privacyMode && (
+                                  <p className="text-sm text-yellow-700">The lister enabled privacy mode. Contact them for the exact location.</p>
                                 )}
                                 <div className="w-full overflow-hidden rounded-lg border">
                                     {(service as any)?.locationData?.latitude && (service as any)?.locationData?.longitude ? (

@@ -20,6 +20,7 @@ import { Badge } from "@/components/ui/badge";
 import { createServiceRequestNotification } from "@/lib/notifications";
 import TagInput from "@/components/form/TagInput";
 import LocationPicker, { type LocationData } from "@/components/LocationPicker";
+import { Switch } from "@/components/ui/switch";
 
 const serviceSchema = z.object({
   serviceName: z.string().min(2, "Service name must be at least 2 characters"),
@@ -34,6 +35,7 @@ const serviceSchema = z.object({
   region: z.string().min(1, "Region/State is required"),
   country: z.string().min(1, "Country is required"),
   postalCode: z.string().min(1, "ZIP/Postal code is required"),
+  privacyMode: z.boolean().optional().default(false),
   priceRange: z.string().min(1, "Price range is required"),
   contactInfo: z.string().email("Please enter a valid email address"),
   phoneNumber: z.string().optional(),
@@ -78,6 +80,9 @@ export default function RegisterServicePage() {
     watch,
   } = useForm<ServiceFormData>({
     resolver: zodResolver(serviceSchema),
+    defaultValues: {
+      privacyMode: false,
+    }
   });
 
   useEffect(() => {
@@ -146,6 +151,7 @@ export default function RegisterServicePage() {
         status: "pending",
         submittedAt: new Date(),
         createdAt: new Date(),
+        privacyMode: !!(data as any).privacyMode,
       };
 
       const docRef = await addDoc(collection(db, "pendingOthers"), serviceData);
@@ -264,6 +270,12 @@ export default function RegisterServicePage() {
                   {errors.location && <p className="text-red-500 text-sm">{errors.location.message}</p>}
                   {errors.locationData && <p className="text-red-500 text-sm">{String((errors as any).locationData?.message || "Location selection required")}</p>}
                 </div>
+                <div className="flex items-center gap-3">
+                  <Switch id="privacyMode" checked={!!watch("privacyMode")}
+                    onCheckedChange={(val) => setValue("privacyMode", !!val)} />
+                  <Label htmlFor="privacyMode" className="text-gray-700">Privacy mode</Label>
+                </div>
+                <p className="text-xs text-gray-500 -mt-2">If enabled, your exact address will be hidden on the public page. Only your city/state will be shown.</p>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">

@@ -159,7 +159,7 @@ export default function CarDetailsPage() {
                 <div className="flex items-center gap-2"><span className="font-semibold text-gray-900">Interior:</span> <span className="text-gray-900">{car.interiorColor}</span></div>
                 <div className="flex items-center gap-2"><span className="font-semibold text-gray-900">Mileage:</span> <span className="text-gray-900">{car.mileage?.toLocaleString()} mi</span></div>
                 {car.vin && <div className="flex items-center gap-2"><span className="font-semibold text-gray-900">VIN:</span> <span className="text-gray-900">{car.vin}</span></div>}
-                <div className="flex items-center gap-2"><span className="font-semibold text-gray-900">Location:</span> <MapPin className="w-4 h-4 inline-block mr-1 text-yellow-600" /><span className="text-gray-900">{car.location}</span></div>
+                <div className="flex items-center gap-2"><span className="font-semibold text-gray-900">Location:</span> <MapPin className="w-4 h-4 inline-block mr-1 text-yellow-600" /><span className="text-gray-900">{car.privacyMode ? [car.city, car.region].filter(Boolean).join(", ") : car.location}</span></div>
               </div>
               <h3 className="text-lg md:text-xl font-bold font-headline mb-2 text-yellow-600">Features</h3>
               <div className="flex flex-wrap gap-2">
@@ -187,7 +187,7 @@ export default function CarDetailsPage() {
                 {car.location && (
                   <div className="flex items-center gap-2 text-gray-700">
                     <MapPin className="w-4 h-4 text-yellow-600" />
-                    <span className="font-medium break-words">{car.location}</span>
+                    <span className="font-medium break-words">{car.privacyMode ? [car.city, car.region].filter(Boolean).join(", ") : car.location}</span>
                   </div>
                 )}
                 <div className="w-full overflow-hidden rounded-lg border">
@@ -209,6 +209,9 @@ export default function CarDetailsPage() {
                     />
                   )}
                 </div>
+                {car.privacyMode && (
+                  <p className="text-sm text-yellow-700">The lister enabled privacy mode. Contact the seller for the exact location.</p>
+                )}
               </CardContent>
             </Card>
           ) : null}

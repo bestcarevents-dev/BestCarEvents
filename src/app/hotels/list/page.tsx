@@ -18,6 +18,7 @@ import { UploadCloud, X } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { createHotelRequestNotification } from "@/lib/notifications";
 import LocationPicker, { type LocationData } from "@/components/LocationPicker";
+import { Switch } from "@/components/ui/switch";
 
 const hotelFeatures = ["Climate Controlled", "24/7 Security", "Detailing Services", "Member's Lounge", "Battery Tending", "Transportation", "24/7 Access", "Social Events", "Sales & Brokerage"] as const;
 
@@ -53,6 +54,7 @@ const hotelSchema = z.object({
       files => typeof window === "undefined" || (Array.isArray(files) && files.length > 0 && files.every(file => file instanceof File)),
       "At least one image is required"
     ),
+  privacyMode: z.boolean().optional().default(false),
 });
 
 type HotelFormData = z.infer<typeof hotelSchema>;
@@ -74,6 +76,7 @@ export default function ListHotelPage() {
     defaultValues: {
       features: [],
       images: [],
+      privacyMode: false,
     }
   });
 
@@ -152,6 +155,7 @@ export default function ListHotelPage() {
         submittedAt: new Date(),
         uploadedByUserId: currentUser?.uid || null,
         uploadedByUserEmail: currentUser?.email || null,
+        privacyMode: !!(data as any).privacyMode,
       };
 
       const docRef = await addDoc(collection(db, "pendingHotels"), hotelData);
@@ -234,6 +238,12 @@ export default function ListHotelPage() {
                     />
                     {errors.locationData && <p className="text-red-500 text-sm">{String((errors as any).locationData?.message || "Location selection required")}</p>}
                   </div>
+                  <div className="flex items-center gap-3">
+                    <Switch id="privacyMode" checked={!!watch("privacyMode")}
+                      onCheckedChange={(val) => setValue("privacyMode", !!val)} />
+                    <Label htmlFor="privacyMode" className="text-gray-700">Privacy mode</Label>
+                  </div>
+                  <p className="text-xs text-gray-500 -mt-2">If enabled, your exact address will be hidden on the public page. Only your city/state will be shown.</p>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                        <div className="space-y-2">
                           <Label htmlFor="address" className="text-gray-700 font-medium">Street Address</Label>
