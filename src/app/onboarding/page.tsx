@@ -156,7 +156,7 @@ export default function OnboardingPage() {
         onboarded: true,
         updatedAt: new Date()
       }, { merge: true });
-      router.push("/account");
+      router.push("/");
     } finally {
       setSaving(false);
     }
