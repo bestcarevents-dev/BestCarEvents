@@ -41,6 +41,7 @@ function useGoogleMaps(): boolean {
           await Promise.all([
             (google.maps as any).importLibrary("maps"),
             (google.maps as any).importLibrary("places"),
+            (google.maps as any).importLibrary("routes").catch(() => null),
           ]);
         }
         setLoaded(true);
@@ -60,6 +61,7 @@ function useGoogleMaps(): boolean {
           await Promise.all([
             (google.maps as any).importLibrary("maps"),
             (google.maps as any).importLibrary("places"),
+            (google.maps as any).importLibrary("routes").catch(() => null),
           ]);
         }
         setLoaded(true);
@@ -77,6 +79,7 @@ function useGoogleMaps(): boolean {
         await Promise.all([
           (google.maps as any).importLibrary("maps"),
           (google.maps as any).importLibrary("places"),
+          (google.maps as any).importLibrary("routes").catch(() => null),
         ]);
       }
       setLoaded(true);
