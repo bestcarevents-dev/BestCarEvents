@@ -179,6 +179,40 @@ export default function CarDetailsPage() {
             </CardContent>
           </Card>
 
+          {/* Location Map Section */}
+          {(car.locationData?.latitude && car.locationData?.longitude) || car.location ? (
+            <Card className="p-4 md:p-6 animate-fade-in-up bg-white border border-gray-200">
+              <CardContent className="p-0 space-y-3">
+                <h2 className="text-xl md:text-2xl font-bold font-headline mb-2 text-yellow-600">Location</h2>
+                {car.location && (
+                  <div className="flex items-center gap-2 text-gray-700">
+                    <MapPin className="w-4 h-4 text-yellow-600" />
+                    <span className="font-medium break-words">{car.location}</span>
+                  </div>
+                )}
+                <div className="w-full overflow-hidden rounded-lg border">
+                  {car.locationData?.latitude && car.locationData?.longitude ? (
+                    <iframe
+                      title="Car location map"
+                      src={`https://www.google.com/maps?q=${car.locationData.latitude},${car.locationData.longitude}&z=14&output=embed`}
+                      className="w-full h-[320px] md:h-[360px]"
+                      loading="lazy"
+                      referrerPolicy="no-referrer-when-downgrade"
+                    />
+                  ) : (
+                    <iframe
+                      title="Car location map"
+                      src={`https://www.google.com/maps?q=${encodeURIComponent(car.location)}&z=14&output=embed`}
+                      className="w-full h-[320px] md:h-[360px]"
+                      loading="lazy"
+                      referrerPolicy="no-referrer-when-downgrade"
+                    />
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          ) : null}
+
           {/* Video Section */}
           {car.videoUrl && (
             <Card className="p-6 animate-fade-in-up bg-white border border-gray-200">

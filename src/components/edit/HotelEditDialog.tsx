@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import LocationPicker, { type LocationData } from "@/components/LocationPicker";
 
 type HotelEditDialogProps = {
   open: boolean;
@@ -20,6 +21,8 @@ type HotelEditDialogProps = {
     city?: string;
     state?: string;
     country?: string;
+    postalCode?: string;
+    locationData?: LocationData;
     description?: string;
     storageType?: string;
     website?: string;
@@ -38,6 +41,8 @@ export default function HotelEditDialog({ open, onOpenChange, documentId, initia
   const [city, setCity] = useState<string>(initial.city || "");
   const [state, setState] = useState<string>(initial.state || "");
   const [country, setCountry] = useState<string>(initial.country || "");
+  const [postalCode, setPostalCode] = useState<string>(initial.postalCode || "");
+  const [locationData, setLocationData] = useState<LocationData | null>(initial.locationData || null);
   const [description, setDescription] = useState<string>(initial.description || "");
   const [storageType, setStorageType] = useState<string>(initial.storageType || "");
   const [website, setWebsite] = useState<string>(initial.website || "");
@@ -57,6 +62,8 @@ export default function HotelEditDialog({ open, onOpenChange, documentId, initia
       setCity(initial.city || "");
       setState(initial.state || "");
       setCountry(initial.country || "");
+      setPostalCode(initial.postalCode || "");
+      setLocationData((initial as any).locationData || null);
       setDescription(initial.description || "");
       setStorageType(initial.storageType || "");
       setWebsite(initial.website || "");
@@ -79,6 +86,8 @@ export default function HotelEditDialog({ open, onOpenChange, documentId, initia
     if (city.trim() !== (initial.city || "")) payload.city = city.trim();
     if (state.trim() !== (initial.state || "")) payload.state = state.trim();
     if (country.trim() !== (initial.country || "")) payload.country = country.trim();
+    if (postalCode.trim() !== (initial.postalCode || "")) payload.postalCode = postalCode.trim();
+    if (JSON.stringify(locationData || null) !== JSON.stringify((initial as any).locationData || null)) payload.locationData = locationData;
     if (description.trim() !== (initial.description || "")) payload.description = description.trim();
     if (storageType.trim() !== (initial.storageType || "")) payload.storageType = storageType.trim();
     if (website.trim() !== (initial.website || "")) payload.website = website.trim();
@@ -130,6 +139,23 @@ export default function HotelEditDialog({ open, onOpenChange, documentId, initia
         </DialogHeader>
         <div className="space-y-4">
           <div className="space-y-2">
+            <Label className="text-foreground">Location</Label>
+            <LocationPicker
+              required
+              initialValue={locationData as any}
+              onChange={(value) => {
+                setLocationData(value);
+                const c = (value as any)?.components;
+                const line = [c?.streetNumber, c?.route].filter(Boolean).join(" ");
+                if (line) setAddress(line);
+                if (c?.locality) setCity(c.locality);
+                if (c?.administrativeAreaLevel1) setState(c.administrativeAreaLevel1);
+                if (c?.country) setCountry(c.country);
+                if (c?.postalCode) setPostalCode(c.postalCode);
+              }}
+            />
+          </div>
+          <div className="space-y-2">
             <Label className="text-foreground">Main image</Label>
             <div className="flex items-center gap-4">
               <div className="w-28 h-20 rounded-md overflow-hidden border bg-muted/40 flex items-center justify-center">
@@ -176,6 +202,10 @@ export default function HotelEditDialog({ open, onOpenChange, documentId, initia
               <Label htmlFor="country" className="text-foreground">Country</Label>
               <Input id="country" value={country} onChange={(e) => setCountry(e.target.value)} placeholder="Country" className="text-foreground" />
             </div>
+          </div>
+          <div className="space-y-1">
+            <Label htmlFor="postalCode" className="text-foreground">ZIP / Postal Code</Label>
+            <Input id="postalCode" value={postalCode} onChange={(e) => setPostalCode(e.target.value)} placeholder="ZIP / Postal code" className="text-foreground" />
           </div>
           <div className="space-y-1">
             <Label htmlFor="description" className="text-foreground">Description</Label>

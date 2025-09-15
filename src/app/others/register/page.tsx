@@ -19,12 +19,21 @@ import { Upload, MapPin, Phone, Mail, Globe, Clock, DollarSign, Shield } from "l
 import { Badge } from "@/components/ui/badge";
 import { createServiceRequestNotification } from "@/lib/notifications";
 import TagInput from "@/components/form/TagInput";
+import LocationPicker, { type LocationData } from "@/components/LocationPicker";
 
 const serviceSchema = z.object({
   serviceName: z.string().min(2, "Service name must be at least 2 characters"),
   serviceType: z.string().min(1, "Please select a service type"),
   description: z.string().min(20, "Description must be at least 20 characters"),
   location: z.string().min(2, "Location is required"),
+  locationData: z.custom<LocationData>((v) => !!v && typeof v === 'object').refine((v: any) => v?.formattedAddress && typeof v.latitude === 'number' && typeof v.longitude === 'number', {
+    message: "Please select a valid location from suggestions or map",
+  }),
+  addressLine: z.string().min(2, "Address is required"),
+  city: z.string().min(1, "City is required"),
+  region: z.string().min(1, "Region/State is required"),
+  country: z.string().min(1, "Country is required"),
+  postalCode: z.string().min(1, "ZIP/Postal code is required"),
   priceRange: z.string().min(1, "Price range is required"),
   contactInfo: z.string().email("Please enter a valid email address"),
   phoneNumber: z.string().optional(),
@@ -235,27 +244,52 @@ export default function RegisterServicePage() {
                   {errors.description && <p className="text-red-500 text-sm">{errors.description.message}</p>}
                 </div>
 
+                <div className="space-y-2">
+                  <Label className="text-gray-700 font-medium">Location *</Label>
+                  <LocationPicker
+                    required
+                    initialValue={watch("locationData") as any}
+                    onChange={(value) => {
+                      setValue("locationData", value as any, { shouldValidate: true });
+                      setValue("location", value?.formattedAddress || "", { shouldValidate: true });
+                      const c = (value as any)?.components;
+                      const line = [c?.streetNumber, c?.route].filter(Boolean).join(" ");
+                      if (line) setValue("addressLine", line, { shouldValidate: true });
+                      if (c?.locality) setValue("city", c.locality, { shouldValidate: true });
+                      if (c?.administrativeAreaLevel1) setValue("region", c.administrativeAreaLevel1, { shouldValidate: true });
+                      if (c?.country) setValue("country", c.country, { shouldValidate: true });
+                      if (c?.postalCode) setValue("postalCode", c.postalCode, { shouldValidate: true });
+                    }}
+                  />
+                  {errors.location && <p className="text-red-500 text-sm">{errors.location.message}</p>}
+                  {errors.locationData && <p className="text-red-500 text-sm">{String((errors as any).locationData?.message || "Location selection required")}</p>}
+                </div>
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <Label htmlFor="location" className="text-gray-700 font-medium">Location *</Label>
-                    <Input 
-                      id="location" 
-                      {...register("location")} 
-                      placeholder="e.g., London, UK or New York, USA"
-                      className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400" 
-                    />
-                    {errors.location && <p className="text-red-500 text-sm">{errors.location.message}</p>}
+                    <Label htmlFor="addressLine" className="text-gray-700 font-medium">Address</Label>
+                    <Input id="addressLine" {...register("addressLine")} className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400" />
+                    {errors.addressLine && <p className="text-red-500 text-sm">{errors.addressLine.message}</p>}
                   </div>
-                  
                   <div className="space-y-2">
-                    <Label htmlFor="priceRange" className="text-gray-700 font-medium">Price Range *</Label>
-                    <Input 
-                      id="priceRange" 
-                      {...register("priceRange")} 
-                      placeholder="e.g., $50-200/hour or $500-2000/project"
-                      className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400" 
-                    />
-                    {errors.priceRange && <p className="text-red-500 text-sm">{errors.priceRange.message}</p>}
+                    <Label htmlFor="city" className="text-gray-700 font-medium">City</Label>
+                    <Input id="city" {...register("city")} className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400" />
+                    {errors.city && <p className="text-red-500 text-sm">{errors.city.message}</p>}
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="region" className="text-gray-700 font-medium">Region/State</Label>
+                    <Input id="region" {...register("region")} className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400" />
+                    {errors.region && <p className="text-red-500 text-sm">{errors.region.message}</p>}
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="country" className="text-gray-700 font-medium">Country</Label>
+                    <Input id="country" {...register("country")} className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400" />
+                    {errors.country && <p className="text-red-500 text-sm">{errors.country.message}</p>}
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="postalCode" className="text-gray-700 font-medium">ZIP / Postal Code</Label>
+                    <Input id="postalCode" {...register("postalCode")} className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400" />
+                    {errors.postalCode && <p className="text-red-500 text-sm">{errors.postalCode.message}</p>}
                   </div>
                 </div>
               </fieldset>

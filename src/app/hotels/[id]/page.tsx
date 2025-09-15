@@ -154,6 +154,36 @@ export default function HotelDetailPage() {
             </div>
           </div>
 
+          {/* Location Map Section */}
+          {((hotel as any)?.locationData?.latitude && (hotel as any)?.locationData?.longitude) || hotel.address || hotel.city ? (
+            <div>
+              <h2 className="text-2xl font-bold font-headline mb-3">Location</h2>
+              <div className="flex items-center gap-2 mb-3 text-gray-700">
+                <MapPin className="w-5 h-5 text-primary" />
+                <span className="text-base">{hotel.address}{hotel.city ? ", " + hotel.city : ""}{hotel.state ? ", " + hotel.state : ""}{hotel.country ? ", " + hotel.country : ""}</span>
+              </div>
+              <div className="w-full overflow-hidden rounded-lg border">
+                {(hotel as any)?.locationData?.latitude && (hotel as any)?.locationData?.longitude ? (
+                  <iframe
+                    title="Hotel location map"
+                    src={`https://www.google.com/maps?q=${(hotel as any).locationData.latitude},${(hotel as any).locationData.longitude}&z=14&output=embed`}
+                    className="w-full h-[320px] sm:h-[360px]"
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                  />
+                ) : (
+                  <iframe
+                    title="Hotel location map"
+                    src={`https://www.google.com/maps?q=${encodeURIComponent(`${hotel.address || ''} ${hotel.city || ''} ${hotel.state || ''} ${hotel.country || ''}`.trim())}&z=14&output=embed`}
+                    className="w-full h-[320px] sm:h-[360px]"
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                  />
+                )}
+              </div>
+            </div>
+          ) : null}
+
           {/* Gallery Thumbnails */}
           {images.length > 1 && (
             <div className="mt-8">

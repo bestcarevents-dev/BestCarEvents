@@ -35,6 +35,7 @@ import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { useToast } from "@/hooks/use-toast";
 import { createCarRequestNotification } from "@/lib/notifications";
 import { usePricing } from "@/lib/usePricing";
+import LocationPicker, { type LocationData } from "@/components/LocationPicker";
 
 const carFeatures = ["Air Conditioning", "Power Steering", "Power Windows", "Sunroof/Moonroof", "Navigation System", "Bluetooth", "Backup Camera", "Leather Seats", "Heated Seats"] as const;
 
@@ -125,6 +126,14 @@ const carSchema = z.object({
 
   // Location
   location: z.string().min(2, "Location is required"),
+  locationData: z.custom<LocationData>((v) => !!v && typeof v === 'object').refine((v: any) => v?.formattedAddress && typeof v.latitude === 'number' && typeof v.longitude === 'number', {
+    message: "Please select a valid location from suggestions or map",
+  }),
+  addressLine: z.string().min(2, "Address is required"),
+  city: z.string().min(1, "City is required"),
+  region: z.string().min(1, "Region/State is required"),
+  country: z.string().min(1, "Country is required"),
+  postalCode: z.string().min(1, "ZIP/Postal code is required"),
   
   // Description & Condition
   description: z.string().min(20, "Description must be at least 20 characters"),
@@ -366,6 +375,12 @@ export default function SellCarPage() {
         ...carDataWithoutVideo,
         images: imageUrls,
         videoUrl: videoUrl,
+        locationData: (data as any).locationData,
+        addressLine: (data as any).addressLine,
+        city: (data as any).city,
+        region: (data as any).region,
+        country: (data as any).country,
+        postalCode: (data as any).postalCode,
         listing_type: isFreeListing ? "free" : selectedListingType,
         status: "pending",
         submittedAt: new Date(),
@@ -712,13 +727,55 @@ export default function SellCarPage() {
                  />
             </fieldset>
             
-            {/* Description and Media */}
+            {/* Location & Description */}
             <fieldset className="space-y-6 border-t pt-6">
-                <legend className="text-xl font-semibold font-headline">Description & Media</legend>
-                 <div className="space-y-2">
-                    <Label htmlFor="location">Location (City, State/Country)</Label>
-                    <Input id="location" {...register("location")} />
-                    {errors.location && <p className="text-red-500 text-sm">{errors.location.message}</p>}
+                <legend className="text-xl font-semibold font-headline">Location & Description</legend>
+                <div className="space-y-2">
+                  <Label className="text-gray-700 font-medium">Location</Label>
+                  <LocationPicker
+                    required
+                    initialValue={watch("locationData") as any}
+                    onChange={(value) => {
+                      setValue("locationData", value as any, { shouldValidate: true });
+                      setValue("location", value?.formattedAddress || "", { shouldValidate: true });
+                      const c = (value as any)?.components;
+                      const line = [c?.streetNumber, c?.route].filter(Boolean).join(" ");
+                      if (line) setValue("addressLine", line, { shouldValidate: true });
+                      if (c?.locality) setValue("city", c.locality, { shouldValidate: true });
+                      if (c?.administrativeAreaLevel1) setValue("region", c.administrativeAreaLevel1, { shouldValidate: true });
+                      if (c?.country) setValue("country", c.country, { shouldValidate: true });
+                      if (c?.postalCode) setValue("postalCode", c.postalCode, { shouldValidate: true });
+                    }}
+                  />
+                  {errors.location && <p className="text-red-500 text-sm">{errors.location.message}</p>}
+                  {errors.locationData && <p className="text-red-500 text-sm">{String((errors as any).locationData?.message || "Location selection required")}</p>}
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="addressLine">Address</Label>
+                    <Input id="addressLine" {...register("addressLine")} />
+                    {errors.addressLine && <p className="text-red-500 text-sm">{errors.addressLine.message}</p>}
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="city">City</Label>
+                    <Input id="city" {...register("city")} />
+                    {errors.city && <p className="text-red-500 text-sm">{errors.city.message}</p>}
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="region">Region/State</Label>
+                    <Input id="region" {...register("region")} />
+                    {errors.region && <p className="text-red-500 text-sm">{errors.region.message}</p>}
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="country">Country</Label>
+                    <Input id="country" {...register("country")} />
+                    {errors.country && <p className="text-red-500 text-sm">{errors.country.message}</p>}
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="postalCode">ZIP / Postal Code</Label>
+                    <Input id="postalCode" {...register("postalCode")} />
+                    {errors.postalCode && <p className="text-red-500 text-sm">{errors.postalCode.message}</p>}
+                  </div>
                 </div>
                 <div className="space-y-2">
                     <Label htmlFor="description">Detailed Description</Label>

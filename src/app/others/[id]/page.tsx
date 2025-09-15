@@ -259,6 +259,40 @@ export default function ServiceDetailsPage({ params }: { params: { id: string } 
                         </CardContent>
                     </Card>
 
+                    {/* Location Map Section */}
+                    {(service as any)?.locationData?.latitude && (service as any)?.locationData?.longitude || service.location ? (
+                        <Card className="p-4 sm:p-6 animate-fade-in-up bg-white border border-gray-200">
+                            <CardContent className="p-0 space-y-3">
+                                <h2 className="text-lg sm:text-xl font-bold font-headline mb-3 sm:mb-4 text-yellow-600">Location</h2>
+                                {service.location && (
+                                    <div className="flex items-center gap-2 text-gray-700 text-sm sm:text-base">
+                                        <MapPin className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-600" />
+                                        <span className="font-medium break-words">{service.location}</span>
+                                    </div>
+                                )}
+                                <div className="w-full overflow-hidden rounded-lg border">
+                                    {(service as any)?.locationData?.latitude && (service as any)?.locationData?.longitude ? (
+                                        <iframe
+                                            title="Service location map"
+                                            src={`https://www.google.com/maps?q=${(service as any).locationData.latitude},${(service as any).locationData.longitude}&z=14&output=embed`}
+                                            className="w-full h-[260px] sm:h-[320px]"
+                                            loading="lazy"
+                                            referrerPolicy="no-referrer-when-downgrade"
+                                        />
+                                    ) : (
+                                        <iframe
+                                            title="Service location map"
+                                            src={`https://www.google.com/maps?q=${encodeURIComponent(service.location)}&z=14&output=embed`}
+                                            className="w-full h-[260px] sm:h-[320px]"
+                                            loading="lazy"
+                                            referrerPolicy="no-referrer-when-downgrade"
+                                        />
+                                    )}
+                                </div>
+                            </CardContent>
+                        </Card>
+                    ) : null}
+
                     {service.businessHours && (
                         <Card className="p-4 sm:p-6 animate-fade-in-up bg-white border border-gray-200">
                             <CardContent className="p-0">
