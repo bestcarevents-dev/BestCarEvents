@@ -39,19 +39,19 @@ export default function LoginPage() {
     try {
       // Optional: protect login with reCAPTCHA Enterprise
       let passing = false;
-      if (typeof window !== 'undefined' && (window as any).grecaptcha?.enterprise) {
-        const siteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || '6Lfdq8krAAAAAHV3CEfz05VXYeetO-TbIfNRqofB';
+      if (typeof window !== 'undefined' && (window as any).grecaptcha) {
+        const siteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || '';
         const action = 'LOGIN';
         const token: string = await new Promise((resolve) => {
-          (window as any).grecaptcha.enterprise.ready(async () => {
-            const t = await (window as any).grecaptcha.enterprise.execute(siteKey, { action });
+          (window as any).grecaptcha.ready(async () => {
+            const t = await (window as any).grecaptcha.execute(siteKey, { action });
             resolve(t);
           });
         });
         const verifyRes = await fetch('/api/recaptcha/verify', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ token, action, siteKey }),
+          body: JSON.stringify({ token, action }),
         });
         const verifyJson = await verifyRes.json();
         passing = !!verifyJson?.ok && !!verifyJson?.valid && !!verifyJson?.passing;
@@ -79,7 +79,7 @@ export default function LoginPage() {
 
   return (
     <div className="w-full h-screen lg:grid lg:grid-cols-2">
-      <Script src={`https://www.google.com/recaptcha/enterprise.js?render=${process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || '6Lfdq8krAAAAAHV3CEfz05VXYeetO-TbIfNRqofB'}`} strategy="afterInteractive" />
+      <Script src={`https://www.google.com/recaptcha/api.js?render=${process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || ''}`} strategy="afterInteractive" />
       <div className="relative flex-1 hidden w-full h-full lg:block">
           <Image
               src={bgUrl || "https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?q=80&w=2700&auto=format&fit=crop"}
