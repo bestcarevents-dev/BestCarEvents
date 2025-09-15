@@ -278,12 +278,12 @@ export default function LocationPicker({ label = "Location", placeholder = "Sear
           className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400 w-full"
         />
         {suggestions.length > 0 && (
-          <div className="absolute z-50 mt-1 w-full bg-white border border-gray-200 rounded shadow">
+          <div className="absolute z-50 mt-1 w-full bg-white border border-gray-200 rounded shadow text-gray-900">
             {suggestions.map((s) => (
               <button
                 key={s.placeId}
                 type="button"
-                className="w-full text-left px-3 py-2 hover:bg-gray-50"
+                className="w-full text-left px-3 py-2 hover:bg-gray-50 text-gray-900"
                 onClick={() => handleSelectSuggestion(s)}
               >
                 {s.text}
