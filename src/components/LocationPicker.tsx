@@ -35,7 +35,17 @@ function useGoogleMaps(): boolean {
   useEffect(() => {
     if (typeof window === "undefined") return;
     if ((window as any).google?.maps) {
-      setLoaded(true);
+      // Ensure modern library import is performed when available
+      const maybeImport = async () => {
+        if ((google.maps as any).importLibrary) {
+          await Promise.all([
+            (google.maps as any).importLibrary("maps"),
+            (google.maps as any).importLibrary("places"),
+          ]);
+        }
+        setLoaded(true);
+      };
+      maybeImport();
       return;
     }
     const existing = document.getElementById("google-maps-script");
@@ -45,15 +55,32 @@ function useGoogleMaps(): boolean {
       return;
     }
     if (existing) {
-      existing.addEventListener("load", () => setLoaded(true));
+      existing.addEventListener("load", async () => {
+        if ((window as any).google?.maps && (google.maps as any).importLibrary) {
+          await Promise.all([
+            (google.maps as any).importLibrary("maps"),
+            (google.maps as any).importLibrary("places"),
+          ]);
+        }
+        setLoaded(true);
+      });
       return;
     }
     const script = document.createElement("script");
     script.id = "google-maps-script";
     script.async = true;
     script.defer = true;
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`;
-    script.onload = () => setLoaded(true);
+    // Use v=weekly for modern API; use importLibrary to load Places (New)
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&v=weekly`;
+    script.onload = async () => {
+      if ((window as any).google?.maps && (google.maps as any).importLibrary) {
+        await Promise.all([
+          (google.maps as any).importLibrary("maps"),
+          (google.maps as any).importLibrary("places"),
+        ]);
+      }
+      setLoaded(true);
+    };
     document.head.appendChild(script);
   }, []);
   return loaded;
@@ -186,7 +213,7 @@ export default function LocationPicker({ label = "Location", placeholder = "Sear
   }
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-2 w-full">
       {label && (
         <Label className="text-gray-700 font-medium">
           {label} {required ? "*" : ""}
@@ -197,7 +224,7 @@ export default function LocationPicker({ label = "Location", placeholder = "Sear
         placeholder={placeholder}
         value={textValue}
         onChange={(e) => setTextValue(e.target.value)}
-        className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400"
+        className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400 w-full"
       />
       <Card className="overflow-hidden">
         <div ref={mapRef} style={{ width: "100%", height }} />

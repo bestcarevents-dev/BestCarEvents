@@ -32,6 +32,11 @@ const eventSchema = z.object({
   locationData: z.custom<LocationData>((v) => !!v && typeof v === 'object').refine((v: any) => v?.formattedAddress && typeof v.latitude === 'number' && typeof v.longitude === 'number', {
     message: "Please select a valid location from suggestions or map",
   }),
+  addressLine: z.string().min(2, "Address is required"),
+  city: z.string().min(1, "City is required"),
+  region: z.string().min(1, "Region/State is required"),
+  country: z.string().min(1, "Country is required"),
+  postalCode: z.string().min(1, "ZIP/Postal code is required"),
   description: z.string().min(20, "Description must be at least 20 characters"),
   organizerName: z.string().min(3, "Organizer name is required"),
   organizerContact: z.string().email("Invalid email address"),
@@ -96,6 +101,11 @@ export default function HostEventPage() {
         eventDate: data.eventDate,
         location: data.location,
         locationData: data.locationData,
+        addressLine: data.addressLine,
+        city: data.city,
+        region: data.region,
+        country: data.country,
+        postalCode: data.postalCode,
         description: data.description,
         organizerName: data.organizerName,
         organizerContact: data.organizerContact,
@@ -194,11 +204,47 @@ export default function HostEventPage() {
                       onChange={(value) => {
                         setValue("locationData", value as any, { shouldValidate: true });
                         setValue("location", value?.formattedAddress || "", { shouldValidate: true });
+                        const c = value?.components;
+                        const line = [c?.streetNumber, c?.route].filter(Boolean).join(" ");
+                        if (line) setValue("addressLine", line, { shouldValidate: true });
+                        if (c?.locality) setValue("city", c.locality, { shouldValidate: true });
+                        if (c?.administrativeAreaLevel1) setValue("region", c.administrativeAreaLevel1, { shouldValidate: true });
+                        if (c?.country) setValue("country", c.country, { shouldValidate: true });
+                        if (c?.postalCode) setValue("postalCode", c.postalCode, { shouldValidate: true });
                       }}
                     />
                     {errors.location && <p className="text-red-500 text-sm">{errors.location.message}</p>}
                     {errors.locationData && <p className="text-red-500 text-sm">{String((errors as any).locationData?.message || "Location selection required")}</p>}
                   </div>
+              </div>
+
+              {/* Address Fields */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <Label htmlFor="addressLine" className="text-gray-700 font-medium">Address</Label>
+                  <Input id="addressLine" {...register("addressLine")} className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400" />
+                  {errors.addressLine && <p className="text-red-500 text-sm">{errors.addressLine.message}</p>}
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="city" className="text-gray-700 font-medium">City</Label>
+                  <Input id="city" {...register("city")} className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400" />
+                  {errors.city && <p className="text-red-500 text-sm">{errors.city.message}</p>}
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="region" className="text-gray-700 font-medium">Region/State</Label>
+                  <Input id="region" {...register("region")} className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400" />
+                  {errors.region && <p className="text-red-500 text-sm">{errors.region.message}</p>}
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="country" className="text-gray-700 font-medium">Country</Label>
+                  <Input id="country" {...register("country")} className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400" />
+                  {errors.country && <p className="text-red-500 text-sm">{errors.country.message}</p>}
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="postalCode" className="text-gray-700 font-medium">ZIP / Postal Code</Label>
+                  <Input id="postalCode" {...register("postalCode")} className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400" />
+                  {errors.postalCode && <p className="text-red-500 text-sm">{errors.postalCode.message}</p>}
+                </div>
               </div>
 
               <div className="space-y-2">
