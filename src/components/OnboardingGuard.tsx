@@ -11,6 +11,7 @@ const EXEMPT_PATH_PREFIXES = new Set([
   "/register",
   "/forgot-password",
   "/onboarding",
+  "/verify-email",
   "/api",
 ]);
 
@@ -38,6 +39,12 @@ export default function OnboardingGuard() {
         const u = auth.currentUser;
         if (!u) return; // not logged in
         if (isExemptPath(pathname)) return; // allow exempt pages
+
+        // Force email verification first
+        if (!u.emailVerified) {
+          router.push("/verify-email");
+          return;
+        }
         const snap = await getDoc(doc(db, "users", u.uid));
         const data = snap.exists() ? (snap.data() as any) : {};
         if ((data?.onboarded ?? false) !== true) {

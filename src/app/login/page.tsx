@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { getAuth, signInWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
 import { app } from "@/lib/firebase";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -61,7 +61,12 @@ export default function LoginPage() {
         return;
       }
 
-      await signInWithEmailAndPassword(auth, email, password);
+      const cred = await signInWithEmailAndPassword(auth, email, password);
+      if (cred.user && !cred.user.emailVerified) {
+        try { await sendEmailVerification(cred.user); } catch {}
+        router.push("/verify-email");
+        return;
+      }
       router.push("/");
     } catch (error: any) {
       let errorMessage = "Failed to log in. Please check your credentials.";

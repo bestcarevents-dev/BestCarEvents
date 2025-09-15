@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { getAuth, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, sendEmailVerification } from "firebase/auth";
 import { getFirestore, doc, setDoc, getDoc } from "firebase/firestore"; // Import Firestore functions
 import { app } from "@/lib/firebase";
 import { Button } from "@/components/ui/button";
@@ -93,7 +93,13 @@ export default function RegisterPage() {
         });
       }
 
-      router.push("/onboarding");
+      // Send verification email and redirect to verify page
+      try {
+        if (user) {
+          await sendEmailVerification(user);
+        }
+      } catch {}
+      router.push("/verify-email");
     } catch (error: any) {
         let errorMessage = "Failed to create an account.";
         if (error.code === 'auth/email-already-in-use') {
