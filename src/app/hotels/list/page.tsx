@@ -19,6 +19,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { createHotelRequestNotification } from "@/lib/notifications";
 import LocationPicker, { type LocationData } from "@/components/LocationPicker";
 import { Switch } from "@/components/ui/switch";
+import { useFormPreferences } from "@/hooks/useFormPreferences";
 
 const hotelFeatures = ["Climate Controlled", "24/7 Security", "Detailing Services", "Member's Lounge", "Battery Tending", "Transportation", "24/7 Access", "Social Events", "Sales & Brokerage"] as const;
 
@@ -79,6 +80,7 @@ export default function ListHotelPage() {
       privacyMode: false,
     }
   });
+  const hotelPrefs = useFormPreferences("hotels");
 
   // Sync images with react-hook-form
   useEffect(() => {
@@ -202,10 +204,9 @@ export default function ListHotelPage() {
                           <Label className="text-gray-700 font-medium">Primary Storage Type</Label>
                           <Controller name="storageType" control={control} render={({ field }) => (
                               <select {...field} className="w-full p-2 border border-gray-300 rounded-md bg-white text-gray-900 focus:border-yellow-400 focus:ring-yellow-400">
-                                <option value="Dedicated">Dedicated</option>
-                                <option value="Collection">Collection</option>
-                                <option value="Long-Term">Long-Term</option>
-                                <option value="Short-Term">Short-Term</option>
+                                {(hotelPrefs.data?.storageTypes || ["Dedicated","Collection","Long-Term","Short-Term"]).map((t) => (
+                                  <option key={t} value={t}>{t}</option>
+                                ))}
                               </select>
                           )} />
                           {errors.storageType && <p className="text-red-500 text-sm">{errors.storageType.message}</p>}
@@ -286,7 +287,7 @@ export default function ListHotelPage() {
                       render={({ field }) => (
                           <>
                           <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
-                              {hotelFeatures.map(feature => (
+                              {(hotelPrefs.data?.features || hotelFeatures).map(feature => (
                                   <div key={feature} className="flex items-center space-x-2">
                                       <Checkbox 
                                           id={feature}

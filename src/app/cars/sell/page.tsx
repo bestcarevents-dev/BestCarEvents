@@ -37,6 +37,7 @@ import { createCarRequestNotification } from "@/lib/notifications";
 import { usePricing } from "@/lib/usePricing";
 import LocationPicker, { type LocationData } from "@/components/LocationPicker";
 import { Switch } from "@/components/ui/switch";
+import { useFormPreferences } from "@/hooks/useFormPreferences";
 
 const carFeatures = ["Air Conditioning", "Power Steering", "Power Windows", "Sunroof/Moonroof", "Navigation System", "Bluetooth", "Backup Camera", "Leather Seats", "Heated Seats"] as const;
 
@@ -193,6 +194,7 @@ export default function SellCarPage() {
   const [couponDiscount, setCouponDiscount] = useState<number>(0);
 
   const { toast } = useToast();
+  const carPrefs = useFormPreferences("cars");
 
   const { control, register, handleSubmit, formState: { errors }, setValue, watch } = useForm<CarFormData>({
     resolver: zodResolver(carSchema),
@@ -647,7 +649,20 @@ export default function SellCarPage() {
                     </div>
                      <div className="space-y-2">
                         <Label htmlFor="bodyStyle">Body Style</Label>
-                        <Input id="bodyStyle" placeholder="e.g., Coupe, Sedan, SUV" {...register("bodyStyle")} />
+                        <Controller
+                          name="bodyStyle"
+                          control={control}
+                          render={({ field }) => (
+                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                              <SelectTrigger><SelectValue placeholder="Select..." /></SelectTrigger>
+                              <SelectContent>
+                                {(carPrefs.data?.bodyStyles || []).map((bs) => (
+                                  <SelectItem key={bs} value={bs}>{bs}</SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          )}
+                        />
                         {errors.bodyStyle && <p className="text-red-500 text-sm">{errors.bodyStyle.message}</p>}
                     </div>
                      <div className="space-y-2">
@@ -664,8 +679,9 @@ export default function SellCarPage() {
                                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                                     <SelectTrigger><SelectValue placeholder="Select..." /></SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="Automatic">Automatic</SelectItem>
-                                        <SelectItem value="Manual">Manual</SelectItem>
+                                        {(carPrefs.data?.transmissions || ["Automatic","Manual"]).map((t) => (
+                                          <SelectItem key={t} value={t}>{t}</SelectItem>
+                                        ))}
                                     </SelectContent>
                                 </Select>
                             )}
@@ -681,10 +697,9 @@ export default function SellCarPage() {
                                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                                     <SelectTrigger><SelectValue placeholder="Select..." /></SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="FWD">FWD</SelectItem>
-                                        <SelectItem value="RWD">RWD</SelectItem>
-                                        <SelectItem value="AWD">AWD</SelectItem>
-                                        <SelectItem value="4WD">4WD</SelectItem>
+                                        {(carPrefs.data?.drivetrains || ["FWD","RWD","AWD","4WD"]).map((d) => (
+                                          <SelectItem key={d} value={d}>{d}</SelectItem>
+                                        ))}
                                     </SelectContent>
                                 </Select>
                             )}
@@ -712,7 +727,7 @@ export default function SellCarPage() {
                     control={control}
                     render={({ field }) => (
                         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                            {carFeatures.map(feature => (
+                            {(carPrefs.data?.features || carFeatures).map(feature => (
                                 <div key={feature} className="flex items-center space-x-2">
                                     <Checkbox 
                                         id={feature}

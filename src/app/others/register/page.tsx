@@ -21,6 +21,7 @@ import { createServiceRequestNotification } from "@/lib/notifications";
 import TagInput from "@/components/form/TagInput";
 import LocationPicker, { type LocationData } from "@/components/LocationPicker";
 import { Switch } from "@/components/ui/switch";
+import { useFormPreferences } from "@/hooks/useFormPreferences";
 
 const serviceSchema = z.object({
   serviceName: z.string().min(2, "Service name must be at least 2 characters"),
@@ -71,6 +72,7 @@ export default function RegisterServicePage() {
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [uploadProgress, setUploadProgress] = useState(0);
   const router = useRouter();
+  const servicePrefs = useFormPreferences("services");
 
   const {
     register,
@@ -224,11 +226,11 @@ export default function RegisterServicePage() {
                         <SelectValue placeholder="Select service type" />
                       </SelectTrigger>
                       <SelectContent>
-                        {serviceTypes.map((type) => (
+                        {(servicePrefs.data?.serviceTypes || serviceTypes).map((type: any) => (
                           <SelectItem key={type.value} value={type.value}>
                             <div>
                               <div className="font-medium">{type.label}</div>
-                              <div className="text-sm text-gray-500">{type.description}</div>
+                              {type.description && <div className="text-sm text-gray-500">{type.description}</div>}
                             </div>
                           </SelectItem>
                         ))}

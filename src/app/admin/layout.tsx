@@ -74,6 +74,7 @@ const navLinks = [
     { href: "/admin/static-pages", icon: Settings, label: "Static Pages" },
     { href: "/admin/auth-images", icon: Settings, label: "Auth Images" },
     { href: "/admin/interests", icon: Settings, label: "Interests" },
+    { href: "/admin/form-preferences", icon: Settings, label: "Form Preferences" },
     { href: "/admin/settings", icon: Settings, label: "Settings" },
 ];
 

@@ -1,12 +1,13 @@
 "use client"
 
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Calendar as CalendarIcon, Search, Car, Hotel, Users, Gavel, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useFormPreferences } from "@/hooks/useFormPreferences";
 
 export default function HeroSearch() {
   const [activeTab, setActiveTab] = useState("events");
@@ -34,78 +35,84 @@ export default function HeroSearch() {
     }
   };
 
+  const carsPrefs = useFormPreferences("cars");
+  const eventsPrefs = useFormPreferences("events");
+  const hotelsPrefs = useFormPreferences("hotels");
+  const servicesPrefs = useFormPreferences("services");
+  const sharedPrefs = useFormPreferences("shared");
+
   const getFilterOptions = () => {
     switch (activeTab) {
       case "cars":
         return {
           filter1: {
             label: "Make",
-            options: ["BMW", "Mercedes", "Audi", "Toyota", "Honda", "Ford", "Chevrolet", "Porsche", "Ferrari", "Lamborghini"]
+            options: ["all", ...(carsPrefs.data?.makes || [])]
           },
           filter2: {
             label: "Body Style",
-            options: ["Sedan", "SUV", "Coupe", "Convertible", "Hatchback", "Wagon", "Truck", "Van"]
+            options: ["all", ...(carsPrefs.data?.bodyStyles || [])]
           }
         };
       case "hotels":
         return {
           filter1: {
             label: "City",
-            options: ["New York", "Los Angeles", "Chicago", "Miami", "Las Vegas", "San Francisco", "Boston", "Seattle"]
+            options: ["all", ...(sharedPrefs.data?.citiesWhitelist || [])]
           },
           filter2: {
             label: "Storage Type",
-            options: ["Indoor", "Outdoor", "Climate Controlled", "Secure", "24/7 Access"]
+            options: ["all", ...(hotelsPrefs.data?.storageTypes || [])]
           }
         };
       case "events":
         return {
           filter1: {
             label: "Category",
-            options: ["Car Show", "Race", "Meetup", "Auction", "Exhibition", "Rally", "Track Day"]
+            options: ["all", ...(eventsPrefs.data?.eventTypes || [])]
           },
           filter2: {
             label: "Vehicle Focus",
-            options: ["Classic", "Sports", "Luxury", "Muscle", "Exotic", "JDM", "European"]
+            options: ["all", ...(eventsPrefs.data?.vehicleFocuses || [])]
           }
         };
       case "clubs":
         return {
           filter1: {
             label: "City",
-            options: ["New York", "Los Angeles", "Chicago", "Miami", "Las Vegas", "San Francisco", "Boston", "Seattle"]
+            options: ["all", ...(sharedPrefs.data?.citiesWhitelist || [])]
           },
           filter2: {
             label: "Activity",
-            options: ["Meetups", "Track Days", "Scenic Drives", "Social Events", "Racing", "Car Shows", "Charity Events"]
+            options: ["all", "Meetups", "Track Days", "Scenic Drives", "Social Events", "Racing", "Car Shows", "Charity Events"]
           }
         };
       case "auctions":
         return {
           filter1: {
             label: "City",
-            options: ["New York", "Los Angeles", "Chicago", "Miami", "Las Vegas", "San Francisco", "Boston", "Seattle"]
+            options: ["all", ...(sharedPrefs.data?.citiesWhitelist || [])]
           },
           filter2: {
             label: "Auction Type",
-            options: ["Classic", "Sports", "Luxury", "Muscle", "Exotic", "Vintage", "Modern"]
+            options: ["all", ...(/* prefer preferences if later added */[])]
           }
         };
       case "others":
         return {
           filter1: {
             label: "Service Type",
-            options: ["Car Storage", "Garage Services", "Spare Parts", "Restoration", "Detailing", "Wrapping & Vinyl", "Towing Services", "Transport", "Insurance", "Finance", "Consulting"]
+            options: ["all", ...((servicesPrefs.data?.serviceTypes || []).map((t) => t.label))]
           },
           filter2: {
             label: "Location",
-            options: ["New York", "Los Angeles", "Chicago", "Miami", "Las Vegas", "San Francisco", "Boston", "Seattle"]
+            options: ["all", ...(sharedPrefs.data?.citiesWhitelist || [])]
           }
         };
       default:
         return {
-          filter1: { label: "Filter 1", options: [] },
-          filter2: { label: "Filter 2", options: [] }
+          filter1: { label: "Filter 1", options: ["all"] },
+          filter2: { label: "Filter 2", options: ["all"] }
         };
     }
   };
@@ -242,7 +249,6 @@ export default function HeroSearch() {
                 <SelectValue placeholder={`${filterOptions.filter1.label}...`} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Any {filterOptions.filter1.label}</SelectItem>
                 {filterOptions.filter1.options.map((option) => (
                   <SelectItem key={option} value={option}>
                     {option}
@@ -257,7 +263,6 @@ export default function HeroSearch() {
                 <SelectValue placeholder={`${filterOptions.filter2.label}...`} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Any {filterOptions.filter2.label}</SelectItem>
                 {filterOptions.filter2.options.map((option) => (
                   <SelectItem key={option} value={option}>
                     {option}

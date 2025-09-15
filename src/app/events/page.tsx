@@ -20,6 +20,7 @@ import FreeCallout from "@/components/free-callout";
 import FreeCalloutDynamic from "@/components/FreeCalloutDynamic";
 import SimpleGallerySection from "@/components/SimpleGallerySection";
 import { defaultPageContent, fetchPageHeader, type PageHeader } from "@/lib/pageContent";
+import { useFormPreferences } from "@/hooks/useFormPreferences";
 
 function EventsPageContent() {
     const [events, setEvents] = useState<any[]>([]);
@@ -181,6 +182,7 @@ function EventsPageContent() {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
+    const prefs = useFormPreferences("events");
     return (
     <div className="bg-white">
         <div className="container mx-auto px-4 py-8">
@@ -324,7 +326,9 @@ function EventsPageContent() {
                    </SelectTrigger>
                    <SelectContent>
                       <SelectItem value="all">Any Event Type</SelectItem>
-                      {/* Add event types from events data if available */}
+                      {(prefs.data?.eventTypes || []).map((et) => (
+                        <SelectItem key={et} value={et}>{et}</SelectItem>
+                      ))}
                    </SelectContent>
                 </Select>
                 <Select value={selectedVehicleFocus} onValueChange={setSelectedVehicleFocus}>
@@ -333,7 +337,9 @@ function EventsPageContent() {
                    </SelectTrigger>
                    <SelectContent>
                       <SelectItem value="all">Any Vehicle Type</SelectItem>
-                      {/* Add vehicle focus options from events data if available */}
+                      {(prefs.data?.vehicleFocuses || []).map((vf) => (
+                        <SelectItem key={vf} value={vf}>{vf}</SelectItem>
+                      ))}
                    </SelectContent>
                 </Select>
                 <Select value={selectedEntryFee} onValueChange={setSelectedEntryFee}>
