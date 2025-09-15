@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { getAuth, onAuthStateChanged, applyActionCode, reload } from "firebase/auth";
 import { getFirestore, doc, getDoc, setDoc, collection, getDocs } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { app } from "@/lib/firebase";
@@ -15,6 +15,7 @@ import { motion, AnimatePresence } from "framer-motion";
 
 export default function OnboardingPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const auth = getAuth(app);
   const db = getFirestore(app);
   const storage = getStorage(app);
@@ -34,6 +35,27 @@ export default function OnboardingPage() {
   const [availableLifestyleNetworking, setAvailableLifestyleNetworking] = useState<{ id: string; name: string; group?: string; active?: boolean }[]>([]);
   const [lifestyleSearch, setLifestyleSearch] = useState("");
   const [saving, setSaving] = useState(false);
+  const [verifyMessage, setVerifyMessage] = useState<string | null>(null);
+
+  // Handle Firebase email action links e.g. mode=verifyEmail&oobCode=...
+  useEffect(() => {
+    const mode = searchParams?.get('mode');
+    const oobCode = searchParams?.get('oobCode');
+    if (mode === 'verifyEmail' && oobCode) {
+      (async () => {
+        try {
+          await applyActionCode(auth, oobCode);
+          try { if (auth.currentUser) await reload(auth.currentUser); } catch {}
+          setVerifyMessage('Your email has been verified successfully.');
+        } catch (e: any) {
+          setVerifyMessage(e?.message || 'Verification link is invalid or expired.');
+        } finally {
+          // Clean the query params from URL
+          router.replace('/onboarding');
+        }
+      })();
+    }
+  }, [auth, router, searchParams]);
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (user) => {
