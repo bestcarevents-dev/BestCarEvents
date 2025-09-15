@@ -12,6 +12,7 @@ import Link from "next/link";
 import Image from "next/image";
 // removed duplicate Firestore import
 import { ShieldAlert } from "lucide-react";
+import Script from "next/script";
 
 export default function RegisterPage() {
   const [email, setEmail] = useState("");
@@ -50,6 +51,34 @@ export default function RegisterPage() {
     }
 
     try {
+      // Execute reCAPTCHA Enterprise token for REGISTER action
+      let passing = false;
+      if (typeof window !== 'undefined' && (window as any).grecaptcha?.enterprise) {
+        const siteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || '6Lfdq8krAAAAAHV3CEfz05VXYeetO-TbIfNRqofB';
+        const action = 'REGISTER';
+        const token: string = await new Promise((resolve) => {
+          (window as any).grecaptcha.enterprise.ready(async () => {
+            const t = await (window as any).grecaptcha.enterprise.execute(siteKey, { action });
+            resolve(t);
+          });
+        });
+        const verifyRes = await fetch('/api/recaptcha/verify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token, action, siteKey }),
+        });
+        const verifyJson = await verifyRes.json();
+        passing = !!verifyJson?.ok && !!verifyJson?.valid && !!verifyJson?.passing;
+      } else {
+        // If script not loaded for some reason, fail closed
+        passing = false;
+      }
+
+      if (!passing) {
+        setError("reCAPTCHA verification failed. Please try again.");
+        return;
+      }
+
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
@@ -105,6 +134,8 @@ export default function RegisterPage() {
 
   return (
     <div className="w-full h-screen lg:grid lg:grid-cols-2">
+      {/* reCAPTCHA Enterprise script */}
+      <Script src={`https://www.google.com/recaptcha/enterprise.js?render=${process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || '6Lfdq8krAAAAAHV3CEfz05VXYeetO-TbIfNRqofB'}`} strategy="afterInteractive" />
       <div className="flex items-center justify-center py-12 bg-background">
         <div className="mx-auto grid w-[350px] gap-6">
           <div className="grid gap-2 text-center">

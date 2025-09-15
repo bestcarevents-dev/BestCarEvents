@@ -11,6 +11,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { getFirestore, doc, getDoc } from "firebase/firestore";
 import { ShieldAlert } from "lucide-react";
+import Script from "next/script";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -36,6 +37,30 @@ export default function LoginPage() {
     e.preventDefault();
     setError(null);
     try {
+      // Optional: protect login with reCAPTCHA Enterprise
+      let passing = false;
+      if (typeof window !== 'undefined' && (window as any).grecaptcha?.enterprise) {
+        const siteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || '6Lfdq8krAAAAAHV3CEfz05VXYeetO-TbIfNRqofB';
+        const action = 'LOGIN';
+        const token: string = await new Promise((resolve) => {
+          (window as any).grecaptcha.enterprise.ready(async () => {
+            const t = await (window as any).grecaptcha.enterprise.execute(siteKey, { action });
+            resolve(t);
+          });
+        });
+        const verifyRes = await fetch('/api/recaptcha/verify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token, action, siteKey }),
+        });
+        const verifyJson = await verifyRes.json();
+        passing = !!verifyJson?.ok && !!verifyJson?.valid && !!verifyJson?.passing;
+      }
+      if (!passing) {
+        setError("reCAPTCHA verification failed. Please try again.");
+        return;
+      }
+
       await signInWithEmailAndPassword(auth, email, password);
       router.push("/");
     } catch (error: any) {
@@ -49,6 +74,7 @@ export default function LoginPage() {
 
   return (
     <div className="w-full h-screen lg:grid lg:grid-cols-2">
+      <Script src={`https://www.google.com/recaptcha/enterprise.js?render=${process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || '6Lfdq8krAAAAAHV3CEfz05VXYeetO-TbIfNRqofB'}`} strategy="afterInteractive" />
       <div className="relative flex-1 hidden w-full h-full lg:block">
           <Image
               src={bgUrl || "https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?q=80&w=2700&auto=format&fit=crop"}
