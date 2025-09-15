@@ -23,11 +23,15 @@ import { format } from "date-fns";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { createEventRequestNotification } from "@/lib/notifications";
 import TagInput from "@/components/form/TagInput";
+import LocationPicker, { type LocationData } from "@/components/LocationPicker";
 
 const eventSchema = z.object({
   eventName: z.string().min(5, "Event name must be at least 5 characters"),
   eventDate: z.date({ required_error: "Event date is required" }),
   location: z.string().min(5, "Location is required"),
+  locationData: z.custom<LocationData>((v) => !!v && typeof v === 'object').refine((v: any) => v?.formattedAddress && typeof v.latitude === 'number' && typeof v.longitude === 'number', {
+    message: "Please select a valid location from suggestions or map",
+  }),
   description: z.string().min(20, "Description must be at least 20 characters"),
   organizerName: z.string().min(3, "Organizer name is required"),
   organizerContact: z.string().email("Invalid email address"),
@@ -60,7 +64,7 @@ export default function HostEventPage() {
   const storage = getStorage(app);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
 
-  const { control, register, handleSubmit, formState: { errors } } = useForm<EventFormData>({
+  const { control, register, handleSubmit, formState: { errors }, setValue, watch } = useForm<EventFormData>({
     resolver: zodResolver(eventSchema),
   });
 
@@ -91,6 +95,7 @@ export default function HostEventPage() {
         eventName: data.eventName,
         eventDate: data.eventDate,
         location: data.location,
+        locationData: data.locationData,
         description: data.description,
         organizerName: data.organizerName,
         organizerContact: data.organizerContact,
@@ -182,9 +187,17 @@ export default function HostEventPage() {
                     {errors.eventDate && <p className="text-red-500 text-sm">{errors.eventDate.message as string}</p>}
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="location" className="text-gray-700 font-medium">Location</Label>
-                    <Input id="location" {...register("location")} className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400" />
+                    <LocationPicker
+                      label="Location"
+                      required
+                      initialValue={watch("locationData") as any}
+                      onChange={(value) => {
+                        setValue("locationData", value as any, { shouldValidate: true });
+                        setValue("location", value?.formattedAddress || "", { shouldValidate: true });
+                      }}
+                    />
                     {errors.location && <p className="text-red-500 text-sm">{errors.location.message}</p>}
+                    {errors.locationData && <p className="text-red-500 text-sm">{String((errors as any).locationData?.message || "Location selection required")}</p>}
                   </div>
               </div>
 
