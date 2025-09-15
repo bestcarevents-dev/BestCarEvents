@@ -234,6 +234,40 @@ export default function EventDetailsPage({ params }: { params: { id: string } })
                             </CardContent>
                         </Card>
                     )}
+
+                    {/* Location Map Section */}
+                    {(event.locationData?.latitude && event.locationData?.longitude) || event.location ? (
+                      <Card className="p-4 sm:p-6 animate-fade-in-up bg-white border border-gray-200">
+                        <CardContent className="p-0 space-y-3">
+                          <h2 className="text-xl sm:text-2xl font-bold font-headline mb-2 sm:mb-3 text-yellow-600">Location</h2>
+                          {event.location && (
+                            <div className="flex items-center gap-2 text-gray-700 text-sm sm:text-base">
+                              <MapPin className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-600" />
+                              <span className="font-medium break-words">{event.location}</span>
+                            </div>
+                          )}
+                          <div className="w-full overflow-hidden rounded-lg border">
+                            {event.locationData?.latitude && event.locationData?.longitude ? (
+                              <iframe
+                                title="Event location map"
+                                src={`https://www.google.com/maps?q=${event.locationData.latitude},${event.locationData.longitude}&z=14&output=embed`}
+                                className="w-full h-[320px] sm:h-[360px]"
+                                loading="lazy"
+                                referrerPolicy="no-referrer-when-downgrade"
+                              />
+                            ) : (
+                              <iframe
+                                title="Event location map"
+                                src={`https://www.google.com/maps?q=${encodeURIComponent(event.location)}&z=14&output=embed`}
+                                className="w-full h-[320px] sm:h-[360px]"
+                                loading="lazy"
+                                referrerPolicy="no-referrer-when-downgrade"
+                              />
+                            )}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ) : null}
                 </div>
                 {/* Quick Info - Mobile Responsive */}
                 <div className="space-y-6 sm:space-y-8">
