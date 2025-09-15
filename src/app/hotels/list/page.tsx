@@ -17,6 +17,7 @@ import * as z from "zod";
 import { UploadCloud, X } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { createHotelRequestNotification } from "@/lib/notifications";
+import LocationPicker, { type LocationData } from "@/components/LocationPicker";
 
 const hotelFeatures = ["Climate Controlled", "24/7 Security", "Detailing Services", "Member's Lounge", "Battery Tending", "Transportation", "24/7 Access", "Social Events", "Sales & Brokerage"] as const;
 
@@ -28,6 +29,10 @@ const hotelSchema = z.object({
   city: z.string().min(2, "City is required"),
   state: z.string().min(2, "State/Province is required"),
   country: z.string().min(2, "Country is required"),
+  postalCode: z.string().min(1, "ZIP/Postal code is required"),
+  locationData: z.custom<LocationData>((v) => !!v && typeof v === 'object').refine((v: any) => v?.formattedAddress && typeof v.latitude === 'number' && typeof v.longitude === 'number', {
+    message: "Please select a valid location from suggestions or map",
+  }),
   website: z.string().url("Must be a valid URL").optional().or(z.literal('')),
   
   // Details
@@ -64,7 +69,7 @@ export default function ListHotelPage() {
   const [customAmenities, setCustomAmenities] = useState<string[]>([]);
   const MAX_IMAGES = 10;
 
-  const { register, handleSubmit, control, setValue, formState: { errors } } = useForm<HotelFormData>({
+  const { register, handleSubmit, control, setValue, watch, formState: { errors } } = useForm<HotelFormData>({
     resolver: zodResolver(hotelSchema),
     defaultValues: {
       features: [],
@@ -134,6 +139,8 @@ export default function ListHotelPage() {
         city: data.city,
         state: data.state,
         country: data.country,
+        postalCode: (data as any).postalCode,
+        locationData: (data as any).locationData,
         website: data.website,
         description: data.description,
         storageType: data.storageType,
@@ -209,6 +216,24 @@ export default function ListHotelPage() {
 
               <fieldset className="space-y-6 border-t border-gray-200 pt-6">
                   <legend className="text-xl font-semibold font-headline text-gray-900">Location & Contact</legend>
+                  <div className="space-y-2">
+                    <Label className="text-gray-700 font-medium">Location</Label>
+                    <LocationPicker
+                      required
+                      initialValue={watch("locationData") as any}
+                      onChange={(value) => {
+                        setValue("locationData", value as any, { shouldValidate: true });
+                        const c = (value as any)?.components;
+                        const line = [c?.streetNumber, c?.route].filter(Boolean).join(" ");
+                        if (line) setValue("address", line, { shouldValidate: true });
+                        if (c?.locality) setValue("city", c.locality, { shouldValidate: true });
+                        if (c?.administrativeAreaLevel1) setValue("state", c.administrativeAreaLevel1, { shouldValidate: true });
+                        if (c?.country) setValue("country", c.country, { shouldValidate: true });
+                        if (c?.postalCode) setValue("postalCode", c.postalCode, { shouldValidate: true });
+                      }}
+                    />
+                    {errors.locationData && <p className="text-red-500 text-sm">{String((errors as any).locationData?.message || "Location selection required")}</p>}
+                  </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                        <div className="space-y-2">
                           <Label htmlFor="address" className="text-gray-700 font-medium">Street Address</Label>
@@ -229,6 +254,11 @@ export default function ListHotelPage() {
                           <Label htmlFor="country" className="text-gray-700 font-medium">Country</Label>
                           <Input id="country" {...register("country")} className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400" />
                           {errors.country && <p className="text-red-500 text-sm">{errors.country.message}</p>}
+                      </div>
+                      <div className="space-y-2">
+                          <Label htmlFor="postalCode" className="text-gray-700 font-medium">ZIP / Postal Code</Label>
+                          <Input id="postalCode" {...register("postalCode")} className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400" />
+                          {errors.postalCode && <p className="text-red-500 text-sm">{errors.postalCode.message}</p>}
                       </div>
                   </div>
                    <div className="space-y-2">
