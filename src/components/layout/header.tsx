@@ -111,7 +111,7 @@ const AuthButtons = ({ inMobileNav = false, user, onMobileMenuClose }: { inMobil
               >
                 <Car className="w-5 h-5 text-yellow-600" />
                 <span className="font-medium">Cars Listing</span>
-                <span className="ml-auto text-sm font-semibold text-yellow-700">({listingCounts.cars})</span>
+                <span className="ml-auto text-xs font-bold px-2 py-0.5 rounded-full bg-yellow-600 text-white">({listingCounts.cars})</span>
               </Link>
               <Link 
                 href="/advertise/events-listing" 
@@ -120,7 +120,7 @@ const AuthButtons = ({ inMobileNav = false, user, onMobileMenuClose }: { inMobil
               >
                 <Calendar className="w-5 h-5 text-yellow-600" />
                 <span className="font-medium">Events Listing</span>
-                <span className="ml-auto text-sm font-semibold text-yellow-700">({listingCounts.events})</span>
+                <span className="ml-auto text-xs font-bold px-2 py-0.5 rounded-full bg-yellow-600 text-white">({listingCounts.events})</span>
               </Link>
               <Link 
                 href="/advertise/auction-listing" 
@@ -129,7 +129,7 @@ const AuthButtons = ({ inMobileNav = false, user, onMobileMenuClose }: { inMobil
               >
                 <Gavel className="w-5 h-5 text-yellow-600" />
                 <span className="font-medium">Auction Listing</span>
-                <span className="ml-auto text-sm font-semibold text-yellow-700">({listingCounts.auctions})</span>
+                <span className="ml-auto text-xs font-bold px-2 py-0.5 rounded-full bg-yellow-600 text-white">({listingCounts.auctions})</span>
               </Link>
               <Link 
                 href="/advertise/club-listing" 
@@ -138,7 +138,7 @@ const AuthButtons = ({ inMobileNav = false, user, onMobileMenuClose }: { inMobil
               >
                 <Users className="w-5 h-5 text-yellow-600" />
                 <span className="font-medium">Club Listing</span>
-                <span className="ml-auto text-sm font-semibold text-yellow-700">({listingCounts.clubs})</span>
+                <span className="ml-auto text-xs font-bold px-2 py-0.5 rounded-full bg-yellow-600 text-white">({listingCounts.clubs})</span>
               </Link>
               <Link 
                 href="/advertise/hotel-listing" 
@@ -147,7 +147,7 @@ const AuthButtons = ({ inMobileNav = false, user, onMobileMenuClose }: { inMobil
               >
                 <Car className="w-5 h-5 text-yellow-600" />
                 <span className="font-medium">Hotel Listing</span>
-                <span className="ml-auto text-sm font-semibold text-yellow-700">({listingCounts.hotels})</span>
+                <span className="ml-auto text-xs font-bold px-2 py-0.5 rounded-full bg-yellow-600 text-white">({listingCounts.hotels})</span>
               </Link>
               <Link 
                 href="/advertise/others-listing" 
@@ -156,7 +156,7 @@ const AuthButtons = ({ inMobileNav = false, user, onMobileMenuClose }: { inMobil
               >
                 <Settings className="w-5 h-5 text-yellow-600" />
                 <span className="font-medium">Others Listing</span>
-                <span className="ml-auto text-sm font-semibold text-yellow-700">({listingCounts.others})</span>
+                <span className="ml-auto text-xs font-bold px-2 py-0.5 rounded-full bg-yellow-600 text-white">({listingCounts.others})</span>
               </Link>
             </div>
           </div>
@@ -247,14 +247,14 @@ const AuthButtons = ({ inMobileNav = false, user, onMobileMenuClose }: { inMobil
                 <Link href="/advertise/cars-listing" className="flex items-center gap-3 w-full">
                   <Car className="w-4 h-4" />
                   <span className="flex-1">Cars Listing</span>
-                  <span className="text-xs font-semibold text-primary">({listingCounts.cars})</span>
+                  <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-yellow-600 text-white">({listingCounts.cars})</span>
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-yellow-50 hover:text-yellow-700 transition-colors duration-200">
                 <Link href="/advertise/events-listing" className="flex items-center gap-3 w-full">
                   <Calendar className="w-4 h-4" />
                   <span className="flex-1">Events Listing</span>
-                  <span className="text-xs font-semibold text-primary">({listingCounts.events})</span>
+                  <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-yellow-600 text-white">({listingCounts.events})</span>
                 </Link>
               </DropdownMenuItem>
 
@@ -263,28 +263,28 @@ const AuthButtons = ({ inMobileNav = false, user, onMobileMenuClose }: { inMobil
                 <Link href="/advertise/auction-listing" className="flex items-center gap-3 w-full">
                   <Gavel className="w-4 h-4" />
                   <span className="flex-1">Auction Listing</span>
-                  <span className="text-xs font-semibold text-primary">({listingCounts.auctions})</span>
+                  <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-yellow-600 text-white">({listingCounts.auctions})</span>
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-yellow-50 hover:text-yellow-700 transition-colors duration-200">
                 <Link href="/advertise/club-listing" className="flex items-center gap-3 w-full">
                   <Users className="w-4 h-4" />
                   <span className="flex-1">Club Listing</span>
-                  <span className="text-xs font-semibold text-primary">({listingCounts.clubs})</span>
+                  <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-yellow-600 text-white">({listingCounts.clubs})</span>
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-yellow-50 hover:text-yellow-700 transition-colors duration-200">
                 <Link href="/advertise/hotel-listing" className="flex items-center gap-3 w-full">
                   <Car className="w-4 h-4" />
                   <span className="flex-1">Hotel Listing</span>
-                  <span className="text-xs font-semibold text-primary">({listingCounts.hotels})</span>
+                  <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-yellow-600 text-white">({listingCounts.hotels})</span>
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-yellow-50 hover:text-yellow-700 transition-colors duration-200">
                 <Link href="/advertise/others-listing" className="flex items-center gap-3 w-full">
                   <Settings className="w-4 h-4" />
                   <span className="flex-1">Others Listing</span>
-                  <span className="text-xs font-semibold text-primary">({listingCounts.others})</span>
+                  <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-yellow-600 text-white">({listingCounts.others})</span>
                 </Link>
               </DropdownMenuItem>
             </DropdownMenuContent>

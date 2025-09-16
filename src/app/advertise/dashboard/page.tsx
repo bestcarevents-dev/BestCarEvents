@@ -640,7 +640,13 @@ export default function PartnerDashboard() {
                 <CardContent className="space-y-3 mt-4">
                   {pkg.features.map((f, i) => (
                     <div key={i} className="flex items-start gap-3">
-                      <Info className="w-4 h-4 text-primary mt-1" />
+                      <span
+                        className="w-4 h-4 mt-1 flex-shrink-0 flex items-center justify-center rounded-full bg-primary text-white"
+                        style={{ minWidth: 16, minHeight: 16, maxWidth: 16, maxHeight: 16 }}
+                        aria-label="Bullet"
+                      >
+                        •
+                      </span>
                       <span className="text-base text-foreground">{f}</span>
                     </div>
                   ))}

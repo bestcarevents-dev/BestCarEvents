@@ -123,6 +123,13 @@ export default function PartnerAdDetailPage() {
     }
   }
 
+  // Ensure website links include a protocol
+  const normalizeUrl = (url: string | undefined): string | undefined => {
+    if (!url) return url;
+    if (/^https?:\/\//i.test(url)) return url;
+    return `https://${url}`;
+  };
+
   return (
     <div className="bg-white">
       <div className="container mx-auto px-2 md:px-6 py-8 relative">
@@ -208,10 +215,10 @@ export default function PartnerAdDetailPage() {
             </div>
             {/* Sticky Contact Card */}
             <div className="lg:sticky lg:top-28 h-fit">
-              <Card className="shadow-xl border border-gray-200">
-                <CardHeader className="bg-gray-50 rounded-t-xl">
+              <Card className="shadow-xl border border-gray-100 bg-white">
+                <CardHeader className="bg-white rounded-t-xl">
                   <CardTitle className="text-2xl font-headline text-gray-900">Contact</CardTitle>
-                  <CardDescription>Get in touch with the advertiser</CardDescription>
+                  <CardDescription className="text-gray-700">Get in touch with the advertiser</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="flex items-center gap-2">
@@ -238,10 +245,10 @@ export default function PartnerAdDetailPage() {
                     <div className="flex items-center justify-between gap-2">
                       <div className="flex items-center gap-2">
                         <Globe className="w-5 h-5 text-muted-foreground" />
-                        <a href={ad.website} target="_blank" rel="noopener noreferrer" className="text-base text-blue-600 underline truncate max-w-[220px]">{ad.website}</a>
+                        <a href={normalizeUrl(ad.website)!} target="_blank" rel="noopener noreferrer" className="text-base text-blue-600 underline truncate max-w-[220px]">{ad.website}</a>
                       </div>
-                      <Button asChild size="sm">
-                        <a href={ad.website} target="_blank" rel="noopener noreferrer">Visit Website</a>
+                      <Button asChild size="sm" className="bg-yellow-600 hover:bg-yellow-700 text-white">
+                        <a href={normalizeUrl(ad.website)!} target="_blank" rel="noopener noreferrer">Visit Website</a>
                       </Button>
                     </div>
                   )}

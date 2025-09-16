@@ -66,10 +66,11 @@ export default function PartnerAdRotator({ page, maxVisible = 4, rotateIntervalM
         const isWebsiteOrGeneralBusiness = ad.adType === "Website" || ad.adType === "General Business";
         
         if (isWebsiteOrGeneralBusiness && ad.url) {
+          const href = /^https?:\/\//i.test(ad.url) ? ad.url : `https://${ad.url}`;
           // Display website URL for Website category
           displayInfo = (
             <div className="text-blue-600 font-semibold text-sm mt-1 break-all">
-              <a href={ad.url} target="_blank" rel="noopener noreferrer" className="hover:underline">
+              <a href={href} target="_blank" rel="noopener noreferrer" className="hover:underline">
                 {truncate(ad.url, isMobile ? 25 : 30)}
               </a>
             </div>

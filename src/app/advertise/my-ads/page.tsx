@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { getFirestore, collection, getDocs, query, where, doc, updateDoc, getDoc } from "firebase/firestore";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { app } from "@/lib/firebase";
 import { useRouter } from "next/navigation";
 import { getAuth } from "firebase/auth";
@@ -60,6 +61,8 @@ export default function MyAdsPage() {
   const anyNeedsType = ads.some((a) => !a.bannerType);
   const [editModal, setEditModal] = useState<{ open: boolean; id: string } | null>(null);
   const [editDraft, setEditDraft] = useState<any>({});
+  const [editImages, setEditImages] = useState<File[]>([]);
+  const [editImagePreviews, setEditImagePreviews] = useState<string[]>([]);
   
   // Payment modal state
   const [bannerPaymentModal, setBannerPaymentModal] = useState<{ open: boolean; type: 'homepage' | 'category' | null }>({ open: false, type: null });
@@ -789,12 +792,53 @@ export default function MyAdsPage() {
                       variant="outline"
                       size="sm"
                       onClick={() => {
-                        setEditDraft({
-                          title: ad.title || "",
+                        const base: any = {
+                          adType: ad.adType || ad.type || "",
                           description: ad.description || "",
-                          website: ad.website || "",
+                          contactName: ad.contactName || "",
                           contactEmail: ad.contactEmail || "",
-                        });
+                          website: ad.website || ad.url || "",
+                          category: ad.category || "",
+                          imageUrls: Array.isArray(ad.imageUrls) ? ad.imageUrls : (ad.imageUrl ? [ad.imageUrl] : []),
+                        };
+                        // Map type-specific fields
+                        const typeSpecific: any = {
+                          // Website
+                          websiteName: ad.websiteName || "",
+                          // General Business
+                          businessName: ad.businessName || "",
+                          industry: ad.industry || "",
+                          // Tires & Wheels
+                          title: ad.title || "",
+                          brand: ad.brand || "",
+                          size: ad.size || "",
+                          price: ad.price || "",
+                          // Car Parts & Accessories
+                          partType: ad.partType || "",
+                          compatibleVehicles: ad.compatibleVehicles || "",
+                          // Transport & Logistics
+                          serviceType: ad.serviceType || "",
+                          coverageArea: ad.coverageArea || "",
+                          priceRange: ad.priceRange || "",
+                          // Detailing & Wrapping
+                          // uses title, serviceType, priceRange
+                          // Restoration & Custom Shops
+                          shopName: ad.shopName || "",
+                          specialties: ad.specialties || "",
+                          yearsInBusiness: ad.yearsInBusiness || "",
+                          // Classic Car Insurance
+                          providerName: ad.providerName || "",
+                          insuranceTypes: ad.insuranceTypes || "",
+                          // Driving Experiences
+                          experienceName: ad.experienceName || "",
+                          experienceType: ad.experienceType || "",
+                          location: ad.location || "",
+                          // Finance / Leasing / Storage
+                          serviceName: ad.serviceName || "",
+                        };
+                        setEditDraft({ ...base, ...typeSpecific });
+                        setEditImages([]);
+                        setEditImagePreviews([]);
                         setEditModal({ open: true, id: ad.id });
                       }}
                     >
@@ -910,45 +954,247 @@ export default function MyAdsPage() {
       </div>
       {/* Simple Edit Dialog */}
       <Dialog open={!!editModal?.open} onOpenChange={(o) => { if (!o) setEditModal(null); }}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-2xl">
           <DialogHeader>
-            <DialogTitle>Edit Ad</DialogTitle>
-            <DialogDescription>Update basic details for your ad.</DialogDescription>
+            <DialogTitle className="text-foreground">Edit Ad</DialogTitle>
+            <DialogDescription className="text-muted-foreground">Update all details for this ad. Fields depend on ad type.</DialogDescription>
           </DialogHeader>
-          <div className="space-y-3">
-            <div className="space-y-1">
-              <Label htmlFor="ad-title">Title</Label>
-              <Input id="ad-title" value={editDraft.title || ""} onChange={(e) => setEditDraft((p: any) => ({ ...p, title: e.target.value }))} />
+          <div className="space-y-4">
+            {/* Ad type display */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div className="space-y-1">
+                <Label className="text-foreground">Ad Type</Label>
+                <Input value={editDraft.adType || ""} disabled className="bg-muted/20 text-foreground" />
+              </div>
+              <div className="space-y-1">
+                <Label className="text-foreground">Contact Name</Label>
+                <Input value={editDraft.contactName || ""} onChange={(e) => setEditDraft((p: any) => ({ ...p, contactName: e.target.value }))} className="text-foreground" />
+              </div>
+              <div className="space-y-1">
+                <Label className="text-foreground">Contact Email</Label>
+                <Input type="email" value={editDraft.contactEmail || ""} onChange={(e) => setEditDraft((p: any) => ({ ...p, contactEmail: e.target.value }))} className="text-foreground" />
+              </div>
             </div>
-            <div className="space-y-1">
-              <Label htmlFor="ad-description">Description</Label>
-              <textarea id="ad-description" value={editDraft.description || ""} onChange={(e) => setEditDraft((p: any) => ({ ...p, description: e.target.value }))} className="w-full border rounded px-3 py-2 min-h-[100px]" />
+
+            {/* Type-specific fields */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {/* Website */}
+              {editDraft.adType === 'Website' && (
+                <>
+                  <div className="space-y-1">
+                    <Label className="text-foreground">Website Name</Label>
+                    <Input value={editDraft.websiteName || ''} onChange={(e) => setEditDraft((p: any) => ({ ...p, websiteName: e.target.value }))} className="text-foreground" />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-foreground">Website URL</Label>
+                    <Input value={editDraft.website || ''} onChange={(e) => setEditDraft((p: any) => ({ ...p, website: e.target.value }))} placeholder="https://example.com" className="text-foreground" />
+                  </div>
+                  <div className="space-y-1 md:col-span-2">
+                    <Label className="text-foreground">Category</Label>
+                    <Input value={editDraft.category || ''} onChange={(e) => setEditDraft((p: any) => ({ ...p, category: e.target.value }))} className="text-foreground" />
+                  </div>
+                </>
+              )}
+
+              {/* General Business */}
+              {editDraft.adType === 'General Business' && (
+                <>
+                  <div className="space-y-1">
+                    <Label className="text-foreground">Business Name</Label>
+                    <Input value={editDraft.businessName || ''} onChange={(e) => setEditDraft((p: any) => ({ ...p, businessName: e.target.value }))} className="text-foreground" />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-foreground">Industry</Label>
+                    <Input value={editDraft.industry || ''} onChange={(e) => setEditDraft((p: any) => ({ ...p, industry: e.target.value }))} className="text-foreground" />
+                  </div>
+                </>
+              )}
+
+              {/* Tires & Wheels AND Car Parts share some fields */}
+              {(editDraft.adType === 'Tires & Wheels' || editDraft.adType === 'Car Parts & Accessories') && (
+                <>
+                  <div className="space-y-1">
+                    <Label className="text-foreground">Title</Label>
+                    <Input value={editDraft.title || ''} onChange={(e) => setEditDraft((p: any) => ({ ...p, title: e.target.value }))} className="text-foreground" />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-foreground">Brand</Label>
+                    <Input value={editDraft.brand || ''} onChange={(e) => setEditDraft((p: any) => ({ ...p, brand: e.target.value }))} className="text-foreground" />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-foreground">Size</Label>
+                    <Input value={editDraft.size || ''} onChange={(e) => setEditDraft((p: any) => ({ ...p, size: e.target.value }))} className="text-foreground" />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-foreground">Price</Label>
+                    <Input value={editDraft.price || ''} onChange={(e) => setEditDraft((p: any) => ({ ...p, price: e.target.value }))} className="text-foreground" />
+                  </div>
+                  {editDraft.adType === 'Car Parts & Accessories' && (
+                    <>
+                      <div className="space-y-1">
+                        <Label className="text-foreground">Part Type</Label>
+                        <Input value={editDraft.partType || ''} onChange={(e) => setEditDraft((p: any) => ({ ...p, partType: e.target.value }))} className="text-foreground" />
+                      </div>
+                      <div className="space-y-1 md:col-span-2">
+                        <Label className="text-foreground">Compatible Vehicles</Label>
+                        <Input value={editDraft.compatibleVehicles || ''} onChange={(e) => setEditDraft((p: any) => ({ ...p, compatibleVehicles: e.target.value }))} className="text-foreground" />
+                      </div>
+                    </>
+                  )}
+                </>
+              )}
+
+              {/* Transport / Detailing / Finance share serviceType + priceRange; transport also coverageArea, finance coverageArea */}
+              {(editDraft.adType === 'Car Transport & Logistics' || editDraft.adType === 'Car Detailing & Wrapping' || editDraft.adType === 'Finance / Leasing / Storage') && (
+                <>
+                  <div className="space-y-1">
+                    <Label className="text-foreground">Title / Service Name</Label>
+                    <Input value={editDraft.title || editDraft.serviceName || ''} onChange={(e) => setEditDraft((p: any) => ({ ...p, title: e.target.value, serviceName: e.target.value }))} className="text-foreground" />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-foreground">Service Type</Label>
+                    <Input value={editDraft.serviceType || ''} onChange={(e) => setEditDraft((p: any) => ({ ...p, serviceType: e.target.value }))} className="text-foreground" />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-foreground">Price Range</Label>
+                    <Input value={editDraft.priceRange || ''} onChange={(e) => setEditDraft((p: any) => ({ ...p, priceRange: e.target.value }))} className="text-foreground" />
+                  </div>
+                  {(editDraft.adType === 'Car Transport & Logistics' || editDraft.adType === 'Finance / Leasing / Storage') && (
+                    <div className="space-y-1">
+                      <Label className="text-foreground">Coverage Area</Label>
+                      <Input value={editDraft.coverageArea || ''} onChange={(e) => setEditDraft((p: any) => ({ ...p, coverageArea: e.target.value }))} className="text-foreground" />
+                    </div>
+                  )}
+                </>
+              )}
+
+              {/* Restoration & Custom Shops */}
+              {editDraft.adType === 'Restoration & Custom Shops' && (
+                <>
+                  <div className="space-y-1">
+                    <Label className="text-foreground">Shop Name</Label>
+                    <Input value={editDraft.shopName || ''} onChange={(e) => setEditDraft((p: any) => ({ ...p, shopName: e.target.value }))} className="text-foreground" />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-foreground">Specialties</Label>
+                    <Input value={editDraft.specialties || ''} onChange={(e) => setEditDraft((p: any) => ({ ...p, specialties: e.target.value }))} className="text-foreground" />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-foreground">Years in Business</Label>
+                    <Input value={editDraft.yearsInBusiness || ''} onChange={(e) => setEditDraft((p: any) => ({ ...p, yearsInBusiness: e.target.value }))} className="text-foreground" />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-foreground">Price Range</Label>
+                    <Input value={editDraft.priceRange || ''} onChange={(e) => setEditDraft((p: any) => ({ ...p, priceRange: e.target.value }))} className="text-foreground" />
+                  </div>
+                </>
+              )}
+
+              {/* Classic Car Insurance */}
+              {editDraft.adType === 'Classic Car Insurance' && (
+                <>
+                  <div className="space-y-1">
+                    <Label className="text-foreground">Provider Name</Label>
+                    <Input value={editDraft.providerName || ''} onChange={(e) => setEditDraft((p: any) => ({ ...p, providerName: e.target.value }))} className="text-foreground" />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-foreground">Insurance Types</Label>
+                    <Input value={editDraft.insuranceTypes || ''} onChange={(e) => setEditDraft((p: any) => ({ ...p, insuranceTypes: e.target.value }))} className="text-foreground" />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-foreground">Coverage Area</Label>
+                    <Input value={editDraft.coverageArea || ''} onChange={(e) => setEditDraft((p: any) => ({ ...p, coverageArea: e.target.value }))} className="text-foreground" />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-foreground">Price Range</Label>
+                    <Input value={editDraft.priceRange || ''} onChange={(e) => setEditDraft((p: any) => ({ ...p, priceRange: e.target.value }))} className="text-foreground" />
+                  </div>
+                </>
+              )}
+
+              {/* Driving Experiences */}
+              {editDraft.adType === 'Driving Experiences' && (
+                <>
+                  <div className="space-y-1">
+                    <Label className="text-foreground">Experience Name</Label>
+                    <Input value={editDraft.experienceName || ''} onChange={(e) => setEditDraft((p: any) => ({ ...p, experienceName: e.target.value }))} className="text-foreground" />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-foreground">Experience Type</Label>
+                    <Input value={editDraft.experienceType || ''} onChange={(e) => setEditDraft((p: any) => ({ ...p, experienceType: e.target.value }))} className="text-foreground" />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-foreground">Location</Label>
+                    <Input value={editDraft.location || ''} onChange={(e) => setEditDraft((p: any) => ({ ...p, location: e.target.value }))} className="text-foreground" />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-foreground">Price</Label>
+                    <Input value={editDraft.price || ''} onChange={(e) => setEditDraft((p: any) => ({ ...p, price: e.target.value }))} className="text-foreground" />
+                  </div>
+                </>
+              )}
             </div>
+
+            {/* Description */}
             <div className="space-y-1">
-              <Label htmlFor="ad-website">Website</Label>
-              <Input id="ad-website" value={editDraft.website || ""} onChange={(e) => setEditDraft((p: any) => ({ ...p, website: e.target.value }))} />
+              <Label className="text-foreground">Description</Label>
+              <textarea value={editDraft.description || ''} onChange={(e) => setEditDraft((p: any) => ({ ...p, description: e.target.value }))} className="w-full border rounded px-3 py-2 bg-background text-foreground min-h-[120px]" />
             </div>
-            <div className="space-y-1">
-              <Label htmlFor="ad-email">Contact Email</Label>
-              <Input id="ad-email" value={editDraft.contactEmail || ""} onChange={(e) => setEditDraft((p: any) => ({ ...p, contactEmail: e.target.value }))} />
+
+            {/* Images */}
+            <div className="space-y-2">
+              <Label className="text-foreground">Images</Label>
+              <div className="flex flex-wrap gap-2">
+                {(editDraft.imageUrls || []).map((img: string, idx: number) => (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img key={idx} src={img} alt="Ad" className="w-24 h-24 object-contain bg-white border rounded" />
+                ))}
+                {editImagePreviews.map((src, idx) => (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img key={`new-${idx}`} src={src} alt="New" className="w-24 h-24 object-contain bg-white border rounded" />
+                ))}
+              </div>
+              <Input type="file" multiple accept="image/*" onChange={(e) => {
+                const files = Array.from(e.target.files || []);
+                setEditImages(files as File[]);
+                setEditImagePreviews(files.map(f => URL.createObjectURL(f)));
+              }} className="text-foreground" />
+              <p className="text-xs text-muted-foreground">Adding images will upload and append to existing ones.</p>
             </div>
           </div>
           <DialogFooter>
             <DialogClose asChild>
-              <Button variant="outline">Cancel</Button>
+              <Button variant="outline" className="text-foreground">Cancel</Button>
             </DialogClose>
             <Button
+              className="text-foreground"
               onClick={async () => {
                 if (!editModal?.id) return;
                 const db = getFirestore(app);
-                await updateDoc(doc(db, "partnerAds", editModal.id), {
-                  title: (editDraft.title || "").trim() || null,
-                  description: (editDraft.description || "").trim() || null,
-                  website: (editDraft.website || "").trim() || null,
-                  contactEmail: (editDraft.contactEmail || "").trim() || null,
-                  updatedAt: new Date(),
-                });
-                setAds((prev) => prev.map((a) => (a.id === editModal.id ? { ...a, ...editDraft } : a)));
+                const storage = getStorage(app);
+                const payload: any = { ...editDraft };
+                // Normalize website field
+                if (payload.website && !/^https?:\/\//i.test(payload.website)) {
+                  payload.website = `https://${payload.website}`;
+                }
+                delete payload.imageUrls;
+                delete payload.adType; // adType stays as-is in DB unless changing type is supported
+                // Upload new images if any
+                let newImageUrls: string[] = [];
+                if (editImages.length > 0) {
+                  for (const file of editImages) {
+                    const imageRef = ref(storage, `partner_ads/${Date.now()}_${file.name}`);
+                    await uploadBytes(imageRef, file);
+                    const url = await getDownloadURL(imageRef);
+                    newImageUrls.push(url);
+                  }
+                }
+                const docRef = doc(db, "partnerAds", editModal.id);
+                const existing = ads.find(a => a.id === editModal.id);
+                const existingUrls = Array.isArray(existing?.imageUrls) ? existing!.imageUrls : [];
+                const finalImageUrls = [...newImageUrls, ...existingUrls];
+                await updateDoc(docRef, { ...payload, imageUrls: finalImageUrls, updatedAt: new Date() });
+                setAds((prev) => prev.map((a) => (a.id === editModal.id ? { ...a, ...editDraft, imageUrls: finalImageUrls } : a)));
                 setEditModal(null);
               }}
             >
