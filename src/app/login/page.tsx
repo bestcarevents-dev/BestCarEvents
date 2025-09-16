@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { getAuth, signInWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
 import { app } from "@/lib/firebase";
 import { Button } from "@/components/ui/button";
@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import Image from "next/image";
 import { getFirestore, doc, getDoc } from "firebase/firestore";
-import { ShieldAlert } from "lucide-react";
+import { ShieldAlert, CheckCircle } from "lucide-react";
 import Script from "next/script";
 
 export default function LoginPage() {
@@ -18,6 +18,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+  const searchParams = useSearchParams();
   const auth = getAuth(app);
   const [bgUrl, setBgUrl] = useState<string | null>(null);
 
@@ -102,6 +103,12 @@ export default function LoginPage() {
               Enter your email below to login to your account
             </p>
           </div>
+          {searchParams?.get('reset') === '1' && (
+            <div className="flex items-center p-3 text-sm rounded-md bg-emerald-600/10 text-emerald-800">
+              <CheckCircle className="w-5 h-5 mr-2" />
+              <p>Your password has been updated. Please log in.</p>
+            </div>
+          )}
           <form onSubmit={handleLogin} className="grid gap-4">
             <div className="grid gap-2">
               <Label htmlFor="email">Email</Label>

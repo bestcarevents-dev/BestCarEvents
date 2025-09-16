@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
-import { getAuth, onAuthStateChanged, applyActionCode, reload } from "firebase/auth";
+import { getAuth, onAuthStateChanged, applyActionCode, reload, verifyPasswordResetCode, confirmPasswordReset } from "firebase/auth";
 import { getFirestore, doc, getDoc, setDoc, collection, getDocs } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { app } from "@/lib/firebase";
@@ -38,6 +38,12 @@ export default function OnboardingPage() {
   const [lifestyleSearch, setLifestyleSearch] = useState("");
   const [saving, setSaving] = useState(false);
   const [verifyMessage, setVerifyMessage] = useState<string | null>(null);
+  const [resetMode, setResetMode] = useState(false);
+  const [resetEmail, setResetEmail] = useState<string | null>(null);
+  const [resetError, setResetError] = useState<string | null>(null);
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [resetSubmitting, setResetSubmitting] = useState(false);
 
   // Handle Firebase email action links e.g. mode=verifyEmail&oobCode=...
   useEffect(() => {
@@ -59,9 +65,34 @@ export default function OnboardingPage() {
     }
   }, [auth, router, searchParams]);
 
+  // Handle Firebase password reset links e.g. mode=resetPassword&oobCode=...
+  useEffect(() => {
+    const mode = searchParams?.get('mode');
+    const oobCode = searchParams?.get('oobCode');
+    if (mode === 'resetPassword' && oobCode) {
+      setResetMode(true);
+      (async () => {
+        try {
+          const email = await verifyPasswordResetCode(auth, oobCode);
+          setResetEmail(email || null);
+          setResetError(null);
+        } catch (e: any) {
+          setResetError(e?.message || 'This password reset link is invalid or expired.');
+        } finally {
+          setLoading(false);
+        }
+      })();
+    }
+  }, [auth, searchParams]);
+
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (user) => {
       if (!user) {
+        const mode = searchParams?.get('mode');
+        if (mode === 'resetPassword') {
+          setLoading(false);
+          return;
+        }
         router.push("/login");
       } else {
         setUid(user.uid);
@@ -79,7 +110,35 @@ export default function OnboardingPage() {
       }
     });
     return () => unsub();
-  }, [auth, db, router]);
+  }, [auth, db, router, searchParams]);
+
+  const handleConfirmReset = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setResetError(null);
+    const oobCode = searchParams?.get('oobCode');
+    if (!oobCode) {
+      setResetError('Missing reset code.');
+      return;
+    }
+    if (newPassword.length < 6) {
+      setResetError('Password must be at least 6 characters.');
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      setResetError('Passwords do not match.');
+      return;
+    }
+    setResetSubmitting(true);
+    try {
+      await confirmPasswordReset(auth, oobCode, newPassword);
+      // Redirect to login with a success hint
+      router.replace('/login?reset=1');
+    } catch (e: any) {
+      setResetError(e?.message || 'Failed to reset password.');
+    } finally {
+      setResetSubmitting(false);
+    }
+  };
 
   useEffect(() => {
     const loadCategories = async () => {
@@ -166,6 +225,77 @@ export default function OnboardingPage() {
   };
 
   if (loading) return <div className="container mx-auto px-4 py-10">Loading...</div>;
+
+  // Render password reset UI if in reset mode
+  if (resetMode) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-white to-[#E0D8C1]">
+        <div className="container mx-auto px-4 py-10 max-w-md">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="mb-8 text-center"
+          >
+            <div className="inline-flex items-center gap-2 bg-yellow-400/20 backdrop-blur-sm px-4 py-2 rounded-full mb-3">
+              <span className="font-semibold text-gray-900">Reset your password</span>
+            </div>
+            {resetEmail && (
+              <p className="text-base text-gray-800">for <span className="font-medium">{resetEmail}</span></p>
+            )}
+            {verifyMessage && (
+              <p className="text-sm text-green-700 mt-2">{verifyMessage}</p>
+            )}
+            {resetError && (
+              <p className="text-sm text-red-600 mt-2">{resetError}</p>
+            )}
+          </motion.div>
+
+          <Card className="shadow-lg bg-white border border-yellow-400/20">
+            <CardHeader>
+              <CardTitle className="text-gray-900">Choose a new password</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleConfirmReset} className="grid gap-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="newPassword" className="text-gray-900">New password</Label>
+                  <Input
+                    id="newPassword"
+                    type="password"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    minLength={6}
+                    required
+                    className="bg-white text-gray-900 placeholder:text-gray-500"
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="confirmPassword" className="text-gray-900">Confirm new password</Label>
+                  <Input
+                    id="confirmPassword"
+                    type="password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    minLength={6}
+                    required
+                    className="bg-white text-gray-900 placeholder:text-gray-500"
+                  />
+                </div>
+                <div className="flex items-center justify-between mt-2">
+                  <Button type="button" variant="outline" onClick={() => router.push('/login')}>
+                    Back to login
+                  </Button>
+                  <Button type="submit" disabled={resetSubmitting} className="font-semibold">
+                    {resetSubmitting ? 'Updating...' : 'Update password'}
+                  </Button>
+                </div>
+              </form>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-[#E0D8C1]">
