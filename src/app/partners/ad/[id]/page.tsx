@@ -216,7 +216,11 @@ export default function PartnerAdDetailPage() {
                 <CardContent className="space-y-4">
                   <div className="flex items-center gap-2">
                     <Mail className="w-5 h-5 text-muted-foreground" />
-                    <span className="text-base">{ad.contactEmail}</span>
+                    {ad.contactEmail ? (
+                      <a href={`mailto:${ad.contactEmail}`} className="text-base text-blue-600 underline">{ad.contactEmail}</a>
+                    ) : (
+                      <span className="text-base">N/A</span>
+                    )}
                   </div>
                   {ad.contactName && (
                     <div className="flex items-center gap-2">
@@ -231,9 +235,14 @@ export default function PartnerAdDetailPage() {
                     </div>
                   )}
                   {ad.website && (
-                    <div className="flex items-center gap-2">
-                      <Globe className="w-5 h-5 text-muted-foreground" />
-                      <a href={ad.website} target="_blank" rel="noopener noreferrer" className="text-base text-blue-600 underline">Website</a>
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2">
+                        <Globe className="w-5 h-5 text-muted-foreground" />
+                        <a href={ad.website} target="_blank" rel="noopener noreferrer" className="text-base text-blue-600 underline truncate max-w-[220px]">{ad.website}</a>
+                      </div>
+                      <Button asChild size="sm">
+                        <a href={ad.website} target="_blank" rel="noopener noreferrer">Visit Website</a>
+                      </Button>
                     </div>
                   )}
                   {ad.coverageArea && (

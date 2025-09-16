@@ -21,6 +21,8 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { getAuth, onAuthStateChanged, signOut, type User } from "firebase/auth";
+import { getFirestore, collection, getDocs, query, where } from "firebase/firestore";
+import { app as firebaseApp } from "@/lib/firebase";
 import { app } from "@/lib/firebase";
 import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
@@ -55,6 +57,34 @@ const isActiveLink = (pathname: string, href: string) => {
 const AuthButtons = ({ inMobileNav = false, user, onMobileMenuClose }: { inMobileNav?: boolean, user: User | null, onMobileMenuClose?: () => void }) => {
   const router = useRouter();
   const auth = getAuth(app);
+  const [listingCounts, setListingCounts] = useState<{ cars: number; events: number; auctions: number; clubs: number; hotels: number; others: number }>({ cars: 0, events: 0, auctions: 0, clubs: 0, hotels: 0, others: 0 });
+
+  useEffect(() => {
+    const loadCounts = async () => {
+      if (!user) { setListingCounts({ cars: 0, events: 0, auctions: 0, clubs: 0, hotels: 0, others: 0 }); return; }
+      const db = getFirestore(firebaseApp);
+      const collections = ["cars", "events", "auctions", "clubs", "hotels", "others"] as const;
+      const results: Record<string, number> = {};
+      for (const col of collections) {
+        const q1 = query(collection(db, col), where("uploadedByUserId", "==", user.uid));
+        const q2 = query(collection(db, col), where("uploadedByUserEmail", "==", user.email || ""));
+        const [s1, s2] = await Promise.all([getDocs(q1), getDocs(q2)]);
+        const ids = new Set<string>();
+        s1.forEach(d => ids.add(d.id));
+        s2.forEach(d => ids.add(d.id));
+        results[col] = ids.size;
+      }
+      setListingCounts({
+        cars: results["cars"] || 0,
+        events: results["events"] || 0,
+        auctions: results["auctions"] || 0,
+        clubs: results["clubs"] || 0,
+        hotels: results["hotels"] || 0,
+        others: results["others"] || 0,
+      });
+    };
+    loadCounts();
+  }, [user]);
 
   const handleLogout = async () => {
     await signOut(auth);
@@ -81,6 +111,7 @@ const AuthButtons = ({ inMobileNav = false, user, onMobileMenuClose }: { inMobil
               >
                 <Car className="w-5 h-5 text-yellow-600" />
                 <span className="font-medium">Cars Listing</span>
+                <span className="ml-auto text-sm font-semibold text-yellow-700">({listingCounts.cars})</span>
               </Link>
               <Link 
                 href="/advertise/events-listing" 
@@ -89,6 +120,7 @@ const AuthButtons = ({ inMobileNav = false, user, onMobileMenuClose }: { inMobil
               >
                 <Calendar className="w-5 h-5 text-yellow-600" />
                 <span className="font-medium">Events Listing</span>
+                <span className="ml-auto text-sm font-semibold text-yellow-700">({listingCounts.events})</span>
               </Link>
               <Link 
                 href="/advertise/auction-listing" 
@@ -97,6 +129,7 @@ const AuthButtons = ({ inMobileNav = false, user, onMobileMenuClose }: { inMobil
               >
                 <Gavel className="w-5 h-5 text-yellow-600" />
                 <span className="font-medium">Auction Listing</span>
+                <span className="ml-auto text-sm font-semibold text-yellow-700">({listingCounts.auctions})</span>
               </Link>
               <Link 
                 href="/advertise/club-listing" 
@@ -105,6 +138,7 @@ const AuthButtons = ({ inMobileNav = false, user, onMobileMenuClose }: { inMobil
               >
                 <Users className="w-5 h-5 text-yellow-600" />
                 <span className="font-medium">Club Listing</span>
+                <span className="ml-auto text-sm font-semibold text-yellow-700">({listingCounts.clubs})</span>
               </Link>
               <Link 
                 href="/advertise/hotel-listing" 
@@ -113,6 +147,7 @@ const AuthButtons = ({ inMobileNav = false, user, onMobileMenuClose }: { inMobil
               >
                 <Car className="w-5 h-5 text-yellow-600" />
                 <span className="font-medium">Hotel Listing</span>
+                <span className="ml-auto text-sm font-semibold text-yellow-700">({listingCounts.hotels})</span>
               </Link>
               <Link 
                 href="/advertise/others-listing" 
@@ -121,6 +156,7 @@ const AuthButtons = ({ inMobileNav = false, user, onMobileMenuClose }: { inMobil
               >
                 <Settings className="w-5 h-5 text-yellow-600" />
                 <span className="font-medium">Others Listing</span>
+                <span className="ml-auto text-sm font-semibold text-yellow-700">({listingCounts.others})</span>
               </Link>
             </div>
           </div>
@@ -210,13 +246,15 @@ const AuthButtons = ({ inMobileNav = false, user, onMobileMenuClose }: { inMobil
               <DropdownMenuItem asChild className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-yellow-50 hover:text-yellow-700 transition-colors duration-200">
                 <Link href="/advertise/cars-listing" className="flex items-center gap-3 w-full">
                   <Car className="w-4 h-4" />
-                  Cars Listing
+                  <span className="flex-1">Cars Listing</span>
+                  <span className="text-xs font-semibold text-primary">({listingCounts.cars})</span>
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-yellow-50 hover:text-yellow-700 transition-colors duration-200">
                 <Link href="/advertise/events-listing" className="flex items-center gap-3 w-full">
                   <Calendar className="w-4 h-4" />
-                  Events Listing
+                  <span className="flex-1">Events Listing</span>
+                  <span className="text-xs font-semibold text-primary">({listingCounts.events})</span>
                 </Link>
               </DropdownMenuItem>
 
@@ -224,25 +262,29 @@ const AuthButtons = ({ inMobileNav = false, user, onMobileMenuClose }: { inMobil
               <DropdownMenuItem asChild className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-yellow-50 hover:text-yellow-700 transition-colors duration-200">
                 <Link href="/advertise/auction-listing" className="flex items-center gap-3 w-full">
                   <Gavel className="w-4 h-4" />
-                  Auction Listing
+                  <span className="flex-1">Auction Listing</span>
+                  <span className="text-xs font-semibold text-primary">({listingCounts.auctions})</span>
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-yellow-50 hover:text-yellow-700 transition-colors duration-200">
                 <Link href="/advertise/club-listing" className="flex items-center gap-3 w-full">
                   <Users className="w-4 h-4" />
-                  Club Listing
+                  <span className="flex-1">Club Listing</span>
+                  <span className="text-xs font-semibold text-primary">({listingCounts.clubs})</span>
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-yellow-50 hover:text-yellow-700 transition-colors duration-200">
                 <Link href="/advertise/hotel-listing" className="flex items-center gap-3 w-full">
                   <Car className="w-4 h-4" />
-                  Hotel Listing
+                  <span className="flex-1">Hotel Listing</span>
+                  <span className="text-xs font-semibold text-primary">({listingCounts.hotels})</span>
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-yellow-50 hover:text-yellow-700 transition-colors duration-200">
                 <Link href="/advertise/others-listing" className="flex items-center gap-3 w-full">
                   <Settings className="w-4 h-4" />
-                  Others Listing
+                  <span className="flex-1">Others Listing</span>
+                  <span className="text-xs font-semibold text-primary">({listingCounts.others})</span>
                 </Link>
               </DropdownMenuItem>
             </DropdownMenuContent>

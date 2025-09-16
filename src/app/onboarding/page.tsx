@@ -406,7 +406,7 @@ export default function OnboardingPage() {
                     }
                     const groups = Object.keys(byGroup).sort();
                     if (groups.length === 0) {
-                      return <p className="text-sm text-gray-700">No categories yet. Add them in Admin → Interests.</p>;
+                      return <p className="text-sm text-gray-700">Category was not found.</p>;
                     }
                     return (
                       <div className="grid gap-4">

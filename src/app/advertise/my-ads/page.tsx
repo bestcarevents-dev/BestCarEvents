@@ -5,7 +5,7 @@ import { getFirestore, collection, getDocs, query, where, doc, updateDoc, getDoc
 import { app } from "@/lib/firebase";
 import { useRouter } from "next/navigation";
 import { getAuth } from "firebase/auth";
-import { AlertTriangle, Info, CheckCircle } from "lucide-react";
+import { AlertTriangle, Info, CheckCircle, Pencil } from "lucide-react";
 import {
   Select,
   SelectTrigger,
@@ -33,7 +33,8 @@ const PAGE_OPTIONS = [
   "Cars for sale",
   "Auctions",
   "Car Hotels",
-  "Car clubs"
+  "Car clubs",
+  "Others",
 ];
 
 const BANNER_PRICES = {
@@ -57,6 +58,8 @@ export default function MyAdsPage() {
   const router = useRouter();
   const { toast } = useToast();
   const anyNeedsType = ads.some((a) => !a.bannerType);
+  const [editModal, setEditModal] = useState<{ open: boolean; id: string } | null>(null);
+  const [editDraft, setEditDraft] = useState<any>({});
   
   // Payment modal state
   const [bannerPaymentModal, setBannerPaymentModal] = useState<{ open: boolean; type: 'homepage' | 'category' | null }>({ open: false, type: null });
@@ -781,6 +784,23 @@ export default function MyAdsPage() {
                       <img src={ad.imageUrls[0]} alt="Ad" className="w-full h-40 object-contain bg-muted rounded mt-2" />
                     )}
                   </div>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setEditDraft({
+                          title: ad.title || "",
+                          description: ad.description || "",
+                          website: ad.website || "",
+                          contactEmail: ad.contactEmail || "",
+                        });
+                        setEditModal({ open: true, id: ad.id });
+                      }}
+                    >
+                      <Pencil className="w-4 h-4 mr-1" /> Edit
+                    </Button>
+                  </div>
                   
                   {/* Ad Type Selection */}
                   <div className="mt-2">
@@ -888,6 +908,55 @@ export default function MyAdsPage() {
           )}
         </div>
       </div>
+      {/* Simple Edit Dialog */}
+      <Dialog open={!!editModal?.open} onOpenChange={(o) => { if (!o) setEditModal(null); }}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Edit Ad</DialogTitle>
+            <DialogDescription>Update basic details for your ad.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3">
+            <div className="space-y-1">
+              <Label htmlFor="ad-title">Title</Label>
+              <Input id="ad-title" value={editDraft.title || ""} onChange={(e) => setEditDraft((p: any) => ({ ...p, title: e.target.value }))} />
+            </div>
+            <div className="space-y-1">
+              <Label htmlFor="ad-description">Description</Label>
+              <textarea id="ad-description" value={editDraft.description || ""} onChange={(e) => setEditDraft((p: any) => ({ ...p, description: e.target.value }))} className="w-full border rounded px-3 py-2 min-h-[100px]" />
+            </div>
+            <div className="space-y-1">
+              <Label htmlFor="ad-website">Website</Label>
+              <Input id="ad-website" value={editDraft.website || ""} onChange={(e) => setEditDraft((p: any) => ({ ...p, website: e.target.value }))} />
+            </div>
+            <div className="space-y-1">
+              <Label htmlFor="ad-email">Contact Email</Label>
+              <Input id="ad-email" value={editDraft.contactEmail || ""} onChange={(e) => setEditDraft((p: any) => ({ ...p, contactEmail: e.target.value }))} />
+            </div>
+          </div>
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button variant="outline">Cancel</Button>
+            </DialogClose>
+            <Button
+              onClick={async () => {
+                if (!editModal?.id) return;
+                const db = getFirestore(app);
+                await updateDoc(doc(db, "partnerAds", editModal.id), {
+                  title: (editDraft.title || "").trim() || null,
+                  description: (editDraft.description || "").trim() || null,
+                  website: (editDraft.website || "").trim() || null,
+                  contactEmail: (editDraft.contactEmail || "").trim() || null,
+                  updatedAt: new Date(),
+                });
+                setAds((prev) => prev.map((a) => (a.id === editModal.id ? { ...a, ...editDraft } : a)));
+                setEditModal(null);
+              }}
+            >
+              Save
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </PayPalScriptProvider>
   );
 } 

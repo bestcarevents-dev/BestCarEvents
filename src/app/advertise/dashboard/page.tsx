@@ -640,7 +640,7 @@ export default function PartnerDashboard() {
                 <CardContent className="space-y-3 mt-4">
                   {pkg.features.map((f, i) => (
                     <div key={i} className="flex items-start gap-3">
-                      <Info className="w-5 h-5 text-primary mt-1" />
+                      <Info className="w-4 h-4 text-primary mt-1" />
                       <span className="text-base text-foreground">{f}</span>
                     </div>
                   ))}
