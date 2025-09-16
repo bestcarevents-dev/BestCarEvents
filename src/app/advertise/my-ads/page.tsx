@@ -954,7 +954,7 @@ export default function MyAdsPage() {
       </div>
       {/* Simple Edit Dialog */}
       <Dialog open={!!editModal?.open} onOpenChange={(o) => { if (!o) setEditModal(null); }}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-foreground">Edit Ad</DialogTitle>
             <DialogDescription className="text-muted-foreground">Update all details for this ad. Fields depend on ad type.</DialogDescription>
