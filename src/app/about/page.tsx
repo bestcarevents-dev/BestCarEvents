@@ -11,7 +11,7 @@ export default async function AboutPage() {
     <div className="min-h-screen bg-white">
       <section className="relative overflow-hidden">
         <div className={`absolute inset-0 bg-gradient-to-b ${accent} pointer-events-none`} />
-        <div className="container mx-auto px-4 py-10 md:py-14 relative">
+        <div className="container mx-auto px-4 py-10 md:py-14 relative" style={{ paddingBottom: 0 }}>
           <div className="inline-flex items-center gap-2 rounded-full border border-amber-200/80 bg-amber-50/70 px-4 py-1 text-amber-800">
             <span className="h-1.5 w-1.5 rounded-full bg-amber-600" />
             <span className="uppercase tracking-[0.2em] text-[11px]">Our Story</span>
