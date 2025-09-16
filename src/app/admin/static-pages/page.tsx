@@ -49,7 +49,14 @@ export default function AdminStaticPages() {
             subtitle: data.about.subtitle || "",
             body: data.about.body,
             images: data.about.images || [],
-            contact: { email: "", phone: "", address: "", mapEmbedUrl: "", instagram: "" },
+            contact: {
+              email: data.about.contact?.email || "",
+              phone: data.about.contact?.phone || "",
+              address: data.about.contact?.address || "",
+              mapEmbedUrl: data.about.contact?.mapEmbedUrl || "",
+              instagram: data.about.contact?.instagram || "",
+              facebook: data.about.contact?.facebook || "",
+            },
           },
           contact: {
             title: data.contact.title,
@@ -62,6 +69,7 @@ export default function AdminStaticPages() {
               address: data.contact.contact?.address || "",
               mapEmbedUrl: data.contact.contact?.mapEmbedUrl || "",
               instagram: data.contact.contact?.instagram || "",
+              facebook: data.contact.contact?.facebook || "",
             },
           },
         });
@@ -299,6 +307,39 @@ export default function AdminStaticPages() {
                       <Input
                         value={state.contact.contact.instagram}
                         onChange={(e) => setState((p) => ({ ...p, contact: { ...p.contact, contact: { ...p.contact.contact, instagram: e.target.value } } }))}
+                      />
+                    </div>
+                    <div className="md:col-span-2">
+                      <Label>Facebook URL</Label>
+                      <Input
+                        value={state.contact.contact.facebook}
+                        onChange={(e) => setState((p) => ({ ...p, contact: { ...p.contact, contact: { ...p.contact.contact, facebook: e.target.value } } }))}
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {key === "about" && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="md:col-span-2">
+                      <Label>Email</Label>
+                      <Input
+                        value={state.about.contact.email}
+                        onChange={(e) => setState((p) => ({ ...p, about: { ...p.about, contact: { ...p.about.contact, email: e.target.value } } }))}
+                      />
+                    </div>
+                    <div className="md:col-span-2">
+                      <Label>Instagram URL</Label>
+                      <Input
+                        value={state.about.contact.instagram}
+                        onChange={(e) => setState((p) => ({ ...p, about: { ...p.about, contact: { ...p.about.contact, instagram: e.target.value } } }))}
+                      />
+                    </div>
+                    <div className="md:col-span-2">
+                      <Label>Facebook URL</Label>
+                      <Input
+                        value={state.about.contact.facebook}
+                        onChange={(e) => setState((p) => ({ ...p, about: { ...p.about, contact: { ...p.about.contact, facebook: e.target.value } } }))}
                       />
                     </div>
                   </div>

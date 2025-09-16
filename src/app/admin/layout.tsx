@@ -51,31 +51,52 @@ import { cn } from "@/lib/utils";
 import { getFirestore, collection, getDocs, query, where } from "firebase/firestore";
 import { app } from "@/lib/firebase";
 
-const navLinks = [
-    { href: "/admin/events", icon: Calendar, label: "Event Requests" },
-    { href: "/admin/cars", icon: Car, label: "Cars for Sale" },
-    { href: "/admin/auctions", icon: Gavel, label: "Auction Requests" },
-    { href: "/admin/hotels", icon: Hotel, label: "Hotel Submissions" },
-    { href: "/admin/clubs", icon: Users, label: "Club Registrations" },
-    { href: "/admin/others", icon: Settings, label: "Service Requests" },
-    { href: "/admin/partners", icon: Handshake, label: "Partner Applications" },
-    { href: "/admin/contact-requests", icon: Mail, label: "Contact Requests" },
-    { href: "/admin/users", icon: Users, label: "Manage Users" },
-    { href: "/admin/newsletter", icon: Mail, label: "Newsletter" },
-    { href: "/admin/newsletter-requests", icon: Mail, label: "Newsletter Requests" },
-    { href: "/admin/payments", icon: CreditCard, label: "Payments" },
-    { href: "/admin/coupons", icon: CreditCard, label: "Coupons" },
-    { href: "/admin/pricing", icon: CreditCard, label: "Pricing" },
-    { href: "/admin/free-listings", icon: Settings, label: "Free Listings" },
-    { href: "/admin/forum", icon: Settings, label: "Forum Moderation" },
-    { href: "/admin/homepage", icon: Settings, label: "Homepage Content" },
-    { href: "/admin/section-galleries", icon: Settings, label: "Section Galleries" },
-    { href: "/admin/page-content", icon: Settings, label: "Page Content" },
-    { href: "/admin/static-pages", icon: Settings, label: "Static Pages" },
-    { href: "/admin/auth-images", icon: Settings, label: "Auth Images" },
-    { href: "/admin/interests", icon: Settings, label: "Interests" },
-    { href: "/admin/form-preferences", icon: Settings, label: "Form Preferences" },
-    { href: "/admin/settings", icon: Settings, label: "Settings" },
+const NAV_SECTIONS = [
+  {
+    title: "Submissions & Moderation",
+    items: [
+      { href: "/admin/events", icon: Calendar, label: "Event Requests" },
+      { href: "/admin/cars", icon: Car, label: "Cars for Sale" },
+      { href: "/admin/auctions", icon: Gavel, label: "Auction Requests" },
+      { href: "/admin/hotels", icon: Hotel, label: "Hotel Submissions" },
+      { href: "/admin/clubs", icon: Users, label: "Club Registrations" },
+      { href: "/admin/others", icon: Settings, label: "Service Requests" },
+      { href: "/admin/partners", icon: Handshake, label: "Partner Applications" },
+      { href: "/admin/forum", icon: Settings, label: "Forum Moderation" },
+    ],
+  },
+  {
+    title: "Users & Communication",
+    items: [
+      { href: "/admin/users", icon: Users, label: "Manage Users" },
+      { href: "/admin/contact-requests", icon: Mail, label: "Contact Requests" },
+      { href: "/admin/newsletter", icon: Mail, label: "Newsletter" },
+      { href: "/admin/newsletter-requests", icon: Mail, label: "Newsletter Requests" },
+    ],
+  },
+  {
+    title: "Advertising & Commerce",
+    items: [
+      { href: "/admin/featured", icon: Star, label: "Advertisements" },
+      { href: "/admin/payments", icon: CreditCard, label: "Payments" },
+      { href: "/admin/coupons", icon: CreditCard, label: "Coupons" },
+      { href: "/admin/pricing", icon: CreditCard, label: "Pricing" },
+      { href: "/admin/free-listings", icon: Settings, label: "Free Listings" },
+    ],
+  },
+  {
+    title: "Content & CMS",
+    items: [
+      { href: "/admin/homepage", icon: Settings, label: "Homepage Content" },
+      { href: "/admin/section-galleries", icon: Settings, label: "Section Galleries" },
+      { href: "/admin/page-content", icon: Settings, label: "Page Content" },
+      { href: "/admin/static-pages", icon: Settings, label: "Static Pages" },
+      { href: "/admin/auth-images", icon: Settings, label: "Auth Images" },
+      { href: "/admin/interests", icon: Settings, label: "Interests" },
+      { href: "/admin/form-preferences", icon: Settings, label: "Form Preferences" },
+      { href: "/admin/settings", icon: Settings, label: "Settings" },
+    ],
+  },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -170,34 +191,28 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 <Home className="h-4 w-4" />
                 Dashboard
               </Link>
-               {navLinks.map(link => (
-                 <Link
-                    key={link.href}
-                    href={link.href}
-                    className={cn("flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary", {
-                      "bg-muted text-primary": link.href === "/admin/newsletter" || link.href === "/admin/newsletter-requests" 
-                        ? pathname === link.href 
-                        : pathname.startsWith(link.href)
-                    })}
-                  >
-                    <link.icon className="h-4 w-4" />
-                    {link.label}
-                    {getBadgeCount(link.href) > 0 && (
-                      <Badge className="ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-full">
-                        {getBadgeCount(link.href)}
-                      </Badge>
-                    )}
-                  </Link>
-               ))}
-              <Link
-                href="/admin/featured"
-                className={cn("flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary", {
-                  "bg-muted text-primary": pathname.startsWith("/admin/featured")
-                })}
-              >
-                <Star className="h-4 w-4" />
-                Adertisements
-              </Link>
+              {NAV_SECTIONS.map((section) => (
+                <div key={section.title} className="mt-4">
+                  <div className="px-3 py-1 text-xs uppercase tracking-wide text-muted-foreground/80">{section.title}</div>
+                  {section.items.map((link) => (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      className={cn("flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary", {
+                        "bg-muted text-primary": pathname === link.href || pathname.startsWith(link.href)
+                      })}
+                    >
+                      <link.icon className="h-4 w-4" />
+                      {link.label}
+                      {getBadgeCount(link.href) > 0 && (
+                        <Badge className="ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-full">
+                          {getBadgeCount(link.href)}
+                        </Badge>
+                      )}
+                    </Link>
+                  ))}
+                </div>
+              ))}
             </nav>
           </div>
         </div>
@@ -231,28 +246,26 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                   <Home className="h-5 w-5" />
                   Dashboard
                 </Link>
-                {navLinks.map(link => (
-                 <Link
-                    key={link.href}
-                    href={link.href}
-                    className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
-                  >
-                    <link.icon className="h-5 w-5" />
-                    {link.label}
-                     {getBadgeCount(link.href) > 0 && (
-                       <Badge className="ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-full">
-                         {getBadgeCount(link.href)}
-                       </Badge>
-                     )}
-                  </Link>
-               ))}
-                <Link
-                  href="/admin/featured"
-                  className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
-                >
-                  <Star className="h-5 w-5" />
-                  Featured
-                </Link>
+                {NAV_SECTIONS.map((section) => (
+                  <div key={section.title} className="mt-3">
+                    <div className="px-3 py-1 text-xs uppercase tracking-wide text-muted-foreground/80">{section.title}</div>
+                    {section.items.map((link) => (
+                      <Link
+                        key={link.href}
+                        href={link.href}
+                        className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
+                      >
+                        <link.icon className="h-5 w-5" />
+                        {link.label}
+                        {getBadgeCount(link.href) > 0 && (
+                          <Badge className="ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-full">
+                            {getBadgeCount(link.href)}
+                          </Badge>
+                        )}
+                      </Link>
+                    ))}
+                  </div>
+                ))}
               </nav>
             </SheetContent>
           </Sheet>

@@ -11,6 +11,11 @@ export const defaultStaticPages: StaticPagesDocument = {
     body:
       "Best Car Events was created because something was missing in the car world: a single place where enthusiasts can share their passion, and those who offer services in this field can all come together.\n\nHere you will find events, auctions, rallies, car sales, clubs, hotels, garages, and more — all collected in one platform, open to everyone. Most importantly, everything is completely free. This is not merchandising, not another commercial project to take advantage of the car industry. Instead, it is a tool made for enthusiasts and automobilists: to connect people, share opportunities, and assist each other in this great automotive world.\n\nWhether you’re at home or traveling, you can use the webpage — and soon the app — to easily find information about what’s happening around you. From international auctions to local rallies, from car hotels to restoration services, Best Car Events is the unique community where passion meets opportunity — free for everyone.",
     images: [],
+    contact: {
+      email: "info@bestcarevents.com",
+      instagram: "https://instagram.com/bestcarevents",
+      facebook: "https://facebook.com/bestcarevents",
+    },
     updatedAt: Date.now(),
   },
   contact: {
@@ -21,6 +26,7 @@ export const defaultStaticPages: StaticPagesDocument = {
     contact: {
       email: "info@bestcarevents.com",
       instagram: "https://instagram.com/bestcarevents",
+      facebook: "https://facebook.com/bestcarevents",
     },
     updatedAt: Date.now(),
   },

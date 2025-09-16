@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { motion, AnimatePresence } from "framer-motion";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export default function OnboardingPage() {
   const router = useRouter();
@@ -25,6 +26,7 @@ export default function OnboardingPage() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [nationality, setNationality] = useState("");
+  const [gender, setGender] = useState<string>("");
   const [photoURL, setPhotoURL] = useState<string | null>(null);
   const [profileFile, setProfileFile] = useState<File | null>(null);
   const [interests, setInterests] = useState<string[]>([]);
@@ -135,7 +137,7 @@ export default function OnboardingPage() {
   const onSave = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!uid) return;
-    if (!firstName.trim() || !lastName.trim()) return;
+    if (!firstName.trim() || !lastName.trim() || !gender) return;
     setSaving(true);
     try {
       let newPhotoURL = photoURL || null;
@@ -148,6 +150,7 @@ export default function OnboardingPage() {
         firstName,
         lastName,
         nationality: nationality || null,
+        gender,
         photoURL: newPhotoURL,
         interests,
         interestIds,
@@ -201,6 +204,19 @@ export default function OnboardingPage() {
                   <div className="grid gap-2">
                     <Label htmlFor="nationality" className="text-gray-900">Nationality</Label>
                     <Input id="nationality" value={nationality} onChange={(e) => setNationality(e.target.value)} className="bg-white text-gray-900 placeholder:text-gray-500" />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label className="text-gray-900">Gender</Label>
+                    <Select value={gender} onValueChange={setGender}>
+                      <SelectTrigger className="bg-white text-gray-900">
+                        <SelectValue placeholder="Select gender" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="male">Male</SelectItem>
+                        <SelectItem value="female">Female</SelectItem>
+                        <SelectItem value="na">Prefer not to say</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
                   <div className="grid gap-2">
                     <Label className="text-gray-900">Profile picture</Label>

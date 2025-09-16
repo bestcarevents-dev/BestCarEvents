@@ -19,6 +19,7 @@ export type ContactDetails = {
   address?: string;
   mapEmbedUrl?: string;
   instagram?: string;
+  facebook?: string;
 };
 
 export type StaticPageContent = BaseStaticPageContent & {

@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import Image from "next/image";
 // removed duplicate Firestore import
-import { ShieldAlert } from "lucide-react";
+import { ShieldAlert, Eye, EyeOff, CheckCircle2, XCircle } from "lucide-react";
 import Script from "next/script";
 
 export default function RegisterPage() {
@@ -30,7 +30,16 @@ export default function RegisterPage() {
   }, []);
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [passHasUpper, setPassHasUpper] = useState(false);
+  const [passHasSymbol, setPassHasSymbol] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  useEffect(() => {
+    setPassHasUpper(/[A-Z]/.test(password));
+    setPassHasSymbol(/[!@#$%^&*(),.?":{}|<>_\-\[\]\\/;'+=~`]/.test(password));
+  }, [password]);
+
   const [name, setName] = useState("");
   const router = useRouter();
   const auth = getAuth(app);
@@ -41,8 +50,12 @@ export default function RegisterPage() {
     setError(null);
 
     if (password.length < 6) {
-        setError("Password must be at least 6 characters long.");
-        return;
+      setError("Password must be at least 6 characters long.");
+      return;
+    }
+    if (!/[A-Z]/.test(password) || !/[!@#$%^&*(),.?":{}|<>_\-\[\]\\/;'+=~`]/.test(password)) {
+      setError("Password must include at least one capital letter and one symbol.");
+      return;
     }
 
     if (password !== confirmPassword) {
@@ -175,26 +188,66 @@ export default function RegisterPage() {
               />
             </div>
             <div className="grid gap-2">
-                <Label htmlFor="password">Password</Label>
-                <Input 
-                    id="password" 
-                    type="password" 
-                    required 
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="bg-input"
+              <Label htmlFor="password">Password</Label>
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="bg-input pr-10"
                 />
+                <button
+                  type="button"
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  onClick={() => setShowPassword((v) => !v)}
+                  className="absolute inset-y-0 right-2 flex items-center text-muted-foreground"
+                >
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+              <div className="text-xs space-y-1">
+                <div className="flex items-center gap-2">
+                  {passHasUpper ? <CheckCircle2 className="w-4 h-4 text-green-600" /> : <XCircle className="w-4 h-4 text-red-500" />}
+                  <span>At least one capital letter</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  {passHasSymbol ? <CheckCircle2 className="w-4 h-4 text-green-600" /> : <XCircle className="w-4 h-4 text-red-500" />}
+                  <span>At least one symbol</span>
+                </div>
+              </div>
             </div>
             <div className="grid gap-2">
-                <Label htmlFor="confirm-password">Confirm Password</Label>
-                <Input 
-                    id="confirm-password" 
-                    type="password" 
-                    required 
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="bg-input"
+              <Label htmlFor="confirm-password">Confirm Password</Label>
+              <div className="relative">
+                <Input
+                  id="confirm-password"
+                  type={showConfirm ? "text" : "password"}
+                  required
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  className="bg-input pr-10"
                 />
+                <button
+                  type="button"
+                  aria-label={showConfirm ? "Hide password" : "Show password"}
+                  onClick={() => setShowConfirm((v) => !v)}
+                  className="absolute inset-y-0 right-2 flex items-center text-muted-foreground"
+                >
+                  {showConfirm ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+              {confirmPassword.length > 0 && (
+                <div className="text-xs flex items-center gap-2">
+                  {confirmPassword === password ? (
+                    <CheckCircle2 className="w-4 h-4 text-green-600" />
+                  ) : (
+                    <XCircle className="w-4 h-4 text-red-500" />
+                  )}
+                  <span>Passwords match</span>
+                </div>
+              )}
             </div>
             {error && (
                 <div className="flex items-center p-3 text-sm rounded-md bg-destructive/15 text-red">
