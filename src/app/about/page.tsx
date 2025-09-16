@@ -48,7 +48,7 @@ export default async function AboutPage() {
         </section>
       ) : null}
 
-      <section className="container mx-auto px-4 py-10 md:py-14">
+      <section className="container mx-auto px-4 py-10 md:py-14" style={{ paddingTop: "1em" }}>
         <div className="grid grid-cols-1 lg:grid-cols-10 gap-10">
           <div className="lg:col-span-7">
             <article className="max-w-3xl text-[1.075rem] leading-8 text-slate-800">
