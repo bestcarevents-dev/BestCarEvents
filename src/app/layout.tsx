@@ -13,6 +13,7 @@ import { cookies } from 'next/headers';
 import EnhancerClient from '@/lib/translate/EnhancerClient';
 import NavigationProgress from '@/components/NavigationProgress';
 import OnboardingGuard from '@/components/OnboardingGuard';
+import LuxuryLightboxProvider from '@/components/LuxuryLightboxProvider';
 export const dynamic = 'force-dynamic';
 
 const fontHeadline = Cinzel({
@@ -59,6 +60,7 @@ export default async function RootLayout({
             <FreeListingsProvider>
               <NavigationProgress />
               <Header />
+              <LuxuryLightboxProvider>
               <main className="flex-1 mt-20">
                 <OnboardingGuard />
                 {/* Auto-translate all text nodes for non-default locales */}
@@ -74,6 +76,7 @@ export default async function RootLayout({
                 {/* Client enhancer to swap text after hydration if cache was just filled */}
                 <EnhancerClient locale={locale} defaultLocale="en" />
               </main>
+              </LuxuryLightboxProvider>
               <Footer />
               <Toaster />
             </FreeListingsProvider>

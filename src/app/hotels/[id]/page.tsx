@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Mail, Globe, MapPin, Star, ArrowLeft, Phone } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useLuxuryLightbox } from "@/components/LuxuryLightboxProvider";
 
 const featureIcons: Record<string, React.ReactNode> = {
   "Climate Controlled": <Star className="w-4 h-4 text-primary" />, // Replace with better icons if available
@@ -29,6 +30,7 @@ export default function HotelDetailPage() {
   const [hotel, setHotel] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [carouselIdx, setCarouselIdx] = useState(0);
+  const lightbox = useLuxuryLightbox();
 
   useEffect(() => {
     const fetchHotel = async () => {
@@ -91,13 +93,15 @@ export default function HotelDetailPage() {
             transition={{ duration: 0.5 }}
             className="absolute inset-0 w-full h-full"
           >
-            <Image
-              src={images[carouselIdx] || "/placeholder.jpg"}
-              alt={`Hotel image ${carouselIdx + 1}`}
-              fill
-              className="object-cover w-full h-full"
-              priority
-            />
+            <button className="absolute inset-0" aria-label="Open image gallery" onClick={() => lightbox.open(images, carouselIdx)} type="button">
+              <Image
+                src={images[carouselIdx] || "/placeholder.jpg"}
+                alt={`Hotel image ${carouselIdx + 1}`}
+                fill
+                className="object-cover w-full h-full"
+                priority
+              />
+            </button>
           </motion.div>
         </AnimatePresence>
         {images.length > 1 && (

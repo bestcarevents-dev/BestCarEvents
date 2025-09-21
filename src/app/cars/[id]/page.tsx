@@ -10,6 +10,7 @@ import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, Dialog
 import { Badge } from "@/components/ui/badge";
 import { MapPin, Star, Share2, Heart, CheckCircle, AlertCircle, Mail } from "lucide-react";
 import Image from "next/image";
+import { useLuxuryLightbox } from "@/components/LuxuryLightboxProvider";
 
 const featureIcons: Record<string, any> = {
   "Air Conditioning": <CheckCircle className="w-4 h-4 mr-1 text-primary" />, // Add more icons as needed
@@ -31,6 +32,7 @@ export default function CarDetailsPage() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showImageModal, setShowImageModal] = useState(false);
   const [emblaApi, setEmblaApi] = useState<any>(null);
+  const lightbox = useLuxuryLightbox();
   const images = car?.images || ["https://via.placeholder.com/800x500?text=No+Image"];
 
   useEffect(() => {
@@ -75,13 +77,8 @@ export default function CarDetailsPage() {
           <CarouselContent>
             {images.map((img: string, idx: number) => (
               <CarouselItem key={idx} className="aspect-video flex items-center justify-center bg-black">
-                {/* Mobile: clicking image opens modal */}
-                <button className="block md:hidden w-full h-full" onClick={() => setShowImageModal(true)} aria-label={`Open image ${idx + 1}`}>
-                  <Image src={img} alt={`Car image ${idx + 1}`} width={900} height={500} className="object-contain w-full h-full" />
-                </button>
-                <div className="hidden md:block w-full h-full">
-                  <Image src={img} alt={`Car image ${idx + 1}`} width={900} height={500} className="object-contain w-full h-full" />
-                </div>
+                <button className="absolute inset-0" onClick={() => lightbox.open(images, idx)} aria-label={`Open image ${idx + 1}`} type="button" />
+                <Image src={img} alt={`Car image ${idx + 1}`} width={900} height={500} className="object-contain w-full h-full" />
               </CarouselItem>
             ))}
           </CarouselContent>

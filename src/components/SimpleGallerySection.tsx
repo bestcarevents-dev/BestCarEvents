@@ -3,10 +3,12 @@
 import { useEffect, useState } from "react";
 import { getFirestore, collection, getDocs, query, orderBy, limit } from "firebase/firestore";
 import { app } from "@/lib/firebase";
+import { useLuxuryLightbox } from "@/components/LuxuryLightboxProvider";
 
 export default function SimpleGallerySection({ title, collectionName, max = 12 }: { title: string; collectionName: string; max?: number }) {
   const [images, setImages] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
+  const lightbox = useLuxuryLightbox();
 
   useEffect(() => {
     const run = async () => {
@@ -41,17 +43,16 @@ export default function SimpleGallerySection({ title, collectionName, max = 12 }
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-0">
           {images.map((url, i) => (
-            <a key={i} href={url} target="_blank" rel="noreferrer" className="group relative block aspect-square overflow-hidden">
+            <button key={i} onClick={() => lightbox.open(images, i)} className="group relative block aspect-square overflow-hidden" aria-label={`Open image ${i + 1}`}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img 
-                src={url} 
-                alt="Gallery" 
+              <img
+                src={url}
+                alt="Gallery"
                 className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.05]"
               />
-              {/* Vintage vignette highlight on hover */}
               <div className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-[radial-gradient(circle_at_center,transparent_45%,rgba(0,0,0,0.55)_100%)]" />
               <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-yellow-500 via-amber-400 to-yellow-600 opacity-90" />
-            </a>
+            </button>
           ))}
         </div>
       </div>

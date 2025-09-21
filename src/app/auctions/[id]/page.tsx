@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { MapPin, Calendar, Mail, ArrowLeft, ArrowRight, Clock, Star, Users } from "lucide-react";
 import Image from "next/image";
+import { useLuxuryLightbox } from "@/components/LuxuryLightboxProvider";
 
 export default function AuctionDetailsPage() {
   const { id } = useParams();
@@ -16,6 +17,7 @@ export default function AuctionDetailsPage() {
   const [auction, setAuction] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [carouselIdx, setCarouselIdx] = useState(0);
+  const lightbox = useLuxuryLightbox();
 
   useEffect(() => {
     const fetchAuction = async () => {
@@ -58,7 +60,7 @@ export default function AuctionDetailsPage() {
         </Button>
       </div>
 
-      {/* Image Carousel */}
+      {/* Image Carousel with lightbox on click */}
       <div className="relative w-full max-w-5xl mx-auto rounded-2xl overflow-hidden shadow-2xl aspect-video mb-6 group">
         {images.length > 1 && (
           <button
@@ -80,9 +82,9 @@ export default function AuctionDetailsPage() {
             <ArrowRight className="w-6 h-6" />
           </button>
         )}
-        <div className="absolute inset-0">
+        <button className="absolute inset-0" aria-label="Open image gallery" onClick={() => lightbox.open(images, carouselIdx)} type="button">
           <Image src={images[carouselIdx] || "https://via.placeholder.com/900x500?text=No+Image"} alt={auction.auctionName} fill className="object-cover w-full h-full" />
-        </div>
+        </button>
       </div>
 
       {/* Thumbnails */}

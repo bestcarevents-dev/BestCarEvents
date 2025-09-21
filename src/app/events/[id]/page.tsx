@@ -11,6 +11,7 @@ import { app } from '@/lib/firebase';
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from '@/components/ui/dialog';
 import { getAuth, onAuthStateChanged, User } from 'firebase/auth';
 import { Badge } from '@/components/ui/badge';
+import { useLuxuryLightbox } from '@/components/LuxuryLightboxProvider';
 import { ArrowLeft } from 'lucide-react';
 
 // This is a mock component for displaying event details.
@@ -20,7 +21,7 @@ export default function EventDetailsPage({ params }: { params: { id: string } })
     const [event, setEvent] = useState<any | null>(null);
     const [loading, setLoading] = useState(true);
     const [showDialog, setShowDialog] = useState(false);
-    const [showImageModal, setShowImageModal] = useState(false);
+    const lightbox = useLuxuryLightbox();
     const [currentUser, setCurrentUser] = useState<User | null>(null);
     const [registering, setRegistering] = useState(false);
     const [registerSuccess, setRegisterSuccess] = useState(false);
@@ -104,20 +105,14 @@ export default function EventDetailsPage({ params }: { params: { id: string } })
             {/* Hero Section */}
             <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl mb-2 sm:mb-10 group">
                 <div className="relative w-full aspect-video bg-black">
-                    {/* Mobile: enable image modal on tap */}
-                    <Dialog open={showImageModal} onOpenChange={setShowImageModal}>
-                        <button className="block sm:hidden w-full h-full" onClick={() => setShowImageModal(true)} aria-label="Open image">
-                            <Image src={event.imageUrl || 'https://via.placeholder.com/900x500?text=No+Image'} alt={event.eventName} fill className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-700" />
-                        </button>
-                        <div className="hidden sm:block w-full h-full">
-                            <Image src={event.imageUrl || 'https://via.placeholder.com/900x500?text=No+Image'} alt={event.eventName} fill className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-700" />
-                        </div>
-                        <DialogContent className="sm:hidden max-w-3xl w-[95vw] p-0 bg-transparent border-0 shadow-none">
-                            <div className="relative w-full aspect-video">
-                                <Image src={event.imageUrl || 'https://via.placeholder.com/900x500?text=No+Image'} alt={event.eventName} fill className="object-contain bg-black" />
-                            </div>
-                        </DialogContent>
-                    </Dialog>
+                    <button
+                      className="absolute inset-0"
+                      aria-label="Open image gallery"
+                      onClick={() => lightbox.open([event.imageUrl || 'https://via.placeholder.com/900x500?text=No+Image'], 0)}
+                      type="button"
+                    >
+                      <Image src={event.imageUrl || 'https://via.placeholder.com/900x500?text=No+Image'} alt={event.eventName} fill className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-700" />
+                    </button>
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
                 </div>
                 {/* Desktop overlay content; mobile will show details below */}

@@ -11,6 +11,7 @@ import { app } from '@/lib/firebase';
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft } from 'lucide-react';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import { useLuxuryLightbox } from "@/components/LuxuryLightboxProvider";
 
 interface ServiceDetails {
   id: string;
@@ -47,6 +48,7 @@ export default function ServiceDetailsPage({ params }: { params: { id: string } 
     const [service, setService] = useState<ServiceDetails | null>(null);
     const [loading, setLoading] = useState(true);
     const router = useRouter();
+    const lightbox = useLuxuryLightbox();
 
     useEffect(() => {
         const fetchService = async () => {
@@ -79,12 +81,14 @@ export default function ServiceDetailsPage({ params }: { params: { id: string } 
             <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl mb-2 sm:mb-10 group">
                 <div className="relative w-full aspect-video bg-black">
                     {service.imageUrls && service.imageUrls.length > 0 ? (
-                        <Image 
-                            src={service.imageUrls[0]} 
-                            alt={service.serviceName} 
-                            fill 
-                            className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-700" 
-                        />
+                        <button className="absolute inset-0" aria-label="Open image gallery" onClick={() => lightbox.open(service.imageUrls, 0)} type="button">
+                          <Image 
+                              src={service.imageUrls[0]} 
+                              alt={service.serviceName} 
+                              fill 
+                              className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-700" 
+                          />
+                        </button>
                     ) : (
                         <div className="w-full h-full bg-gradient-to-br from-gray-400 to-gray-600 flex items-center justify-center">
                             <ServiceTypeIcon className="w-24 h-24 text-white/50" />
@@ -214,12 +218,8 @@ export default function ServiceDetailsPage({ params }: { params: { id: string } 
                                             <CarouselItem key={index} className="pl-2 md:pl-4 basis-full md:basis-1/2 lg:basis-1/3">
                                                 <div className="p-2">
                                                     <div className="relative aspect-video overflow-hidden rounded-lg">
-                                                        <Image
-                                                            src={imageUrl}
-                                                            alt={`${service.serviceName} - Image ${index + 1}`}
-                                                            fill
-                                                            className="object-cover"
-                                                        />
+                                                        <button className="absolute inset-0" aria-label={`Open image ${index + 1}`} onClick={() => lightbox.open(service.imageUrls || [], index)} type="button" />
+                                                        <Image src={imageUrl} alt={`${service.serviceName} - Image ${index + 1}`} fill className="object-cover" />
                                                     </div>
                                                 </div>
                                             </CarouselItem>
