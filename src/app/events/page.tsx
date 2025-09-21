@@ -101,6 +101,10 @@ function EventsPageContent() {
 
     // Filter and sort events
     const filteredAndSortedEvents = useMemo(() => {
+      const extractCity = (value?: string | null) => {
+        if (!value || typeof value !== 'string') return "";
+        return value.split(',')[0]?.trim() || "";
+      };
       let filtered = events.filter(event => {
         const matchesSearch = searchQuery === "" || 
           event.eventName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -109,8 +113,9 @@ function EventsPageContent() {
           event.city?.toLowerCase().includes(searchQuery.toLowerCase()) ||
           event.country?.toLowerCase().includes(searchQuery.toLowerCase());
         
+        const eventCity = (event.city || extractCity(event.location || "")).toLowerCase();
         const matchesCity = selectedCity === "all" || 
-          event.city?.toLowerCase() === selectedCity.toLowerCase();
+          eventCity === selectedCity.toLowerCase();
         
         const matchesState = selectedState === "all" || 
           event.state?.toLowerCase() === selectedState.toLowerCase();
@@ -149,6 +154,27 @@ function EventsPageContent() {
 
       return filtered;
     }, [events, searchQuery, selectedCity, selectedState, selectedCountry, selectedEventType, selectedVehicleFocus, selectedEntryFee, sortBy]);
+    // Build city options from events, including fallback extraction from location
+    const cities = useMemo(() => {
+      const set = new Set<string>();
+      const extractCity = (value?: string | null) => {
+        if (!value || typeof value !== 'string') return null;
+        return value.split(',')[0]?.trim() || null;
+      };
+      for (const ev of events) {
+        const c = (ev.city || extractCity(ev.location)) as string | null;
+        if (c) set.add(c);
+      }
+      return Array.from(set).sort((a, b) => a.localeCompare(b));
+    }, [events]);
+
+    const cityOptions = useMemo(() => {
+      if (selectedCity !== 'all' && selectedCity && !cities.includes(selectedCity)) {
+        return [selectedCity, ...cities];
+      }
+      return cities;
+    }, [cities, selectedCity]);
+
 
     // Separate featured and regular events
     const featuredEvents = filteredAndSortedEvents.filter(event => event.featured === true);
@@ -299,7 +325,11 @@ function EventsPageContent() {
                    </SelectTrigger>
                    <SelectContent>
                       <SelectItem value="all">Any City</SelectItem>
-                      {/* Add cities from events data if available */}
+                      {cityOptions.map((city) => (
+                        <SelectItem key={city} value={city}>
+                          {city}
+                        </SelectItem>
+                      ))}
                    </SelectContent>
                 </Select>
                 <Select value={selectedState} onValueChange={setSelectedState}>
