@@ -43,10 +43,30 @@ export async function POST(req: NextRequest) {
     
     if (captureData.status === 'COMPLETED') {
       const captureId = captureData.purchase_units[0]?.payments?.captures[0]?.id;
-      const customerEmail = email || captureData.payer?.email_address;
-      const paymentAmount = amount || parseFloat(captureData.purchase_units[0]?.payments?.captures[0]?.amount?.value || '0');
-      const paymentCurrency = currency || captureData.purchase_units[0]?.payments?.captures[0]?.amount?.currency_code || 'USD';
-      const paymentDescription = description || 'PayPal Payment';
+      let customerEmail = email || captureData.payer?.email_address || '';
+      let paymentAmount = amount || parseFloat(captureData.purchase_units[0]?.payments?.captures[0]?.amount?.value || '0');
+      let paymentCurrency = currency || captureData.purchase_units[0]?.payments?.captures[0]?.amount?.currency_code || 'USD';
+      let paymentDescription = description || captureData.purchase_units?.[0]?.description || 'PayPal Payment';
+
+      // Fallback: fetch order details for missing fields (payer email, description)
+      if (!customerEmail || !paymentDescription) {
+        try {
+          const orderDetailsRes = await fetch(`https://api-m.sandbox.paypal.com/v2/checkout/orders/${orderId}`, {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${tokenData.access_token}`,
+              'Content-Type': 'application/json',
+            },
+          });
+          const orderDetails = await orderDetailsRes.json();
+          if (!customerEmail) customerEmail = orderDetails?.payer?.email_address || '';
+          if (!paymentDescription) paymentDescription = orderDetails?.purchase_units?.[0]?.description || paymentDescription;
+          if (!paymentAmount) paymentAmount = parseFloat(orderDetails?.purchase_units?.[0]?.amount?.value || `${paymentAmount}`);
+          if (!paymentCurrency) paymentCurrency = orderDetails?.purchase_units?.[0]?.amount?.currency_code || paymentCurrency;
+        } catch (e) {
+          console.warn('Failed to fetch PayPal order details for enrichment:', e);
+        }
+      }
       
       // Map description to Firestore field
       let update: Record<string, any> = {};

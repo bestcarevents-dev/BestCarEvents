@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
+import StripeReceiptClient from '@/components/StripeReceiptClient';
 import Header from '@/components/layout/header';
 import Footer from '@/components/layout/footer';
 import GlobalNewsletterProvider from '@/components/GlobalNewsletterProvider';
@@ -63,6 +64,8 @@ export default async function RootLayout({
               <LuxuryLightboxProvider>
               <main className="flex-1 mt-20">
                 <OnboardingGuard />
+                {/* Auto send receipt email on Stripe success in client (fallback to webhook) */}
+                <StripeReceiptClient />
                 {/* Auto-translate all text nodes for non-default locales */}
                 {/* Default is en */}
                 {/* Server component ensures no creds leak client-side */}
