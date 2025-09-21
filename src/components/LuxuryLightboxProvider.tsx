@@ -60,17 +60,17 @@ export default function LuxuryLightboxProvider({ children }: { children: React.R
     <LuxuryLightboxContext.Provider value={value}>
       {children}
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="fixed inset-0 m-0 p-0 bg-gradient-to-b from-[#0b0b0b]/95 to-[#111]/95 border-0 shadow-none w-screen max-w-none h-screen max-h-screen rounded-none">
-          <div className="relative w-full h-full flex flex-col">
+        <DialogContent className="p-0 w-[100vw] h-[100vh] sm:w-[min(96vw,1200px)] sm:h-[min(92vh,820px)] max-w-none overflow-hidden rounded-none sm:rounded-2xl border-0 bg-gradient-to-b from-[#0b0b0b]/95 to-[#111]/95 shadow-2xl">
+          <div className="relative w-full h-full sm:h-[min(92vh,820px)] flex flex-col">
             {/* Chrome top bar with luxury accents */}
-            <div className="flex items-center justify-between px-4 h-14 shrink-0 bg-gradient-to-b from-black/60 to-transparent">
+            <div className="flex items-center justify-between px-3 sm:px-4 h-12 sm:h-14 shrink-0 bg-gradient-to-b from-black/60 to-transparent">
               <div className="h-[2px] w-24 bg-gradient-to-r from-yellow-600 via-amber-400 to-yellow-600 rounded-full" />
-              <button aria-label="Close" onClick={close} className="inline-flex items-center justify-center rounded-full p-2 hover:bg-white/10 text-[#E0D8C1] transition-colors">
-                <X className="w-6 h-6" />
+              <button aria-label="Close" onClick={close} className="inline-flex items-center justify-center rounded-full p-2 sm:p-2.5 hover:bg-white/10 text-[#E0D8C1] transition-colors">
+                <X className="w-5 h-5 sm:w-6 sm:h-6" />
               </button>
             </div>
 
-            {/* Image area fills remaining height */}
+            {/* Image area fills remaining height with safe padding to avoid cutoffs */}
             <div className="relative w-full flex-1 bg-black">
               <AnimatePresence initial={false} mode="wait">
                 <motion.div
@@ -79,7 +79,7 @@ export default function LuxuryLightboxProvider({ children }: { children: React.R
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.98 }}
                   transition={{ duration: 0.2 }}
-                  className="absolute inset-0"
+                  className="absolute inset-0 p-2 sm:p-4"
                 >
                   <Image
                     src={images[index] || "/placeholder.jpg"}
@@ -121,20 +121,20 @@ export default function LuxuryLightboxProvider({ children }: { children: React.R
             </div>
 
             {/* Bottom chrome: index and thumbnails */}
-            <div className="px-4 py-3 bg-gradient-to-t from-black/70 to-black/20 shrink-0">
+            <div className="px-3 sm:px-4 py-2 sm:py-3 bg-gradient-to-t from-black/70 to-black/20 shrink-0">
               <div className="flex items-center justify-between text-[#E0D8C1] mb-2">
-                <div className="text-sm tracking-wide">{index + 1} / {images.length}</div>
+                <div className="text-xs sm:text-sm tracking-wide">{index + 1} / {images.length}</div>
                 <div className="h-[1px] flex-1 mx-4 bg-gradient-to-r from-transparent via-amber-400/60 to-transparent" />
-                <div className="text-xs uppercase tracking-[0.2em] opacity-80">Gallery</div>
+                <div className="text-[10px] sm:text-xs uppercase tracking-[0.2em] opacity-80">Gallery</div>
               </div>
               {images.length > 1 && (
-                <div className="flex gap-2 overflow-x-auto pb-1">
+                <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-thin scrollbar-thumb-white/20">
                   {images.map((img, i) => (
                     <button
                       key={img + i}
                       onClick={() => setIndex(i)}
                       aria-label={`Go to image ${i + 1}`}
-                      className={`relative h-14 sm:h-16 w-20 sm:w-24 flex-shrink-0 rounded-md overflow-hidden border ${index === i ? 'border-amber-400' : 'border-white/10'}`}
+                      className={`relative h-12 sm:h-16 w-20 sm:w-24 flex-shrink-0 rounded-md overflow-hidden border ${index === i ? 'border-amber-400' : 'border-white/10'}`}
                       type="button"
                     >
                       <Image src={img} alt={`Thumbnail ${i + 1}`} fill className="object-cover" />
