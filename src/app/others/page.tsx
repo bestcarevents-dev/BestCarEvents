@@ -19,6 +19,7 @@ import { useSearchParams } from "next/navigation";
 import FreeCallout from "@/components/free-callout";
 import FreeCalloutDynamic from "@/components/FreeCalloutDynamic";
 import { defaultPageContent, fetchPageHeader, type PageHeader } from "@/lib/pageContent";
+import { useFormPreferences } from "@/hooks/useFormPreferences";
 
 interface ServiceCardProps {
   id: string;
@@ -117,6 +118,7 @@ function OthersPageContent() {
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedType, setSelectedType] = useState("all");
     const [selectedLocation, setSelectedLocation] = useState("all");
+    const sharedPrefs = useFormPreferences("shared");
     const [sortBy, setSortBy] = useState("name");
     const searchParams = useSearchParams();
     const [header, setHeader] = useState<PageHeader>(defaultPageContent.others);
@@ -199,8 +201,12 @@ function OthersPageContent() {
       const matchesType = selectedType === "all" || 
         service.serviceType.toLowerCase().includes(selectedType.replace('-', ' ')) ||
         service.serviceType.toLowerCase() === selectedType;
-      const matchesLocation = selectedLocation === "all" ||
-        (service.location || '').toLowerCase().startsWith(selectedLocation.toLowerCase());
+      const extractCity = (value?: string | null) => {
+        if (!value || typeof value !== 'string') return "";
+        return value.split(',')[0]?.trim() || "";
+      };
+      const serviceCity = extractCity(service.location).toLowerCase();
+      const matchesLocation = selectedLocation === "all" || serviceCity === selectedLocation.toLowerCase();
       
       return matchesSearch && matchesType && matchesLocation;
     });
@@ -324,7 +330,7 @@ function OthersPageContent() {
             <FreeCalloutDynamic section="others" />
 
           <div className="bg-[#E0D8C1]/30 p-6 rounded-lg border border-[#E0D8C1]/50 mb-8">
-            <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
               <Input 
                 placeholder="Search by service name, type..." 
                 className="md:col-span-2 bg-white border-[#80A0A9]/50 text-gray-900 placeholder:text-gray-500 focus:border-[#80A0A9]"
@@ -342,6 +348,29 @@ function OthersPageContent() {
                     ))}
                  </SelectContent>
               </Select>
+              {/* Location filter aligned with HeroSearch (extract city, fallback to whitelist) */}
+              {(() => {
+                const set = new Set<string>();
+                services.forEach((s) => {
+                  const c = (s.location || '').split(',')[0]?.trim();
+                  if (c) set.add(c);
+                });
+                const derived = Array.from(set).sort((a, b) => a.localeCompare(b));
+                const locationOptions = derived.length > 0 ? derived : (sharedPrefs.data?.citiesWhitelist || []);
+                return (
+                  <Select value={selectedLocation} onValueChange={setSelectedLocation}>
+                    <SelectTrigger className="bg-white border-[#80A0A9]/50 text-gray-900 focus:border-[#80A0A9]">
+                      <SelectValue placeholder="Location: Any" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Any Location</SelectItem>
+                      {locationOptions.map((city) => (
+                        <SelectItem key={city} value={city}>{city}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                );
+              })()}
               <Select value={sortBy} onValueChange={setSortBy}>
                 <SelectTrigger className="bg-white border-[#80A0A9]/50 text-gray-900 focus:border-[#80A0A9]">
                   <SelectValue placeholder="Sort by: Name" />
@@ -356,6 +385,7 @@ function OthersPageContent() {
                 onClick={() => {
                   setSearchTerm("");
                   setSelectedType("all");
+                  setSelectedLocation("all");
                   setSortBy("name");
                   setCurrentPage(1);
                 }}

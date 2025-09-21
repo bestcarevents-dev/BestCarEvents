@@ -19,6 +19,7 @@ import FreeCallout from "@/components/free-callout";
 import FreeCalloutDynamic from "@/components/FreeCalloutDynamic";
 import SimpleGallerySection from "@/components/SimpleGallerySection";
 import { defaultPageContent, fetchPageHeader, type PageHeader } from "@/lib/pageContent";
+import { useFormPreferences } from "@/hooks/useFormPreferences";
 
 function CarHotelsPageContent() {
   const [hotels, setHotels] = useState<any[]>([]);
@@ -91,6 +92,10 @@ function CarHotelsPageContent() {
 
   // Filter and sort hotels
   const filteredAndSortedHotels = useMemo(() => {
+    const extractCity = (value?: string | null) => {
+      if (!value || typeof value !== 'string') return "";
+      return value.split(',')[0]?.trim() || "";
+    };
     let filtered = hotels.filter(hotel => {
       const matchesSearch = searchQuery === "" || 
         hotel.hotelName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -98,8 +103,8 @@ function CarHotelsPageContent() {
         hotel.state?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         hotel.description?.toLowerCase().includes(searchQuery.toLowerCase());
       
-      const matchesCity = selectedCity === "all" || 
-        hotel.city?.toLowerCase() === selectedCity.toLowerCase();
+      const hotelCity = (hotel.city || extractCity(hotel.location || "")).toLowerCase();
+      const matchesCity = selectedCity === "all" || hotelCity === selectedCity.toLowerCase();
       
       const matchesState = selectedState === "all" || 
         hotel.state?.toLowerCase() === selectedState.toLowerCase();
@@ -153,20 +158,27 @@ function CarHotelsPageContent() {
   const paginatedHotels = regularHotels.slice(startIndex, endIndex);
 
   // Get unique filter options from hotels
+  const sharedPrefs = useFormPreferences("shared");
   const cities = useMemo(() => {
-    const hotelCities = hotels
-      .map(hotel => hotel.city)
-      .filter(Boolean)
-      .filter((value, index, self) => self.indexOf(value) === index);
-    return hotelCities;
+    const set = new Set<string>();
+    const extractCity = (value?: string | null) => {
+      if (!value || typeof value !== 'string') return null;
+      return value.split(',')[0]?.trim() || null;
+    };
+    hotels.forEach((hotel) => {
+      const c = (hotel.city || extractCity(hotel.location)) as string | null;
+      if (c) set.add(c);
+    });
+    return Array.from(set).sort((a, b) => a.localeCompare(b));
   }, [hotels]);
 
   const cityOptions = useMemo(() => {
-    if (selectedCity !== 'all' && selectedCity && !cities.includes(selectedCity)) {
-      return [selectedCity, ...cities];
+    const base = (cities && cities.length > 0) ? cities : (sharedPrefs.data?.citiesWhitelist || []);
+    if (selectedCity !== 'all' && selectedCity && !base.includes(selectedCity)) {
+      return [selectedCity, ...base];
     }
-    return cities;
-  }, [cities, selectedCity]);
+    return base;
+  }, [cities, selectedCity, sharedPrefs.data?.citiesWhitelist]);
 
   const states = useMemo(() => {
     const hotelStates = hotels

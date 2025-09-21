@@ -21,6 +21,7 @@ import FreeCallout from "@/components/free-callout";
 import FreeCalloutDynamic from "@/components/FreeCalloutDynamic";
 import SimpleGallerySection from "@/components/SimpleGallerySection";
 import { defaultPageContent, fetchPageHeader, type PageHeader } from "@/lib/pageContent";
+import { useFormPreferences } from "@/hooks/useFormPreferences";
 
 function ClubsPageContent() {
   const [clubs, setClubs] = useState<any[]>([]);
@@ -153,13 +154,20 @@ function ClubsPageContent() {
   const paginatedClubs = regularClubs.slice(startIndex, endIndex);
 
   // Get unique filter options from clubs
+  const sharedPrefs = useFormPreferences("shared");
   const cities = useMemo(() => {
-    const clubCities = clubs
-      .map(club => club.city)
-      .filter(Boolean)
-      .filter((value, index, self) => self.indexOf(value) === index);
-    return clubCities;
-  }, [clubs]);
+    const set = new Set<string>();
+    const extractCity = (value?: string | null) => {
+      if (!value || typeof value !== 'string') return null;
+      return value.split(',')[0]?.trim() || null;
+    };
+    clubs.forEach((club) => {
+      const c = (club.city || extractCity(club.location)) as string | null;
+      if (c) set.add(c);
+    });
+    const list = Array.from(set).sort((a, b) => a.localeCompare(b));
+    return list.length > 0 ? list : (sharedPrefs.data?.citiesWhitelist || []);
+  }, [clubs, sharedPrefs.data?.citiesWhitelist]);
 
   const cityOptions = useMemo(() => {
     if (selectedCity !== 'all' && selectedCity && !cities.includes(selectedCity)) {

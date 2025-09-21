@@ -18,6 +18,7 @@ import FreeCallout from "@/components/free-callout";
 import FreeCalloutDynamic from "@/components/FreeCalloutDynamic";
 import SimpleGallerySection from "@/components/SimpleGallerySection";
 import { defaultPageContent, fetchPageHeader, type PageHeader } from "@/lib/pageContent";
+import { useFormPreferences } from "@/hooks/useFormPreferences";
 
 function AuctionsPageContent() {
   const [auctions, setAuctions] = useState<any[]>([]);
@@ -157,13 +158,20 @@ function AuctionsPageContent() {
   const paginatedAuctions = regularAuctions.slice(startIndex, endIndex);
 
   // Get unique filter options from auctions
+  const sharedPrefs = useFormPreferences("shared");
   const cities = useMemo(() => {
-    const auctionCities = auctions
-      .map(auction => auction.city)
-      .filter(Boolean)
-      .filter((value, index, self) => self.indexOf(value) === index);
-    return auctionCities;
-  }, [auctions]);
+    const set = new Set<string>();
+    const extractCity = (value?: string | null) => {
+      if (!value || typeof value !== 'string') return null;
+      return value.split(',')[0]?.trim() || null;
+    };
+    auctions.forEach((auction) => {
+      const c = (auction.city || extractCity(auction.location)) as string | null;
+      if (c) set.add(c);
+    });
+    const list = Array.from(set).sort((a, b) => a.localeCompare(b));
+    return list.length > 0 ? list : (sharedPrefs.data?.citiesWhitelist || []);
+  }, [auctions, sharedPrefs.data?.citiesWhitelist]);
 
   const cityOptions = useMemo(() => {
     if (selectedCity !== 'all' && selectedCity && !cities.includes(selectedCity)) {
