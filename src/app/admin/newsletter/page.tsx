@@ -103,14 +103,13 @@ export default function AdminNewsletterPage() {
     fetchSubscribers();
   }, []);
 
-  // Load approved newsletter requests
+  // Load newsletter requests (all are auto-approved now)
   useEffect(() => {
     const fetchApproved = async () => {
       setRequestsLoading(true);
       try {
         const db = getFirestore(app);
-        const q = query(collection(db, "newsletterrequests"), where("status", "==", "approved"));
-        const snap = await getDocs(q);
+        const snap = await getDocs(collection(db, "newsletterrequests"));
         setApprovedRequests(snap.docs.map((d) => ({ id: d.id, ...(d.data() as any) })) as NewsletterRequestDoc[]);
       } finally {
         setRequestsLoading(false);

@@ -68,9 +68,8 @@ export default function AdminDashboard() {
         const pendingPartnersSnapshot = await getDocs(collection(db, "pendingPartners"));
         const pendingPartnersCount = pendingPartnersSnapshot.size;
 
-        // Fetch pending newsletter requests
-        const newsletterRequestsSnapshot = await getDocs(query(collection(db, "newsletterrequests"), where("status", "==", "pending")));
-        const pendingNewslettersCount = newsletterRequestsSnapshot.size;
+        // Newsletter requests are auto-approved
+        const pendingNewslettersCount = 0;
 
         // Fetch recent payments (last 24 hours)
         const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);

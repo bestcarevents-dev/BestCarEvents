@@ -34,8 +34,25 @@ export default function NewsletterRequestsPage() {
   const [requests, setRequests] = useState<NewsletterRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedRequest, setSelectedRequest] = useState<NewsletterRequest | null>(null);
-  const [tab, setTab] = useState("pending");
+  const [tab, setTab] = useState("approved");
   const db = getFirestore(app);
+  
+  const sendApprovalEmail = async (
+    action: 'approved' | 'rejected',
+    to?: string | null,
+    listingName?: string
+  ) => {
+    try {
+      if (!to) return;
+      await fetch('/api/emails/approval', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ to, listingType: 'newsletter', action, listingName })
+      });
+    } catch (e) {
+      console.error('Failed to send newsletter approval email:', e);
+    }
+  };
 
   useEffect(() => {
     const fetchRequests = async () => {
@@ -48,17 +65,7 @@ export default function NewsletterRequestsPage() {
     fetchRequests();
   }, [db]);
 
-  const handleApprove = async (request: NewsletterRequest) => {
-    try {
-      await updateDoc(doc(db, "newsletterrequests", request.id), {
-        status: "approved"
-      });
-      setRequests(requests.map(r => r.id === request.id ? { ...r, status: "approved" } : r));
-      setSelectedRequest(null);
-    } catch (error) {
-      console.error("Error approving request: ", error);
-    }
-  };
+  // Approval is automatic on submission; no manual approve action needed
 
   const handleReject = async (id: string) => {
     try {
@@ -66,7 +73,11 @@ export default function NewsletterRequestsPage() {
         status: "rejected"
       });
       setRequests(requests.map(r => r.id === id ? { ...r, status: "rejected" } : r));
+      const req = requests.find(r => r.id === id);
       setSelectedRequest(null);
+      if (req) {
+        await sendApprovalEmail('rejected', req.uploadedByUserEmail, req.title);
+      }
     } catch (error) {
       console.error("Error rejecting request: ", error);
     }
@@ -87,7 +98,6 @@ export default function NewsletterRequestsPage() {
   };
 
   const filteredRequests = requests.filter(request => {
-    if (tab === "pending") return request.status === "pending";
     if (tab === "approved") return request.status === "approved";
     if (tab === "rejected") return request.status === "rejected";
     return true;
@@ -98,7 +108,6 @@ export default function NewsletterRequestsPage() {
       <h1 className="text-2xl font-semibold mb-4">Newsletter Requests</h1>
       <Tabs value={tab} onValueChange={setTab} className="mb-6">
         <TabsList>
-          <TabsTrigger value="pending">Pending</TabsTrigger>
           <TabsTrigger value="approved">Approved</TabsTrigger>
           <TabsTrigger value="rejected">Rejected</TabsTrigger>
         </TabsList>
@@ -155,12 +164,7 @@ export default function NewsletterRequestsPage() {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        {request.status === 'pending' && (
-                          <>
-                            <DropdownMenuItem onClick={() => handleApprove(request)}>Approve</DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => handleReject(request.id)}>Reject</DropdownMenuItem>
-                          </>
-                        )}
+                        <DropdownMenuItem onClick={() => handleReject(request.id)}>Reject</DropdownMenuItem>
                         <DropdownMenuItem onClick={() => handleDelete(request.id)}>Delete</DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -267,10 +271,9 @@ export default function NewsletterRequestsPage() {
                 </div>
               </div>
               
-              {selectedRequest?.status === "pending" && (
+              {selectedRequest?.status !== "rejected" && (
                 <div className="flex gap-2">
-                  <Button onClick={() => handleApprove(selectedRequest)}>Approve</Button>
-                  <Button variant="destructive" onClick={() => handleReject(selectedRequest.id)}>Reject</Button>
+                  <Button variant="destructive" onClick={() => handleReject(selectedRequest!.id)}>Reject</Button>
                 </div>
               )}
             </div>

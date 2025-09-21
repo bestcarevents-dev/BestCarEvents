@@ -129,7 +129,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           getDocs(collection(db, "pendingAuctions")),
           getDocs(collection(db, "pendingClubs")),
           getDocs(collection(db, "pendingPartners")),
-          getDocs(query(collection(db, "newsletterrequests"), where("status", "==", "pending"))),
+          // Newsletter requests are auto-approved now; no pending filter needed
+          Promise.resolve({ size: 0 } as any),
           getDocs(query(collection(db, "contactRequests"), where("read", "==", false)))
         ]);
 
@@ -162,7 +163,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       case "/admin/partners":
         return counts.partners;
       case "/admin/newsletter-requests":
-        return counts.newsletters;
+        return 0;
       case "/admin/contact-requests":
         return counts.contact;
       default:

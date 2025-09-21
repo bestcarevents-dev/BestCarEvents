@@ -16,7 +16,7 @@ export function getBrandedSender(): string {
 
 export interface ApprovalEmailPayload {
   to: string;
-  listingType: 'event' | 'car' | 'hotel' | 'club' | 'auction' | 'service';
+  listingType: 'event' | 'car' | 'hotel' | 'club' | 'auction' | 'service' | 'newsletter';
   action: 'approved' | 'rejected';
   listingName?: string;
 }

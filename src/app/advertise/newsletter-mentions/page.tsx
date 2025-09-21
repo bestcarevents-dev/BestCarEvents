@@ -210,13 +210,23 @@ export default function NewsletterMentionsPage() {
         description: formData.description,
         websiteUrl: formData.websiteUrl || "",
         images: imageUrls,
-        status: "pending",
+        status: "approved",
         createdAt: new Date(),
         uploadedByUser: currentUser.displayName || currentUser.email,
         uploadedByUserEmail: currentUser.email
       };
 
       const docRef = await addDoc(collection(db, "newsletterrequests"), newsletterRequest);
+      // Immediately notify user of approval since newsletter requests are auto-approved
+      try {
+        await fetch('/api/emails/approval', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ to: currentUser.email, listingType: 'newsletter', action: 'approved', listingName: formData.title })
+        });
+      } catch (e) {
+        console.error('Failed to send auto-approval email for newsletter request:', e);
+      }
       
       // Create notification (non-blocking)
       try {
