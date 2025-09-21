@@ -111,9 +111,7 @@ export default function NewsletterSubscribe() {
           >
             {alreadySubscribed ? "Subscribed — you'll receive updates" : (subscribed ? "Subscribed!" : "Subscribe to our Newsletter")}
           </Button>
-          {alreadySubscribed && !subscribed && (
-            <p className="mt-2 text-sm text-muted-foreground">You're already subscribed to the newsletter.</p>
-          )}
+          {/* Removed extra subscribed notice to keep only button text */}
           <AnimatePresence>
             {subscribed && (
               <motion.div

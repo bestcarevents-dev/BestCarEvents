@@ -50,6 +50,115 @@ type EventData = {
   createdAt?: any;
 };
 
+const CitiesSliderSection = () => {
+  const [cities, setCities] = useState<string[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    const fetchCities = async () => {
+      setLoading(true);
+      try {
+        const db = getFirestore(app);
+
+        const extractCity = (value?: string | null) => {
+          if (!value || typeof value !== 'string') return null;
+          const first = value.split(',')[0]?.trim();
+          return first || null;
+        };
+
+        const [carsSnap, eventsSnap, hotelsSnap, clubsSnap, auctionsSnap, othersSnap] = await Promise.all([
+          getDocs(collection(db, "cars")),
+          getDocs(collection(db, "events")),
+          getDocs(collection(db, "hotels")),
+          getDocs(collection(db, "clubs")),
+          getDocs(collection(db, "auctions")),
+          getDocs(collection(db, "others")),
+        ]);
+
+        const citySet = new Set<string>();
+
+        carsSnap.docs.forEach(d => {
+          const data: any = d.data();
+          const c = extractCity(data?.location) || extractCity(data?.city);
+          if (c) citySet.add(c);
+        });
+        eventsSnap.docs.forEach(d => {
+          const data: any = d.data();
+          const c = extractCity(data?.city) || extractCity(data?.location);
+          if (c) citySet.add(c);
+        });
+        hotelsSnap.docs.forEach(d => {
+          const data: any = d.data();
+          const c = extractCity(data?.city) || extractCity(data?.location);
+          if (c) citySet.add(c);
+        });
+        clubsSnap.docs.forEach(d => {
+          const data: any = d.data();
+          const c = extractCity(data?.city) || extractCity(data?.location);
+          if (c) citySet.add(c);
+        });
+        auctionsSnap.docs.forEach(d => {
+          const data: any = d.data();
+          const c = extractCity(data?.city) || extractCity(data?.location);
+          if (c) citySet.add(c);
+        });
+        othersSnap.docs.forEach(d => {
+          const data: any = d.data();
+          const c = extractCity(data?.location) || extractCity(data?.city);
+          if (c) citySet.add(c);
+        });
+
+        const unique = Array.from(citySet).sort((a, b) => a.localeCompare(b));
+        setCities(unique);
+      } catch (e) {
+        setCities([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCities();
+  }, []);
+
+  return (
+    <section className="py-10 bg-white">
+      <div className="container mx-auto px-4">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="p-2 bg-yellow-400/10 rounded-full">
+            <span className="text-yellow-600 font-bold text-sm">{String.fromCharCode(9733)}</span>
+          </div>
+          <h2 className="text-2xl font-headline font-bold text-gray-900">Browse by City</h2>
+          <div className="flex-1 h-px bg-gradient-to-r from-yellow-400/50 to-transparent"></div>
+        </div>
+        {loading ? (
+          <div className="overflow-x-auto">
+            <div className="inline-flex gap-3 py-2">
+              {Array.from({ length: 10 }).map((_, i) => (
+                <div key={i} className="h-9 w-28 rounded-full bg-gray-200 animate-pulse" />
+              ))}
+            </div>
+          </div>
+        ) : cities.length === 0 ? (
+          <div className="text-gray-600 py-4">No cities found.</div>
+        ) : (
+          <div className="overflow-x-auto">
+            <div className="inline-flex gap-3 py-2">
+              {cities.map((city) => (
+                <span
+                  key={city}
+                  className="px-4 h-9 inline-flex items-center rounded-full bg-[#F4F0E7] border border-[#D9CEB6] text-gray-800 whitespace-nowrap shadow-sm"
+                >
+                  <Map className="w-4 h-4 mr-2 text-[#7D8C91]" />
+                  {city}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </section>
+  );
+};
+
 type AuctionData = {
   id: string;
   auctionName?: string;
@@ -2220,6 +2329,7 @@ export default function Home() {
 
       <FeaturedCarsSection copy={copy.featuredCars ?? defaultHomepageContent.featuredCars!} />
       <FeaturedEventsSection copy={copy.featuredEvents ?? defaultHomepageContent.featuredEvents!} />
+      <CitiesSliderSection />
       <SimpleGallerySection title={copy.galleries?.location1?.title ?? defaultHomepageContent.galleries!.location1!.title} collectionName="gallery_location1" max={12} />
       <FeaturedAuctionsSection copy={copy.featuredAuctions ?? defaultHomepageContent.featuredAuctions!} />
       <FeaturedHotelsSection copy={copy.featuredHotels ?? defaultHomepageContent.featuredHotels!} />
