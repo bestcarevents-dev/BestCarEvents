@@ -161,6 +161,13 @@ function ClubsPageContent() {
     return clubCities;
   }, [clubs]);
 
+  const cityOptions = useMemo(() => {
+    if (selectedCity !== 'all' && selectedCity && !cities.includes(selectedCity)) {
+      return [selectedCity, ...cities];
+    }
+    return cities;
+  }, [cities, selectedCity]);
+
   const countries = useMemo(() => {
     const clubCountries = clubs
       .map(club => club.country)
@@ -332,7 +339,7 @@ function ClubsPageContent() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">Any City</SelectItem>
-                    {cities.map((city) => (
+                    {cityOptions.map((city) => (
                       <SelectItem key={city} value={city}>
                         {city}
                       </SelectItem>

@@ -161,6 +161,13 @@ function CarHotelsPageContent() {
     return hotelCities;
   }, [hotels]);
 
+  const cityOptions = useMemo(() => {
+    if (selectedCity !== 'all' && selectedCity && !cities.includes(selectedCity)) {
+      return [selectedCity, ...cities];
+    }
+    return cities;
+  }, [cities, selectedCity]);
+
   const states = useMemo(() => {
     const hotelStates = hotels
       .map(hotel => hotel.state)
@@ -323,7 +330,7 @@ function CarHotelsPageContent() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Any City</SelectItem>
-                  {cities.map((city) => (
+                  {cityOptions.map((city) => (
                     <SelectItem key={city} value={city}>
                       {city}
                     </SelectItem>
