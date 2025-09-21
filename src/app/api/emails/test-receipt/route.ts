@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getResendClient, buildReceiptEmail } from '@/lib/email/resend';
+import { getResendClient, buildReceiptEmail, getBrandedSender } from '@/lib/email/resend';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
       paymentId: `test_${Date.now()}`,
       metadata: { stripeSessionId: 'cs_test_123' }
     });
-    const result = await resend.emails.send({ from: 'info@bestcarevents.com', to: [to], subject, html });
+    const result = await resend.emails.send({ from: getBrandedSender(), to: [to], subject, html });
     return NextResponse.json({ ok: true, id: (result as any)?.id || null });
   } catch (err: any) {
     console.error('POST /api/emails/test-receipt error:', err);

@@ -3,7 +3,7 @@ import Stripe from 'stripe';
 import { db } from '@/lib/firebase';
 import { collection, query, where, getDocs, updateDoc, increment, addDoc, serverTimestamp } from 'firebase/firestore';
 import { createPaymentNotification } from '@/lib/notifications';
-import { getResendClient, buildReceiptEmail } from '@/lib/email/resend';
+import { getResendClient, buildReceiptEmail, getBrandedSender } from '@/lib/email/resend';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -187,7 +187,7 @@ export async function POST(req: NextRequest) {
           },
         });
         // Do not await; ensure failure never impacts main flow
-        resend.emails.send({ from: 'info@bestcarevents.com', to: [email], subject, html })
+        resend.emails.send({ from: getBrandedSender(), to: [email], subject, html })
           .then((r) => console.log('Receipt email queued (Stripe):', (r as any)?.id || 'ok'))
           .catch((e) => console.error('Receipt email error (Stripe):', e));
       } catch (emailError) {

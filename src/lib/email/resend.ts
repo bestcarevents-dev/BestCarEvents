@@ -10,6 +10,10 @@ export function getResendClient(): Resend {
   return new Resend(apiKey);
 }
 
+export function getBrandedSender(): string {
+  return 'BestCarEvents <info@bestcarevents.com>';
+}
+
 export interface ApprovalEmailPayload {
   to: string;
   listingType: 'event' | 'car' | 'hotel' | 'club' | 'auction' | 'service';
@@ -20,20 +24,44 @@ export interface ApprovalEmailPayload {
 export function buildApprovalEmail({ to, listingType, action, listingName }: ApprovalEmailPayload) {
   const prettyType = listingType.charAt(0).toUpperCase() + listingType.slice(1);
   const subject = action === 'approved'
-    ? `${prettyType} listing approved`
-    : `${prettyType} listing rejected`;
+    ? `Your ${prettyType} listing is approved`
+    : `Update on your ${prettyType} listing`;
 
   const safeName = listingName || prettyType;
-  const title = action === 'approved' ? 'Approved' : 'Rejected';
-  const message = action === 'approved'
-    ? `Good news! Your ${prettyType} listing${safeName ? ` "${safeName}"` : ''} has been approved and is now live.`
-    : `We’re sorry. Your ${prettyType} listing${safeName ? ` "${safeName}"` : ''} was not approved at this time.`;
+  const title = action === 'approved' ? 'Congratulations' : 'Status Update';
+  const lead = action === 'approved'
+    ? `We’re delighted to let you know your ${prettyType.toLowerCase()} listing${safeName ? ` “${safeName}”` : ''} has been approved and is now live on BestCarEvents.`
+    : `We’ve reviewed your ${prettyType.toLowerCase()} listing${safeName ? ` “${safeName}”` : ''}. Unfortunately, it wasn’t approved at this time.`;
+
+  const gold = '#C9A227';
+  const slate = '#0f172a';
+  const muted = '#64748b';
+  const border = '#e2e8f0';
+
+  const nextSteps = action === 'approved'
+    ? 'You can manage or update your listing from your dashboard anytime.'
+    : 'Feel free to update and resubmit. Our team is happy to help with any questions.';
 
   const html = `
-  <div style="font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; color:#0f172a;">
-    <h2 style="margin:0 0 8px;">${title}</h2>
-    <p style="margin:0 0 12px; line-height:1.6;">${message}</p>
-    <p style="margin:0; line-height:1.6;">If you have any questions, just reply to this email.</p>
+  <div style="font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; color:${slate}; background:#fff;">
+    <div style="max-width:640px; margin:0 auto;">
+      <div style="padding:20px 0; text-align:center;">
+        <div style="font-size:22px; font-weight:700; color:${slate};">BestCarEvents</div>
+        <div style="font-size:12px; color:${muted}; letter-spacing:0.08em; text-transform:uppercase;">Listing ${action === 'approved' ? 'Approved' : 'Update'}</div>
+      </div>
+      <div style="border:1px solid ${border}; border-radius:12px; overflow:hidden;">
+        <div style="background:${slate}; color:white; padding:16px 20px;">
+          <div style="font-size:16px; font-weight:600;">${title}</div>
+          <div style="font-size:13px; opacity:0.85;">${safeName ? escapeHtml(safeName) : prettyType}</div>
+        </div>
+        <div style="padding:20px;">
+          <p style="margin:0 0 12px; line-height:1.6;">${lead}</p>
+          <p style="margin:0 0 12px; line-height:1.6; color:${muted};">${nextSteps}</p>
+          <p style="margin:0; line-height:1.6; color:${muted};">If you need assistance, just reply to this email—our team is here to help.</p>
+        </div>
+      </div>
+      <div style="text-align:center; font-size:12px; color:${muted}; margin-top:16px;">© ${new Date().getFullYear()} BestCarEvents</div>
+    </div>
   </div>`;
 
   return { to, subject, html };
@@ -64,7 +92,7 @@ export function buildReceiptEmail(payload: ReceiptEmailPayload) {
     currency: currency || 'USD'
   }).format(amount || 0);
 
-  const subject = `Your BestCar receipt • ${prettyAmount}`;
+  const subject = `Thank you for your purchase • ${prettyAmount}`;
 
   const gold = '#C9A227';
   const slate = '#0f172a';
@@ -90,18 +118,19 @@ export function buildReceiptEmail(payload: ReceiptEmailPayload) {
   }
 
   const html = `
-  <div style="font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; color:${slate};">
+  <div style="font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; color:${slate}; background:#fff;">
     <div style="max-width:640px; margin:0 auto;">
       <div style="padding:20px 0; text-align:center;">
-        <div style="font-size:22px; font-weight:700; color:${slate};">BestCar</div>
+        <div style="font-size:22px; font-weight:700; color:${slate};">BestCarEvents</div>
         <div style="font-size:12px; color:${muted}; letter-spacing:0.08em; text-transform:uppercase;">Payment Receipt</div>
       </div>
       <div style="border:1px solid ${border}; border-radius:12px; overflow:hidden;">
         <div style="background:${slate}; color:white; padding:16px 20px;">
           <div style="font-size:16px; font-weight:600;">Thank you for your purchase</div>
-          <div style="font-size:13px; opacity:0.85;">A copy of your receipt is below.</div>
+          <div style="font-size:13px; opacity:0.85;">We appreciate your business. Your receipt is below.</div>
         </div>
         <div style="padding:20px;">
+          <p style="margin:0 0 12px; line-height:1.6; color:${muted};">This email confirms your order with BestCarEvents. Keep it for your records.</p>
           <table style="width:100%; border-collapse:collapse;">
             ${rows.join('')}
             <tr><td colspan="2" style="padding-top:16px; border-top:1px solid ${border};"></td></tr>
@@ -110,10 +139,14 @@ export function buildReceiptEmail(payload: ReceiptEmailPayload) {
               <td style="padding:12px 0; text-align:right; color:${gold}; font-weight:700;">${prettyAmount}</td>
             </tr>
           </table>
-          <div style="margin-top:16px; font-size:12px; color:${muted};">If you have any questions, reply to this email and our team will assist you.</div>
+          <div style="margin-top:12px; font-size:13px; color:${slate};">What’s next?</div>
+          <ul style="margin:8px 0 0 18px; padding:0; color:${muted}; font-size:12px; line-height:1.6;">
+            <li>Manage your purchases anytime from your dashboard.</li>
+            <li>Need help? Reply to this email and our team will assist you promptly.</li>
+          </ul>
         </div>
       </div>
-      <div style="text-align:center; font-size:12px; color:${muted}; margin-top:16px;">© ${new Date().getFullYear()} BestCar Events</div>
+      <div style="text-align:center; font-size:12px; color:${muted}; margin-top:16px;">© ${new Date().getFullYear()} BestCarEvents</div>
     </div>
   </div>`;
 

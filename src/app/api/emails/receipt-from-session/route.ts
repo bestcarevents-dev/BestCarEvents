@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
-import { getResendClient, buildReceiptEmail } from '@/lib/email/resend';
+import { getResendClient, buildReceiptEmail, getBrandedSender } from '@/lib/email/resend';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
         stripePaymentIntentId: typeof session.payment_intent === 'string' ? session.payment_intent : (session.payment_intent as any)?.id || null,
       },
     });
-    const result = await resend.emails.send({ from: 'info@bestcarevents.com', to: [email], subject, html });
+    const result = await resend.emails.send({ from: getBrandedSender(), to: [email], subject, html });
     return NextResponse.json({ ok: true, id: (result as any)?.id || null });
   } catch (err: any) {
     console.error('POST /api/emails/receipt-from-session error:', err);

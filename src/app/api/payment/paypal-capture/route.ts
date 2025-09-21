@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/firebase';
 import { collection, query, where, getDocs, updateDoc, increment, addDoc, serverTimestamp } from 'firebase/firestore';
 import { createPaymentNotification } from '@/lib/notifications';
-import { getResendClient, buildReceiptEmail } from '@/lib/email/resend';
+import { getResendClient, buildReceiptEmail, getBrandedSender } from '@/lib/email/resend';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -220,7 +220,7 @@ export async function POST(req: NextRequest) {
                 paypalCaptureId: captureId,
               },
             });
-            resend.emails.send({ from: 'info@bestcarevents.com', to: [customerEmail], subject, html })
+            resend.emails.send({ from: getBrandedSender(), to: [customerEmail], subject, html })
               .then((r) => console.log('Receipt email queued (PayPal capture):', (r as any)?.id || 'ok'))
               .catch((e) => console.error('Receipt email error (PayPal capture):', e));
           }
