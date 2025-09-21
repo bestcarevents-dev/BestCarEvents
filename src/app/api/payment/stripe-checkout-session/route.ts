@@ -75,7 +75,7 @@ export async function POST(req: NextRequest) {
         originalAmount: String(amount),
         finalAmount: String(finalAmount),
       },
-      success_url: `${baseReturnUrl}?success=1`,
+      success_url: `${baseReturnUrl}?success=1&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${baseReturnUrl}?canceled=1`,
     });
     return NextResponse.json({ url: session.url });

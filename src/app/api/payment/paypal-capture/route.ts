@@ -4,6 +4,9 @@ import { collection, query, where, getDocs, updateDoc, increment, addDoc, server
 import { createPaymentNotification } from '@/lib/notifications';
 import { getResendClient, buildReceiptEmail } from '@/lib/email/resend';
 
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+
 export async function POST(req: NextRequest) {
   const { orderId, email, description, amount, currency } = await req.json();
   if (!orderId) {
@@ -197,7 +200,7 @@ export async function POST(req: NextRequest) {
                 paypalCaptureId: captureId,
               },
             });
-            resend.emails.send({ from: 'receipts@bestcarevents.com', to: [customerEmail], subject, html })
+            resend.emails.send({ from: 'info@bestcarevents.com', to: [customerEmail], subject, html })
               .then((r) => console.log('Receipt email queued (PayPal capture):', (r as any)?.id || 'ok'))
               .catch((e) => console.error('Receipt email error (PayPal capture):', e));
           }

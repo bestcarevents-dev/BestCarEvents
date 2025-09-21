@@ -5,6 +5,9 @@ import { collection, query, where, getDocs, updateDoc, increment, addDoc, server
 import { createPaymentNotification } from '@/lib/notifications';
 import { getResendClient, buildReceiptEmail } from '@/lib/email/resend';
 
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2022-11-15',
 });
@@ -184,7 +187,7 @@ export async function POST(req: NextRequest) {
           },
         });
         // Do not await; ensure failure never impacts main flow
-        resend.emails.send({ from: 'receipts@bestcarevents.com', to: [email], subject, html })
+        resend.emails.send({ from: 'info@bestcarevents.com', to: [email], subject, html })
           .then((r) => console.log('Receipt email queued (Stripe):', (r as any)?.id || 'ok'))
           .catch((e) => console.error('Receipt email error (Stripe):', e));
       } catch (emailError) {
