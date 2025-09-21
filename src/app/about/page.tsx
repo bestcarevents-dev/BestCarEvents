@@ -1,5 +1,6 @@
 import { fetchStaticPage } from "@/lib/staticPages";
 import Image from "next/image";
+import { Mail, Instagram, Facebook, Twitter, Youtube, Linkedin, Globe, MessageCircle, Send, BadgePercent } from "lucide-react";
 
 export const revalidate = 60;
 
@@ -76,21 +77,66 @@ export default async function AboutPage() {
             <div className="mt-6 rounded-2xl border border-amber-200 bg-white p-6 shadow-[0_8px_30px_rgba(191,146,42,0.12)]">
               <h3 className="font-serif text-xl font-semibold text-slate-900">Connect with us</h3>
               <ul className="mt-4 space-y-4 text-slate-700">
-                <li className="flex items-center gap-3">
-                  {/* Mail icon */}
-                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-amber-700"><path d="M4 4h16v16H4z"></path><path d="m22 6-10 7L2 6"></path></svg>
-                  <a href={`mailto:${content.contact?.email || 'info@bestcarevents.com'}`} className="underline decoration-amber-500 underline-offset-2">{content.contact?.email || 'info@bestcarevents.com'}</a>
-                </li>
-                <li className="flex items-center gap-3">
-                  {/* Instagram icon */}
-                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-amber-700"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
-                  <a href={content.contact?.instagram || 'https://instagram.com/bestcarevents'} target="_blank" rel="noopener noreferrer" className="underline decoration-amber-500 underline-offset-2">BestCarEvents</a>
-                </li>
-                <li className="flex items-center gap-3">
-                  {/* Facebook icon */}
-                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" className="text-amber-700"><path d="M22 12a10 10 0 1 0-11.5 9.95v-7.04H7.9V12h2.6V9.8c0-2.57 1.53-3.99 3.87-3.99 1.12 0 2.3.2 2.3.2v2.53h-1.3c-1.28 0-1.68.8-1.68 1.62V12h2.86l-.46 2.91h-2.4v7.04A10 10 0 0 0 22 12z"></path></svg>
-                  <a href={content.contact?.facebook || 'https://facebook.com/bestcarevents'} target="_blank" rel="noopener noreferrer" className="underline decoration-amber-500 underline-offset-2">Facebook</a>
-                </li>
+                {content.contact?.email && (
+                  <li className="flex items-center gap-3">
+                    <Mail size={18} className="text-amber-700" />
+                    <a href={`mailto:${content.contact.email}`} className="underline decoration-amber-500 underline-offset-2">{content.contact.email}</a>
+                  </li>
+                )}
+                {content.contact?.website && (
+                  <li className="flex items-center gap-3">
+                    <Globe size={18} className="text-amber-700" />
+                    <a href={content.contact.website} target="_blank" rel="noopener noreferrer" className="underline decoration-amber-500 underline-offset-2">Website</a>
+                  </li>
+                )}
+                {content.contact?.instagram && (
+                  <li className="flex items-center gap-3">
+                    <Instagram size={18} className="text-amber-700" />
+                    <a href={content.contact.instagram} target="_blank" rel="noopener noreferrer" className="underline decoration-amber-500 underline-offset-2">Instagram</a>
+                  </li>
+                )}
+                {content.contact?.facebook && (
+                  <li className="flex items-center gap-3">
+                    <Facebook size={18} className="text-amber-700" />
+                    <a href={content.contact.facebook} target="_blank" rel="noopener noreferrer" className="underline decoration-amber-500 underline-offset-2">Facebook</a>
+                  </li>
+                )}
+                {content.contact?.twitter && (
+                  <li className="flex items-center gap-3">
+                    <Twitter size={18} className="text-amber-700" />
+                    <a href={content.contact.twitter} target="_blank" rel="noopener noreferrer" className="underline decoration-amber-500 underline-offset-2">Twitter</a>
+                  </li>
+                )}
+                {content.contact?.youtube && (
+                  <li className="flex items-center gap-3">
+                    <Youtube size={18} className="text-amber-700" />
+                    <a href={content.contact.youtube} target="_blank" rel="noopener noreferrer" className="underline decoration-amber-500 underline-offset-2">YouTube</a>
+                  </li>
+                )}
+                {content.contact?.linkedin && (
+                  <li className="flex items-center gap-3">
+                    <Linkedin size={18} className="text-amber-700" />
+                    <a href={content.contact.linkedin} target="_blank" rel="noopener noreferrer" className="underline decoration-amber-500 underline-offset-2">LinkedIn</a>
+                  </li>
+                )}
+                {content.contact?.tiktok && (
+                  <li className="flex items-center gap-3">
+                    <BadgePercent size={18} className="text-amber-700" />
+                    <a href={content.contact.tiktok} target="_blank" rel="noopener noreferrer" className="underline decoration-amber-500 underline-offset-2">TikTok</a>
+                  </li>
+                )}
+                {content.contact?.telegram && (
+                  <li className="flex items-center gap-3">
+                    <Send size={18} className="text-amber-700" />
+                    <a href={content.contact.telegram} target="_blank" rel="noopener noreferrer" className="underline decoration-amber-500 underline-offset-2">Telegram</a>
+                  </li>
+                )}
+                {content.contact?.whatsapp && (
+                  <li className="flex items-center gap-3">
+                    <MessageCircle size={18} className="text-amber-700" />
+                    <a href={content.contact.whatsapp} target="_blank" rel="noopener noreferrer" className="underline decoration-amber-500 underline-offset-2">WhatsApp</a>
+                  </li>
+                )}
               </ul>
             </div>
           </div>

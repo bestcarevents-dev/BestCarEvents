@@ -21,7 +21,21 @@ function createDefaultState() {
     subtitle: "",
     body: "",
     images: [] as { url: string; alt?: string }[],
-    contact: { email: "", phone: "", address: "", mapEmbedUrl: "", instagram: "" },
+    contact: {
+      email: "",
+      phone: "",
+      address: "",
+      mapEmbedUrl: "",
+      instagram: "",
+      facebook: "",
+      twitter: "",
+      youtube: "",
+      linkedin: "",
+      website: "",
+      tiktok: "",
+      telegram: "",
+      whatsapp: "",
+    },
   };
 }
 
@@ -56,6 +70,13 @@ export default function AdminStaticPages() {
               mapEmbedUrl: data.about.contact?.mapEmbedUrl || "",
               instagram: data.about.contact?.instagram || "",
               facebook: data.about.contact?.facebook || "",
+              twitter: data.about.contact?.twitter || "",
+              youtube: data.about.contact?.youtube || "",
+              linkedin: data.about.contact?.linkedin || "",
+              website: data.about.contact?.website || "",
+              tiktok: data.about.contact?.tiktok || "",
+              telegram: data.about.contact?.telegram || "",
+              whatsapp: data.about.contact?.whatsapp || "",
             },
           },
           contact: {
@@ -70,6 +91,13 @@ export default function AdminStaticPages() {
               mapEmbedUrl: data.contact.contact?.mapEmbedUrl || "",
               instagram: data.contact.contact?.instagram || "",
               facebook: data.contact.contact?.facebook || "",
+              twitter: data.contact.contact?.twitter || "",
+              youtube: data.contact.contact?.youtube || "",
+              linkedin: data.contact.contact?.linkedin || "",
+              website: data.contact.contact?.website || "",
+              tiktok: data.contact.contact?.tiktok || "",
+              telegram: data.contact.contact?.telegram || "",
+              whatsapp: data.contact.contact?.whatsapp || "",
             },
           },
         });
@@ -302,18 +330,67 @@ export default function AdminStaticPages() {
                         onChange={(e) => setState((p) => ({ ...p, contact: { ...p.contact, contact: { ...p.contact.contact, mapEmbedUrl: e.target.value } } }))}
                       />
                     </div>
-                    <div className="md:col-span-2">
+                    <div>
                       <Label>Instagram URL</Label>
                       <Input
                         value={state.contact.contact.instagram}
                         onChange={(e) => setState((p) => ({ ...p, contact: { ...p.contact, contact: { ...p.contact.contact, instagram: e.target.value } } }))}
                       />
                     </div>
-                    <div className="md:col-span-2">
+                    <div>
                       <Label>Facebook URL</Label>
                       <Input
                         value={state.contact.contact.facebook}
                         onChange={(e) => setState((p) => ({ ...p, contact: { ...p.contact, contact: { ...p.contact.contact, facebook: e.target.value } } }))}
+                      />
+                    </div>
+                    <div>
+                      <Label>Twitter URL</Label>
+                      <Input
+                        value={state.contact.contact.twitter || ""}
+                        onChange={(e) => setState((p) => ({ ...p, contact: { ...p.contact, contact: { ...p.contact.contact, twitter: e.target.value } } }))}
+                      />
+                    </div>
+                    <div>
+                      <Label>YouTube URL</Label>
+                      <Input
+                        value={state.contact.contact.youtube || ""}
+                        onChange={(e) => setState((p) => ({ ...p, contact: { ...p.contact, contact: { ...p.contact.contact, youtube: e.target.value } } }))}
+                      />
+                    </div>
+                    <div>
+                      <Label>LinkedIn URL</Label>
+                      <Input
+                        value={state.contact.contact.linkedin || ""}
+                        onChange={(e) => setState((p) => ({ ...p, contact: { ...p.contact, contact: { ...p.contact.contact, linkedin: e.target.value } } }))}
+                      />
+                    </div>
+                    <div>
+                      <Label>Website URL</Label>
+                      <Input
+                        value={state.contact.contact.website || ""}
+                        onChange={(e) => setState((p) => ({ ...p, contact: { ...p.contact, contact: { ...p.contact.contact, website: e.target.value } } }))}
+                      />
+                    </div>
+                    <div>
+                      <Label>TikTok URL</Label>
+                      <Input
+                        value={state.contact.contact.tiktok || ""}
+                        onChange={(e) => setState((p) => ({ ...p, contact: { ...p.contact, contact: { ...p.contact.contact, tiktok: e.target.value } } }))}
+                      />
+                    </div>
+                    <div>
+                      <Label>Telegram URL</Label>
+                      <Input
+                        value={state.contact.contact.telegram || ""}
+                        onChange={(e) => setState((p) => ({ ...p, contact: { ...p.contact, contact: { ...p.contact.contact, telegram: e.target.value } } }))}
+                      />
+                    </div>
+                    <div>
+                      <Label>WhatsApp Link</Label>
+                      <Input
+                        value={state.contact.contact.whatsapp || ""}
+                        onChange={(e) => setState((p) => ({ ...p, contact: { ...p.contact, contact: { ...p.contact.contact, whatsapp: e.target.value } } }))}
                       />
                     </div>
                   </div>
@@ -328,18 +405,67 @@ export default function AdminStaticPages() {
                         onChange={(e) => setState((p) => ({ ...p, about: { ...p.about, contact: { ...p.about.contact, email: e.target.value } } }))}
                       />
                     </div>
-                    <div className="md:col-span-2">
+                    <div>
                       <Label>Instagram URL</Label>
                       <Input
                         value={state.about.contact.instagram}
                         onChange={(e) => setState((p) => ({ ...p, about: { ...p.about, contact: { ...p.about.contact, instagram: e.target.value } } }))}
                       />
                     </div>
-                    <div className="md:col-span-2">
+                    <div>
                       <Label>Facebook URL</Label>
                       <Input
                         value={state.about.contact.facebook}
                         onChange={(e) => setState((p) => ({ ...p, about: { ...p.about, contact: { ...p.about.contact, facebook: e.target.value } } }))}
+                      />
+                    </div>
+                    <div>
+                      <Label>Twitter URL</Label>
+                      <Input
+                        value={state.about.contact.twitter || ""}
+                        onChange={(e) => setState((p) => ({ ...p, about: { ...p.about, contact: { ...p.about.contact, twitter: e.target.value } } }))}
+                      />
+                    </div>
+                    <div>
+                      <Label>YouTube URL</Label>
+                      <Input
+                        value={state.about.contact.youtube || ""}
+                        onChange={(e) => setState((p) => ({ ...p, about: { ...p.about, contact: { ...p.about.contact, youtube: e.target.value } } }))}
+                      />
+                    </div>
+                    <div>
+                      <Label>LinkedIn URL</Label>
+                      <Input
+                        value={state.about.contact.linkedin || ""}
+                        onChange={(e) => setState((p) => ({ ...p, about: { ...p.about, contact: { ...p.about.contact, linkedin: e.target.value } } }))}
+                      />
+                    </div>
+                    <div>
+                      <Label>Website URL</Label>
+                      <Input
+                        value={state.about.contact.website || ""}
+                        onChange={(e) => setState((p) => ({ ...p, about: { ...p.about, contact: { ...p.about.contact, website: e.target.value } } }))}
+                      />
+                    </div>
+                    <div>
+                      <Label>TikTok URL</Label>
+                      <Input
+                        value={state.about.contact.tiktok || ""}
+                        onChange={(e) => setState((p) => ({ ...p, about: { ...p.about, contact: { ...p.about.contact, tiktok: e.target.value } } }))}
+                      />
+                    </div>
+                    <div>
+                      <Label>Telegram URL</Label>
+                      <Input
+                        value={state.about.contact.telegram || ""}
+                        onChange={(e) => setState((p) => ({ ...p, about: { ...p.about, contact: { ...p.about.contact, telegram: e.target.value } } }))}
+                      />
+                    </div>
+                    <div>
+                      <Label>WhatsApp Link</Label>
+                      <Input
+                        value={state.about.contact.whatsapp || ""}
+                        onChange={(e) => setState((p) => ({ ...p, about: { ...p.about, contact: { ...p.about.contact, whatsapp: e.target.value } } }))}
                       />
                     </div>
                   </div>

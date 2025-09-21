@@ -20,6 +20,13 @@ export type ContactDetails = {
   mapEmbedUrl?: string;
   instagram?: string;
   facebook?: string;
+  linkedin?: string;
+  youtube?: string;
+  twitter?: string;
+  website?: string;
+  tiktok?: string;
+  telegram?: string;
+  whatsapp?: string;
 };
 
 export type StaticPageContent = BaseStaticPageContent & {

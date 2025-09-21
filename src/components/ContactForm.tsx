@@ -50,33 +50,33 @@ export default function ContactForm() {
     <Card className="bg-white border-amber-200 shadow-[0_8px_30px_rgba(191,146,42,0.12)]">
       <CardContent className="p-6">
         <h2 className="font-serif text-2xl md:text-3xl font-bold text-slate-900">Send us a message</h2>
-        <p className="mt-1 text-amber-900/80">We typically respond within one business day.</p>
+        <p className="mt-1 text-slate-700">We typically respond within one business day.</p>
         <form onSubmit={handleSubmit} className="mt-4 space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="contact-email">Your Email</Label>
+            <Label htmlFor="contact-email" className="text-slate-800">Your Email</Label>
             <Input
               id="contact-email"
               type="email"
               placeholder="you@company.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="bg-white border-amber-200 focus-visible:ring-yellow-500"
+              className="bg-white border-slate-300 text-slate-900 placeholder:text-slate-400 focus-visible:ring-yellow-500"
               required
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="contact-message">Message</Label>
+            <Label htmlFor="contact-message" className="text-slate-800">Message</Label>
             <Textarea
               id="contact-message"
               placeholder="Tell us how we can help..."
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              className="min-h-40 bg-white border-amber-200 focus-visible:ring-yellow-500"
+              className="min-h-40 bg-white border-slate-300 text-slate-900 placeholder:text-slate-400 focus-visible:ring-yellow-500"
               required
             />
           </div>
           <div className="pt-2">
-            <Button type="submit" disabled={submitting} className="w-full sm:w-auto bg-yellow-600 hover:bg-yellow-700">
+            <Button type="submit" disabled={submitting} className="w-full sm:w-auto bg-yellow-600 hover:bg-yellow-700 text-white">
               {submitting ? "Sending..." : "Send Message"}
             </Button>
           </div>
