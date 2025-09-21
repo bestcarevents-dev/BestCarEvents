@@ -7,12 +7,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import Image from "next/image";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
-import { ChevronLeft, ChevronRight, ExternalLink } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { ExternalLink } from "lucide-react";
 
 export default function HomepageAdCarousel() {
   const [ads, setAds] = useState<any[]>([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
 
   // Detect mobile screen size
@@ -36,34 +34,9 @@ export default function HomepageAdCarousel() {
     fetchAds();
   }, []);
 
-  // Auto-rotate ads (2s on all screens)
-  useEffect(() => {
-    if (ads.length <= 1) return;
-    const interval = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % ads.length);
-    }, 2000);
-    return () => clearInterval(interval);
-  }, [ads.length, isMobile]);
-
   if (!ads.length) return null;
 
-  const maxVisible = isMobile ? 1 : 2;
-  const totalSlides = Math.ceil(ads.length / maxVisible);
-
-  const nextSlide = () => {
-    setCurrentIndex((prev) => (prev + 1) % totalSlides);
-  };
-
-  const prevSlide = () => {
-    setCurrentIndex((prev) => (prev - 1 + totalSlides) % totalSlides);
-  };
-
-  const getVisibleAds = () => {
-    const startIdx = currentIndex * maxVisible;
-    return ads.slice(startIdx, startIdx + maxVisible);
-  };
-
-  const visibleAds = getVisibleAds();
+  const columns = isMobile ? 1 : 3; // show more ads at once on desktop
 
   const renderAdContent = (ad: any) => {
     // Determine what to display based on ad type
@@ -133,7 +106,7 @@ export default function HomepageAdCarousel() {
               className="inline-flex items-center text-yellow-600 hover:text-yellow-700 font-semibold text-sm transition-colors"
             >
               Learn More
-              <ChevronRight className="w-4 h-4 ml-1" />
+              <span className="ml-1">→</span>
             </Link>
           </div>
         </CardContent>
@@ -153,51 +126,9 @@ export default function HomepageAdCarousel() {
         </p>
       </div>
 
-      {/* Carousel Container */}
-      <div className="relative">
-        {/* Navigation Buttons */}
-        {totalSlides > 1 && !isMobile && (
-          <>
-            <Button
-              variant="outline"
-              size="icon"
-              className="absolute left-2 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white shadow-md"
-              onClick={prevSlide}
-            >
-              <ChevronLeft className="w-4 h-4" />
-            </Button>
-            <Button
-              variant="outline"
-              size="icon"
-              className="absolute right-2 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white shadow-md"
-              onClick={nextSlide}
-            >
-              <ChevronRight className="w-4 h-4" />
-            </Button>
-          </>
-        )}
-
-        {/* Ads Grid */}
-        <div className={`grid gap-6 ${isMobile ? 'grid-cols-1' : 'grid-cols-2'}`}>
-          {visibleAds.map(renderAdContent)}
-        </div>
-
-        {/* Dots Indicator */}
-        {totalSlides > 1 && (
-          <div className="flex justify-center mt-6 gap-2">
-            {Array.from({ length: totalSlides }, (_, i) => (
-              <button
-                key={i}
-                className={`w-2 h-2 rounded-full transition-all ${
-                  i === currentIndex 
-                    ? 'bg-yellow-600 w-6' 
-                    : 'bg-gray-300 hover:bg-gray-400'
-                }`}
-                onClick={() => setCurrentIndex(i)}
-              />
-            ))}
-          </div>
-        )}
+      {/* Ads Grid: show more items, no carousel */}
+      <div className={`grid gap-6 ${isMobile ? 'grid-cols-1' : 'grid-cols-3'}`}>
+        {ads.map(renderAdContent)}
       </div>
     </div>
   );

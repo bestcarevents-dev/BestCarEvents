@@ -7,7 +7,7 @@ import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, Dialog
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { motion, AnimatePresence } from "framer-motion";
 import { getAuth, onAuthStateChanged, User } from "firebase/auth";
-import { getFirestore, doc, setDoc } from "firebase/firestore";
+import { getFirestore, doc, setDoc, getDoc } from "firebase/firestore";
 import { app } from "@/lib/firebase";
 import { CheckCircle2, LogIn } from "lucide-react";
 
@@ -18,6 +18,7 @@ export default function NewsletterSubscribe() {
   const [submitting, setSubmitting] = useState(false);
   const [subscribed, setSubscribed] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [alreadySubscribed, setAlreadySubscribed] = useState(false);
 
   useEffect(() => {
     const auth = getAuth(app);
@@ -28,8 +29,29 @@ export default function NewsletterSubscribe() {
     return () => unsubscribe();
   }, []);
 
+  // Check if already subscribed
+  useEffect(() => {
+    const checkSubscription = async () => {
+      if (!user?.uid) {
+        setAlreadySubscribed(false);
+        return;
+      }
+      try {
+        const db = getFirestore(app);
+        const userRef = doc(db, "users", user.uid);
+        const snap = await getDoc(userRef);
+        const data = snap.exists() ? (snap.data() as any) : null;
+        setAlreadySubscribed(!!data?.isNewsletterSubscribed);
+      } catch {
+        setAlreadySubscribed(false);
+      }
+    };
+    checkSubscription();
+  }, [user]);
+
   const handleSubscribe = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
+    if (alreadySubscribed) return; // no-op if already subscribed
     setSubmitting(true);
     setError(null);
     const db = getFirestore(app);
@@ -51,12 +73,20 @@ export default function NewsletterSubscribe() {
       }
       
       setSubscribed(true);
+      setAlreadySubscribed(true);
     } catch (err) {
       setError("Subscription failed. Please try again.");
     } finally {
       setSubmitting(false);
     }
   };
+
+  // Auto-hide subscribed container after 3 seconds
+  useEffect(() => {
+    if (!subscribed) return;
+    const t = setTimeout(() => setSubscribed(false), 3000);
+    return () => clearTimeout(t);
+  }, [subscribed]);
 
   // Reset state when dialog closes
   useEffect(() => {
@@ -77,10 +107,13 @@ export default function NewsletterSubscribe() {
             size="lg"
             className="rounded-lg px-7 py-4 text-lg font-semibold shadow-xl bg-white/90 text-gray-900 border border-white hover:bg-white transition-all duration-300"
             onClick={handleSubscribe}
-            disabled={submitting || subscribed}
+            disabled={submitting || subscribed || alreadySubscribed}
           >
-            {subscribed ? "Subscribed!" : "Subscribe to our Newsletter"}
+            {alreadySubscribed ? "Subscribed — you'll receive updates" : (subscribed ? "Subscribed!" : "Subscribe to our Newsletter")}
           </Button>
+          {alreadySubscribed && !subscribed && (
+            <p className="mt-2 text-sm text-muted-foreground">You're already subscribed to the newsletter.</p>
+          )}
           <AnimatePresence>
             {subscribed && (
               <motion.div

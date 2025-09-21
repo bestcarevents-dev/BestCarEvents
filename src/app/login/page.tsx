@@ -10,13 +10,14 @@ import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import Image from "next/image";
 import { getFirestore, doc, getDoc } from "firebase/firestore";
-import { ShieldAlert, CheckCircle } from "lucide-react";
+import { ShieldAlert, CheckCircle, Eye, EyeOff } from "lucide-react";
 import Script from "next/script";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
   const auth = getAuth(app);
@@ -132,14 +133,24 @@ export default function LoginPage() {
                   Forgot your password?
                 </Link>
               </div>
-              <Input 
-                id="password" 
-                type="password" 
-                required 
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="bg-input"
-              />
+              <div className="relative">
+                <Input 
+                  id="password" 
+                  type={showPassword ? "text" : "password"}
+                  required 
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="bg-input pr-10"
+                />
+                <button
+                  type="button"
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  onClick={() => setShowPassword((v) => !v)}
+                  className="absolute inset-y-0 right-2 flex items-center text-muted-foreground"
+                >
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
             </div>
             {error && (
                 <div className="flex items-center p-3 text-sm rounded-md bg-destructive/15 text-red">
