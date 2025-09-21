@@ -5,7 +5,7 @@ const nextConfig: NextConfig = {
   i18n: {
     locales: ['en', 'sv', 'da', 'ur', 'it'],
     defaultLocale: 'en',
-    localeDetection: true,
+    localeDetection: false,
   },
   typescript: {
     ignoreBuildErrors: true,
@@ -14,10 +14,20 @@ const nextConfig: NextConfig = {
     ignoreDuringBuilds: true,
   },
   images: {
+    // Reduce number of generated responsive variants to cut cache writes
+    deviceSizes: [360, 640, 768, 1024, 1280],
+    imageSizes: [16, 24, 32, 48, 64, 96, 128, 256],
+    formats: ['image/avif', 'image/webp'],
     remotePatterns: [
       {
         protocol: 'https',
         hostname: 'placehold.co',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'flagcdn.com',
         port: '',
         pathname: '/**',
       },

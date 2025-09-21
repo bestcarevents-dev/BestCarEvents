@@ -84,6 +84,7 @@ export default function HomepageAdCarousel() {
             alt={ad.title || ad.shopName || "Ad"} 
             fill 
             className="object-cover group-hover:scale-105 transition-transform duration-300" 
+            sizes="(max-width: 768px) 100vw, 33vw"
           />
           <Badge className="absolute top-3 left-3 text-xs bg-yellow-600 text-white font-semibold">
             Ad

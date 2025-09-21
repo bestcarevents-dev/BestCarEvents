@@ -77,8 +77,9 @@ export default function HeroSlider({ slides }: { slides?: HeroSlide[] }) {
                                 alt="Hero fallback"
                                 fill
                                 priority={index === 0}
-                                quality={90}
+                                unoptimized
                                 className="object-cover"
+                                sizes="100vw"
                             />
                             {/* Main slide image fades in when loaded */}
                             <Image
@@ -86,9 +87,10 @@ export default function HeroSlider({ slides }: { slides?: HeroSlide[] }) {
                                 alt={slide.headline}
                                 fill
                                 priority={index === 0}
-                                quality={100}
+                                unoptimized
                                 className={cn("object-cover transition-opacity duration-500", loaded[index] ? "opacity-100" : "opacity-0")}
                                 data-ai-hint={slide.hint}
+                                sizes="100vw"
                                 onLoadingComplete={() => {
                                     setLoaded(prev => {
                                         const next = [...prev];

@@ -512,7 +512,7 @@ export default function Header() {
             <div className="relative">
                 <div className="absolute inset-0 bg-gradient-to-br from-amber-50/50 via-white/30 to-orange-50/50 rounded-full p-1 shadow-lg hidden lg:block"></div>
                 <div className="relative z-10 p-2">
-                    <Image src="/logo.png" alt="BestCarEvents Logo" width={70} height={70} />
+                    <Image src="/logo.png" alt="BestCarEvents Logo" width={70} height={70} priority />
                 </div>
             </div>
             BestCarEvents
@@ -533,6 +533,7 @@ export default function Header() {
                     width={24} 
                     height={16} 
                     className="rounded shadow" 
+                    sizes="24px"
                   />
                   <ChevronDown className="w-4 h-4 ml-1 text-white" />
                 </button>
@@ -555,7 +556,7 @@ export default function Header() {
                     }
                   }}
                 >
-                  <Image src={FLAG_UK} alt="English (UK)" width={24} height={16} className="rounded shadow" />
+                  <Image src={FLAG_UK} alt="English (UK)" width={24} height={16} className="rounded shadow" sizes="24px" />
                   English
                 </DropdownMenuItem>
                 <DropdownMenuItem 
@@ -578,7 +579,7 @@ export default function Header() {
                     }
                   }}
                 >
-                  <Image src={FLAG_IT} alt="Italiano" width={24} height={16} className="rounded shadow" />
+                  <Image src={FLAG_IT} alt="Italiano" width={24} height={16} className="rounded shadow" sizes="24px" />
                   Italiano
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -598,7 +599,7 @@ export default function Header() {
               <div className="flex flex-col h-full">
                 <SheetHeader className="flex flex-row items-center justify-between p-4 border-b">
                     <div className="flex items-center gap-2">
-                         <Image src="/logo.png" alt="BestCarEvents Logo" width={50} height={50} />
+                         <Image src="/logo.png" alt="BestCarEvents Logo" width={50} height={50} sizes="50px" />
                         <SheetTitle className="text-lg font-bold text-left font-headline tracking-tighter">BestCarEvents</SheetTitle>
                     </div>
                    <SheetClose asChild>
@@ -626,7 +627,7 @@ export default function Header() {
                             : 'text-gray-900 hover:text-white hover:bg-yellow-600 border-gray-300 bg-white shadow-sm'
                         }`}
                       >
-                        <Image src={FLAG_UK} alt="English (UK)" width={24} height={16} className="rounded shadow" />
+                        <Image src={FLAG_UK} alt="English (UK)" width={24} height={16} className="rounded shadow" sizes="24px" />
                         <span className="font-medium">English</span>
                       </button>
                       <button 
@@ -641,7 +642,7 @@ export default function Header() {
                             : 'text-gray-900 hover:text-white hover:bg-yellow-600 border-gray-300 bg-white shadow-sm'
                         }`}
                       >
-                        <Image src={FLAG_IT} alt="Italiano" width={24} height={16} className="rounded shadow" />
+                        <Image src={FLAG_IT} alt="Italiano" width={24} height={16} className="rounded shadow" sizes="24px" />
                         <span className="font-medium">Italiano</span>
                       </button>
                     </div>
