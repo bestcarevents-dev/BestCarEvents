@@ -10,6 +10,7 @@ type CarSpec = {
 };
 
 type FeaturedCarCardProps = {
+  id?: string;
   name: string;
   year: string;
   price: string;
@@ -25,7 +26,17 @@ const iconMap: { [key: string]: React.ElementType } = {
   "Top Speed": Gauge,
 };
 
-export default function FeaturedCarCard({ name, year, price, image, hint, specs, featured = false }: FeaturedCarCardProps) {
+function formatPriceDisplay(price: string): string {
+  const match = price.match(/^(\D+)?\s*(\d[\d.,]*)/);
+  if (!match) return price;
+  const currency = (match[1] || '').trim();
+  const numeric = match[2].replace(/[,\s]/g, '');
+  const withCommas = Number(numeric).toLocaleString();
+  return `${currency ? currency + ' ' : ''}${withCommas}`;
+}
+
+export default function FeaturedCarCard({ id, name, year, price, image, hint, specs, featured = false }: FeaturedCarCardProps) {
+  const displayPrice = formatPriceDisplay(price);
   return (
     <Card className="group w-full overflow-hidden rounded-[18px] border border-[#C7BCA3]/50 bg-[#F8F6F1] shadow-[0_6px_24px_rgba(0,0,0,0.08)] transition-all duration-500 hover:shadow-[0_12px_36px_rgba(0,0,0,0.14)]">
       <div className="flex flex-col md:flex-row">
@@ -56,11 +67,11 @@ export default function FeaturedCarCard({ name, year, price, image, hint, specs,
               <span className="font-semibold tracking-[0.08em] text-[#7D8C91]">{year}</span>
               <div className="h-[1px] w-8 bg-gradient-to-r from-[#C3A76D] to-transparent" />
             </div>
-            <h3 className="mt-1 text-[28px] md:text-[34px] leading-tight font-headline font-extrabold tracking-[-0.01em] bg-gradient-to-r from-[#1d1d1d] via-[#2a2a2a] to-[#1d1d1d] bg-clip-text text-transparent">
+            <h3 className="mt-1 text-[28px] md:text-[34px] leading-tight font-headline font-extrabold tracking-[-0.01em] text-[#1e1e1e]">
               {name}
             </h3>
-            <p className="mt-3 text-[22px] font-mono font-bold bg-gradient-to-r from-[#C3A76D] via-[#E7D08A] to-[#B98A2A] bg-clip-text text-transparent">
-              {price}
+            <p className="mt-3 text-[22px] font-mono font-bold text-[#2a2a2a]">
+              {displayPrice}
             </p>
 
             {/* Spec plaques */}
@@ -81,7 +92,7 @@ export default function FeaturedCarCard({ name, year, price, image, hint, specs,
           </div>
           <div className="mt-7 flex justify-end">
             <Button asChild className="rounded-full bg-[#C3A76D] hover:bg-[#B99754] text-black font-semibold shadow-sm hover:shadow transition-all">
-              <Link href="/cars">
+              <Link href={id ? `/cars/${id}` : '/cars'}>
                 View Listing <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
               </Link>
             </Button>

@@ -552,6 +552,7 @@ const FeaturedCarsSection = ({ copy }: { copy: NonNullable<HomepageContent["feat
                                             <div className="space-y-8">
                                                 {featuredCars.slice(slideIndex * 2, slideIndex * 2 + 2).map((car) => (
                                                     <FeaturedCarCard 
+                                                        id={car.id}
                                                         key={car.id} 
                                                         name={car.make && car.model ? `${car.year} ${car.make} ${car.model}` : "Car"}
                                                         year={car.year?.toString() || ""}
@@ -575,6 +576,7 @@ const FeaturedCarsSection = ({ copy }: { copy: NonNullable<HomepageContent["feat
                                         <div className="space-y-8">
                                             {featuredCars.map((car) => (
                                                 <FeaturedCarCard 
+                                                    id={car.id}
                                                     key={car.id} 
                                                     name={car.make && car.model ? `${car.year} ${car.make} ${car.model}` : "Car"}
                                                     year={car.year?.toString() || ""}

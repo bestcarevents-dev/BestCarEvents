@@ -213,7 +213,18 @@ export default function PendingCarsPage() {
                         <Badge variant="secondary">Approved</Badge>
                       </TableCell>
                       <TableCell>
-                        <Button variant="destructive" size="sm" onClick={e => { e.stopPropagation(); handleDeleteApproved(request.id); }}>Delete</Button>
+                        <Button 
+                          variant="destructive" 
+                          size="sm" 
+                          onClick={e => { 
+                            e.stopPropagation(); 
+                            if (confirm('Delete this car listing permanently?')) {
+                              handleDeleteApproved(request.id);
+                            }
+                          }}
+                        >
+                          Delete
+                        </Button>
                       </TableCell>
                     </TableRow>
                   ))}

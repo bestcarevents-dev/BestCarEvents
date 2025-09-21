@@ -16,6 +16,14 @@ type CarCardProps = {
 };
 
 export default function CarCard({ id, name, price, location, image, hint, type = 'car', featured }: CarCardProps) {
+  const formatPrice = (raw: string): string => {
+    const match = raw.match(/^(\D+)?\s*(\d[\d.,]*)/);
+    if (!match) return raw;
+    const c = (match[1] || '').trim();
+    const n = match[2].replace(/[,\s]/g, '');
+    return `${c ? c + ' ' : ''}${Number(n).toLocaleString()}`;
+  };
+  const displayPrice = formatPrice(price);
   return (
     <Card className={`overflow-hidden flex flex-col group rounded-[18px] ${type === 'auction' ? 'border border-[#C7BCA3]/50 bg-[#F8F6F1] shadow-[0_6px_24px_rgba(0,0,0,0.08)] hover:shadow-[0_12px_36px_rgba(0,0,0,0.14)]' : 'border border-white/20 bg-white/70 backdrop-blur-sm shadow-md hover:shadow-2xl'} transition-all duration-500`}>
       <div className="relative overflow-hidden rounded-2xl bg-[#EDE7DA]">
@@ -43,10 +51,10 @@ export default function CarCard({ id, name, price, location, image, hint, type =
       </div>
       <CardContent className="p-5 sm:p-6 flex-grow flex flex-col">
         <h3 className="text-xl sm:text-[1.35rem] font-headline leading-tight tracking-[0.02em] text-[#1f1f1f]">
-          <span className="bg-gradient-to-r from-[#1d1d1d] via-[#2a2a2a] to-[#1d1d1d] bg-clip-text text-transparent group-hover:opacity-90 transition-opacity">{name}</span>
+          <span className="text-[#1f1f1f] group-hover:opacity-90 transition-opacity">{name}</span>
         </h3>
         <div className="flex justify-between items-center mt-auto pt-4">
-            <p className={`text-2xl font-semibold ${type === 'auction' ? 'bg-gradient-to-r from-[#C3A76D] via-[#E7D08A] to-[#B98A2A] bg-clip-text text-transparent' : 'bg-gradient-to-r from-yellow-500 to-amber-400 bg-clip-text text-transparent'}`}>{price}</p>
+            <p className={`text-2xl font-semibold ${type === 'auction' ? 'text-[#2a2a2a]' : 'text-[#2a2a2a]'}`}>{displayPrice}</p>
             <Button variant="ghost" size="icon" asChild className={`${type === 'auction' ? 'rounded-full border border-[#D9CEB6] text-[#1f1f1f] hover:bg-[#F8F6F1]' : 'rounded-full border border-yellow-500/30 text-gray-800 hover:text-gray-900 bg-white/70 hover:bg-white shadow-sm hover:shadow-md'} transition-all`}>
               <Link href={`/${type === 'auction' ? 'auctions' : 'cars'}/${id}`}>
                 <ArrowRight className="w-6 h-6 transform transition-transform group-hover:translate-x-1"/>
