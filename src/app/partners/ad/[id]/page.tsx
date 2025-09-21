@@ -150,6 +150,7 @@ export default function PartnerAdDetailPage() {
                 fill
                 className="object-contain w-full h-full bg-white"
                 priority
+                unoptimized
               />
             </div>
             {/* Thumbnails */}
@@ -162,7 +163,7 @@ export default function PartnerAdDetailPage() {
                   aria-label={`Show image ${idx + 1}`}
                   type="button"
                 >
-                  <Image src={img} alt={`Thumbnail ${idx + 1}`} fill className="object-contain" />
+                  <Image src={img} alt={`Thumbnail ${idx + 1}`} fill className="object-contain" unoptimized />
                 </button>
               ))}
             </div>
@@ -176,6 +177,7 @@ export default function PartnerAdDetailPage() {
                     fill
                     className="object-contain w-full h-full bg-black"
                     priority
+                    unoptimized
                   />
                 </div>
                 <div className="flex gap-2 mt-4 w-full justify-center">
@@ -187,7 +189,7 @@ export default function PartnerAdDetailPage() {
                       aria-label={`Show image ${idx + 1}`}
                       type="button"
                     >
-                      <Image src={img} alt={`Thumbnail ${idx + 1}`} fill className="object-contain" />
+                      <Image src={img} alt={`Thumbnail ${idx + 1}`} fill className="object-contain" unoptimized />
                     </button>
                   ))}
                 </div>

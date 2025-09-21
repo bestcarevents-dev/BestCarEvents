@@ -100,6 +100,7 @@ export default function HotelDetailPage() {
                 fill
                 className="object-cover w-full h-full"
                 priority
+                unoptimized
               />
             </button>
           </motion.div>
@@ -225,7 +226,7 @@ export default function HotelDetailPage() {
                     className={`relative w-40 h-28 rounded-lg overflow-hidden border-2 ${carouselIdx === idx ? "border-primary" : "border-transparent"}`}
                     onClick={() => setCarouselIdx(idx)}
                   >
-                    <Image src={img} alt={`Hotel image ${idx + 1}`} fill className="object-cover" />
+                    <Image src={img} alt={`Hotel image ${idx + 1}`} fill className="object-cover" unoptimized />
                   </button>
                 ))}
               </div>

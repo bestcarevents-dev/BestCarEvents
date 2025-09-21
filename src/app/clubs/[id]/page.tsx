@@ -47,12 +47,13 @@ export default function ClubDetailPage() {
           height={320}
           className="absolute inset-0 w-full h-full object-cover object-center opacity-30 scale-110 blur-sm"
           priority
+          unoptimized
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/40 to-transparent z-10" />
         <div className="relative z-20 flex flex-col items-center justify-center w-full h-full text-center">
           <div className="mb-4 animate-fade-in-down">
             <div className="mx-auto rounded-full border-4 border-yellow-600 shadow-lg bg-white/90 w-32 h-32 flex items-center justify-center overflow-hidden">
-              <Image src={club.logoUrl || "/placeholder.jpg"} alt={club.clubName} width={128} height={128} className="object-contain w-full h-full" />
+              <Image src={club.logoUrl || "/placeholder.jpg"} alt={club.clubName} width={128} height={128} className="object-contain w-full h-full" unoptimized />
             </div>
           </div>
           <h1 className="text-4xl md:text-5xl font-extrabold font-headline text-yellow-600 drop-shadow-lg animate-fade-in-up">{club.clubName}</h1>

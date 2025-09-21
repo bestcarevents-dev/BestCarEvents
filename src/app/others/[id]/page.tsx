@@ -87,6 +87,7 @@ export default function ServiceDetailsPage({ params }: { params: { id: string } 
                               alt={service.serviceName} 
                               fill 
                               className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-700" 
+                              unoptimized
                           />
                         </button>
                     ) : (
@@ -219,7 +220,7 @@ export default function ServiceDetailsPage({ params }: { params: { id: string } 
                                                 <div className="p-2">
                                                     <div className="relative aspect-video overflow-hidden rounded-lg">
                                                         <button className="absolute inset-0" aria-label={`Open image ${index + 1}`} onClick={() => lightbox.open(service.imageUrls || [], index)} type="button" />
-                                                        <Image src={imageUrl} alt={`${service.serviceName} - Image ${index + 1}`} fill className="object-cover" />
+                                                        <Image src={imageUrl} alt={`${service.serviceName} - Image ${index + 1}`} fill className="object-cover" unoptimized />
                                                     </div>
                                                 </div>
                                             </CarouselItem>

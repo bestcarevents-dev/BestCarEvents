@@ -87,6 +87,7 @@ export default function LuxuryLightboxProvider({ children }: { children: React.R
                     fill
                     className="object-contain select-none"
                     priority
+                    unoptimized
                   />
                 </motion.div>
               </AnimatePresence>
@@ -137,7 +138,7 @@ export default function LuxuryLightboxProvider({ children }: { children: React.R
                       className={`relative h-12 sm:h-16 w-20 sm:w-24 flex-shrink-0 rounded-md overflow-hidden border ${index === i ? 'border-amber-400' : 'border-white/10'}`}
                       type="button"
                     >
-                      <Image src={img} alt={`Thumbnail ${i + 1}`} fill className="object-cover" />
+                      <Image src={img} alt={`Thumbnail ${i + 1}`} fill className="object-cover" unoptimized />
                     </button>
                   ))}
                 </div>

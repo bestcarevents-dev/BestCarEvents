@@ -78,7 +78,7 @@ export default function CarDetailsPage() {
             {images.map((img: string, idx: number) => (
               <CarouselItem key={idx} className="aspect-video flex items-center justify-center bg-black">
                 <button className="absolute inset-0" onClick={() => lightbox.open(images, idx)} aria-label={`Open image ${idx + 1}`} type="button" />
-                <Image src={img} alt={`Car image ${idx + 1}`} width={900} height={500} className="object-contain w-full h-full" />
+                <Image src={img} alt={`Car image ${idx + 1}`} width={900} height={500} className="object-contain w-full h-full" unoptimized />
               </CarouselItem>
             ))}
           </CarouselContent>
@@ -92,7 +92,7 @@ export default function CarDetailsPage() {
         <div className="mt-3 md:mt-4 flex gap-2 overflow-x-auto pb-1 md:justify-center md:hidden">
           {images.map((thumb: string, tIdx: number) => (
             <button key={tIdx} onClick={() => emblaApi?.scrollTo(tIdx)} className={`relative h-16 w-24 flex-shrink-0 rounded-md overflow-hidden border ${currentIndex === tIdx ? 'border-yellow-500' : 'border-gray-200'}`} aria-label={`Go to image ${tIdx + 1}`}>
-              <Image src={thumb} alt={`Thumbnail ${tIdx + 1}`} fill className="object-cover" />
+              <Image src={thumb} alt={`Thumbnail ${tIdx + 1}`} fill className="object-cover" unoptimized />
             </button>
           ))}
         </div>
@@ -273,7 +273,7 @@ export default function CarDetailsPage() {
       <Dialog open={showImageModal} onOpenChange={setShowImageModal}>
         <DialogContent className="sm:hidden max-w-3xl w-[95vw] p-0 bg-transparent border-0 shadow-none">
           <div className="relative w-full aspect-video">
-            <Image src={images[currentIndex]} alt={`Car image ${currentIndex + 1}`} fill className="object-contain bg-black" />
+            <Image src={images[currentIndex]} alt={`Car image ${currentIndex + 1}`} fill className="object-contain bg-black" unoptimized />
           </div>
         </DialogContent>
       </Dialog>

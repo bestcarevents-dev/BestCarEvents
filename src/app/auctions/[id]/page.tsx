@@ -83,7 +83,7 @@ export default function AuctionDetailsPage() {
           </button>
         )}
         <button className="absolute inset-0" aria-label="Open image gallery" onClick={() => lightbox.open(images, carouselIdx)} type="button">
-          <Image src={images[carouselIdx] || "https://via.placeholder.com/900x500?text=No+Image"} alt={auction.auctionName} fill className="object-cover w-full h-full" />
+          <Image src={images[carouselIdx] || "https://via.placeholder.com/900x500?text=No+Image"} alt={auction.auctionName} fill className="object-cover w-full h-full" unoptimized />
         </button>
       </div>
 
@@ -92,7 +92,7 @@ export default function AuctionDetailsPage() {
         <div className="max-w-5xl mx-auto mb-8 flex gap-3 overflow-x-auto pb-2">
           {images.map((img, idx) => (
             <button key={idx} className={`relative w-36 h-24 rounded-lg overflow-hidden border-2 ${carouselIdx === idx ? 'border-yellow-600' : 'border-transparent'}`} onClick={() => setCarouselIdx(idx)} aria-label={`Go to image ${idx + 1}`}>
-              <Image src={img} alt={`Auction image ${idx + 1}`} fill className="object-cover" />
+              <Image src={img} alt={`Auction image ${idx + 1}`} fill className="object-cover" unoptimized />
             </button>
           ))}
         </div>
