@@ -59,12 +59,12 @@ export default function PendingCarsPage() {
       setLoading(true);
       // Fetch pending cars
       const pendingSnapshot = await getDocs(collection(db, "pendingCars"));
-      const pendingData = pendingSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as CarRequest));
+      const pendingData = pendingSnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as CarRequest));
       setPendingRequests(pendingData);
       // Fetch approved cars (all cars in 'cars' collection, no status filter)
       const approvedSnapshot = await getDocs(collection(db, "cars"));
       const approvedData = approvedSnapshot.docs
-        .map(doc => ({ id: doc.id, ...doc.data() } as CarRequest));
+        .map(doc => ({ ...doc.data(), id: doc.id } as CarRequest));
       setApprovedRequests(approvedData);
       setLoading(false);
     };
@@ -91,7 +91,8 @@ export default function PendingCarsPage() {
 
   const handleApprove = async (request: CarRequest) => {
     try {
-      const carData = { ...request, status: "approved", createdAt: new Date() };
+      const { id: _ignoreId, ...rest } = request;
+      const carData = { ...rest, status: "approved", createdAt: new Date() };
       await addDoc(collection(db, "cars"), carData);
       await deleteDoc(doc(db, "pendingCars", request.id));
       setPendingRequests(pendingRequests.filter(r => r.id !== request.id));

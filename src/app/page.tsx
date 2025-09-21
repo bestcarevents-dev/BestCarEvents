@@ -447,8 +447,8 @@ const FeaturedCarsSection = ({ copy }: { copy: NonNullable<HomepageContent["feat
                 const carsSnapshot = await getDocs(carsQuery);
                 const allCars = carsSnapshot.docs
                     .map(doc => ({ 
-                        id: doc.id,
-                        ...doc.data() 
+                        ...doc.data(),
+                        id: doc.id
                     } as CarData));
 
                 // Separate exclusive banner cars and normal cars
@@ -792,7 +792,7 @@ const FeaturedEventsSection = ({ copy }: { copy: NonNullable<HomepageContent["fe
                         {featuredEvents.slice(slideIndex * 3, slideIndex * 3 + 3).map((event) => (
                           <EventListItem 
                             key={event.id} 
-                            id={parseInt(event.id)}
+                            documentId={event.id}
                             name={event.eventName || "Event"}
                             date={formatDate(event.eventDate)}
                             location={event.location || "TBD"}
@@ -811,7 +811,7 @@ const FeaturedEventsSection = ({ copy }: { copy: NonNullable<HomepageContent["fe
                       {featuredEvents.map((event) => (
                         <EventListItem 
                           key={event.id} 
-                          id={parseInt(event.id)}
+                          documentId={event.id}
                           name={event.eventName || "Event"}
                           date={formatDate(event.eventDate)}
                           location={event.location || "TBD"}

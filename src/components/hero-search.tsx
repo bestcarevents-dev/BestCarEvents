@@ -68,12 +68,12 @@ export default function HeroSearch() {
       case "events":
         return {
           filter1: {
-            label: "Category",
+            label: "Event Type",
             options: ["all", ...(eventsPrefs.data?.eventTypes || [])]
           },
           filter2: {
-            label: "Vehicle Focus",
-            options: ["all", ...(eventsPrefs.data?.vehicleFocuses || [])]
+            label: "City",
+            options: ["all", ...(sharedPrefs.data?.citiesWhitelist || [])]
           }
         };
       case "clubs":
