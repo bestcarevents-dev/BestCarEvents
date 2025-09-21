@@ -42,139 +42,172 @@ export default function HeroSearch() {
   const hotelsPrefs = useFormPreferences("hotels");
   const servicesPrefs = useFormPreferences("services");
   const sharedPrefs = useFormPreferences("shared");
-  const [cityOptions, setCityOptions] = useState<string[]>([]);
+  // Per-tab city/location options
+  const [eventsCities, setEventsCities] = useState<string[] | null>(null);
+  const [hotelsCities, setHotelsCities] = useState<string[] | null>(null);
+  const [clubsCities, setClubsCities] = useState<string[] | null>(null);
+  const [auctionsCities, setAuctionsCities] = useState<string[] | null>(null);
+  const [othersLocations, setOthersLocations] = useState<string[] | null>(null);
 
   useEffect(() => {
-    // Aggregate unique city/location values across major collections
+    const db = getFirestore(app);
+    const extractCity = (value?: string | null) => {
+      if (!value || typeof value !== 'string') return null;
+      return value.split(',')[0]?.trim() || null;
+    };
     (async () => {
       try {
-        const db = getFirestore(app);
-        const [carsSnap, eventsSnap, hotelsSnap, clubsSnap, auctionsSnap, othersSnap] = await Promise.all([
-          getDocs(collection(db, "cars")),
-          getDocs(collection(db, "events")),
-          getDocs(collection(db, "hotels")),
-          getDocs(collection(db, "clubs")),
-          getDocs(collection(db, "auctions")),
-          getDocs(collection(db, "others")),
-        ]);
-
-        const extractCity = (value?: string | null) => {
-          if (!value || typeof value !== 'string') return null;
-          return value.split(',')[0]?.trim() || null;
-        };
-
-        const citySet = new Set<string>();
-        carsSnap.docs.forEach(d => {
-          const data: any = d.data();
-          const c = extractCity(data?.city) || extractCity(data?.location);
-          if (c) citySet.add(c);
-        });
-        eventsSnap.docs.forEach(d => {
-          const data: any = d.data();
-          const c = extractCity(data?.city) || extractCity(data?.location);
-          if (c) citySet.add(c);
-        });
-        hotelsSnap.docs.forEach(d => {
-          const data: any = d.data();
-          const c = extractCity(data?.city) || extractCity(data?.location);
-          if (c) citySet.add(c);
-        });
-        clubsSnap.docs.forEach(d => {
-          const data: any = d.data();
-          const c = extractCity(data?.city) || extractCity(data?.location);
-          if (c) citySet.add(c);
-        });
-        auctionsSnap.docs.forEach(d => {
-          const data: any = d.data();
-          const c = extractCity(data?.city) || extractCity(data?.location);
-          if (c) citySet.add(c);
-        });
-        othersSnap.docs.forEach(d => {
-          const data: any = d.data();
-          const c = extractCity(data?.city) || extractCity(data?.location);
-          if (c) citySet.add(c);
-        });
-
-        const unique = Array.from(citySet).sort((a, b) => a.localeCompare(b));
-        setCityOptions(unique);
+        if (activeTab === 'events' && eventsCities == null) {
+          const snap = await getDocs(collection(db, 'events'));
+          const set = new Set<string>();
+          snap.docs.forEach(d => {
+            const data: any = d.data();
+            const c = extractCity(data?.city) || extractCity(data?.location);
+            if (c) set.add(c);
+          });
+          setEventsCities(Array.from(set).sort((a, b) => a.localeCompare(b)));
+        }
+        if (activeTab === 'hotels' && hotelsCities == null) {
+          const snap = await getDocs(collection(db, 'hotels'));
+          const set = new Set<string>();
+          snap.docs.forEach(d => {
+            const data: any = d.data();
+            const c = extractCity(data?.city) || extractCity(data?.location);
+            if (c) set.add(c);
+          });
+          setHotelsCities(Array.from(set).sort((a, b) => a.localeCompare(b)));
+        }
+        if (activeTab === 'clubs' && clubsCities == null) {
+          const snap = await getDocs(collection(db, 'clubs'));
+          const set = new Set<string>();
+          snap.docs.forEach(d => {
+            const data: any = d.data();
+            const c = extractCity(data?.city) || extractCity(data?.location);
+            if (c) set.add(c);
+          });
+          setClubsCities(Array.from(set).sort((a, b) => a.localeCompare(b)));
+        }
+        if (activeTab === 'auctions' && auctionsCities == null) {
+          const snap = await getDocs(collection(db, 'auctions'));
+          const set = new Set<string>();
+          snap.docs.forEach(d => {
+            const data: any = d.data();
+            const c = extractCity(data?.city) || extractCity(data?.location);
+            if (c) set.add(c);
+          });
+          setAuctionsCities(Array.from(set).sort((a, b) => a.localeCompare(b)));
+        }
+        if (activeTab === 'others' && othersLocations == null) {
+          const snap = await getDocs(collection(db, 'others'));
+          const set = new Set<string>();
+          snap.docs.forEach(d => {
+            const data: any = d.data();
+            const c = extractCity(data?.location) || extractCity(data?.city);
+            if (c) set.add(c);
+          });
+          setOthersLocations(Array.from(set).sort((a, b) => a.localeCompare(b)));
+        }
       } catch (e) {
-        setCityOptions([]);
+        // ignore per-tab failures
       }
     })();
-  }, []);
+  }, [activeTab, eventsCities, hotelsCities, clubsCities, auctionsCities, othersLocations]);
 
-  const getFilterOptions = () => {
+  // Reset filters when switching tabs to avoid stale selections
+  useEffect(() => {
+    setFilter1("");
+    setFilter2("");
+  }, [activeTab]);
+
+  type FilterConfig = {
+    filter1: { label: string; options: string[]; key: string };
+    filter2: { label: string; options: string[]; key: string };
+  };
+
+  const getFilterOptions = (): FilterConfig => {
     switch (activeTab) {
       case "cars":
         return {
           filter1: {
             label: "Make",
-            options: ["all", ...(carsPrefs.data?.makes || [])]
+            options: ["all", ...(carsPrefs.data?.makes || [])],
+            key: "make",
           },
           filter2: {
             label: "Body Style",
-            options: ["all", ...(carsPrefs.data?.bodyStyles || [])]
+            options: ["all", ...(carsPrefs.data?.bodyStyles || [])],
+            key: "bodystyle",
           }
         };
       case "hotels":
         return {
           filter1: {
             label: "City",
-            options: ["all", ...(cityOptions.length ? cityOptions : (sharedPrefs.data?.citiesWhitelist || []))]
+            options: ["all", ...((hotelsCities ?? [])?.length ? (hotelsCities as string[]) : (sharedPrefs.data?.citiesWhitelist || []))],
+            key: "city",
           },
           filter2: {
             label: "Storage Type",
-            options: ["all", ...(hotelsPrefs.data?.storageTypes || [])]
+            options: ["all", ...(hotelsPrefs.data?.storageTypes || [])],
+            key: "storagetype",
           }
         };
       case "events":
         return {
           filter1: {
             label: "Event Type",
-            options: ["all", ...(eventsPrefs.data?.eventTypes || [])]
+            options: ["all", ...(eventsPrefs.data?.eventTypes || [])],
+            key: "eventtype",
           },
           filter2: {
             label: "City",
-            options: ["all", ...(cityOptions.length ? cityOptions : (sharedPrefs.data?.citiesWhitelist || []))]
+            options: ["all", ...((eventsCities ?? [])?.length ? (eventsCities as string[]) : (sharedPrefs.data?.citiesWhitelist || []))],
+            key: "city",
           }
         };
       case "clubs":
         return {
           filter1: {
             label: "City",
-            options: ["all", ...(cityOptions.length ? cityOptions : (sharedPrefs.data?.citiesWhitelist || []))]
+            options: ["all", ...((clubsCities ?? [])?.length ? (clubsCities as string[]) : (sharedPrefs.data?.citiesWhitelist || []))],
+            key: "city",
           },
           filter2: {
             label: "Activity",
-            options: ["all", "Meetups", "Track Days", "Scenic Drives", "Social Events", "Racing", "Car Shows", "Charity Events"]
+            options: ["all", "Meetups", "Track Days", "Scenic Drives", "Social Events", "Racing", "Car Shows", "Charity Events"],
+            key: "activity",
           }
         };
       case "auctions":
         return {
           filter1: {
             label: "City",
-            options: ["all", ...(cityOptions.length ? cityOptions : (sharedPrefs.data?.citiesWhitelist || []))]
+            options: ["all", ...((auctionsCities ?? [])?.length ? (auctionsCities as string[]) : (sharedPrefs.data?.citiesWhitelist || []))],
+            key: "city",
           },
           filter2: {
             label: "Auction Type",
-            options: ["all", ...(/* prefer preferences if later added */[])]
+            options: ["all", ...(/* prefer preferences if later added */[])],
+            key: "auctiontype",
           }
         };
       case "others":
         return {
           filter1: {
             label: "Service Type",
-            options: ["all", ...((servicesPrefs.data?.serviceTypes || []).map((t) => t.label))]
+            options: ["all", ...((servicesPrefs.data?.serviceTypes || []).map((t) => t.label))],
+            key: "servicetype",
           },
           filter2: {
             label: "Location",
-            options: ["all", ...(cityOptions.length ? cityOptions : (sharedPrefs.data?.citiesWhitelist || []))]
+            options: ["all", ...((othersLocations ?? [])?.length ? (othersLocations as string[]) : (sharedPrefs.data?.citiesWhitelist || []))],
+            key: "location",
           }
         };
       default:
         return {
-          filter1: { label: "Filter 1", options: ["all"] },
-          filter2: { label: "Filter 2", options: ["all"] }
+          filter1: { label: "Filter 1", options: ["all"], key: "filter1" },
+          filter2: { label: "Filter 2", options: ["all"], key: "filter2" }
         };
     }
   };
@@ -193,11 +226,11 @@ export default function HeroSearch() {
     const filterOptions = getFilterOptions();
     
     if (filter1 && filter1 !== "all") {
-      params.append(filterOptions.filter1.label.toLowerCase().replace(" ", ""), filter1);
+      params.append(filterOptions.filter1.key, filter1);
     }
     
     if (filter2 && filter2 !== "all") {
-      params.append(filterOptions.filter2.label.toLowerCase().replace(" ", ""), filter2);
+      params.append(filterOptions.filter2.key, filter2);
     }
     
     // Navigate to the appropriate page with search parameters
