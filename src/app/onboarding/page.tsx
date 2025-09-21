@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { getAuth, onAuthStateChanged, applyActionCode, reload, verifyPasswordResetCode, confirmPasswordReset } from "firebase/auth";
@@ -44,6 +44,12 @@ export default function OnboardingPage() {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [resetSubmitting, setResetSubmitting] = useState(false);
+  
+  // Validation state and refs for scroll-to-error
+  const [errors, setErrors] = useState<{ firstName?: string; lastName?: string; gender?: string }>({});
+  const firstNameRef = useRef<HTMLInputElement | null>(null);
+  const lastNameRef = useRef<HTMLInputElement | null>(null);
+  const genderTriggerRef = useRef<HTMLButtonElement | null>(null);
 
   // Handle Firebase email action links e.g. mode=verifyEmail&oobCode=...
   useEffect(() => {
@@ -196,7 +202,21 @@ export default function OnboardingPage() {
   const onSave = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!uid) return;
-    if (!firstName.trim() || !lastName.trim() || !gender) return;
+    const nextErrors: { firstName?: string; lastName?: string; gender?: string } = {};
+    if (!firstName.trim()) nextErrors.firstName = 'First name is required';
+    if (!lastName.trim()) nextErrors.lastName = 'Surname is required';
+    if (!gender) nextErrors.gender = 'Please select a gender';
+
+    if (Object.keys(nextErrors).length > 0) {
+      setErrors(nextErrors);
+      const firstKey = (['firstName', 'lastName', 'gender'] as const).find((k) => (nextErrors as any)[k]);
+      const el = firstKey === 'firstName' ? firstNameRef.current : firstKey === 'lastName' ? lastNameRef.current : genderTriggerRef.current;
+      if (el) {
+        try { el.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch {}
+        setTimeout(() => { try { (el as any).focus?.(); } catch {} }, 250);
+      }
+      return;
+    }
     setSaving(true);
     try {
       let newPhotoURL = photoURL || null;
@@ -324,11 +344,27 @@ export default function OnboardingPage() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="grid gap-2">
                       <Label htmlFor="firstName" className="text-gray-900">First name</Label>
-                      <Input id="firstName" required value={firstName} onChange={(e) => setFirstName(e.target.value)} className="bg-white text-gray-900 placeholder:text-gray-500" />
+                      <Input
+                        id="firstName"
+                        ref={firstNameRef}
+                        value={firstName}
+                        onChange={(e) => { setFirstName(e.target.value); if (errors.firstName) setErrors((p) => ({ ...p, firstName: undefined })); }}
+                        aria-invalid={!!errors.firstName}
+                        className={`bg-white text-gray-900 placeholder:text-gray-500 ${errors.firstName ? 'border-red-500 focus-visible:ring-red-500' : ''}`}
+                      />
+                      {errors.firstName && <p className="text-sm text-red-600">{errors.firstName}</p>}
                     </div>
                     <div className="grid gap-2">
                       <Label htmlFor="lastName" className="text-gray-900">Surname</Label>
-                      <Input id="lastName" required value={lastName} onChange={(e) => setLastName(e.target.value)} className="bg-white text-gray-900 placeholder:text-gray-500" />
+                      <Input
+                        id="lastName"
+                        ref={lastNameRef}
+                        value={lastName}
+                        onChange={(e) => { setLastName(e.target.value); if (errors.lastName) setErrors((p) => ({ ...p, lastName: undefined })); }}
+                        aria-invalid={!!errors.lastName}
+                        className={`bg-white text-gray-900 placeholder:text-gray-500 ${errors.lastName ? 'border-red-500 focus-visible:ring-red-500' : ''}`}
+                      />
+                      {errors.lastName && <p className="text-sm text-red-600">{errors.lastName}</p>}
                     </div>
                   </div>
                   <div className="grid gap-2">
@@ -337,8 +373,8 @@ export default function OnboardingPage() {
                   </div>
                   <div className="grid gap-2">
                     <Label className="text-gray-900">Gender</Label>
-                    <Select value={gender} onValueChange={setGender}>
-                      <SelectTrigger className="bg-white text-gray-900">
+                    <Select value={gender} onValueChange={(v) => { setGender(v); if (errors.gender) setErrors((p) => ({ ...p, gender: undefined })); }}>
+                      <SelectTrigger ref={genderTriggerRef} className={`bg-white text-gray-900 ${errors.gender ? 'border-red-500 focus-visible:ring-red-500' : ''}`} aria-invalid={!!errors.gender}>
                         <SelectValue placeholder="Select gender" />
                       </SelectTrigger>
                       <SelectContent>
@@ -347,6 +383,7 @@ export default function OnboardingPage() {
                         <SelectItem value="na">Prefer not to say</SelectItem>
                       </SelectContent>
                     </Select>
+                    {errors.gender && <p className="text-sm text-red-600">{errors.gender}</p>}
                   </div>
                   <div className="grid gap-2">
                     <Label className="text-gray-900">Profile picture</Label>
