@@ -48,7 +48,7 @@ import {
 } from "@/components/ui/sheet"
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { getFirestore, collection, getDocs, query, where } from "firebase/firestore";
+import { getFirestore, collection, getDocs, query, where, where as whereField } from "firebase/firestore";
 import { app } from "@/lib/firebase";
 
 const NAV_SECTIONS = [
@@ -130,7 +130,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           getDocs(collection(db, "pendingClubs")),
           getDocs(collection(db, "pendingPartners")),
           getDocs(query(collection(db, "newsletterrequests"), where("status", "==", "pending"))),
-          getDocs(collection(db, "contactRequests"))
+          getDocs(query(collection(db, "contactRequests"), where("read", "==", false)))
         ]);
 
         setCounts({

@@ -1,16 +1,18 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getFirestore, collection, getDocs, orderBy, query } from "firebase/firestore";
+import { getFirestore, collection, getDocs, orderBy, query, updateDoc, doc } from "firebase/firestore";
 import { app } from "@/lib/firebase";
 import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 
 type ContactRequest = {
   id: string;
   email: string;
   message: string;
+  read?: boolean;
   createdAt?: { seconds: number } | Date;
 };
 
@@ -32,6 +34,16 @@ export default function AdminContactRequestsPage() {
     })();
   }, []);
 
+  const markAsRead = async (id: string) => {
+    try {
+      const db = getFirestore(app);
+      await updateDoc(doc(db, "contactRequests", id), { read: true });
+      setItems(prev => prev.map(it => it.id === id ? { ...it, read: true } : it));
+    } catch (e) {
+      console.error('Failed to mark as read', e);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div>
@@ -51,7 +63,9 @@ export default function AdminContactRequestsPage() {
                   <TableRow>
                     <TableHead>Email</TableHead>
                     <TableHead>Message</TableHead>
-                    <TableHead className="w-[180px]">Submitted</TableHead>
+                  <TableHead className="w-[180px]">Submitted</TableHead>
+                  <TableHead className="w-[120px]">Status</TableHead>
+                  <TableHead className="w-[140px]">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -70,6 +84,18 @@ export default function AdminContactRequestsPage() {
                             <Badge variant="outline">{created.toLocaleString()}</Badge>
                           ) : (
                             <span className="text-muted-foreground">—</span>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          {it.read ? (
+                            <Badge variant="outline">Read</Badge>
+                          ) : (
+                            <Badge>Unread</Badge>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          {!it.read && (
+                            <Button size="sm" variant="outline" onClick={() => markAsRead(it.id)}>Mark as read</Button>
                           )}
                         </TableCell>
                       </TableRow>
