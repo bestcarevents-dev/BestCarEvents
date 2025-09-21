@@ -222,30 +222,30 @@ export default function PartnerAdDetailPage() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="flex items-center gap-2">
-                    <Mail className="w-5 h-5 text-muted-foreground" />
+                    <Mail className="w-5 h-5 text-gray-700" />
                     {ad.contactEmail ? (
-                      <a href={`mailto:${ad.contactEmail}`} className="text-base text-blue-600 underline">{ad.contactEmail}</a>
+                      <a href={`mailto:${ad.contactEmail}`} className="text-base text-blue-700 underline">{ad.contactEmail}</a>
                     ) : (
-                      <span className="text-base">N/A</span>
+                      <span className="text-base text-gray-800">N/A</span>
                     )}
                   </div>
                   {ad.contactName && (
                     <div className="flex items-center gap-2">
-                      <Star className="w-5 h-5 text-muted-foreground" />
-                      <span className="text-base">{ad.contactName}</span>
+                      <Star className="w-5 h-5 text-gray-700" />
+                      <span className="text-base text-gray-900">{ad.contactName}</span>
                     </div>
                   )}
                   {ad.phone && (
                     <div className="flex items-center gap-2">
-                      <Phone className="w-5 h-5 text-muted-foreground" />
-                      <span className="text-base">{ad.phone}</span>
+                      <Phone className="w-5 h-5 text-gray-700" />
+                      <span className="text-base text-gray-900">{ad.phone}</span>
                     </div>
                   )}
                   {ad.website && (
                     <div className="flex items-center justify-between gap-2">
                       <div className="flex items-center gap-2">
-                        <Globe className="w-5 h-5 text-muted-foreground" />
-                        <a href={normalizeUrl(ad.website)!} target="_blank" rel="noopener noreferrer" className="text-base text-blue-600 underline truncate max-w-[220px]">{ad.website}</a>
+                        <Globe className="w-5 h-5 text-gray-700" />
+                        <a href={normalizeUrl(ad.website)!} target="_blank" rel="noopener noreferrer" className="text-base text-blue-700 underline truncate max-w-[220px]">{ad.website}</a>
                       </div>
                       <Button asChild size="sm" className="bg-yellow-600 hover:bg-yellow-700 text-white">
                         <a href={normalizeUrl(ad.website)!} target="_blank" rel="noopener noreferrer">Visit Website</a>
@@ -254,14 +254,14 @@ export default function PartnerAdDetailPage() {
                   )}
                   {ad.coverageArea && (
                     <div className="flex items-center gap-2">
-                      <MapPin className="w-5 h-5 text-muted-foreground" />
-                      <span className="text-base">{ad.coverageArea}</span>
+                      <MapPin className="w-5 h-5 text-gray-700" />
+                      <span className="text-base text-gray-900">{ad.coverageArea}</span>
                     </div>
                   )}
                   {ad.location && (
                     <div className="flex items-center gap-2">
-                      <MapPin className="w-5 h-5 text-muted-foreground" />
-                      <span className="text-base">{ad.location}</span>
+                      <MapPin className="w-5 h-5 text-gray-700" />
+                      <span className="text-base text-gray-900">{ad.location}</span>
                     </div>
                   )}
                 </CardContent>

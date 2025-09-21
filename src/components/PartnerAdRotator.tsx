@@ -106,7 +106,7 @@ export default function PartnerAdRotator({ page, maxVisible = 4, rotateIntervalM
                 {ad.title || ad.shopName || ad.providerName || ad.experienceName || ad.serviceName || ad.websiteName || ad.businessName}
               </Link>
               {displayInfo}
-              <div className="text-xs text-gray-600 mt-1 w-full overflow-hidden">
+              <div className="text-xs text-gray-700 mt-1 w-full overflow-hidden">
                 <div className="line-clamp-2 break-words">
                   {ad.description}
                 </div>

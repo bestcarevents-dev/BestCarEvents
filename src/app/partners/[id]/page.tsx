@@ -161,23 +161,23 @@ export default function PartnerDetailPage() {
               </CardHeader>
               <CardContent className="p-0 mt-4 space-y-4">
                 <div className="flex items-center gap-3 animate-fade-in-up">
-                  <Mail className="w-5 h-5 text-yellow-800" />
+                  <Mail className="w-5 h-5 text-gray-700" />
                   <span className="font-medium text-gray-900">{partner.partnerName}</span>
                 </div>
                 <div className="flex items-center gap-3 animate-fade-in-up">
-                  <Mail className="w-5 h-5 text-yellow-800" />
-                  <a href={`mailto:${partner.contactEmail}`} className="text-yellow-600 underline hover:text-yellow-800 transition-colors">{partner.contactEmail}</a>
+                  <Mail className="w-5 h-5 text-gray-700" />
+                  <a href={`mailto:${partner.contactEmail}`} className="text-blue-700 underline hover:text-blue-800 transition-colors">{partner.contactEmail}</a>
                 </div>
                 {partner.createdAt && (
                   <div className="flex items-center gap-3 animate-fade-in-up">
-                    <Calendar className="w-5 h-5 text-yellow-800" />
-                    <span className="text-sm text-gray-600">Joined {partner.createdAt.seconds ? new Date(partner.createdAt.seconds * 1000).toLocaleDateString() : partner.createdAt.toString()}</span>
+                    <Calendar className="w-5 h-5 text-gray-700" />
+                    <span className="text-sm text-gray-700">Joined {partner.createdAt.seconds ? new Date(partner.createdAt.seconds * 1000).toLocaleDateString() : partner.createdAt.toString()}</span>
                   </div>
                 )}
                 {partner.phone && (
                   <div className="flex items-center gap-3 animate-fade-in-up">
-                    <Mail className="w-5 h-5 text-yellow-800" />
-                    <span className="text-yellow-600">{partner.phone}</span>
+                    <Mail className="w-5 h-5 text-gray-700" />
+                    <span className="text-gray-900">{partner.phone}</span>
                   </div>
                 )}
               </CardContent>
