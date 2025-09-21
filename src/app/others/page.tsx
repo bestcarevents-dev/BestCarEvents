@@ -116,6 +116,7 @@ function OthersPageContent() {
     const [showDialog, setShowDialog] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedType, setSelectedType] = useState("all");
+    const [selectedLocation, setSelectedLocation] = useState("all");
     const [sortBy, setSortBy] = useState("name");
     const searchParams = useSearchParams();
     const [header, setHeader] = useState<PageHeader>(defaultPageContent.others);
@@ -135,6 +136,7 @@ function OthersPageContent() {
     useEffect(() => {
       const search = searchParams.get("search");
       const servicetype = searchParams.get("servicetype");
+      const location = searchParams.get("location");
       
       if (search) {
         setSearchTerm(search);
@@ -142,6 +144,9 @@ function OthersPageContent() {
       
       if (servicetype && servicetype !== "all") {
         setSelectedType(servicetype);
+      }
+      if (location && location !== "all") {
+        setSelectedLocation(location);
       }
     }, [searchParams]);
 
@@ -194,8 +199,10 @@ function OthersPageContent() {
       const matchesType = selectedType === "all" || 
         service.serviceType.toLowerCase().includes(selectedType.replace('-', ' ')) ||
         service.serviceType.toLowerCase() === selectedType;
+      const matchesLocation = selectedLocation === "all" ||
+        (service.location || '').toLowerCase().startsWith(selectedLocation.toLowerCase());
       
-      return matchesSearch && matchesType;
+      return matchesSearch && matchesType && matchesLocation;
     });
 
     // Sort services

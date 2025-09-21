@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Calendar as CalendarIcon, Search, Car, Hotel, Users, Gavel, Settings } from "lucide-react";
@@ -8,6 +8,8 @@ import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useFormPreferences } from "@/hooks/useFormPreferences";
+import { getFirestore, collection, getDocs } from "firebase/firestore";
+import { app } from "@/lib/firebase";
 
 export default function HeroSearch() {
   const [activeTab, setActiveTab] = useState("events");
@@ -40,6 +42,66 @@ export default function HeroSearch() {
   const hotelsPrefs = useFormPreferences("hotels");
   const servicesPrefs = useFormPreferences("services");
   const sharedPrefs = useFormPreferences("shared");
+  const [cityOptions, setCityOptions] = useState<string[]>([]);
+
+  useEffect(() => {
+    // Aggregate unique city/location values across major collections
+    (async () => {
+      try {
+        const db = getFirestore(app);
+        const [carsSnap, eventsSnap, hotelsSnap, clubsSnap, auctionsSnap, othersSnap] = await Promise.all([
+          getDocs(collection(db, "cars")),
+          getDocs(collection(db, "events")),
+          getDocs(collection(db, "hotels")),
+          getDocs(collection(db, "clubs")),
+          getDocs(collection(db, "auctions")),
+          getDocs(collection(db, "others")),
+        ]);
+
+        const extractCity = (value?: string | null) => {
+          if (!value || typeof value !== 'string') return null;
+          return value.split(',')[0]?.trim() || null;
+        };
+
+        const citySet = new Set<string>();
+        carsSnap.docs.forEach(d => {
+          const data: any = d.data();
+          const c = extractCity(data?.city) || extractCity(data?.location);
+          if (c) citySet.add(c);
+        });
+        eventsSnap.docs.forEach(d => {
+          const data: any = d.data();
+          const c = extractCity(data?.city) || extractCity(data?.location);
+          if (c) citySet.add(c);
+        });
+        hotelsSnap.docs.forEach(d => {
+          const data: any = d.data();
+          const c = extractCity(data?.city) || extractCity(data?.location);
+          if (c) citySet.add(c);
+        });
+        clubsSnap.docs.forEach(d => {
+          const data: any = d.data();
+          const c = extractCity(data?.city) || extractCity(data?.location);
+          if (c) citySet.add(c);
+        });
+        auctionsSnap.docs.forEach(d => {
+          const data: any = d.data();
+          const c = extractCity(data?.city) || extractCity(data?.location);
+          if (c) citySet.add(c);
+        });
+        othersSnap.docs.forEach(d => {
+          const data: any = d.data();
+          const c = extractCity(data?.city) || extractCity(data?.location);
+          if (c) citySet.add(c);
+        });
+
+        const unique = Array.from(citySet).sort((a, b) => a.localeCompare(b));
+        setCityOptions(unique);
+      } catch (e) {
+        setCityOptions([]);
+      }
+    })();
+  }, []);
 
   const getFilterOptions = () => {
     switch (activeTab) {
@@ -58,7 +120,7 @@ export default function HeroSearch() {
         return {
           filter1: {
             label: "City",
-            options: ["all", ...(sharedPrefs.data?.citiesWhitelist || [])]
+            options: ["all", ...(cityOptions.length ? cityOptions : (sharedPrefs.data?.citiesWhitelist || []))]
           },
           filter2: {
             label: "Storage Type",
@@ -73,14 +135,14 @@ export default function HeroSearch() {
           },
           filter2: {
             label: "City",
-            options: ["all", ...(sharedPrefs.data?.citiesWhitelist || [])]
+            options: ["all", ...(cityOptions.length ? cityOptions : (sharedPrefs.data?.citiesWhitelist || []))]
           }
         };
       case "clubs":
         return {
           filter1: {
             label: "City",
-            options: ["all", ...(sharedPrefs.data?.citiesWhitelist || [])]
+            options: ["all", ...(cityOptions.length ? cityOptions : (sharedPrefs.data?.citiesWhitelist || []))]
           },
           filter2: {
             label: "Activity",
@@ -91,7 +153,7 @@ export default function HeroSearch() {
         return {
           filter1: {
             label: "City",
-            options: ["all", ...(sharedPrefs.data?.citiesWhitelist || [])]
+            options: ["all", ...(cityOptions.length ? cityOptions : (sharedPrefs.data?.citiesWhitelist || []))]
           },
           filter2: {
             label: "Auction Type",
@@ -106,7 +168,7 @@ export default function HeroSearch() {
           },
           filter2: {
             label: "Location",
-            options: ["all", ...(sharedPrefs.data?.citiesWhitelist || [])]
+            options: ["all", ...(cityOptions.length ? cityOptions : (sharedPrefs.data?.citiesWhitelist || []))]
           }
         };
       default:
