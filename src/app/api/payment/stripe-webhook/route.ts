@@ -3,6 +3,7 @@ import Stripe from 'stripe';
 import { db } from '@/lib/firebase';
 import { collection, query, where, getDocs, updateDoc, increment, addDoc, serverTimestamp } from 'firebase/firestore';
 import { createPaymentNotification } from '@/lib/notifications';
+import { getResendClient, buildReceiptEmail } from '@/lib/email/resend';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2022-11-15',
@@ -165,6 +166,29 @@ export async function POST(req: NextRequest) {
       } catch (notificationError) {
         console.error('Error creating payment notification:', notificationError);
         // Don't fail the payment process if notification fails
+      }
+
+      // Send receipt email (fire-and-forget; never block or throw)
+      try {
+        const resend = getResendClient();
+        const { subject, html } = buildReceiptEmail({
+          to: email,
+          amount: paymentData.amount,
+          currency: paymentData.currency,
+          description: description,
+          paymentMethod: 'Stripe',
+          paymentId: session.id,
+          metadata: {
+            stripeSessionId: session.id,
+            stripePaymentIntentId: typeof session.payment_intent === 'string' ? session.payment_intent : (session.payment_intent as any)?.id || null,
+          },
+        });
+        // Do not await; ensure failure never impacts main flow
+        resend.emails.send({ from: 'receipts@bestcarevents.com', to: [email], subject, html })
+          .then((r) => console.log('Receipt email queued (Stripe):', (r as any)?.id || 'ok'))
+          .catch((e) => console.error('Receipt email error (Stripe):', e));
+      } catch (emailError) {
+        console.error('Error preparing/sending receipt email (Stripe):', emailError);
       }
       
       return NextResponse.json({ received: true, updated: update });

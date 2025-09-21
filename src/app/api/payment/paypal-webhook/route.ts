@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/firebase';
 import { collection, query, where, getDocs, updateDoc, increment, addDoc, serverTimestamp } from 'firebase/firestore';
 import { createPaymentNotification } from '@/lib/notifications';
+import { getResendClient, buildReceiptEmail } from '@/lib/email/resend';
 
 export async function POST(req: NextRequest) {
   console.log('Received PayPal webhook request');
@@ -151,6 +152,27 @@ export async function POST(req: NextRequest) {
         } catch (notificationError) {
           console.error('Error creating PayPal payment notification:', notificationError);
           // Don't fail the payment process if notification fails
+        }
+
+        // Send receipt email (fire-and-forget; never block or throw)
+        try {
+          const resend = getResendClient();
+          const { subject, html } = buildReceiptEmail({
+            to: email,
+            amount: amount,
+            currency: currency,
+            description: description,
+            paymentMethod: 'PayPal',
+            paymentId: capture.id,
+            metadata: {
+              paypalCaptureId: capture.id,
+            },
+          });
+          resend.emails.send({ from: 'receipts@bestcarevents.com', to: [email], subject, html })
+            .then((r) => console.log('Receipt email queued (PayPal webhook):', (r as any)?.id || 'ok'))
+            .catch((e) => console.error('Receipt email error (PayPal webhook):', e));
+        } catch (emailError) {
+          console.error('Error preparing/sending receipt email (PayPal webhook):', emailError);
         }
         
         return NextResponse.json({ received: true, updated: update });
