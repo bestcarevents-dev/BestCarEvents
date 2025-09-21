@@ -341,6 +341,26 @@ export default function PostDetailPage() {
           replies: increment(1)
         });
 
+        // Fire-and-forget email to post author (non-blocking)
+        try {
+          const postSnap = await getDoc(doc(db, "forum_posts", postId));
+          const p = postSnap.data() as any;
+          const postOwnerId = p?.author?.id;
+          const postTitle = p?.title || 'your post';
+          if (postOwnerId && postOwnerId !== currentUser.uid) {
+            const userSnap = await getDoc(doc(db, 'users', postOwnerId));
+            const ownerEmail = (userSnap.data() as any)?.email;
+            const actorName = currentUser.displayName || currentUser.email?.split('@')[0] || 'Someone';
+            if (ownerEmail) {
+              fetch('/api/emails/forum-activity', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ to: ownerEmail, postTitle, actorName, kind: 'comment', preview: newComment.slice(0, 200) })
+              }).catch(() => {});
+            }
+          }
+        } catch {}
+
         setNewComment('');
       } catch (error) {
         console.error('Error adding comment:', error);
@@ -371,6 +391,26 @@ export default function PostDetailPage() {
         await updateDoc(doc(db, "forum_posts", postId), {
           replies: increment(1)
         });
+
+        // Fire-and-forget email to post author (non-blocking)
+        try {
+          const postSnap = await getDoc(doc(db, "forum_posts", postId));
+          const p = postSnap.data() as any;
+          const postOwnerId = p?.author?.id;
+          const postTitle = p?.title || 'your post';
+          if (postOwnerId && postOwnerId !== currentUser.uid) {
+            const userSnap = await getDoc(doc(db, 'users', postOwnerId));
+            const ownerEmail = (userSnap.data() as any)?.email;
+            const actorName = currentUser.displayName || currentUser.email?.split('@')[0] || 'Someone';
+            if (ownerEmail) {
+              fetch('/api/emails/forum-activity', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ to: ownerEmail, postTitle, actorName, kind: 'reply', preview: replyContent.slice(0, 200) })
+              }).catch(() => {});
+            }
+          }
+        } catch {}
 
         setReplyContent('');
         setReplyingTo(null);

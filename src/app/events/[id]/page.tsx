@@ -71,6 +71,19 @@ export default function EventDetailsPage({ params }: { params: { id: string } })
             await updateDoc(eventRef, {
                 attendees: arrayUnion({ uid: currentUser.uid, email: currentUser.email })
             });
+
+            // Fire-and-forget email to event owner (non-blocking)
+            try {
+                const ownerEmail = (data as any)?.uploadedByUserEmail;
+                const eventName = (data as any)?.eventName || 'Your event';
+                if (ownerEmail && currentUser.email && ownerEmail !== currentUser.email) {
+                    fetch('/api/emails/event-registration', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ to: ownerEmail, eventName, attendeeEmail: currentUser.email })
+                    }).catch(() => {});
+                }
+            } catch {}
             setRegisterSuccess(true);
         } catch (err) {
             alert('Registration failed. Please try again.');

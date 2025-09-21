@@ -153,6 +153,79 @@ export function buildReceiptEmail(payload: ReceiptEmailPayload) {
   return { to, subject, html };
 }
 
+export interface EventRegistrationEmailPayload {
+  to: string;
+  eventName: string;
+  attendeeEmail: string;
+}
+
+export function buildEventRegistrationEmail({ to, eventName, attendeeEmail }: EventRegistrationEmailPayload) {
+  const slate = '#0f172a';
+  const muted = '#64748b';
+  const border = '#e2e8f0';
+  const subject = `New registration • ${eventName}`;
+  const html = `
+  <div style="font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; color:${slate}; background:#fff;">
+    <div style="max-width:640px; margin:0 auto;">
+      <div style="padding:20px 0; text-align:center;">
+        <div style="font-size:22px; font-weight:700; color:${slate};">BestCarEvents</div>
+        <div style="font-size:12px; color:${muted}; letter-spacing:0.08em; text-transform:uppercase;">Event Registration</div>
+      </div>
+      <div style="border:1px solid ${border}; border-radius:12px; overflow:hidden;">
+        <div style="background:${slate}; color:white; padding:16px 20px; font-size:16px; font-weight:600;">Someone registered for your event</div>
+        <div style="padding:20px;">
+          <p style="margin:0 0 12px; line-height:1.6;">Your event “${escapeHtml(eventName)}” has a new attendee.</p>
+          <table style="width:100%; border-collapse:collapse;">
+            <tr>
+              <td style="padding:6px 0; color:${slate};">Attendee</td>
+              <td style="padding:6px 0; color:${slate}; text-align:right; font-weight:600;">${escapeHtml(attendeeEmail)}</td>
+            </tr>
+          </table>
+          <p style="margin:12px 0 0; font-size:12px; color:${muted};">You can view all attendees in your dashboard.</p>
+        </div>
+      </div>
+      <div style="text-align:center; font-size:12px; color:${muted}; margin-top:16px;">© ${new Date().getFullYear()} BestCarEvents</div>
+    </div>
+  </div>`;
+
+  return { to, subject, html };
+}
+
+export interface ForumActivityEmailPayload {
+  to: string;
+  postTitle: string;
+  actorName: string;
+  kind: 'comment' | 'reply';
+  preview?: string;
+}
+
+export function buildForumActivityEmail({ to, postTitle, actorName, kind, preview }: ForumActivityEmailPayload) {
+  const slate = '#0f172a';
+  const muted = '#64748b';
+  const border = '#e2e8f0';
+  const subject = kind === 'reply' ? `New reply on your post • ${postTitle}` : `New comment on your post • ${postTitle}`;
+  const html = `
+  <div style="font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; color:${slate}; background:#fff;">
+    <div style="max-width:640px; margin:0 auto;">
+      <div style="padding:20px 0; text-align:center;">
+        <div style="font-size:22px; font-weight:700; color:${slate};">BestCarEvents</div>
+        <div style="font-size:12px; color:${muted}; letter-spacing:0.08em; text-transform:uppercase;">Forum Notification</div>
+      </div>
+      <div style="border:1px solid ${border}; border-radius:12px; overflow:hidden;">
+        <div style="background:${slate}; color:white; padding:16px 20px; font-size:16px; font-weight:600;">${escapeHtml(actorName)} ${kind === 'reply' ? 'replied' : 'commented'} on your post</div>
+        <div style="padding:20px;">
+          <p style="margin:0 0 12px; line-height:1.6;">Post: “${escapeHtml(postTitle)}”.</p>
+          ${preview ? `<blockquote style="margin:0; padding:12px; border-left:3px solid ${border}; background:#f8fafc; color:${slate}; font-size:14px;">${escapeHtml(preview)}</blockquote>` : ''}
+          <p style="margin:12px 0 0; font-size:12px; color:${muted};">Open the post to join the conversation.</p>
+        </div>
+      </div>
+      <div style="text-align:center; font-size:12px; color:${muted}; margin-top:16px;">© ${new Date().getFullYear()} BestCarEvents</div>
+    </div>
+  </div>`;
+
+  return { to, subject, html };
+}
+
 function escapeHtml(input: string) {
   return String(input)
     .replace(/&/g, '&amp;')

@@ -666,7 +666,46 @@ export default function AdminNewsletterPage() {
                   <Button type="button" onClick={() => setPreview((p) => !p)} variant="secondary">
                     {preview ? "Hide Preview" : "Preview"}
                   </Button>
-                  <Button type="button" disabled={!newsletterHtml.trim()}>Send Newsletter</Button>
+                  <Button
+                    type="button"
+                    disabled={!newsletterHtml.trim()}
+                    onClick={async () => {
+                      try {
+                        const subject = 'BestCarEvents Newsletter';
+                        const res = await fetch('/api/emails/newsletter-send', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ subject, html: newsletterHtml, mode: 'all' })
+                        });
+                        const json = await res.json();
+                        if (!res.ok) throw new Error(json?.error || 'Failed to send');
+                        toast({ title: 'Newsletter queued', description: `Sent to ${json.sent} subscribers.` });
+                      } catch (e: any) {
+                        toast({ title: 'Send failed', description: e?.message || 'Unknown error', variant: 'destructive' });
+                      }
+                    }}
+                  >Send Newsletter</Button>
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    onClick={async () => {
+                      const email = prompt('Enter test email:');
+                      if (!email) return;
+                      try {
+                        const subject = 'BestCarEvents Newsletter (Test)';
+                        const res = await fetch('/api/emails/newsletter-send', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ subject, html: newsletterHtml, mode: 'test', testEmail: email })
+                        });
+                        const json = await res.json();
+                        if (!res.ok) throw new Error(json?.error || 'Failed to send');
+                        toast({ title: 'Test email sent', description: `Sent to ${email}.` });
+                      } catch (e: any) {
+                        toast({ title: 'Test send failed', description: e?.message || 'Unknown error', variant: 'destructive' });
+                      }
+                    }}
+                  >Send Test</Button>
                 </div>
                 {preview && (
                   <div className="border rounded-lg p-4 bg-muted/50 mt-2">
