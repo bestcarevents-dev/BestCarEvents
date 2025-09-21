@@ -8,6 +8,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { ExternalLink } from "lucide-react";
+import { formatPrice as formatPriceUtil } from "@/lib/utils";
 
 export default function HomepageAdCarousel() {
   const [ads, setAds] = useState<any[]>([]);
@@ -60,19 +61,19 @@ export default function HomepageAdCarousel() {
       // Display price and price range
       displayInfo = (
         <div className="flex flex-col gap-1 mt-2">
-          <span className="text-green-600 font-bold text-lg">{ad.price}</span>
-          <span className="text-green-600 font-semibold text-sm">{ad.priceRange}</span>
+          <span className="text-green-600 font-bold text-lg">{formatPriceUtil(String(ad.price))}</span>
+          <span className="text-green-600 font-semibold text-sm">{formatPriceUtil(String(ad.priceRange))}</span>
         </div>
       );
     } else if (ad.price) {
       // Display price only
       displayInfo = (
-        <div className="text-green-600 font-bold text-lg mt-2">{ad.price}</div>
+        <div className="text-green-600 font-bold text-lg mt-2">{formatPriceUtil(String(ad.price))}</div>
       );
     } else if (ad.priceRange) {
       // Display price range only
       displayInfo = (
-        <div className="text-green-600 font-semibold text-lg mt-2">{ad.priceRange}</div>
+        <div className="text-green-600 font-semibold text-lg mt-2">{formatPriceUtil(String(ad.priceRange))}</div>
       );
     }
 

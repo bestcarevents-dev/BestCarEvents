@@ -3,6 +3,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { MapPin, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
+import { formatPrice as formatPriceUtil } from '@/lib/utils';
+
 
 type CarCardProps = {
   id: string;
@@ -16,14 +18,7 @@ type CarCardProps = {
 };
 
 export default function CarCard({ id, name, price, location, image, hint, type = 'car', featured }: CarCardProps) {
-  const formatPrice = (raw: string): string => {
-    const match = raw.match(/^(\D+)?\s*(\d[\d.,]*)/);
-    if (!match) return raw;
-    const c = (match[1] || '').trim();
-    const n = match[2].replace(/[,\s]/g, '');
-    return `${c ? c + ' ' : ''}${Number(n).toLocaleString()}`;
-  };
-  const displayPrice = formatPrice(price);
+  const displayPrice = formatPriceUtil(price);
   return (
     <Card className={`overflow-hidden flex flex-col group rounded-[18px] ${type === 'auction' ? 'border border-[#C7BCA3]/50 bg-[#F8F6F1] shadow-[0_6px_24px_rgba(0,0,0,0.08)] hover:shadow-[0_12px_36px_rgba(0,0,0,0.14)]' : 'border border-white/20 bg-white/70 backdrop-blur-sm shadow-md hover:shadow-2xl'} transition-all duration-500`}>
       <div className="relative overflow-hidden rounded-2xl bg-[#EDE7DA]">

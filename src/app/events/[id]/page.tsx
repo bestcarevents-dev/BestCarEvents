@@ -188,7 +188,7 @@ export default function EventDetailsPage({ params }: { params: { id: string } })
                     <div className="flex flex-col items-center bg-white border border-gray-200 rounded-xl shadow-lg px-4 sm:px-6 py-4 sm:py-6 animate-pop-in">
                         <DollarSign className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-600 mb-2" />
                         <div className="text-sm sm:text-lg font-semibold text-yellow-600 mb-1">Entry Fee</div>
-                        <div className="text-base sm:text-xl font-bold text-gray-900 text-center">{event.entryFee === 0 ? 'Free' : `$${event.entryFee}`}</div>
+                        <div className="text-base sm:text-xl font-bold text-gray-900 text-center">{event.entryFee === 0 ? 'Free' : `$${Number(event.entryFee).toLocaleString()}`}</div>
                     </div>
                 )}
             </div>

@@ -35,6 +35,7 @@ import { usePricing } from "@/lib/usePricing";
 import { validateCoupon } from "@/lib/coupon";
 import { Badge } from "@/components/ui/badge";
 import CarEditDialog from "@/components/edit/CarEditDialog";
+import { formatPrice as formatPriceUtil } from "@/lib/utils";
 
 // Car listing pricing tiers
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
@@ -313,7 +314,7 @@ export default function CarsListingPage() {
     data: cars,
     columns: [
       { label: "Name", key: (c: any) => `${c.year} ${c.make} ${c.model}` },
-      { label: "Price", key: (c: any) => c.price && c.currency ? `${c.currency} ${c.price}` : "N/A" },
+      { label: "Price", key: (c: any) => c.price && c.currency ? formatPriceUtil(`${c.currency} ${c.price}`) : "N/A" },
       { label: "Location", key: "location" },
       { label: "Status", key: "status" },
       { label: "Type", key: "type" },
@@ -470,7 +471,7 @@ export default function CarsListingPage() {
                           <DollarSign className="w-4 h-4 text-muted-foreground" />
                           <span className="text-muted-foreground">Price:</span>
                           <span className="truncate">
-                            {car.price && car.currency ? `${car.currency} ${car.price}` : 'Price TBD'}
+                            {car.price && car.currency ? formatPriceUtil(`${car.currency} ${car.price}`) : 'Price TBD'}
                           </span>
                         </div>
                         

@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { MapPin, Star, Share2, Heart, CheckCircle, AlertCircle, Mail } from "lucide-react";
 import Image from "next/image";
 import { useLuxuryLightbox } from "@/components/LuxuryLightboxProvider";
+import { formatPrice as formatPriceUtil } from "@/lib/utils";
 
 const featureIcons: Record<string, any> = {
   "Air Conditioning": <CheckCircle className="w-4 h-4 mr-1 text-primary" />, // Add more icons as needed
@@ -69,6 +70,8 @@ export default function CarDetailsPage() {
   if (car.mileage && car.mileage < 20000) highlightBadges.push("Low Mileage");
   if (car.features && car.features.includes("Sunroof/Moonroof")) highlightBadges.push("Rare Find");
 
+  const displayPrice = formatPriceUtil(`${car.currency || ''} ${car.price || ''}`.trim());
+
   return (
     <div className="container mx-auto px-4 py-10 bg-white animate-fade-in">
       {/* Hero Section */}
@@ -110,7 +113,7 @@ export default function CarDetailsPage() {
             </div>
           </div>
           <div className="text-right">
-            <span className="text-2xl font-mono font-bold text-yellow-700">{car.currency} {car.price}</span>
+            <span className="text-2xl font-mono font-bold text-yellow-700">{displayPrice}</span>
           </div>
         </div>
         <div className="mt-3">
@@ -133,7 +136,7 @@ export default function CarDetailsPage() {
           </div>
           <div className="flex flex-col items-end gap-2 shrink-0 max-w-full lg:max-w-[40%]">
             <span className="text-3xl lg:text-4xl font-mono font-bold text-yellow-400 drop-shadow-lg whitespace-nowrap">
-              {car.currency} {car.price}
+              {displayPrice}
             </span>
             <Button size="lg" className="mt-1" onClick={() => setShowContact(true)}><Mail className="mr-2" />Contact Seller</Button>
           </div>

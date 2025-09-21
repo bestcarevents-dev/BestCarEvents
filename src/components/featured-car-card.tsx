@@ -3,6 +3,8 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { ArrowRight, Zap, Gauge, Rocket } from 'lucide-react';
 import Link from 'next/link';
+import { formatPrice as formatPriceUtil } from '@/lib/utils';
+
 
 type CarSpec = {
   name: string;
@@ -26,17 +28,8 @@ const iconMap: { [key: string]: React.ElementType } = {
   "Top Speed": Gauge,
 };
 
-function formatPriceDisplay(price: string): string {
-  const match = price.match(/^(\D+)?\s*(\d[\d.,]*)/);
-  if (!match) return price;
-  const currency = (match[1] || '').trim();
-  const numeric = match[2].replace(/[,\s]/g, '');
-  const withCommas = Number(numeric).toLocaleString();
-  return `${currency ? currency + ' ' : ''}${withCommas}`;
-}
-
 export default function FeaturedCarCard({ id, name, year, price, image, hint, specs, featured = false }: FeaturedCarCardProps) {
-  const displayPrice = formatPriceDisplay(price);
+  const displayPrice = formatPriceUtil(price);
   return (
     <Card className="group w-full overflow-hidden rounded-[18px] border border-[#C7BCA3]/50 bg-[#F8F6F1] shadow-[0_6px_24px_rgba(0,0,0,0.08)] transition-all duration-500 hover:shadow-[0_12px_36px_rgba(0,0,0,0.14)]">
       <div className="flex flex-col md:flex-row">

@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Mail, Globe, MapPin, Star, ArrowLeft, Phone } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { formatPrice as formatPriceUtil } from "@/lib/utils";
 
 export default function PartnerAdDetailPage() {
   const { id } = useParams();
@@ -205,10 +206,10 @@ export default function PartnerAdDetailPage() {
               </div>
               {/* Show price if available */}
               {ad.price && (
-                <div className="text-2xl font-semibold text-gray-900 mb-2">{ad.price}</div>
+                <div className="text-2xl font-semibold text-gray-900 mb-2">{formatPriceUtil(String(ad.price))}</div>
               )}
               {ad.priceRange && (
-                <div className="text-xl font-semibold text-gray-900 mb-2">{ad.priceRange}</div>
+                <div className="text-xl font-semibold text-gray-900 mb-2">{formatPriceUtil(String(ad.priceRange))}</div>
               )}
               <p className="text-base text-gray-700 mb-4 max-w-xl leading-relaxed">{ad.description}</p>
               <div className="flex flex-wrap gap-4 mb-4">
@@ -281,7 +282,7 @@ function Field({ label, value }: { label: string; value: any }) {
   return (
     <div className="flex flex-col min-w-[160px]">
       <span className="text-xs text-gray-500 font-semibold uppercase tracking-wider mb-1">{label}</span>
-      <span className="text-base font-medium text-gray-900 break-words">{value}</span>
+      <span className="text-base font-medium text-gray-900 break-words">{label.toLowerCase().includes('price') ? formatPriceUtil(String(value)) : value}</span>
     </div>
   );
 } 
