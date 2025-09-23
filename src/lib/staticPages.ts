@@ -44,6 +44,13 @@ export const defaultStaticPages: StaticPagesDocument = {
     },
     updatedAt: Date.now(),
   },
+  privacy: {
+    title: "Privacy Policy",
+    subtitle: "How we handle your data",
+    body: "This is our privacy policy. You can edit this content in the admin panel.",
+    images: [],
+    updatedAt: Date.now(),
+  },
 };
 
 export async function fetchStaticPage(key: StaticPageKey): Promise<StaticPageContent> {
@@ -64,6 +71,7 @@ export async function fetchAllStaticPages(): Promise<StaticPagesDocument> {
   return {
     about: { ...defaultStaticPages.about, ...(data?.about ?? {}) },
     contact: { ...defaultStaticPages.contact, ...(data?.contact ?? {}) },
+    privacy: { ...defaultStaticPages.privacy, ...(data?.privacy ?? {}) },
   };
 }
 

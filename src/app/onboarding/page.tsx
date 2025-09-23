@@ -302,7 +302,7 @@ export default function OnboardingPage() {
                   />
                 </div>
                 <div className="flex items-center justify-between mt-2">
-                  <Button type="button" variant="outline" onClick={() => router.push('/login')}>
+                  <Button type="button" variant="ghost" className="text-slate-800 hover:text-slate-900 underline underline-offset-4" onClick={() => router.push('/login')}>
                     Back to login
                   </Button>
                   <Button type="submit" disabled={resetSubmitting} className="font-semibold">

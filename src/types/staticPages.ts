@@ -1,4 +1,4 @@
-export type StaticPageKey = "about" | "contact";
+export type StaticPageKey = "about" | "contact" | "privacy";
 
 export type PageImage = {
   url: string;

@@ -91,6 +91,7 @@ const NAV_SECTIONS = [
       { href: "/admin/section-galleries", icon: Settings, label: "Section Galleries" },
       { href: "/admin/page-content", icon: Settings, label: "Page Content" },
       { href: "/admin/static-pages", icon: Settings, label: "Static Pages" },
+      { href: "/admin/static-pages#privacy", icon: Settings, label: "Privacy Policy" },
       { href: "/admin/auth-images", icon: Settings, label: "Auth Images" },
       { href: "/admin/interests", icon: Settings, label: "Interests" },
       { href: "/admin/form-preferences", icon: Settings, label: "Form Preferences" },

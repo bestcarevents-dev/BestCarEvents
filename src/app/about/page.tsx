@@ -75,7 +75,7 @@ export default async function AboutPage() {
               </ul>
             </div>
             <div className="mt-6 rounded-2xl border border-amber-200 bg-white p-6 shadow-[0_8px_30px_rgba(191,146,42,0.12)]">
-              <h3 className="font-serif text-xl font-semibold text-slate-900">Connect with us</h3>
+              <h3 className="font-serif text-xl font-semibold text-slate-900">Contact</h3>
               <ul className="mt-4 space-y-4 text-slate-700">
                 {content.contact?.email && (
                   <li className="flex items-center gap-3">
@@ -83,58 +83,57 @@ export default async function AboutPage() {
                     <a href={`mailto:${content.contact.email}`} className="underline decoration-amber-500 underline-offset-2">{content.contact.email}</a>
                   </li>
                 )}
-                {content.contact?.website && (
-                  <li className="flex items-center gap-3">
-                    <Globe size={18} className="text-amber-700" />
-                    <a href={content.contact.website} target="_blank" rel="noopener noreferrer" className="underline decoration-amber-500 underline-offset-2">Website</a>
-                  </li>
-                )}
+              </ul>
+            </div>
+            <div className="mt-6 rounded-2xl border border-amber-200 bg-white p-6 shadow-[0_8px_30px_rgba(191,146,42,0.12)]">
+              <h3 className="font-serif text-xl font-semibold text-slate-900">Follow us on</h3>
+              <ul className="mt-4 space-y-4 text-slate-700">
                 {content.contact?.instagram && (
                   <li className="flex items-center gap-3">
                     <Instagram size={18} className="text-amber-700" />
-                    <a href={content.contact.instagram} target="_blank" rel="noopener noreferrer" className="underline decoration-amber-500 underline-offset-2">Instagram</a>
+                    <a href={content.contact.instagram} target="_blank" rel="noopener noreferrer" className="underline decoration-amber-500 underline-offset-2">BestCarEvents Social Media Name</a>
                   </li>
                 )}
                 {content.contact?.facebook && (
                   <li className="flex items-center gap-3">
                     <Facebook size={18} className="text-amber-700" />
-                    <a href={content.contact.facebook} target="_blank" rel="noopener noreferrer" className="underline decoration-amber-500 underline-offset-2">Facebook</a>
+                    <a href={content.contact.facebook} target="_blank" rel="noopener noreferrer" className="underline decoration-amber-500 underline-offset-2">BestCarEvents Social Media Name</a>
                   </li>
                 )}
                 {content.contact?.twitter && (
                   <li className="flex items-center gap-3">
                     <Twitter size={18} className="text-amber-700" />
-                    <a href={content.contact.twitter} target="_blank" rel="noopener noreferrer" className="underline decoration-amber-500 underline-offset-2">Twitter</a>
+                    <a href={content.contact.twitter} target="_blank" rel="noopener noreferrer" className="underline decoration-amber-500 underline-offset-2">BestCarEvents Social Media Name</a>
                   </li>
                 )}
                 {content.contact?.youtube && (
                   <li className="flex items-center gap-3">
                     <Youtube size={18} className="text-amber-700" />
-                    <a href={content.contact.youtube} target="_blank" rel="noopener noreferrer" className="underline decoration-amber-500 underline-offset-2">YouTube</a>
+                    <a href={content.contact.youtube} target="_blank" rel="noopener noreferrer" className="underline decoration-amber-500 underline-offset-2">BestCarEvents Social Media Name</a>
                   </li>
                 )}
                 {content.contact?.linkedin && (
                   <li className="flex items-center gap-3">
                     <Linkedin size={18} className="text-amber-700" />
-                    <a href={content.contact.linkedin} target="_blank" rel="noopener noreferrer" className="underline decoration-amber-500 underline-offset-2">LinkedIn</a>
+                    <a href={content.contact.linkedin} target="_blank" rel="noopener noreferrer" className="underline decoration-amber-500 underline-offset-2">BestCarEvents Social Media Name</a>
                   </li>
                 )}
                 {content.contact?.tiktok && (
                   <li className="flex items-center gap-3">
                     <BadgePercent size={18} className="text-amber-700" />
-                    <a href={content.contact.tiktok} target="_blank" rel="noopener noreferrer" className="underline decoration-amber-500 underline-offset-2">TikTok</a>
+                    <a href={content.contact.tiktok} target="_blank" rel="noopener noreferrer" className="underline decoration-amber-500 underline-offset-2">BestCarEvents Social Media Name</a>
                   </li>
                 )}
                 {content.contact?.telegram && (
                   <li className="flex items-center gap-3">
                     <Send size={18} className="text-amber-700" />
-                    <a href={content.contact.telegram} target="_blank" rel="noopener noreferrer" className="underline decoration-amber-500 underline-offset-2">Telegram</a>
+                    <a href={content.contact.telegram} target="_blank" rel="noopener noreferrer" className="underline decoration-amber-500 underline-offset-2">BestCarEvents Social Media Name</a>
                   </li>
                 )}
                 {content.contact?.whatsapp && (
                   <li className="flex items-center gap-3">
                     <MessageCircle size={18} className="text-amber-700" />
-                    <a href={content.contact.whatsapp} target="_blank" rel="noopener noreferrer" className="underline decoration-amber-500 underline-offset-2">WhatsApp</a>
+                    <a href={content.contact.whatsapp} target="_blank" rel="noopener noreferrer" className="underline decoration-amber-500 underline-offset-2">BestCarEvents Social Media Name</a>
                   </li>
                 )}
               </ul>

@@ -784,6 +784,7 @@ export default function CarsListingPage() {
           location: cars.find((c) => c.id === editModal?.id)?.location,
           price: cars.find((c) => c.id === editModal?.id)?.price,
           currency: cars.find((c) => c.id === editModal?.id)?.currency,
+          description: cars.find((c) => c.id === editModal?.id)?.description,
         }}
         onSaved={(update) => {
           setCars((prev) => prev.map((c) => (c.id === editModal?.id ? { ...c, ...update } : c)));

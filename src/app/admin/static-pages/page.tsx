@@ -43,7 +43,7 @@ export default function AdminStaticPages() {
   const [isAuthed, setIsAuthed] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState<StaticPageKey | null>(null);
-  const [state, setState] = useState<EditorState>({ about: createDefaultState(), contact: createDefaultState() });
+  const [state, setState] = useState<EditorState>({ about: createDefaultState(), contact: createDefaultState(), privacy: createDefaultState() });
   const [uploading, setUploading] = useState<Record<string, boolean>>({});
   const storage = getStorage(app);
 
@@ -98,6 +98,27 @@ export default function AdminStaticPages() {
               tiktok: data.contact.contact?.tiktok || "",
               telegram: data.contact.contact?.telegram || "",
               whatsapp: data.contact.contact?.whatsapp || "",
+            },
+          },
+          privacy: {
+            title: data.privacy.title,
+            subtitle: data.privacy.subtitle || "",
+            body: data.privacy.body,
+            images: data.privacy.images || [],
+            contact: {
+              email: "",
+              phone: "",
+              address: "",
+              mapEmbedUrl: "",
+              instagram: "",
+              facebook: "",
+              twitter: "",
+              youtube: "",
+              linkedin: "",
+              website: "",
+              tiktok: "",
+              telegram: "",
+              whatsapp: "",
             },
           },
         });
@@ -255,9 +276,10 @@ export default function AdminStaticPages() {
         <TabsList className="mb-6">
           <TabsTrigger value="about">About</TabsTrigger>
           <TabsTrigger value="contact">Contact</TabsTrigger>
+          <TabsTrigger value="privacy">Privacy</TabsTrigger>
         </TabsList>
 
-        {(["about", "contact"] as StaticPageKey[]).map((key) => (
+        {(["about", "contact", "privacy"] as StaticPageKey[]).map((key) => (
           <TabsContent key={key} value={key}>
             <Card>
               <CardHeader>

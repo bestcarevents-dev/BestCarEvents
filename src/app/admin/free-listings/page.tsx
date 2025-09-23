@@ -69,8 +69,9 @@ export default function AdminFreeListingsPage() {
         await saveFreeCallout(s, callouts[s]);
       }
       toast({ title: "Saved", description: "Free callouts updated." });
-    } catch (e) {
-      toast({ title: "Error", description: "Failed to save callouts.", variant: "destructive" });
+    } catch (e: any) {
+      const message = e?.message || (typeof e === 'string' ? e : 'Failed to save callouts.');
+      toast({ title: "Error", description: message, variant: "destructive" });
     } finally {
       setSaving(false);
     }
@@ -81,8 +82,9 @@ export default function AdminFreeListingsPage() {
     try {
       await saveFreeListingsModal(modalCopy);
       toast({ title: "Saved", description: "Modal copy updated." });
-    } catch (e) {
-      toast({ title: "Error", description: "Failed to save modal copy.", variant: "destructive" });
+    } catch (e: any) {
+      const message = e?.message || (typeof e === 'string' ? e : 'Failed to save modal copy.');
+      toast({ title: "Error", description: message, variant: "destructive" });
     } finally {
       setSaving(false);
     }
@@ -143,11 +145,17 @@ export default function AdminFreeListingsPage() {
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label>CTA Href</Label>
-                      <Input value={callouts[section]?.ctaHref || ""} onChange={(e) => handleCalloutChange(section, "ctaHref", e.target.value)} />
+                      <Input
+                        value={(callouts[section]?.ctaHref ?? defaultFreeCallouts[section]?.ctaHref) || ""}
+                        onChange={(e) => handleCalloutChange(section, "ctaHref", e.target.value)}
+                      />
                     </div>
                     <div className="space-y-2">
                       <Label>CTA Text</Label>
-                      <Input value={callouts[section]?.ctaText || ""} onChange={(e) => handleCalloutChange(section, "ctaText", e.target.value)} />
+                      <Input
+                        value={(callouts[section]?.ctaText ?? defaultFreeCallouts[section]?.ctaText) || ""}
+                        onChange={(e) => handleCalloutChange(section, "ctaText", e.target.value)}
+                      />
                     </div>
                   </div>
                 </CardContent>

@@ -13,14 +13,15 @@ type CarEditDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   documentId: string;
-  initial: { location?: string; price?: number; currency?: string };
-  onSaved?: (update: Partial<{ location: string; price: number; currency: string }>) => void;
+  initial: { location?: string; price?: number; currency?: string; description?: string };
+  onSaved?: (update: Partial<{ location: string; price: number; currency: string; description: string }>) => void;
 };
 
 export default function CarEditDialog({ open, onOpenChange, documentId, initial, onSaved }: CarEditDialogProps) {
   const [location, setLocation] = useState<string>(initial.location || "");
   const [price, setPrice] = useState<string>(initial.price != null ? String(initial.price) : "");
   const [currency, setCurrency] = useState<string>(initial.currency || "");
+  const [description, setDescription] = useState<string>(initial.description || "");
   const [saving, setSaving] = useState(false);
   const { toast } = useToast();
 
@@ -28,7 +29,9 @@ export default function CarEditDialog({ open, onOpenChange, documentId, initial,
     const payload: Record<string, any> = {};
     if (location.trim() !== (initial.location || "")) payload.location = location.trim();
     if (price.trim() !== (initial.price != null ? String(initial.price) : "")) {
-      const parsed = Number(price);
+      // Support thousand separators: comma, dot, apostrophe, and spaces
+      const sanitized = price.replace(/[',\.\s]/g, "");
+      const parsed = Number(sanitized);
       if (Number.isNaN(parsed) || parsed < 0) {
         toast({ title: "Invalid price", description: "Enter a valid number.", variant: "destructive" });
         return;
@@ -36,6 +39,7 @@ export default function CarEditDialog({ open, onOpenChange, documentId, initial,
       payload.price = parsed;
     }
     if (currency.trim() !== (initial.currency || "")) payload.currency = currency.trim();
+    if (description.trim() !== (initial.description || "")) payload.description = description.trim();
     if (Object.keys(payload).length === 0) {
       toast({ title: "No changes", description: "Nothing to update.", variant: "destructive" });
       return;
@@ -72,10 +76,14 @@ export default function CarEditDialog({ open, onOpenChange, documentId, initial,
             <Label htmlFor="carLocation" className="text-foreground">Location</Label>
             <Input id="carLocation" value={location} onChange={(e) => setLocation(e.target.value)} placeholder="City, Country" className="text-foreground" />
           </div>
+          <div className="space-y-1">
+            <Label htmlFor="carDescription" className="text-foreground">Description</Label>
+            <textarea id="carDescription" value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Short description" className="text-foreground w-full border rounded-md p-2 min-h-[100px]" />
+          </div>
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1">
               <Label htmlFor="carPrice" className="text-foreground">Price</Label>
-              <Input id="carPrice" value={price} onChange={(e) => setPrice(e.target.value)} placeholder="e.g. 25000" className="text-foreground" />
+              <Input id="carPrice" value={price} onChange={(e) => setPrice(e.target.value)} placeholder="e.g. 25'000 or 25,000" className="text-foreground" />
             </div>
             <div className="space-y-1">
               <Label htmlFor="carCurrency" className="text-foreground">Currency</Label>
