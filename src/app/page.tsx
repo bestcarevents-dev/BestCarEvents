@@ -143,13 +143,15 @@ const CitiesSliderSection = () => {
           <div className="overflow-x-auto">
             <div className="inline-flex gap-3 py-2">
               {cities.map((city) => (
-                <span
+                <Link
                   key={city}
-                  className="px-4 h-9 inline-flex items-center rounded-full bg-[#F4F0E7] border border-[#D9CEB6] text-gray-800 whitespace-nowrap shadow-sm"
+                  href={`/events?city=${encodeURIComponent(city)}`}
+                  className="px-4 h-9 inline-flex items-center rounded-full bg-[#F4F0E7] border border-[#D9CEB6] text-gray-800 whitespace-nowrap shadow-sm hover:bg-[#EAE3D1] hover:border-[#C7B892] transition-colors"
+                  aria-label={`Browse events in ${city}`}
                 >
                   <Map className="w-4 h-4 mr-2 text-[#7D8C91]" />
                   {city}
-                </span>
+                </Link>
               ))}
             </div>
           </div>
