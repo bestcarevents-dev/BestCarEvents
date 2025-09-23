@@ -16,6 +16,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { UploadCloud, X } from "lucide-react";
 import { createClubRequestNotification } from "@/lib/notifications";
+import ConsentCheckbox from "@/components/form/ConsentCheckbox";
 
 const clubSchema = z.object({
   clubName: z.string().min(3, "Club name is required"),
@@ -42,6 +43,11 @@ const clubSchema = z.object({
       (file) => typeof window === "undefined" || (file instanceof File && file.size > 0),
       "A club logo is required"
     ),
+  mediaConsent: z
+    .boolean()
+    .refine((val) => val === true, {
+      message: "You must confirm you have required consent and rights",
+    }),
 });
 
 type ClubFormData = z.infer<typeof clubSchema>;
@@ -57,6 +63,7 @@ export default function RegisterClubPage() {
 
   const { register, handleSubmit, control, setValue, formState: { errors } } = useForm<ClubFormData>({
     resolver: zodResolver(clubSchema),
+    defaultValues: { mediaConsent: false },
   });
 
   // Get current user
@@ -105,6 +112,7 @@ export default function RegisterClubPage() {
         contactName: data.contactName,
         contactEmail: data.contactEmail,
         logoUrl,
+        mediaConsent: !!(data as any).mediaConsent,
         status: "pending",
         submittedAt: new Date(),
         uploadedByUserId: currentUser?.uid || null,
@@ -255,6 +263,12 @@ export default function RegisterClubPage() {
               <Button type="submit" className="w-full text-lg py-6 bg-yellow-600 hover:bg-yellow-700 text-white border-yellow-600 focus:ring-yellow-400" disabled={isSubmitting}>
                 {isSubmitting ? "Submitting..." : "Submit Club for Approval"}
               </Button>
+              <div className="pt-2">
+                <ConsentCheckbox control={control} />
+                {errors.mediaConsent && (
+                  <p className="text-red-500 text-sm mt-1">{String(errors.mediaConsent.message)}</p>
+                )}
+              </div>
             </form>
           </CardContent>
         </Card>

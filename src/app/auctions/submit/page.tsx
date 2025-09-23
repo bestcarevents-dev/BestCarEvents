@@ -22,6 +22,7 @@ import { format } from "date-fns";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import React from "react";
 import { createAuctionRequestNotification } from "@/lib/notifications";
+import ConsentCheckbox from "@/components/form/ConsentCheckbox";
 
 const auctionSchema = z.object({
   auctionName: z.string().min(5, "Auction name is required"),
@@ -51,6 +52,11 @@ const auctionSchema = z.object({
       (file) => typeof window === "undefined" || (file instanceof File && file.size > 0),
       "An image of the venue or a poster is required"
     ),
+  mediaConsent: z
+    .boolean()
+    .refine((val) => val === true, {
+      message: "You must confirm you have required consent and rights",
+    }),
 });
 
 type AuctionFormData = z.infer<typeof auctionSchema>;
@@ -65,6 +71,7 @@ export default function RegisterAuctionPage() {
 
   const { control, register, handleSubmit, formState: { errors }, setValue, watch } = useForm<AuctionFormData>({
     resolver: zodResolver(auctionSchema),
+    defaultValues: { mediaConsent: false },
   });
 
   // Watch for image changes to update preview
@@ -112,6 +119,7 @@ export default function RegisterAuctionPage() {
         organizerName: data.organizerName,
         organizerContact: data.organizerContact,
         imageUrl,
+        mediaConsent: !!(data as any).mediaConsent,
         status: "pending",
         submittedAt: new Date(),
         uploadedByUserId: currentUser?.uid || null,
@@ -310,6 +318,12 @@ export default function RegisterAuctionPage() {
               <Button type="submit" className="w-full text-lg py-6 bg-yellow-600 hover:bg-yellow-700 text-white border-yellow-600 focus:ring-yellow-400" disabled={isSubmitting}>
                 {isSubmitting ? "Submitting..." : "Submit Auction for Approval"}
               </Button>
+              <div className="pt-2">
+                <ConsentCheckbox control={control} />
+                {errors.mediaConsent && (
+                  <p className="text-red-500 text-sm mt-1">{String(errors.mediaConsent.message)}</p>
+                )}
+              </div>
             </form>
           </CardContent>
         </Card>

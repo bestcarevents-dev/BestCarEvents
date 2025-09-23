@@ -21,6 +21,7 @@ import { createServiceRequestNotification } from "@/lib/notifications";
 import TagInput from "@/components/form/TagInput";
 import LocationPicker, { type LocationData } from "@/components/LocationPicker";
 import { Switch } from "@/components/ui/switch";
+import ConsentCheckbox from "@/components/form/ConsentCheckbox";
 import { useFormPreferences } from "@/hooks/useFormPreferences";
 
 const serviceSchema = z.object({
@@ -46,6 +47,11 @@ const serviceSchema = z.object({
   specializations: z.string().optional(),
   experience: z.string().optional(),
   certifications: z.string().optional(),
+  mediaConsent: z
+    .boolean()
+    .refine((val) => val === true, {
+      message: "You must confirm you have required consent and rights",
+    }),
 });
 
 type ServiceFormData = z.infer<typeof serviceSchema>;
@@ -84,6 +90,7 @@ export default function RegisterServicePage() {
     resolver: zodResolver(serviceSchema),
     defaultValues: {
       privacyMode: false,
+      mediaConsent: false,
     }
   });
 
@@ -154,6 +161,7 @@ export default function RegisterServicePage() {
         submittedAt: new Date(),
         createdAt: new Date(),
         privacyMode: !!(data as any).privacyMode,
+        mediaConsent: !!(data as any).mediaConsent,
       };
 
       const docRef = await addDoc(collection(db, "pendingOthers"), serviceData);
@@ -479,6 +487,13 @@ export default function RegisterServicePage() {
                   )}
                 </div>
               </fieldset>
+
+              <div className="pt-2">
+                <ConsentCheckbox control={control as any} />
+                {errors.mediaConsent && (
+                  <p className="text-red-500 text-sm mt-1">{String((errors as any).mediaConsent?.message)}</p>
+                )}
+              </div>
 
               {/* Submit Button */}
               <div className="flex justify-end pt-6 border-t border-gray-200">

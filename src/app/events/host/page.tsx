@@ -25,6 +25,7 @@ import { createEventRequestNotification } from "@/lib/notifications";
 import TagInput from "@/components/form/TagInput";
 import LocationPicker, { type LocationData } from "@/components/LocationPicker";
 import { Switch } from "@/components/ui/switch";
+import ConsentCheckbox from "@/components/form/ConsentCheckbox";
 
 const eventSchema = z.object({
   eventName: z.string().min(5, "Event name must be at least 5 characters"),
@@ -59,6 +60,11 @@ const eventSchema = z.object({
   sponsors: z.string().optional(),
   websiteUrl: z.string().url("Must be a valid URL").optional().or(z.literal('')),
   privacyMode: z.boolean().optional().default(false),
+  mediaConsent: z
+    .boolean()
+    .refine((val) => val === true, {
+      message: "You must confirm you have required consent and rights",
+    }),
 });
 
 type EventFormData = z.infer<typeof eventSchema>;
@@ -75,6 +81,7 @@ export default function HostEventPage() {
     resolver: zodResolver(eventSchema),
     defaultValues: {
       privacyMode: false,
+      mediaConsent: false,
     }
   });
 
@@ -125,6 +132,7 @@ export default function HostEventPage() {
         sponsors: data.sponsors,
         websiteUrl: data.websiteUrl,
         privacyMode: !!(data as any).privacyMode,
+        mediaConsent: !!(data as any).mediaConsent,
         status: "pending",
         submittedAt: new Date(),
         uploadedByUserId: currentUser?.uid || null,
@@ -411,6 +419,12 @@ export default function HostEventPage() {
               <Button type="submit" className="w-full bg-yellow-600 hover:bg-yellow-700 text-white border-yellow-600 focus:ring-yellow-400" disabled={isSubmitting}>
                 {isSubmitting ? "Submitting..." : "Submit for Approval"}
               </Button>
+              <div className="pt-2">
+                <ConsentCheckbox control={control} />
+                {errors.mediaConsent && (
+                  <p className="text-red-500 text-sm mt-1">{String(errors.mediaConsent.message)}</p>
+                )}
+              </div>
             </form>
           </CardContent>
         </Card>

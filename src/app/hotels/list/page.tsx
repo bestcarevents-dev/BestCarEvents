@@ -19,6 +19,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { createHotelRequestNotification } from "@/lib/notifications";
 import LocationPicker, { type LocationData } from "@/components/LocationPicker";
 import { Switch } from "@/components/ui/switch";
+import ConsentCheckbox from "@/components/form/ConsentCheckbox";
 import { useFormPreferences } from "@/hooks/useFormPreferences";
 
 const hotelFeatures = ["Climate Controlled", "24/7 Security", "Detailing Services", "Member's Lounge", "Battery Tending", "Transportation", "24/7 Access", "Social Events", "Sales & Brokerage"] as const;
@@ -56,6 +57,11 @@ const hotelSchema = z.object({
       "At least one image is required"
     ),
   privacyMode: z.boolean().optional().default(false),
+  mediaConsent: z
+    .boolean()
+    .refine((val) => val === true, {
+      message: "You must confirm you have required consent and rights",
+    }),
 });
 
 type HotelFormData = z.infer<typeof hotelSchema>;
@@ -78,6 +84,7 @@ export default function ListHotelPage() {
       features: [],
       images: [],
       privacyMode: false,
+      mediaConsent: false,
     }
   });
   const hotelPrefs = useFormPreferences("hotels");
@@ -158,6 +165,7 @@ export default function ListHotelPage() {
         uploadedByUserId: currentUser?.uid || null,
         uploadedByUserEmail: currentUser?.email || null,
         privacyMode: !!(data as any).privacyMode,
+        mediaConsent: !!(data as any).mediaConsent,
       };
 
       const docRef = await addDoc(collection(db, "pendingHotels"), hotelData);
@@ -218,6 +226,13 @@ export default function ListHotelPage() {
                       {errors.description && <p className="text-red-500 text-sm">{errors.description.message}</p>}
                    </div>
               </fieldset>
+
+              <div className="pt-2">
+                <ConsentCheckbox control={control} />
+                {errors.mediaConsent && (
+                  <p className="text-red-500 text-sm mt-1">{String(errors.mediaConsent.message)}</p>
+                )}
+              </div>
 
               <fieldset className="space-y-6 border-t border-gray-200 pt-6">
                   <legend className="text-xl font-semibold font-headline text-gray-900">Location & Contact</legend>

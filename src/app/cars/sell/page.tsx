@@ -37,6 +37,7 @@ import { createCarRequestNotification } from "@/lib/notifications";
 import { usePricing } from "@/lib/usePricing";
 import LocationPicker, { type LocationData } from "@/components/LocationPicker";
 import { Switch } from "@/components/ui/switch";
+import ConsentCheckbox from "@/components/form/ConsentCheckbox";
 import { useFormPreferences } from "@/hooks/useFormPreferences";
 
 const carFeatures = ["Air Conditioning", "Power Steering", "Power Windows", "Sunroof/Moonroof", "Navigation System", "Bluetooth", "Backup Camera", "Leather Seats", "Heated Seats"] as const;
@@ -157,6 +158,12 @@ const carSchema = z.object({
       "At least one image is required"
     ),
   video: z.any().optional(),
+  // Consent
+  mediaConsent: z
+    .boolean()
+    .refine((val) => val === true, {
+      message: "You must confirm you have required consent and rights",
+    }),
 });
 
 type CarFormData = z.infer<typeof carSchema>;
@@ -202,6 +209,7 @@ export default function SellCarPage() {
         features: [],
         currency: "USD",
         privacyMode: false,
+        mediaConsent: false,
     }
   });
   const [customFeature, setCustomFeature] = useState("");
@@ -387,6 +395,7 @@ export default function SellCarPage() {
         country: (data as any).country,
         postalCode: (data as any).postalCode,
         privacyMode: !!(data as any).privacyMode,
+        mediaConsent: !!(data as any).mediaConsent,
         listing_type: isFreeListing ? "free" : selectedListingType,
         status: "pending",
         submittedAt: new Date(),
@@ -991,6 +1000,12 @@ export default function SellCarPage() {
                         <Input id="sellerContact" type="email" {...register("sellerContact")} />
                         {errors.sellerContact && <p className="text-red-500 text-sm">{errors.sellerContact.message}</p>}
                     </div>
+                </div>
+                <div className="pt-2">
+                  <ConsentCheckbox control={control} />
+                  {errors.mediaConsent && (
+                    <p className="text-red-500 text-sm mt-1">{String(errors.mediaConsent.message)}</p>
+                  )}
                 </div>
             </fieldset>
 
