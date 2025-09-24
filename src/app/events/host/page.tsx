@@ -128,7 +128,7 @@ export default function HostEventPage() {
       await uploadBytes(imageRef, data.image);
       const imageUrl = await getDownloadURL(imageRef);
 
-      const eventData = {
+      const raw = {
         eventName: data.eventName,
         eventDate: data.eventDate,
         location: data.location,
@@ -157,8 +157,10 @@ export default function HostEventPage() {
         submittedAt: new Date(),
         uploadedByUserId: currentUser?.uid || null,
         uploadedByUserEmail: currentUser?.email || null,
-      };
+      } as Record<string, any>;
 
+      const eventData = Object.fromEntries(Object.entries(raw).filter(([_, v]) => v !== undefined));
+ 
       const docRef = await addDoc(collection(db, "pendingEvents"), eventData);
       
       // Create notification (non-blocking)
