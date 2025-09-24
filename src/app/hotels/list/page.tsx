@@ -227,13 +227,6 @@ export default function ListHotelPage() {
                    </div>
               </fieldset>
 
-              <div className="pt-2">
-                <ConsentCheckbox control={control} />
-                {errors.mediaConsent && (
-                  <p className="text-red-500 text-sm mt-1">{String(errors.mediaConsent.message)}</p>
-                )}
-              </div>
-
               <fieldset className="space-y-6 border-t border-gray-200 pt-6">
                   <legend className="text-xl font-semibold font-headline text-gray-900">Location & Contact</legend>
                   <div className="space-y-2">
@@ -392,6 +385,7 @@ export default function ListHotelPage() {
                   <p className="text-red-500 text-sm mt-1">{String(errors.mediaConsent.message)}</p>
                 )}
               </div>
+
               <Button type="submit" className="w-full text-lg py-6 bg-yellow-600 hover:bg-yellow-700 text-white border-yellow-600 focus:ring-yellow-400" disabled={isSubmitting}>
                 {isSubmitting ? "Submitting..." : "Submit Facility for Approval"}
               </Button>

@@ -1001,12 +1001,6 @@ export default function SellCarPage() {
                         {errors.sellerContact && <p className="text-red-500 text-sm">{errors.sellerContact.message}</p>}
                     </div>
                 </div>
-                <div className="pt-2">
-                  <ConsentCheckbox control={control} />
-                  {errors.mediaConsent && (
-                    <p className="text-red-500 text-sm mt-1">{String(errors.mediaConsent.message)}</p>
-                  )}
-                </div>
             </fieldset>
 
             <div className="pt-2">

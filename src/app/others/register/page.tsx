@@ -38,7 +38,7 @@ const serviceSchema = z.object({
   country: z.string().min(1, "Country is required"),
   postalCode: z.string().min(1, "ZIP/Postal code is required"),
   privacyMode: z.boolean().optional().default(false),
-  priceRange: z.string().min(1, "Price range is required"),
+  priceRange: z.string().optional().or(z.literal("")),
   contactInfo: z.string().email("Please enter a valid email address"),
   phoneNumber: z.string().optional(),
   websiteUrl: z.string().url().optional().or(z.literal("")),
@@ -83,6 +83,7 @@ export default function RegisterServicePage() {
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors },
     setValue,
     watch,
@@ -488,6 +489,7 @@ export default function RegisterServicePage() {
                 </div>
               </fieldset>
 
+              {/* Consent (single instance above submit) */}
               <div className="pt-2">
                 <ConsentCheckbox control={control as any} />
                 {errors.mediaConsent && (
@@ -496,12 +498,6 @@ export default function RegisterServicePage() {
               </div>
 
               {/* Submit Button */}
-              <div className="pt-2">
-                <ConsentCheckbox control={control as any} />
-                {errors.mediaConsent && (
-                  <p className="text-red-500 text-sm mt-1">{String((errors as any).mediaConsent?.message)}</p>
-                )}
-              </div>
               <div className="flex justify-end pt-6 border-t border-gray-200">
                 <Button 
                   type="submit" 

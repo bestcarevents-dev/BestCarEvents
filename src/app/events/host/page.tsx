@@ -52,8 +52,17 @@ const eventSchema = z.object({
   // New Fields for Comprehensive Event Details
   eventType: z.enum(["Car Show", "Race", "Meetup", "Rally", "Other"], { required_error: "Event type is required" }),
   vehicleFocus: z.string().optional(), // e.g., Classic Cars, JDM, Muscle Cars, Electric Vehicles
-  expectedAttendance: z.number().int().positive("Expected attendance must be a positive number").optional(),
-  entryFee: z.number().positive("Entry fee must be a positive number").optional().or(z.literal(0)),
+  expectedAttendance: z.preprocess(
+    (v) => (v === "" || v === null || typeof v === "undefined" || Number.isNaN(v as any) ? undefined : v),
+    z.coerce.number().int().positive("Expected attendance must be a positive number").optional(),
+  ),
+  entryFee: z.preprocess(
+    (v) => (v === "" || v === null || typeof v === "undefined" || Number.isNaN(v as any) ? undefined : v),
+    z.union([
+      z.coerce.number().positive("Entry fee must be a positive number"),
+      z.literal(0),
+    ]).optional(),
+  ),
   scheduleHighlights: z.string().optional(),
   activities: z.string().optional(),
   rulesUrl: z.string().url("Must be a valid URL").optional().or(z.literal('')),
@@ -180,6 +189,7 @@ export default function HostEventPage() {
               <div className="space-y-2">
                 <Label className="text-gray-700 font-medium">Location</Label>
                 <LocationPicker
+                  label=""
                   required
                   initialValue={watch("locationData") as any}
                   onChange={(value) => {

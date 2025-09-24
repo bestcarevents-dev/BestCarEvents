@@ -62,62 +62,53 @@ export default async function ContactPage() {
           </div>
           <div className="rounded-2xl border border-amber-200 bg-amber-50/60 p-6">
             <h2 className="font-serif font-semibold text-slate-900 text-xl">Follow us on</h2>
-            <ul className="mt-4 space-y-3 text-slate-800">
+            <div className="mt-4 flex flex-wrap items-center gap-3">
               {content.contact?.instagram && (
-                <li className="flex items-center gap-3">
-                  <Instagram size={18} className="text-amber-700" />
-                  <a className="text-amber-800 hover:underline" href={content.contact.instagram} target="_blank" rel="noreferrer noopener">BestCarEvents Social Media Name</a>
-                </li>
+                <a aria-label="Instagram" href={content.contact.instagram} target="_blank" rel="noreferrer noopener" className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-amber-200 bg-white text-amber-700 hover:bg-amber-50 hover:border-amber-300 transition">
+                  <Instagram size={18} />
+                </a>
               )}
               {content.contact?.facebook && (
-                <li className="flex items-center gap-3">
-                  <Facebook size={18} className="text-amber-700" />
-                  <a className="text-amber-800 hover:underline" href={content.contact.facebook} target="_blank" rel="noreferrer noopener">BestCarEvents Social Media Name</a>
-                </li>
+                <a aria-label="Facebook" href={content.contact.facebook} target="_blank" rel="noreferrer noopener" className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-amber-200 bg-white text-amber-700 hover:bg-amber-50 hover:border-amber-300 transition">
+                  <Facebook size={18} />
+                </a>
               )}
               {content.contact?.twitter && (
-                <li className="flex items-center gap-3">
-                  <Twitter size={18} className="text-amber-700" />
-                  <a className="text-amber-800 hover:underline" href={content.contact.twitter} target="_blank" rel="noreferrer noopener">BestCarEvents Social Media Name</a>
-                </li>
+                <a aria-label="Twitter" href={content.contact.twitter} target="_blank" rel="noreferrer noopener" className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-amber-200 bg-white text-amber-700 hover:bg-amber-50 hover:border-amber-300 transition">
+                  <Twitter size={18} />
+                </a>
               )}
               {content.contact?.youtube && (
-                <li className="flex items-center gap-3">
-                  <Youtube size={18} className="text-amber-700" />
-                  <a className="text-amber-800 hover:underline" href={content.contact.youtube} target="_blank" rel="noreferrer noopener">BestCarEvents Social Media Name</a>
-                </li>
+                <a aria-label="YouTube" href={content.contact.youtube} target="_blank" rel="noreferrer noopener" className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-amber-200 bg-white text-amber-700 hover:bg-amber-50 hover:border-amber-300 transition">
+                  <Youtube size={18} />
+                </a>
               )}
               {content.contact?.linkedin && (
-                <li className="flex items-center gap-3">
-                  <Linkedin size={18} className="text-amber-700" />
-                  <a className="text-amber-800 hover:underline" href={content.contact.linkedin} target="_blank" rel="noreferrer noopener">BestCarEvents Social Media Name</a>
-                </li>
+                <a aria-label="LinkedIn" href={content.contact.linkedin} target="_blank" rel="noreferrer noopener" className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-amber-200 bg-white text-amber-700 hover:bg-amber-50 hover:border-amber-300 transition">
+                  <Linkedin size={18} />
+                </a>
               )}
               {content.contact?.tiktok && (
-                <li className="flex items-center gap-3">
-                  <BadgePercent size={18} className="text-amber-700" />
-                  <a className="text-amber-800 hover:underline" href={content.contact.tiktok} target="_blank" rel="noreferrer noopener">BestCarEvents Social Media Name</a>
-                </li>
+                <a aria-label="TikTok" href={content.contact.tiktok} target="_blank" rel="noreferrer noopener" className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-amber-200 bg-white text-amber-700 hover:bg-amber-50 hover:border-amber-300 transition">
+                  <BadgePercent size={18} />
+                </a>
               )}
               {content.contact?.telegram && (
-                <li className="flex items-center gap-3">
-                  <Send size={18} className="text-amber-700" />
-                  <a className="text-amber-800 hover:underline" href={content.contact.telegram} target="_blank" rel="noreferrer noopener">BestCarEvents Social Media Name</a>
-                </li>
+                <a aria-label="Telegram" href={content.contact.telegram} target="_blank" rel="noreferrer noopener" className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-amber-200 bg-white text-amber-700 hover:bg-amber-50 hover:border-amber-300 transition">
+                  <Send size={18} />
+                </a>
               )}
               {content.contact?.whatsapp && (
-                <li className="flex items-center gap-3">
-                  <MessageCircle size={18} className="text-amber-700" />
-                  <a className="text-amber-800 hover:underline" href={content.contact.whatsapp} target="_blank" rel="noreferrer noopener">BestCarEvents Social Media Name</a>
-                </li>
+                <a aria-label="WhatsApp" href={content.contact.whatsapp} target="_blank" rel="noreferrer noopener" className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-amber-200 bg-white text-amber-700 hover:bg-amber-50 hover:border-amber-300 transition">
+                  <MessageCircle size={18} />
+                </a>
               )}
               {content.contact?.website && (
-                <li className="flex items-center gap-3">
-                  <Globe size={18} className="text-amber-700" />
-                  <a className="text-amber-800 hover:underline" href={content.contact.website} target="_blank" rel="noreferrer noopener">Website</a>
-                </li>
+                <a aria-label="Website" href={content.contact.website} target="_blank" rel="noreferrer noopener" className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-amber-200 bg-white text-amber-700 hover:bg-amber-50 hover:border-amber-300 transition">
+                  <Globe size={18} />
+                </a>
               )}
-            </ul>
+            </div>
           </div>
           {content.contact?.mapEmbedUrl && (
             <div className="rounded-2xl overflow-hidden border border-amber-200">

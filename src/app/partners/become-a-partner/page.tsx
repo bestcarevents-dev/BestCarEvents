@@ -14,6 +14,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import ConsentCheckbox from "@/components/form/ConsentCheckbox";
 import { UploadCloud, CheckCircle, Star, Award, Users, ArrowRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from "@/components/ui/dialog";
@@ -77,6 +78,7 @@ const partnerSchema = z.object({
   phone: z.string().min(5, "Phone required"),
   socialMedia: z.string().url("Invalid URL").optional().or(z.literal('')),
   website: z.string().url("Invalid URL").optional().or(z.literal('')),
+  mediaConsent: z.boolean().refine(v => v === true, { message: "You must confirm you have required consent and rights" }),
 });
 
 type PartnerFormData = z.infer<typeof partnerSchema>;
@@ -113,7 +115,7 @@ export default function BecomePartnerPage() {
   // Form
   const { control, register, handleSubmit, setValue, getValues, formState: { errors } } = useForm<PartnerFormData>({
     resolver: zodResolver(partnerSchema),
-    defaultValues: { categories: [] },
+    defaultValues: { categories: [], mediaConsent: false },
   });
 
   // Auth/user doc
@@ -561,7 +563,13 @@ export default function BecomePartnerPage() {
                     <Input id="socialMedia" {...register("socialMedia")} className="text-black bg-white border-gray-300" />
                     {errors.socialMedia && <p className="text-red-600 text-sm font-bold">{errors.socialMedia.message}</p>}
                   </div>
-                  <input type="hidden" {...register("paymentMethod")} value={selectedPayment || 'card'} />
+                <input type="hidden" {...register("paymentMethod")} value={selectedPayment || 'card'} />
+                <div className="pt-2">
+                  <ConsentCheckbox control={control} />
+                  {errors.mediaConsent && (
+                    <p className="text-red-600 text-sm font-bold mt-1">{String(errors.mediaConsent.message)}</p>
+                  )}
+                </div>
                   <Button type="submit" className="w-full bg-yellow-500 hover:bg-yellow-600 text-black border-yellow-600 font-bold text-lg">Submit</Button>
                 </form>
               </CardContent>
