@@ -1,7 +1,7 @@
 "use client";
 
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { getFirestore, collection, addDoc } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
@@ -86,13 +86,24 @@ export default function HostEventPage() {
   const storage = getStorage(app);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
 
-  const { control, register, handleSubmit, formState: { errors }, setValue, watch } = useForm<EventFormData>({
+  const { control, register, handleSubmit, formState: { errors }, setValue, watch, setFocus } = useForm<EventFormData>({
     resolver: zodResolver(eventSchema),
     defaultValues: {
       privacyMode: false,
       mediaConsent: false,
     }
   });
+  const locationSectionRef = useRef<HTMLDivElement | null>(null);
+
+  const onInvalid = (errs: any) => {
+    if (errs?.location || errs?.locationData) {
+      locationSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+    const firstKey = Object.keys(errs || {})[0];
+    if (firstKey) {
+      try { setFocus(firstKey as any); } catch {}
+    }
+  };
 
   // Watch for image changes and update preview
   useEffect(() => {
@@ -178,7 +189,7 @@ export default function HostEventPage() {
             <CardDescription className="text-gray-600">Fill out the form below to submit your event for approval.</CardDescription>
           </CardHeader>
           <CardContent className="p-6">
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            <form onSubmit={handleSubmit(onSubmit, onInvalid)} className="space-y-6">
               {/* Existing Fields */}
               <div className="space-y-2">
                 <Label htmlFor="eventName" className="text-gray-700 font-medium">Event Name</Label>
@@ -186,7 +197,7 @@ export default function HostEventPage() {
                 {errors.eventName && <p className="text-red-500 text-sm">{errors.eventName.message}</p>}
               </div>
               
-              <div className="space-y-2">
+              <div className="space-y-2" ref={locationSectionRef}>
                 <Label className="text-gray-700 font-medium">Location</Label>
                 <LocationPicker
                   label=""

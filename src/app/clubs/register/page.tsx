@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { getFirestore, collection, addDoc } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
@@ -17,13 +17,23 @@ import * as z from "zod";
 import { UploadCloud, X } from "lucide-react";
 import { createClubRequestNotification } from "@/lib/notifications";
 import ConsentCheckbox from "@/components/form/ConsentCheckbox";
+import LocationPicker, { type LocationData } from "@/components/LocationPicker";
+import { Switch } from "@/components/ui/switch";
 
 const clubSchema = z.object({
   clubName: z.string().min(3, "Club name is required"),
   
   // Location and Contact
-  city: z.string().min(2, "City is required"),
-  country: z.string().min(2, "Country is required"),
+  location: z.string().min(2, "Location is required"),
+  locationData: z.custom<LocationData>((v) => !!v && typeof v === 'object').refine((v: any) => v?.formattedAddress && typeof v.latitude === 'number' && typeof v.longitude === 'number', {
+    message: "Please select a valid location from suggestions or map",
+  }),
+  addressLine: z.string().min(2, "Address is required"),
+  city: z.string().min(1, "City is required"),
+  region: z.string().min(1, "Region/State is required"),
+  country: z.string().min(1, "Country is required"),
+  postalCode: z.string().min(1, "ZIP/Postal code is required"),
+  privacyMode: z.boolean().optional().default(false),
   website: z.string().url("Must be a valid URL").optional().or(z.literal('')),
   socialMediaLink: z.string().url("Must be a valid URL").optional().or(z.literal('')),
 
@@ -61,10 +71,20 @@ export default function RegisterClubPage() {
   const db = getFirestore(app);
   const storage = getStorage(app);
 
-  const { register, handleSubmit, control, setValue, formState: { errors } } = useForm<ClubFormData>({
+  const { register, handleSubmit, control, setValue, formState: { errors }, watch, setFocus } = useForm<ClubFormData>({
     resolver: zodResolver(clubSchema),
-    defaultValues: { mediaConsent: false },
+    defaultValues: { mediaConsent: false, privacyMode: false },
   });
+  const locationSectionRef = useRef<HTMLDivElement | null>(null);
+  const onInvalid = (errs: any) => {
+    if (errs?.location || errs?.locationData) {
+      locationSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+    const firstKey = Object.keys(errs || {})[0];
+    if (firstKey) {
+      try { setFocus(firstKey as any); } catch {}
+    }
+  };
 
   // Get current user
   useEffect(() => {
@@ -102,8 +122,14 @@ export default function RegisterClubPage() {
 
       const clubData = {
         clubName: data.clubName,
+        location: data.location,
+        locationData: (data as any).locationData,
+        addressLine: (data as any).addressLine,
         city: data.city,
+        region: (data as any).region,
         country: data.country,
+        postalCode: (data as any).postalCode,
+        privacyMode: !!(data as any).privacyMode,
         website: data.website,
         socialMediaLink: data.socialMediaLink,
         description: data.description,
@@ -149,7 +175,7 @@ export default function RegisterClubPage() {
             <CardDescription className="text-gray-600">Provide detailed information about your club for our community to discover.</CardDescription>
           </CardHeader>
           <CardContent className="p-6">
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+            <form onSubmit={handleSubmit(onSubmit, onInvalid)} className="space-y-8">
               
               <fieldset className="space-y-6 border-t border-gray-200 pt-6">
                   <legend className="text-xl font-semibold font-headline text-gray-900">Club Information</legend>
@@ -179,6 +205,32 @@ export default function RegisterClubPage() {
 
               <fieldset className="space-y-6 border-t border-gray-200 pt-6">
                   <legend className="text-xl font-semibold font-headline text-gray-900">Location & Links</legend>
+                  <div className="space-y-2" ref={locationSectionRef}>
+                    <Label className="text-gray-700 font-medium">Location</Label>
+                    <LocationPicker
+                      label=""
+                      required
+                      initialValue={watch("locationData") as any}
+                      onChange={(value) => {
+                        setValue("locationData", value as any, { shouldValidate: true });
+                        setValue("location", value?.formattedAddress || "", { shouldValidate: true });
+                        const c = (value as any)?.components;
+                        const line = [c?.streetNumber, c?.route].filter(Boolean).join(" ");
+                        if (line) setValue("addressLine", line, { shouldValidate: true });
+                        if (c?.locality) setValue("city", c.locality, { shouldValidate: true });
+                        if (c?.administrativeAreaLevel1) setValue("region", c.administrativeAreaLevel1, { shouldValidate: true });
+                        if (c?.country) setValue("country", c.country, { shouldValidate: true });
+                        if (c?.postalCode) setValue("postalCode", c.postalCode, { shouldValidate: true });
+                      }}
+                    />
+                    {errors.location && <p className="text-red-500 text-sm">{errors.location.message}</p>}
+                    {errors.locationData && <p className="text-red-500 text-sm">{String((errors as any).locationData?.message || "Location selection required")}</p>}
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Switch id="privacyMode" checked={!!watch("privacyMode")} onCheckedChange={(val) => setValue("privacyMode", !!val)} />
+                    <Label htmlFor="privacyMode" className="text-gray-700">Privacy mode</Label>
+                  </div>
+                  <p className="text-xs text-gray-500 -mt-2">If enabled, your exact address will be hidden on the public page. Only your city/state will be shown.</p>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-2">
                           <Label htmlFor="city" className="text-gray-700 font-medium">City</Label>
@@ -186,13 +238,25 @@ export default function RegisterClubPage() {
                           {errors.city && <p className="text-red-500 text-sm">{errors.city.message}</p>}
                       </div>
                        <div className="space-y-2">
+                          <Label htmlFor="region" className="text-gray-700 font-medium">Region/State</Label>
+                          <Input id="region" {...register("region")} className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400" />
+                          {errors.region && <p className="text-red-500 text-sm">{errors.region.message}</p>}
+                      </div>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-2">
                           <Label htmlFor="country" className="text-gray-700 font-medium">Country</Label>
                           <Input id="country" {...register("country")} className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400" />
                           {errors.country && <p className="text-red-500 text-sm">{errors.country.message}</p>}
                       </div>
+                      <div className="space-y-2">
+                          <Label htmlFor="postalCode" className="text-gray-700 font-medium">ZIP / Postal Code</Label>
+                          <Input id="postalCode" {...register("postalCode")} className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400" />
+                          {errors.postalCode && <p className="text-red-500 text-sm">{errors.postalCode.message}</p>}
+                      </div>
                   </div>
-                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                       <div className="space-y-2">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-2">
                           <Label htmlFor="website" className="text-gray-700 font-medium">Website URL</Label>
                           <Input id="website" {...register("website")} placeholder="https://example.com" className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400" />
                           {errors.website && <p className="text-red-500 text-sm">{errors.website.message}</p>}
@@ -201,9 +265,9 @@ export default function RegisterClubPage() {
                           <Label htmlFor="socialMediaLink" className="text-gray-700 font-medium">Primary Social Media Link</Label>
                           <Input id="socialMediaLink" {...register("socialMediaLink")} placeholder="https://instagram.com/yourclub" className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400" />
                           {errors.socialMediaLink && <p className="text-red-500 text-sm">{errors.socialMediaLink.message}</p>}
-                      </div>
-                  </div>
-              </fieldset>
+                        </div>
+                   </div>
+               </fieldset>
 
               <fieldset className="space-y-6 border-t border-gray-200 pt-6">
                   <legend className="text-xl font-semibold font-headline text-gray-900">Contact & Media</legend>

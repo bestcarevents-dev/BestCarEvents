@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { getFirestore, collection, addDoc, doc, getDoc, updateDoc } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL, uploadBytesResumable } from "firebase/storage";
@@ -203,7 +203,7 @@ export default function SellCarPage() {
   const { toast } = useToast();
   const carPrefs = useFormPreferences("cars");
 
-  const { control, register, handleSubmit, formState: { errors }, setValue, watch } = useForm<CarFormData>({
+  const { control, register, handleSubmit, formState: { errors }, setValue, watch, setFocus } = useForm<CarFormData>({
     resolver: zodResolver(carSchema),
     defaultValues: {
         features: [],
@@ -212,6 +212,17 @@ export default function SellCarPage() {
         mediaConsent: false,
     }
   });
+  const locationSectionRef = useRef<HTMLDivElement | null>(null);
+
+  const onInvalid = (errs: any) => {
+    if (errs?.location || errs?.locationData) {
+      locationSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+    const firstKey = Object.keys(errs || {})[0];
+    if (firstKey) {
+      try { setFocus(firstKey as any); } catch {}
+    }
+  };
   const [customFeature, setCustomFeature] = useState("");
 
   // Get max images based on selected listing type
@@ -587,7 +598,7 @@ export default function SellCarPage() {
           <CardDescription>Provide detailed information about your vehicle to create a comprehensive listing for potential buyers.</CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+          <form onSubmit={handleSubmit(onSubmit, onInvalid)} className="space-y-8">
             
             {/* Basic Info Section */}
             <fieldset className="space-y-6 border-t pt-6">
@@ -758,9 +769,10 @@ export default function SellCarPage() {
             {/* Location & Description */}
             <fieldset className="space-y-6 border-t pt-6">
                 <legend className="text-xl font-semibold font-headline">Location & Description</legend>
-                <div className="space-y-2">
+                <div className="space-y-2" ref={locationSectionRef}>
                   <Label className="text-gray-700 font-medium">Location</Label>
                   <LocationPicker
+                    label=""
                     required
                     initialValue={watch("locationData") as any}
                     onChange={(value) => {

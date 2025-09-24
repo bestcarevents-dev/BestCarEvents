@@ -59,7 +59,7 @@ export default function ClubDetailPage() {
           <h1 className="text-4xl md:text-5xl font-extrabold font-headline text-yellow-600 drop-shadow-lg animate-fade-in-up">{club.clubName}</h1>
           <div className="flex items-center justify-center gap-3 mt-2 animate-fade-in-up">
             <Users className="w-5 h-5 text-yellow-800" />
-            <span className="text-lg font-medium text-gray-900">{club.city}, {club.country}</span>
+            <span className="text-lg font-medium text-gray-900">{club.privacyMode ? [club.city, club.region].filter(Boolean).join(", ") : (club.location || [club.addressLine, club.city, club.region, club.country].filter(Boolean).join(", "))}</span>
             <Badge className="bg-yellow-600 text-white font-bold ml-2 animate-pop">Club</Badge>
           </div>
           <div className="mt-4 flex gap-4 justify-center animate-fade-in-up">

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -83,6 +83,7 @@ export default function RegisterServicePage() {
   const {
     register,
     handleSubmit,
+    setFocus,
     control,
     formState: { errors },
     setValue,
@@ -94,6 +95,17 @@ export default function RegisterServicePage() {
       mediaConsent: false,
     }
   });
+  const locationSectionRef = useRef<HTMLDivElement | null>(null);
+
+  const onInvalid = (errs: any) => {
+    if (errs?.locationData || errs?.location) {
+      locationSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+    const firstKey = Object.keys(errs || {})[0];
+    if (firstKey) {
+      try { setFocus(firstKey as any); } catch {}
+    }
+  };
 
   useEffect(() => {
     const auth = getAuth(app);
@@ -207,7 +219,7 @@ export default function RegisterServicePage() {
             </CardDescription>
           </CardHeader>
           <CardContent className="p-6">
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+            <form onSubmit={handleSubmit(onSubmit, onInvalid)} className="space-y-8">
               
               {/* Service Information */}
               <fieldset className="space-y-6 border-t border-gray-200 pt-6">
@@ -261,9 +273,10 @@ export default function RegisterServicePage() {
                   {errors.description && <p className="text-red-500 text-sm">{errors.description.message}</p>}
                 </div>
 
-                <div className="space-y-2">
+                <div className="space-y-2" ref={locationSectionRef}>
                   <Label className="text-gray-700 font-medium">Location *</Label>
                   <LocationPicker
+                    label=""
                     required
                     initialValue={watch("locationData") as any}
                     onChange={(value) => {

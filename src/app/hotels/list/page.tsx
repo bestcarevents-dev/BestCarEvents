@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { getFirestore, collection, addDoc } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
@@ -78,7 +78,7 @@ export default function ListHotelPage() {
   const [customAmenities, setCustomAmenities] = useState<string[]>([]);
   const MAX_IMAGES = 10;
 
-  const { register, handleSubmit, control, setValue, watch, formState: { errors } } = useForm<HotelFormData>({
+  const { register, handleSubmit, control, setValue, watch, formState: { errors }, setFocus } = useForm<HotelFormData>({
     resolver: zodResolver(hotelSchema),
     defaultValues: {
       features: [],
@@ -87,6 +87,17 @@ export default function ListHotelPage() {
       mediaConsent: false,
     }
   });
+  const locationSectionRef = useRef<HTMLDivElement | null>(null);
+
+  const onInvalid = (errs: any) => {
+    if (errs?.location || errs?.locationData) {
+      locationSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+    const firstKey = Object.keys(errs || {})[0];
+    if (firstKey) {
+      try { setFocus(firstKey as any); } catch {}
+    }
+  };
   const hotelPrefs = useFormPreferences("hotels");
 
   // Sync images with react-hook-form
@@ -198,7 +209,7 @@ export default function ListHotelPage() {
             <CardDescription className="text-gray-600">Provide detailed information about your facility for our team to review.</CardDescription>
           </CardHeader>
           <CardContent className="p-6">
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+            <form onSubmit={handleSubmit(onSubmit, onInvalid)} className="space-y-8">
               
               <fieldset className="space-y-6 border-t border-gray-200 pt-6">
                   <legend className="text-xl font-semibold font-headline text-gray-900">Facility Information</legend>
@@ -229,9 +240,10 @@ export default function ListHotelPage() {
 
               <fieldset className="space-y-6 border-t border-gray-200 pt-6">
                   <legend className="text-xl font-semibold font-headline text-gray-900">Location & Contact</legend>
-                  <div className="space-y-2">
+                  <div className="space-y-2" ref={locationSectionRef}>
                     <Label className="text-gray-700 font-medium">Location</Label>
                     <LocationPicker
+                      label=""
                       required
                       initialValue={watch("locationData") as any}
                       onChange={(value) => {
