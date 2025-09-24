@@ -21,15 +21,17 @@ export default function ConsentCheckbox<T>({ control, name, label, className }: 
       name={fieldName}
       control={control}
       render={({ field }) => (
-        <div className={`flex items-start gap-2 ${className || ""}`}>
-          <Checkbox
-            id="mediaConsent"
-            checked={!!field.value}
-            onCheckedChange={(checked) => field.onChange(!!checked)}
-          />
-          <Label htmlFor="mediaConsent" className="text-sm font-normal leading-5">
-            {text}
-          </Label>
+        <div className={`rounded-md border bg-muted p-3 ${className || ""}`}>
+          <div className="flex items-start gap-2">
+            <Checkbox
+              id="mediaConsent"
+              checked={!!field.value}
+              onCheckedChange={(checked) => field.onChange(!!checked)}
+            />
+            <Label htmlFor="mediaConsent" className="text-sm font-normal leading-5">
+              {text}
+            </Label>
+          </div>
         </div>
       )}
     />

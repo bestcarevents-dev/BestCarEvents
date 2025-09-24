@@ -386,6 +386,12 @@ export default function ListHotelPage() {
                   </div>
               </fieldset>
 
+              <div className="pt-2">
+                <ConsentCheckbox control={control} />
+                {errors.mediaConsent && (
+                  <p className="text-red-500 text-sm mt-1">{String(errors.mediaConsent.message)}</p>
+                )}
+              </div>
               <Button type="submit" className="w-full text-lg py-6 bg-yellow-600 hover:bg-yellow-700 text-white border-yellow-600 focus:ring-yellow-400" disabled={isSubmitting}>
                 {isSubmitting ? "Submitting..." : "Submit Facility for Approval"}
               </Button>

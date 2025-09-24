@@ -496,6 +496,12 @@ export default function RegisterServicePage() {
               </div>
 
               {/* Submit Button */}
+              <div className="pt-2">
+                <ConsentCheckbox control={control as any} />
+                {errors.mediaConsent && (
+                  <p className="text-red-500 text-sm mt-1">{String((errors as any).mediaConsent?.message)}</p>
+                )}
+              </div>
               <div className="flex justify-end pt-6 border-t border-gray-200">
                 <Button 
                   type="submit" 
