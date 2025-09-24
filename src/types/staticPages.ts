@@ -8,6 +8,7 @@ export type PageImage = {
 export type BaseStaticPageContent = {
   title: string;
   subtitle?: string;
+  quote?: string;
   body: string;
   images: PageImage[];
   updatedAt?: number;

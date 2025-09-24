@@ -59,11 +59,13 @@ export default async function AboutPage() {
                 </p>
               ))}
             </article>
-            <div className="mt-10 rounded-xl border border-amber-200/60 bg-amber-50/40 p-6">
-              <blockquote className="text-amber-900 italic text-lg">
-                “A unique community where passion meets opportunity — free for everyone.”
-              </blockquote>
-            </div>
+            {content.quote && (
+              <div className="mt-10 rounded-xl border border-amber-200/60 bg-amber-50/40 p-6">
+                <blockquote className="text-amber-900 italic text-lg">
+                  {`“${content.quote}”`}
+                </blockquote>
+              </div>
+            )}
           </div>
           <div className="lg:col-span-3">
             <div className="rounded-2xl border border-amber-200 bg-white p-6 shadow-[0_8px_30px_rgba(191,146,42,0.12)]">

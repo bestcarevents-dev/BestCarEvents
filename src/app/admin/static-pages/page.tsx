@@ -427,6 +427,13 @@ export default function AdminStaticPages() {
                         onChange={(e) => setState((p) => ({ ...p, about: { ...p.about, contact: { ...p.about.contact, email: e.target.value } } }))}
                       />
                     </div>
+                    <div className="md:col-span-2">
+                      <Label>Quote</Label>
+                      <Input
+                        value={(state as any).about.quote || ""}
+                        onChange={(e) => setState((p: any) => ({ ...p, about: { ...p.about, quote: e.target.value } }))}
+                      />
+                    </div>
                     <div>
                       <Label>Instagram URL</Label>
                       <Input
