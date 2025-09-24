@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { getFirestore, collection, addDoc } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
@@ -23,6 +23,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import React from "react";
 import { createAuctionRequestNotification } from "@/lib/notifications";
 import ConsentCheckbox from "@/components/form/ConsentCheckbox";
+import LocationPicker, { type LocationData } from "@/components/LocationPicker";
+import { Switch } from "@/components/ui/switch";
 
 const auctionSchema = z.object({
   auctionName: z.string().min(5, "Auction name is required"),
@@ -31,10 +33,16 @@ const auctionSchema = z.object({
   endDate: z.date({ required_error: "End date is required" }),
   
   // Location
-  address: z.string().min(10, "A detailed address is required"),
-  city: z.string().min(2, "City is required"),
-  state: z.string().min(2, "State/Province is required"),
-  country: z.string().min(2, "Country is required"),
+  location: z.string().min(2, "Location is required"),
+  locationData: z.custom<LocationData>((v) => !!v && typeof v === 'object').refine((v: any) => v?.formattedAddress && typeof v.latitude === 'number' && typeof v.longitude === 'number', {
+    message: "Please select a valid location from suggestions or map",
+  }),
+  address: z.string().min(2, "Address is required"),
+  city: z.string().min(1, "City is required"),
+  state: z.string().min(1, "State/Province is required"),
+  country: z.string().min(1, "Country is required"),
+  postalCode: z.string().min(1, "ZIP/Postal code is required"),
+  privacyMode: z.boolean().optional().default(false),
   
   // Details
   description: z.string().min(20, "A detailed description of the auction event is required"),
@@ -69,10 +77,20 @@ export default function RegisterAuctionPage() {
   const db = getFirestore(app);
   const storage = getStorage(app);
 
-  const { control, register, handleSubmit, formState: { errors }, setValue, watch } = useForm<AuctionFormData>({
+  const { control, register, handleSubmit, formState: { errors }, setValue, watch, setFocus } = useForm<AuctionFormData>({
     resolver: zodResolver(auctionSchema),
-    defaultValues: { mediaConsent: false },
+    defaultValues: { mediaConsent: false, privacyMode: false },
   });
+  const locationSectionRef = useRef<HTMLDivElement | null>(null);
+  const onInvalid = (errs: any) => {
+    if (errs?.location || errs?.locationData) {
+      locationSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+    const firstKey = Object.keys(errs || {})[0];
+    if (firstKey) {
+      try { setFocus(firstKey as any); } catch {}
+    }
+  };
 
   // Watch for image changes to update preview
   const imageFile = watch("image");
@@ -109,16 +127,20 @@ export default function RegisterAuctionPage() {
         auctionHouse: data.auctionHouse,
         startDate: data.startDate,
         endDate: data.endDate,
+        location: data.location,
+        locationData: (data as any).locationData,
         address: data.address,
         city: data.city,
         state: data.state,
         country: data.country,
+        postalCode: (data as any).postalCode,
         description: data.description,
         auctionType: data.auctionType,
         viewingTimes: data.viewingTimes,
         organizerName: data.organizerName,
         organizerContact: data.organizerContact,
         imageUrl,
+        privacyMode: !!(data as any).privacyMode,
         mediaConsent: !!(data as any).mediaConsent,
         status: "pending",
         submittedAt: new Date(),
@@ -156,7 +178,7 @@ export default function RegisterAuctionPage() {
             <CardDescription className="text-gray-600">Provide details about your upcoming auction for our team to review and list on the platform.</CardDescription>
           </CardHeader>
           <CardContent className="p-6">
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+            <form onSubmit={handleSubmit(onSubmit, onInvalid)} className="space-y-8">
               
               <fieldset className="space-y-6 border-t border-gray-200 pt-6">
                   <legend className="text-xl font-semibold font-headline text-gray-900">Auction Details</legend>
@@ -229,12 +251,38 @@ export default function RegisterAuctionPage() {
 
               <fieldset className="space-y-6 border-t border-gray-200 pt-6">
                   <legend className="text-xl font-semibold font-headline text-gray-900">Location & Venue</legend>
-                   <div className="space-y-2">
-                      <Label htmlFor="address" className="text-gray-700 font-medium">Street Address</Label>
-                      <Input id="address" {...register("address")} className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400" />
-                      {errors.address && <p className="text-red-500 text-sm">{errors.address.message}</p>}
+                   <div className="space-y-2" ref={locationSectionRef}>
+                      <Label className="text-gray-700 font-medium">Location</Label>
+                      <LocationPicker
+                        label=""
+                        required
+                        initialValue={watch("locationData") as any}
+                        onChange={(value) => {
+                          setValue("locationData", value as any, { shouldValidate: true });
+                          setValue("location", value?.formattedAddress || "", { shouldValidate: true });
+                          const c = (value as any)?.components;
+                          const line = [c?.streetNumber, c?.route].filter(Boolean).join(" ");
+                          if (line) setValue("address", line, { shouldValidate: true });
+                          if (c?.locality) setValue("city", c.locality, { shouldValidate: true });
+                          if (c?.administrativeAreaLevel1) setValue("state", c.administrativeAreaLevel1, { shouldValidate: true });
+                          if (c?.country) setValue("country", c.country, { shouldValidate: true });
+                          if (c?.postalCode) setValue("postalCode", c.postalCode, { shouldValidate: true });
+                        }}
+                      />
+                      {errors.location && <p className="text-red-500 text-sm">{errors.location.message}</p>}
+                      {errors.locationData && <p className="text-red-500 text-sm">{String((errors as any).locationData?.message || "Location selection required")}</p>}
                   </div>
+                  <div className="flex items-center gap-3">
+                    <Switch id="privacyMode" checked={!!watch("privacyMode")} onCheckedChange={(val) => setValue("privacyMode", !!val)} />
+                    <Label htmlFor="privacyMode" className="text-gray-700">Privacy mode</Label>
+                  </div>
+                  <p className="text-xs text-gray-500 -mt-2">If enabled, your exact address will be hidden on the public page. Only your city/state will be shown.</p>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                      <div className="space-y-2">
+                          <Label htmlFor="address" className="text-gray-700 font-medium">Street Address</Label>
+                          <Input id="address" {...register("address")} className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400" />
+                          {errors.address && <p className="text-red-500 text-sm">{errors.address.message}</p>}
+                      </div>
                       <div className="space-y-2">
                           <Label htmlFor="city" className="text-gray-700 font-medium">City</Label>
                           <Input id="city" {...register("city")} className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400" />
@@ -250,6 +298,11 @@ export default function RegisterAuctionPage() {
                           <Input id="country" {...register("country")} className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400" />
                           {errors.country && <p className="text-red-500 text-sm">{errors.country.message}</p>}
                       </div>
+                       <div className="space-y-2">
+                           <Label htmlFor="postalCode" className="text-gray-700 font-medium">ZIP / Postal Code</Label>
+                           <Input id="postalCode" {...register("postalCode")} className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400" />
+                           {errors.postalCode && <p className="text-red-500 text-sm">{errors.postalCode.message}</p>}
+                       </div>
                   </div>
               </fieldset>
 

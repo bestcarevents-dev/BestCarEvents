@@ -106,7 +106,7 @@ export default function AuctionDetailsPage() {
             <h1 className="text-3xl md:text-4xl font-extrabold font-headline text-yellow-600 mb-2">{auction.auctionName}</h1>
             <div className="flex flex-wrap items-center gap-2 mb-3">
               <MapPin className="w-4 h-4 text-gray-600" />
-              <span className="text-gray-700">{auction.address}{auction.address ? ", " : ''}{auction.city}, {auction.state}, {auction.country}</span>
+              <span className="text-gray-700">{auction.privacyMode ? [auction.city, auction.state].filter(Boolean).join(", ") : (auction.location || [auction.address, auction.city, auction.state, auction.country].filter(Boolean).join(", "))}</span>
             </div>
             <div className="flex flex-wrap gap-2 mb-4">
               {auction.auctionHouse && <Badge className="bg-yellow-600 text-white">{auction.auctionHouse}</Badge>}
@@ -129,13 +129,34 @@ export default function AuctionDetailsPage() {
           </Card>
         </div>
 
-        {/* Sticky Contact Card */}
+        {/* Map & Contact */}
         <div className="lg:sticky lg:top-28 h-fit">
           <Card className="bg-white shadow-xl border border-yellow-300/70 animate-fade-in-up">
             <CardContent className="p-6 space-y-4">
               <h2 className="text-2xl font-headline font-bold text-gray-900">Contact Organizer</h2>
               <div className="flex items-center gap-2 text-gray-900"><Mail className="w-4 h-4 text-yellow-600" /><a href={`mailto:${auction.organizerContact}?subject=Inquiry about ${auction.auctionName}`} className="underline text-yellow-700">{auction.organizerContact}</a></div>
-              <div className="flex items-center gap-2 text-gray-900"><MapPin className="w-4 h-4 text-yellow-600" /><span>{auction.city}, {auction.state}, {auction.country}</span></div>
+              <div className="flex items-center gap-2 text-gray-900"><MapPin className="w-4 h-4 text-yellow-600" /><span>{auction.privacyMode ? [auction.city, auction.state].filter(Boolean).join(", ") : (auction.location || [auction.address, auction.city, auction.state, auction.country].filter(Boolean).join(", "))}</span></div>
+              {(auction.locationData?.latitude && auction.locationData?.longitude) || auction.location ? (
+                <div className="w-full overflow-hidden rounded-lg border">
+                  {auction.locationData?.latitude && auction.locationData?.longitude ? (
+                    <iframe
+                      title="Auction location map"
+                      src={`https://www.google.com/maps?q=${auction.locationData.latitude},${auction.locationData.longitude}&z=14&output=embed`}
+                      className="w-full h-56"
+                      loading="lazy"
+                      referrerPolicy="no-referrer-when-downgrade"
+                    />
+                  ) : (
+                    <iframe
+                      title="Auction location map"
+                      src={`https://www.google.com/maps?q=${encodeURIComponent(auction.location || [auction.address, auction.city, auction.state, auction.country].filter(Boolean).join(', '))}&z=14&output=embed`}
+                      className="w-full h-56"
+                      loading="lazy"
+                      referrerPolicy="no-referrer-when-downgrade"
+                    />
+                  )}
+                </div>
+              ) : null}
               <div className="pt-2">
                 <Button asChild className="bg-yellow-600 hover:bg-yellow-700">
                   <a href={`mailto:${auction.organizerContact}?subject=Inquiry about ${auction.auctionName}`}><Mail className="mr-2 w-4 h-4" />Email Organizer</a>
