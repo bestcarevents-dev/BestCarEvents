@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
@@ -23,6 +23,8 @@ export default function LuxuryLightboxProvider({ children }: { children: React.R
   const [isOpen, setIsOpen] = useState(false);
   const [images, setImages] = useState<string[]>([]);
   const [index, setIndex] = useState(0);
+  const touchStartXRef = useRef<number | null>(null);
+  const touchEndXRef = useRef<number | null>(null);
 
   const open = useCallback((imgs: string[], startIndex: number = 0) => {
     const valid = (imgs || []).filter(Boolean);
@@ -61,7 +63,10 @@ export default function LuxuryLightboxProvider({ children }: { children: React.R
       {children}
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent className="p-0 w-[100vw] h-[100vh] sm:w-[min(96vw,1200px)] sm:h-[min(92vh,820px)] max-w-none overflow-hidden rounded-none sm:rounded-2xl border-0 bg-gradient-to-b from-[#0b0b0b]/95 to-[#111]/95 shadow-2xl">
-          <div className="relative w-full h-full sm:h-[min(92vh,820px)] flex flex-col">
+          <div
+            className="relative w-full h-full sm:h-[min(92vh,820px)] flex flex-col"
+            style={{ paddingTop: "env(safe-area-inset-top)", paddingBottom: "env(safe-area-inset-bottom)" }}
+          >
             {/* Chrome top bar with luxury accents */}
             <div className="flex items-center justify-between px-3 sm:px-4 h-12 sm:h-14 shrink-0 bg-gradient-to-b from-black/60 to-transparent">
               <div className="h-[2px] w-24 bg-gradient-to-r from-yellow-600 via-amber-400 to-yellow-600 rounded-full" />
@@ -71,7 +76,35 @@ export default function LuxuryLightboxProvider({ children }: { children: React.R
             </div>
 
             {/* Image area fills remaining height with safe padding to avoid cutoffs */}
-            <div className="relative w-full flex-1 bg-black">
+            <div
+              className="relative w-full flex-1 bg-black touch-pan-y"
+              onTouchStart={(e) => {
+                if (e.touches && e.touches.length > 0) {
+                  touchStartXRef.current = e.touches[0].clientX;
+                  touchEndXRef.current = null;
+                }
+              }}
+              onTouchMove={(e) => {
+                if (e.touches && e.touches.length > 0) {
+                  touchEndXRef.current = e.touches[0].clientX;
+                }
+              }}
+              onTouchEnd={() => {
+                const startX = touchStartXRef.current;
+                const endX = touchEndXRef.current;
+                if (startX == null || endX == null) return;
+                const deltaX = endX - startX;
+                if (Math.abs(deltaX) > 40) {
+                  if (deltaX < 0) {
+                    next();
+                  } else {
+                    prev();
+                  }
+                }
+                touchStartXRef.current = null;
+                touchEndXRef.current = null;
+              }}
+            >
               <AnimatePresence initial={false} mode="wait">
                 <motion.div
                   key={index}
@@ -129,7 +162,7 @@ export default function LuxuryLightboxProvider({ children }: { children: React.R
                 <div className="text-[10px] sm:text-xs uppercase tracking-[0.2em] opacity-80">Gallery</div>
               </div>
               {images.length > 1 && (
-                <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-thin scrollbar-thumb-white/20">
+                <div className="hidden sm:flex gap-2 overflow-x-auto pb-1 scrollbar-thin scrollbar-thumb-white/20">
                   {images.map((img, i) => (
                     <button
                       key={img + i}

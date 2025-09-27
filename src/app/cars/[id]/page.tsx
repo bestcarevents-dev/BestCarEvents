@@ -150,16 +150,16 @@ export default function CarDetailsPage() {
           <Card className="p-4 md:p-6 animate-fade-in-up bg-white border border-gray-200">
             <CardContent className="p-0">
               <h2 className="text-xl md:text-2xl font-bold font-headline mb-4 text-yellow-600">Specifications</h2>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 md:gap-4 mb-6">
-                <div className="flex items-center gap-2"><span className="font-semibold text-gray-900">Body:</span> <span className="text-gray-900">{car.bodyStyle}</span></div>
-                <div className="flex items-center gap-2"><span className="font-semibold text-gray-900">Engine:</span> <span className="text-gray-900">{car.engine}</span></div>
-                <div className="flex items-center gap-2"><span className="font-semibold text-gray-900">Transmission:</span> <span className="text-gray-900">{car.transmission}</span></div>
-                <div className="flex items-center gap-2"><span className="font-semibold text-gray-900">Drivetrain:</span> <span className="text-gray-900">{car.drivetrain}</span></div>
-                <div className="flex items-center gap-2"><span className="font-semibold text-gray-900">Exterior:</span> <span className="text-gray-900">{car.exteriorColor}</span></div>
-                <div className="flex items-center gap-2"><span className="font-semibold text-gray-900">Interior:</span> <span className="text-gray-900">{car.interiorColor}</span></div>
-                <div className="flex items-center gap-2"><span className="font-semibold text-gray-900">Mileage:</span> <span className="text-gray-900">{car.mileage?.toLocaleString()} mi</span></div>
-                {car.vin && <div className="flex items-center gap-2"><span className="font-semibold text-gray-900">VIN:</span> <span className="text-gray-900">{car.vin}</span></div>}
-                <div className="flex items-center gap-2"><span className="font-semibold text-gray-900">Location:</span> <MapPin className="w-4 h-4 inline-block mr-1 text-yellow-600" /><span className="text-gray-900">{car.privacyMode ? [car.city, car.region].filter(Boolean).join(", ") : car.location}</span></div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 md:gap-4 mb-6">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 min-w-0"><span className="font-semibold text-gray-900 shrink-0">Body:</span> <span className="text-gray-900 break-words whitespace-pre-wrap leading-snug">{car.bodyStyle}</span></div>
+                <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 min-w-0"><span className="font-semibold text-gray-900 shrink-0">Engine:</span> <span className="text-gray-900 break-words whitespace-pre-wrap leading-snug">{car.engine}</span></div>
+                <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 min-w-0"><span className="font-semibold text-gray-900 shrink-0">Transmission:</span> <span className="text-gray-900 break-words whitespace-pre-wrap leading-snug">{car.transmission}</span></div>
+                <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 min-w-0"><span className="font-semibold text-gray-900 shrink-0">Drivetrain:</span> <span className="text-gray-900 break-words whitespace-pre-wrap leading-snug">{car.drivetrain}</span></div>
+                <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 min-w-0"><span className="font-semibold text-gray-900 shrink-0">Exterior:</span> <span className="text-gray-900 break-words whitespace-pre-wrap leading-snug">{car.exteriorColor}</span></div>
+                <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 min-w-0"><span className="font-semibold text-gray-900 shrink-0">Interior:</span> <span className="text-gray-900 break-words whitespace-pre-wrap leading-snug">{car.interiorColor}</span></div>
+                <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 min-w-0"><span className="font-semibold text-gray-900 shrink-0">Mileage:</span> <span className="text-gray-900 break-words whitespace-pre-wrap leading-snug">{car.mileage?.toLocaleString()} mi</span></div>
+                {car.vin && <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 min-w-0"><span className="font-semibold text-gray-900 shrink-0">VIN:</span> <span className="text-gray-900 break-all leading-snug">{car.vin}</span></div>}
+                <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 min-w-0"><span className="font-semibold text-gray-900 shrink-0">Location:</span> <div className="text-gray-900 break-words whitespace-pre-wrap leading-snug inline-flex items-start gap-1"><MapPin className="w-4 h-4 mt-0.5 text-yellow-600" /><span className="break-words">{car.privacyMode ? [car.city, car.region].filter(Boolean).join(", ") : car.location}</span></div></div>
               </div>
               <h3 className="text-lg md:text-xl font-bold font-headline mb-2 text-yellow-600">Features</h3>
               <div className="flex flex-wrap gap-2">

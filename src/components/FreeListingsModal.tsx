@@ -140,14 +140,14 @@ export default function FreeListingsModal({ isOpen, onClose }: FreeListingsModal
                   transition={{ duration: 0.5, delay: 0.4, ease: "easeOut" }}
                   className="mb-5"
                 >
-                  {copy.subline && (
-                    <div className="flex items-center justify-center space-x-2 bg-yellow-400/20 backdrop-blur-sm rounded-full px-4 py-2 border border-yellow-400/30">
-                      <Car className="w-4 h-4 text-yellow-600" />
-                      <span className="text-base font-bold text-gray-900 break-words hyphens-auto text-balance leading-snug">
-                        {copy.subline}
-                      </span>
-                    </div>
-                  )}
+              {copy.subline && (
+                <div className="flex flex-col sm:flex-row items-center justify-center sm:space-x-2 space-y-1 sm:space-y-0 bg-yellow-400/20 backdrop-blur-sm rounded-full px-4 py-2 border border-yellow-400/30 text-center">
+                  <Car className="w-4 h-4 text-yellow-600" />
+                  <span className="text-base font-bold text-gray-900 break-words hyphens-auto text-balance leading-snug">
+                    {copy.subline}
+                  </span>
+                </div>
+              )}
                 </motion.div>
 
                 {/* CTA Button with dramatic effect */}
