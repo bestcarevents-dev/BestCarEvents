@@ -15,6 +15,7 @@ import EnhancerClient from '@/lib/translate/EnhancerClient';
 import NavigationProgress from '@/components/NavigationProgress';
 import OnboardingGuard from '@/components/OnboardingGuard';
 import LuxuryLightboxProvider from '@/components/LuxuryLightboxProvider';
+import OrganizationJsonLd from '@/components/OrganizationJsonLd';
 export const dynamic = 'force-dynamic';
 
 const fontHeadline = Cinzel({
@@ -37,6 +38,13 @@ export const metadata: Metadata = {
     icon: '/logo.png',
     shortcut: '/logo.png',
     apple: '/logo.png',
+  },
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:9002'),
+  openGraph: {
+    siteName: 'BestCarEvents',
+  },
+  twitter: {
+    site: '@BestCarEvents',
   },
 };
 
@@ -82,6 +90,7 @@ export default async function RootLayout({
               </LuxuryLightboxProvider>
               <Footer />
               <Toaster />
+              <OrganizationJsonLd />
             </FreeListingsProvider>
           </GlobalNewsletterProvider>
         </LanguageProvider>
