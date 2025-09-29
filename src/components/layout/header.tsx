@@ -588,13 +588,75 @@ export default function Header() {
             <AuthButtons user={user} onMobileMenuClose={() => setMobileMenuOpen(false)} />
         </div>
 
-        <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
-          <SheetTrigger asChild className="lg:hidden">
-            <Button variant="ghost" size="icon">
-                <AlignJustify />
-                <span className="sr-only">Open Menu</span>
-            </Button>
-          </SheetTrigger>
+        {/* Mobile quick actions: language + menu */}
+        <div className="flex items-center gap-2 lg:hidden">
+          {/* Mobile quick language switch (shortcut) */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="flex items-center gap-1 px-2 py-1 rounded hover:bg-white/10 focus:outline-none">
+                <Image
+                  src={language === 'it' ? FLAG_IT : FLAG_UK}
+                  alt={language === 'it' ? 'Italiano' : 'English (UK)'}
+                  width={24}
+                  height={16}
+                  className="rounded shadow"
+                  sizes="24px"
+                />
+                <ChevronDown className="w-4 h-4 ml-1 text-white" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem
+                className="flex items-center gap-2"
+                onClick={() => {
+                  setLanguage('en');
+                  document.cookie = `NEXT_LOCALE=en; path=/; max-age=31536000`;
+                  const parts = pathname.split('/').filter(Boolean);
+                  const locales = new Set(['en','sv','da','ur','it']);
+                  const first = parts[0];
+                  const rest = locales.has(first || '') ? parts.slice(1) : parts;
+                  const href = '/' + rest.join('/');
+                  const target = rest.length ? href : '/';
+                  if (typeof window !== 'undefined') {
+                    window.location.assign(target);
+                  }
+                }}
+              >
+                <Image src={FLAG_UK} alt="English (UK)" width={24} height={16} className="rounded shadow" sizes="24px" />
+                English
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className="flex items-center gap-2"
+                onClick={() => {
+                  setLanguage('it');
+                  document.cookie = `NEXT_LOCALE=it; path=/; max-age=31536000`;
+                  const parts = pathname.split('/').filter(Boolean);
+                  const locales = new Set(['en','sv','da','ur','it']);
+                  const first = parts[0];
+                  const rest = locales.has(first || '') ? parts.slice(1) : parts;
+                  if (rest.length === 0) {
+                    router.replace('/');
+                    router.refresh();
+                  } else {
+                    const href = '/it/' + rest.join('/');
+                    const target = href.replace(/\/$/, '');
+                    router.replace(target);
+                  }
+                }}
+              >
+                <Image src={FLAG_IT} alt="Italiano" width={24} height={16} className="rounded shadow" sizes="24px" />
+                Italiano
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon">
+                  <AlignJustify />
+                  <span className="sr-only">Open Menu</span>
+              </Button>
+            </SheetTrigger>
           <SheetContent side="left" className="w-full bg-background text-foreground p-0 overflow-y-auto">
               <div className="flex flex-col h-full">
                 <SheetHeader className="flex flex-row items-center justify-between p-4 border-b">
@@ -652,8 +714,9 @@ export default function Header() {
                     <AuthButtons inMobileNav user={user} onMobileMenuClose={() => setMobileMenuOpen(false)} />
                 </div>
               </div>
-          </SheetContent>
-        </Sheet>
+            </SheetContent>
+          </Sheet>
+        </div>
       </div>
     </header>
   );

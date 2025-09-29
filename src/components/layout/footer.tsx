@@ -1,11 +1,11 @@
-"use client";
-
 import Link from "next/link";
 import Image from "next/image";
-import { Facebook, Twitter, Instagram } from "lucide-react";
+import { Facebook, Twitter, Instagram, Youtube, Linkedin, Globe, MessageCircle, Send, BadgePercent } from "lucide-react";
 import FooterNewsletter from "@/components/FooterNewsletter";
+import { fetchStaticPage } from "@/lib/staticPages";
 
-export default function Footer() {
+export default async function Footer() {
+  const content = await fetchStaticPage("contact");
   return (
     <footer className="bg-muted/90 text-muted-foreground border-t border-[#E0D8C1]/30">
       <div className="container py-16">
@@ -65,6 +65,56 @@ export default function Footer() {
         </div>
         <div className="flex justify-center mt-8">
           <FooterNewsletter />
+        </div>
+        {/* Social icons under newsletter, reusing /contact logic */}
+        <div className="mt-6 flex justify-center">
+          <div className="flex flex-wrap items-center gap-3">
+            {content.contact?.instagram && (
+              <a aria-label="Instagram" href={content.contact.instagram} target="_blank" rel="noreferrer noopener" className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-amber-200 bg-white text-amber-700 hover:bg-amber-50 hover:border-amber-300 transition">
+                <Instagram size={18} />
+              </a>
+            )}
+            {content.contact?.facebook && (
+              <a aria-label="Facebook" href={content.contact.facebook} target="_blank" rel="noreferrer noopener" className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-amber-200 bg-white text-amber-700 hover:bg-amber-50 hover:border-amber-300 transition">
+                <Facebook size={18} />
+              </a>
+            )}
+            {content.contact?.twitter && (
+              <a aria-label="Twitter" href={content.contact.twitter} target="_blank" rel="noreferrer noopener" className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-amber-200 bg-white text-amber-700 hover:bg-amber-50 hover:border-amber-300 transition">
+                <Twitter size={18} />
+              </a>
+            )}
+            {content.contact?.youtube && (
+              <a aria-label="YouTube" href={content.contact.youtube} target="_blank" rel="noreferrer noopener" className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-amber-200 bg-white text-amber-700 hover:bg-amber-50 hover:border-amber-300 transition">
+                <Youtube size={18} />
+              </a>
+            )}
+            {content.contact?.linkedin && (
+              <a aria-label="LinkedIn" href={content.contact.linkedin} target="_blank" rel="noreferrer noopener" className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-amber-200 bg-white text-amber-700 hover:bg-amber-50 hover:border-amber-300 transition">
+                <Linkedin size={18} />
+              </a>
+            )}
+            {content.contact?.tiktok && (
+              <a aria-label="TikTok" href={content.contact.tiktok} target="_blank" rel="noreferrer noopener" className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-amber-200 bg-white text-amber-700 hover:bg-amber-50 hover:border-amber-300 transition">
+                <BadgePercent size={18} />
+              </a>
+            )}
+            {content.contact?.telegram && (
+              <a aria-label="Telegram" href={content.contact.telegram} target="_blank" rel="noreferrer noopener" className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-amber-200 bg-white text-amber-700 hover:bg-amber-50 hover:border-amber-300 transition">
+                <Send size={18} />
+              </a>
+            )}
+            {content.contact?.whatsapp && (
+              <a aria-label="WhatsApp" href={content.contact.whatsapp} target="_blank" rel="noreferrer noopener" className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-amber-200 bg-white text-amber-700 hover:bg-amber-50 hover:border-amber-300 transition">
+                <MessageCircle size={18} />
+              </a>
+            )}
+            {content.contact?.website && (
+              <a aria-label="Website" href={content.contact.website} target="_blank" rel="noreferrer noopener" className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-amber-200 bg-white text-amber-700 hover:bg-amber-50 hover:border-amber-300 transition">
+                <Globe size={18} />
+              </a>
+            )}
+          </div>
         </div>
         <div className="mt-12 border-t border-[#E0D8C1]/30 pt-8 text-center text-sm">
           <p>&copy; {new Date().getFullYear()} BestCarEvents. All rights reserved.</p>

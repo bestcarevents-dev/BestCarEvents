@@ -50,7 +50,6 @@ export default function ContactForm() {
     <Card className="bg-white border-amber-200 shadow-[0_8px_30px_rgba(191,146,42,0.12)]">
       <CardContent className="p-6">
         <h2 className="font-serif text-2xl md:text-3xl font-bold text-slate-900">Send us a message</h2>
-        <p className="mt-1 text-slate-700">We typically respond within one business day.</p>
         <form onSubmit={handleSubmit} className="mt-4 space-y-4">
           <div className="space-y-2">
             <Label htmlFor="contact-email" className="text-slate-800">Your Email</Label>
