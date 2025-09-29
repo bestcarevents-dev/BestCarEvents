@@ -120,7 +120,11 @@ export default function PendingServicesPage() {
           userId: request.userId,
           userEmail: request.userEmail,
       };
-      await addDoc(collection(db, "others"), { ...approvedServiceData, status: "approved", submittedAt: request.submittedAt, createdAt: new Date() });
+      // Remove undefined fields so Firestore doesn't get undefined values
+      const cleaned: Record<string, any> = Object.fromEntries(
+        Object.entries(approvedServiceData).filter(([, v]) => v !== undefined)
+      );
+      await addDoc(collection(db, "others"), { ...cleaned, status: "approved", submittedAt: request.submittedAt, createdAt: new Date() });
       await deleteDoc(doc(db, "pendingOthers", request.id));
       setPendingRequests(pendingRequests.filter(r => r.id !== request.id));
       setSelectedService(null); // Close modal after action

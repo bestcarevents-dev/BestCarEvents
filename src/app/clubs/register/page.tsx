@@ -75,8 +75,17 @@ export default function RegisterClubPage() {
     resolver: zodResolver(clubSchema),
     defaultValues: { mediaConsent: false, privacyMode: false },
   });
+  // Ensure non-visual fields are part of form state
+  useEffect(() => {
+    try {
+      register("location");
+      register("locationData" as any);
+    } catch {}
+  }, [register]);
   const locationSectionRef = useRef<HTMLDivElement | null>(null);
   const onInvalid = (errs: any) => {
+    // Minimal console signal when submission is blocked
+    try { console.warn("Club register form invalid:", errs); } catch {}
     if (errs?.location || errs?.locationData) {
       locationSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
@@ -225,6 +234,11 @@ export default function RegisterClubPage() {
                     />
                     {errors.location && <p className="text-red-500 text-sm">{errors.location.message}</p>}
                     {errors.locationData && <p className="text-red-500 text-sm">{String((errors as any).locationData?.message || "Location selection required")}</p>}
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="addressLine" className="text-gray-700 font-medium">Address Line</Label>
+                    <Input id="addressLine" placeholder="Street and number" {...register("addressLine")} className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400" />
+                    {errors.addressLine && <p className="text-red-500 text-sm">{errors.addressLine.message as string}</p>}
                   </div>
                   <div className="flex items-center gap-3">
                     <Switch id="privacyMode" checked={!!watch("privacyMode")} onCheckedChange={(val) => setValue("privacyMode", !!val)} />

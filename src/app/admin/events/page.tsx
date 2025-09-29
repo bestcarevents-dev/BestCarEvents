@@ -119,7 +119,11 @@ export default function PendingEventsPage() {
           sponsors: request.sponsors,
           websiteUrl: request.websiteUrl,
       };
-      await addDoc(collection(db, "events"), { ...approvedEventData, status: "approved", submittedAt: request.submittedAt, createdAt: new Date() });
+      // Remove undefined fields so Firestore doesn't get undefined values
+      const cleaned: Record<string, any> = Object.fromEntries(
+        Object.entries(approvedEventData).filter(([, v]) => v !== undefined)
+      );
+      await addDoc(collection(db, "events"), { ...cleaned, status: "approved", submittedAt: request.submittedAt, createdAt: new Date() });
       await deleteDoc(doc(db, "pendingEvents", request.id));
       setPendingRequests(pendingRequests.filter(r => r.id !== request.id));
       setSelectedEvent(null); // Close modal after action

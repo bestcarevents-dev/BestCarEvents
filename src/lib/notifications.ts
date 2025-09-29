@@ -120,7 +120,7 @@ export async function createClubRequestNotification(clubData: any) {
   return createNotification({
     type: 'club_request',
     title: 'New Club Registration',
-    message: `New club "${clubData.clubName}" submitted by ${clubData.contactPerson}`,
+    message: `New club "${clubData.clubName}" submitted by ${clubData.contactName}`,
     data: clubData,
     userId: clubData.userId,
     userEmail: clubData.contactEmail,

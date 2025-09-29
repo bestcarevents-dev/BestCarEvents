@@ -48,7 +48,7 @@ import {
 } from "@/components/ui/sheet"
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { getFirestore, collection, getDocs, query, where, where as whereField } from "firebase/firestore";
+import { getFirestore, collection, getDocs, query, where, onSnapshot } from "firebase/firestore";
 import { app } from "@/lib/firebase";
 
 const NAV_SECTIONS = [
@@ -106,49 +106,48 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     events: number;
     cars: number;
     auctions: number;
+    hotels: number;
     clubs: number;
+    services: number;
     partners: number;
     newsletters: number;
     contact: number;
-  }>({ events: 0, cars: 0, auctions: 0, clubs: 0, partners: 0, newsletters: 0, contact: 0 });
+  }>({ events: 0, cars: 0, auctions: 0, hotels: 0, clubs: 0, services: 0, partners: 0, newsletters: 0, contact: 0 });
 
   useEffect(() => {
     const db = getFirestore(app);
-    const fetchCounts = async () => {
-      try {
-        const [
-          pendingEventsSnapshot,
-          pendingCarsSnapshot,
-          pendingAuctionsSnapshot,
-          pendingClubsSnapshot,
-          pendingPartnersSnapshot,
-          newsletterPendingSnapshot,
-          contactRequestsSnapshot
-        ] = await Promise.all([
-          getDocs(collection(db, "pendingEvents")),
-          getDocs(collection(db, "pendingCars")),
-          getDocs(collection(db, "pendingAuctions")),
-          getDocs(collection(db, "pendingClubs")),
-          getDocs(collection(db, "pendingPartners")),
-          // Newsletter requests are auto-approved now; no pending filter needed
-          Promise.resolve({ size: 0 } as any),
-          getDocs(query(collection(db, "contactRequests"), where("read", "==", false)))
-        ]);
+    const unsubscribers: Array<() => void> = [];
+    try {
+      const collectionsToWatch: Array<[string, keyof typeof counts]> = [
+        ["pendingEvents", "events"],
+        ["pendingCars", "cars"],
+        ["pendingAuctions", "auctions"],
+        ["pendingHotels", "hotels"],
+        ["pendingClubs", "clubs"],
+        ["pendingOthers", "services"],
+        ["pendingPartners", "partners"],
+      ];
 
-        setCounts({
-          events: pendingEventsSnapshot.size,
-          cars: pendingCarsSnapshot.size,
-          auctions: pendingAuctionsSnapshot.size,
-          clubs: pendingClubsSnapshot.size,
-          partners: pendingPartnersSnapshot.size,
-          newsletters: newsletterPendingSnapshot.size,
-          contact: contactRequestsSnapshot.size,
+      for (const [colName, key] of collectionsToWatch) {
+        const unsub = onSnapshot(collection(db, colName), (snap) => {
+          setCounts((prev) => ({ ...prev, [key]: snap.size }));
         });
-      } catch (e) {
-        console.error("Failed to fetch admin sidebar counts", e);
+        unsubscribers.push(unsub);
       }
+
+      // contact requests unread count
+      const unsubContact = onSnapshot(query(collection(db, "contactRequests"), where("read", "==", false)), (snap) => {
+        setCounts((prev) => ({ ...prev, contact: snap.size }));
+      });
+      unsubscribers.push(unsubContact);
+    } catch (e) {
+      console.error("Failed to subscribe admin sidebar counts", e);
+    }
+    return () => {
+      unsubscribers.forEach((u) => {
+        try { u(); } catch {}
+      });
     };
-    fetchCounts();
   }, []);
 
   const getBadgeCount = (href: string) => {
@@ -159,8 +158,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         return counts.cars;
       case "/admin/auctions":
         return counts.auctions;
+      case "/admin/hotels":
+        return counts.hotels;
       case "/admin/clubs":
         return counts.clubs;
+      case "/admin/others":
+        return counts.services;
       case "/admin/partners":
         return counts.partners;
       case "/admin/newsletter-requests":
