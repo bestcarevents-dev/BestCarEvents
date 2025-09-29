@@ -508,7 +508,7 @@ export default function Header() {
       )}
     >
       <div className="container mx-auto flex items-center justify-between h-20">
-        <Link href="/" className="flex items-center gap-2 text-xl font-bold font-headline tracking-tighter">
+        <Link href="/" className="flex items-center gap-2 text-sm sm:text-base lg:text-xl font-bold font-headline tracking-tighter">
             <div className="relative">
                 <div className="absolute inset-0 bg-gradient-to-br from-amber-50/50 via-white/30 to-orange-50/50 rounded-full p-1 shadow-lg hidden lg:block"></div>
                 <div className="relative z-10 p-2">
