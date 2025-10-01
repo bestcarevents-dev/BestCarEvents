@@ -52,6 +52,26 @@ function computeMissingTexts(nodes: Text[], map: Map<string, string>): string[] 
 
 // Minimal indicator (tiny spinner) management
 let indicatorCount = 0;
+let hideTimeout: any = null;
+let isEnhancing = false;
+let lastEnhanceAt = 0;
+
+function getFlagUrl(locale: string): string | null {
+  switch ((locale || '').toLowerCase()) {
+    case 'it':
+      return 'https://flagcdn.com/it.svg';
+    case 'sv':
+      return 'https://flagcdn.com/se.svg';
+    case 'da':
+      return 'https://flagcdn.com/dk.svg';
+    case 'ur':
+      return 'https://flagcdn.com/pk.svg';
+    case 'en':
+      return 'https://flagcdn.com/gb.svg';
+    default:
+      return null;
+  }
+}
 
 function ensureIndicator(): HTMLElement | null {
   try {
@@ -62,38 +82,52 @@ function ensureIndicator(): HTMLElement | null {
     el.setAttribute('aria-live', 'polite');
     el.setAttribute('aria-atomic', 'true');
     el.style.position = 'fixed';
-    el.style.top = '8px';
-    el.style.right = '8px';
+    el.style.bottom = '8px';
+    el.style.left = '8px';
     el.style.zIndex = '100';
-    el.style.padding = '6px 8px';
-    el.style.background = 'rgba(15,23,42,0.70)'; // slate-900/70
-    el.style.color = '#fff';
+    el.style.width = '32px';
+    el.style.height = '32px';
+    el.style.background = 'rgba(15,23,42,0.60)';
     el.style.borderRadius = '9999px';
-    el.style.display = 'flex';
-    el.style.alignItems = 'center';
-    el.style.gap = '6px';
-    el.style.fontSize = '12px';
+    el.style.display = 'grid';
+    el.style.placeItems = 'center';
     el.style.boxShadow = '0 2px 8px rgba(0,0,0,0.25)';
     el.style.backdropFilter = 'saturate(140%) blur(6px)';
     el.style.webkitBackdropFilter = 'saturate(140%) blur(6px)';
 
-    // spinner
-    const spinner = document.createElement('span');
-    spinner.setAttribute('aria-hidden', 'true');
-    spinner.style.width = '10px';
-    spinner.style.height = '10px';
-    spinner.style.border = '2px solid rgba(255,255,255,0.25)';
-    spinner.style.borderTopColor = '#fde68a'; // amber-200
-    spinner.style.borderRadius = '9999px';
-    spinner.style.display = 'inline-block';
-    spinner.style.animation = 'mini-spin 0.75s linear infinite';
+    // Wrapper so we can spin the ring around the flag
+    const wrap = document.createElement('div');
+    wrap.style.position = 'relative';
+    wrap.style.width = '22px';
+    wrap.style.height = '22px';
 
-    const text = document.createElement('span');
-    text.textContent = 'Translating';
-    text.style.opacity = '0.9';
+    // Flag image
+    const img = document.createElement('img');
+    img.id = 'mini-translate-flag';
+    img.alt = 'Language';
+    img.width = 18;
+    img.height = 18;
+    img.style.width = '18px';
+    img.style.height = '18px';
+    img.style.borderRadius = '3px';
+    img.style.display = 'block';
+    img.style.objectFit = 'cover';
+    img.referrerPolicy = 'no-referrer';
+    img.src = getFlagUrl((window as any).__currentTargetLocale || 'it') || 'https://flagcdn.com/it.svg';
 
-    el.appendChild(spinner);
-    el.appendChild(text);
+    // Spinner ring around flag
+    const ring = document.createElement('span');
+    ring.setAttribute('aria-hidden', 'true');
+    ring.style.position = 'absolute';
+    ring.style.inset = '-2px';
+    ring.style.border = '2px solid rgba(255,255,255,0.25)';
+    ring.style.borderTopColor = '#fde68a';
+    ring.style.borderRadius = '9999px';
+    ring.style.animation = 'mini-spin 0.8s linear infinite';
+
+    wrap.appendChild(img);
+    wrap.appendChild(ring);
+    el.appendChild(wrap);
 
     // inject keyframes once
     if (!document.getElementById('mini-spin-style')) {
@@ -113,7 +147,13 @@ function ensureIndicator(): HTMLElement | null {
 function showIndicator() {
   indicatorCount++;
   const el = ensureIndicator();
-  if (el) el.style.opacity = '1';
+  if (!el) return;
+  if (hideTimeout) {
+    clearTimeout(hideTimeout);
+    hideTimeout = null;
+  }
+  el.style.transition = 'opacity 120ms ease-out';
+  el.style.opacity = '1';
 }
 
 function hideIndicatorSoon() {
@@ -121,13 +161,12 @@ function hideIndicatorSoon() {
   if (indicatorCount === 0) {
     const el = document.getElementById('mini-translate-indicator');
     if (!el) return;
-    // Fade out subtly
-    el.style.transition = 'opacity 160ms ease-in';
-    el.style.opacity = '0';
-    setTimeout(() => {
-      // Keep element mounted to avoid layout shift; we just keep it invisible
-      // Could remove if needed: el.remove()
-    }, 200);
+    if (hideTimeout) clearTimeout(hideTimeout);
+    // Keep visible briefly to avoid flicker across quick successive passes
+    hideTimeout = setTimeout(() => {
+      el.style.transition = 'opacity 160ms ease-in';
+      el.style.opacity = '0';
+    }, 800);
   }
 }
 
@@ -140,8 +179,23 @@ export async function enhancePageTranslations(locale: string, defaultLocale = 'e
   const uniqueTexts = Array.from(new Set(nodes.map((n) => n.textContent || '')));
   if (uniqueTexts.length === 0) return;
 
+  // expose locale for flag selection
+  (window as any).__currentTargetLocale = locale;
+
+  // Throttle frequent dynamic calls to avoid excessive API traffic and flicker
+  const now = Date.now();
+  const isSubtree = !!root && root !== document.body;
+  if (isSubtree && now - lastEnhanceAt < 600) {
+    return;
+  }
+
   showIndicator();
   try {
+    if (isEnhancing && isSubtree) {
+      // Another pass is already enhancing the DOM; rely on it to cover recent changes
+      return;
+    }
+    isEnhancing = true;
     const initial = await fetchTranslations(endpoint, { locale, defaultLocale, texts: uniqueTexts });
     if (!initial) {
       return;
@@ -154,8 +208,8 @@ export async function enhancePageTranslations(locale: string, defaultLocale = 'e
     let remaining = uniqueTexts.filter((t) => (initialMap.get(t) ?? t) === t);
     if (remaining.length === 0) return;
 
-    // Backoff-bounded retry loop
-    const retryDelaysMs = [400, 800, 1200, 2000, 3000, 3000];
+    // Backoff-bounded retry loop (shorter for subtree updates)
+    const retryDelaysMs = isSubtree ? [600, 1500] : [400, 800, 1200, 2000, 3000, 3000];
     for (let i = 0; i < retryDelaysMs.length && remaining.length > 0; i++) {
       await new Promise((r) => setTimeout(r, retryDelaysMs[i]));
       const res = await fetchTranslations(endpoint, { locale, defaultLocale, texts: remaining });
@@ -167,6 +221,8 @@ export async function enhancePageTranslations(locale: string, defaultLocale = 'e
       remaining = remaining.filter((t) => (map.get(t) ?? t) === t);
     }
   } finally {
+    isEnhancing = false;
+    lastEnhanceAt = Date.now();
     hideIndicatorSoon();
   }
 }
