@@ -203,6 +203,9 @@ export default function SellCarPage() {
   const { toast } = useToast();
   const carPrefs = useFormPreferences("cars");
 
+  // Derived state
+  const isFreeSelected = isFreeListing && selectedListingType === "free";
+
   const { control, register, handleSubmit, formState: { errors }, setValue, watch, setFocus } = useForm<CarFormData>({
     resolver: zodResolver(carSchema),
     defaultValues: {
@@ -227,14 +230,14 @@ export default function SellCarPage() {
 
   // Get max images based on selected listing type
   const getMaxImages = () => {
-    if (isFreeListing) return 5; // Free listings get 5 images
+    if (isFreeSelected) return 5; // Free listings get 5 images
     if (!selectedTier) return 10;
     return selectedTier.maxImages;
   };
 
   // Check if video upload is allowed
   const isVideoAllowed = () => {
-    if (isFreeListing) return false;
+    if (isFreeSelected) return false;
     return selectedTier && (selectedTier.key === 'premiumListing' || selectedTier.key === 'exclusiveBanner');
   };
 
@@ -270,22 +273,20 @@ export default function SellCarPage() {
     const auth = getAuth(app);
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setCurrentUser(user);
-      if (user && !isFreeListing) {
+      if (user) {
         const userRef = doc(db, "users", user.uid);
         const userSnap = await getDoc(userRef);
         setUserDoc(userSnap.exists() ? userSnap.data() : null);
       }
     });
     return () => unsubscribe();
-  }, [db, isFreeListing]);
+  }, [db]);
 
   // Update selected tier when listing type changes
   useEffect(() => {
-    if (!isFreeListing) {
-      const tier = CAR_LISTING_TIERS.find(t => t.key === selectedListingType);
-      setSelectedTier(tier);
-    }
-  }, [selectedListingType, isFreeListing]);
+    const tier = CAR_LISTING_TIERS.find(t => t.key === selectedListingType);
+    setSelectedTier(tier || null);
+  }, [selectedListingType]);
 
   // Sync images with react-hook-form
   useEffect(() => {
@@ -293,13 +294,13 @@ export default function SellCarPage() {
   }, [images, setValue]);
 
   const onSubmit = async (data: CarFormData) => {
-    if (!isFreeListing && !selectedListingType) {
+    if (!selectedListingType) {
       alert("Please select a listing type");
       return;
     }
 
-    // Check quota only if not free listing
-    if (!isFreeListing) {
+    // Check quota only for paid listings
+    if (selectedListingType !== 'free') {
       const quotaField = `cars_${selectedListingType}`;
       const currentQuota = userDoc?.[quotaField] || 0;
       
@@ -407,7 +408,7 @@ export default function SellCarPage() {
         postalCode: (data as any).postalCode,
         privacyMode: !!(data as any).privacyMode,
         mediaConsent: !!(data as any).mediaConsent,
-        listing_type: isFreeListing ? "free" : selectedListingType,
+        listing_type: selectedListingType,
         status: "pending",
         submittedAt: new Date(),
         uploadedByUserId: currentUser?.uid || null,
@@ -428,8 +429,8 @@ export default function SellCarPage() {
         // Don't fail the submission if notification fails
       }
 
-      // Decrease user's quota only if not free listing
-      if (!isFreeListing && currentUser) {
+      // Decrease user's quota only for paid listings
+      if (selectedListingType !== 'free' && currentUser) {
         const quotaField = `cars_${selectedListingType}`;
         const currentQuota = userDoc?.[quotaField] || 0;
         const userRef = doc(db, "users", currentUser.uid);
@@ -468,7 +469,7 @@ export default function SellCarPage() {
   return (
     <div className="container mx-auto px-4 py-12">
       {/* Free Listing Promotional Message */}
-      {isFreeListing ? (
+      {isFreeListing && (
         <Card className="mb-8">
           <CardContent className="pt-6">
             <div className="text-center">
@@ -485,111 +486,130 @@ export default function SellCarPage() {
             </div>
           </CardContent>
         </Card>
-      ) : (
-        <>
-          {/* Quota Cards Section */}
-          {userDoc && (
-            <Card className="mb-8">
-              <CardContent className="pt-6">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-semibold">Your Current Car Listing Credit</h3>
-                  <Button 
-                    className="bg-yellow-500 hover:bg-yellow-600 text-white"
-                    onClick={() => setCreditPaymentModal({ open: true, tierKey: null })}
-                  >
-                    Buy More Credit
-                  </Button>
-                </div>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  {CAR_LISTING_TIERS.map((tier) => (
-                    <div key={tier.name} className="text-center p-3 bg-muted rounded">
-                      <div className="flex justify-center mb-2">
-                        <tier.icon className="w-6 h-6 text-primary" />
-                      </div>
-                      <p className="text-sm font-medium">{tier.name}</p>
-                      <p className="text-lg font-bold text-primary">
-                        {userDoc[`cars_${tier.key}`] || 0}
-                      </p>
-                      <p className="text-xs text-muted-foreground">Remaining</p>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          )}
+      )}
 
-          {/* Listing Type Selection */}
-          <Card className="mb-8">
-            <CardContent className="pt-6">
-              <h3 className="text-lg font-semibold mb-4">Select Listing Type</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                {CAR_LISTING_TIERS.map((tier) => {
-                  const quotaField = `cars_${tier.key}`;
-                  const currentQuota = userDoc?.[quotaField] || 0;
-                  const hasQuota = currentQuota > 0;
-                  
-                  return (
-                    <div 
-                      key={tier.key}
-                      className={`p-4 border rounded-lg cursor-pointer transition-all ${
-                        selectedListingType === tier.key 
-                          ? 'border-primary bg-primary/5' 
-                          : 'border-border hover:border-primary/50'
-                      }`}
-                      onClick={() => {
-                        if (hasQuota) {
-                          setSelectedListingType(tier.key);
-                        } else {
-                          // Open purchase modal for this tier and preselect it
-                          setPendingListingSelection(tier.key);
-                          setCreditPaymentModal({ open: true, tierKey: tier.key });
-                          setCreditSelectedTier(tier);
-                          setCreditPaymentStep('selectPayment');
-                          setCreditSelectedPayment(null);
-                          setCreditStripeClientSecret(null);
-                          setCreditPaymentError(null);
-                        }
-                      }}
-                    >
-                      <div className="flex items-center gap-3 mb-3">
-                        <tier.icon className="w-6 h-6 text-primary" />
-                        <div>
-                          <h4 className="font-semibold">{tier.name}</h4>
-                          <p className="text-sm text-muted-foreground">
-                            {currentQuota} remaining
-                          </p>
-                        </div>
-                      </div>
-                      {!hasQuota && (
-                        <p className="text-xs text-red">No Credit available. Click to buy.</p>
-                      )}
-                    </div>
-                  );
-                })}
+      {/* Quota Cards Section */}
+      {userDoc && (
+        <Card className="mb-8">
+          <CardContent className="pt-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold">Your Current Car Listing Credit</h3>
+              <Button 
+                className="bg-yellow-500 hover:bg-yellow-600 text-white"
+                onClick={() => setCreditPaymentModal({ open: true, tierKey: null })}
+              >
+                Buy More Credit
+              </Button>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {CAR_LISTING_TIERS.map((tier) => (
+                <div key={tier.name} className="text-center p-3 bg-muted rounded">
+                  <div className="flex justify-center mb-2">
+                    <tier.icon className="w-6 h-6 text-primary" />
+                  </div>
+                  <p className="text-sm font-medium">{tier.name}</p>
+                  <p className="text-lg font-bold text-primary">
+                    {userDoc[`cars_${tier.key}`] || 0}
+                  </p>
+                  <p className="text-xs text-muted-foreground">Remaining</p>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Listing Type Selection */}
+      <Card className="mb-8">
+        <CardContent className="pt-6">
+          <h3 className="text-lg font-semibold mb-4">Select Listing Type</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {isFreeListing && (
+              <div 
+                key="free"
+                className={`p-4 border rounded-lg cursor-pointer transition-all ${
+                  selectedListingType === 'free' 
+                    ? 'border-primary bg-primary/5' 
+                    : 'border-border hover:border-primary/50'
+                }`}
+                onClick={() => setSelectedListingType('free')}
+              >
+                <div className="flex items-center gap-3 mb-3">
+                  <Car className="w-6 h-6 text-primary" />
+                  <div>
+                    <h4 className="font-semibold">Free Listing</h4>
+                    <p className="text-sm text-muted-foreground">Promotional: up to 5 images</p>
+                  </div>
+                </div>
+                <p className="text-xs text-muted-foreground">Available for all users while promotion lasts.</p>
               </div>
-            </CardContent>
-          </Card>
+            )}
 
-          {/* Selected Listing Benefits */}
-          {selectedTier && (
-            <Card className="mb-8">
-              <CardContent className="pt-6">
-                <div className="flex items-center gap-3 mb-4">
-                  <selectedTier.icon className="w-6 h-6 text-primary" />
-                  <h3 className="text-lg font-semibold">{selectedTier.name} Benefits</h3>
+            {CAR_LISTING_TIERS.map((tier) => {
+              const quotaField = `cars_${tier.key}`;
+              const currentQuota = userDoc?.[quotaField] || 0;
+              const hasQuota = currentQuota > 0;
+              
+              return (
+                <div 
+                  key={tier.key}
+                  className={`p-4 border rounded-lg cursor-pointer transition-all ${
+                    selectedListingType === tier.key 
+                      ? 'border-primary bg-primary/5' 
+                      : 'border-border hover:border-primary/50'
+                  }`}
+                  onClick={() => {
+                    if (hasQuota) {
+                      setSelectedListingType(tier.key);
+                    } else {
+                      // Open purchase modal for this tier and preselect it
+                      setPendingListingSelection(tier.key);
+                      setCreditPaymentModal({ open: true, tierKey: tier.key });
+                      setCreditSelectedTier(tier);
+                      setCreditPaymentStep('selectPayment');
+                      setCreditSelectedPayment(null);
+                      setCreditStripeClientSecret(null);
+                      setCreditPaymentError(null);
+                    }
+                  }}
+                >
+                  <div className="flex items-center gap-3 mb-3">
+                    <tier.icon className="w-6 h-6 text-primary" />
+                    <div>
+                      <h4 className="font-semibold">{tier.name}</h4>
+                      <p className="text-sm text-muted-foreground">
+                        {currentQuota} remaining
+                      </p>
+                    </div>
+                  </div>
+                  {!hasQuota && (
+                    <p className="text-xs text-red">No Credit available. Click to buy.</p>
+                  )}
                 </div>
-                <ul className="space-y-2">
-                  {selectedTier.features.map((feature: string, index: number) => (
-                    <li key={index} className="flex items-start gap-2 text-sm">
-                      <Info className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
-                      <span className="text-muted-foreground">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-              </CardContent>
-            </Card>
-          )}
-        </>
+              );
+            })}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Selected Listing Benefits */}
+      {selectedTier && (
+        <Card className="mb-8">
+          <CardContent className="pt-6">
+            <div className="flex items-center gap-3 mb-4">
+              <selectedTier.icon className="w-6 h-6 text-primary" />
+              <h3 className="text-lg font-semibold">{selectedTier.name} Benefits</h3>
+            </div>
+            <ul className="space-y-2">
+              {selectedTier.features.map((feature: string, index: number) => (
+                <li key={index} className="flex items-start gap-2 text-sm">
+                  <Info className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                  <span className="text-muted-foreground">{feature}</span>
+                </li>
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
       )}
 
       <Card className="max-w-4xl mx-auto">
@@ -872,7 +892,7 @@ export default function SellCarPage() {
                                 <UploadCloud className="w-10 h-10 mb-3 text-muted-foreground" />
                                 <p className="mb-2 text-sm text-muted-foreground"><span className="font-semibold">Click to upload</span> or drag and drop</p>
                                 <p className="text-xs text-muted-foreground">
-                                  {isFreeListing 
+                    {isFreeSelected 
                                     ? "Upload up to 5 high-quality images (Free Promotional Listing)"
                                     : selectedTier 
                                       ? `Upload up to ${selectedTier.maxImages} high-quality images (${selectedTier.name})`
@@ -886,7 +906,7 @@ export default function SellCarPage() {
                               className="hidden"
                               multiple
                               accept="image/*"
-                              disabled={!isFreeListing && !selectedTier}
+                              disabled={!isFreeSelected && !selectedTier}
                               onChange={e => {
                                 let files = e.target.files ? Array.from(e.target.files) : [];
                                 if (images.length + files.length > getMaxImages()) {
