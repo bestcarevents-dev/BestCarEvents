@@ -14,6 +14,60 @@ export default function EnhancerClient({ locale, defaultLocale = 'en' }: {locale
     };
     run();
   }, [locale, defaultLocale, pathname]);
+
+  // Observe dynamic DOM changes and translate newly added/changed content
+  useEffect(() => {
+    if (locale === defaultLocale) return;
+    let timer: any = null;
+    const pendingRoots = new Set<Node>();
+
+    const schedule = () => {
+      if (timer) return;
+      timer = setTimeout(async () => {
+        const roots = Array.from(pendingRoots);
+        pendingRoots.clear();
+        timer = null;
+        // If many changes happened, do a single pass on body for efficiency
+        if (roots.length === 0) return;
+        if (roots.length > 5) {
+          await enhancePageTranslations(locale, defaultLocale);
+        } else {
+          for (const root of roots) {
+            await enhancePageTranslations(locale, defaultLocale, root);
+          }
+        }
+      }, 200);
+    };
+
+    const observer = new MutationObserver((mutations) => {
+      for (const m of mutations) {
+        if (m.type === 'childList') {
+          pendingRoots.add(m.target);
+          for (const n of Array.from(m.addedNodes)) {
+            if (n.nodeType === Node.ELEMENT_NODE || n.nodeType === Node.DOCUMENT_FRAGMENT_NODE) {
+              pendingRoots.add(n as Node);
+            }
+          }
+        } else if (m.type === 'characterData') {
+          if (m.target && (m.target as Node).parentNode) {
+            pendingRoots.add((m.target as Node).parentNode as Node);
+          }
+        }
+      }
+      schedule();
+    });
+
+    observer.observe(document.body, {
+      subtree: true,
+      childList: true,
+      characterData: true,
+    });
+
+    return () => {
+      observer.disconnect();
+      if (timer) clearTimeout(timer);
+    };
+  }, [locale, defaultLocale]);
   return null;
 }
 

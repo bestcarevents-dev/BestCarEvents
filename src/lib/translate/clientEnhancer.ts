@@ -50,70 +50,125 @@ function computeMissingTexts(nodes: Text[], map: Map<string, string>): string[] 
   return Array.from(new Set(missing));
 }
 
-export async function enhancePageTranslations(locale: string, defaultLocale = 'en') {
+// Minimal indicator (tiny spinner) management
+let indicatorCount = 0;
+
+function ensureIndicator(): HTMLElement | null {
+  try {
+    let el = document.getElementById('mini-translate-indicator');
+    if (el) return el;
+    el = document.createElement('div');
+    el.id = 'mini-translate-indicator';
+    el.setAttribute('aria-live', 'polite');
+    el.setAttribute('aria-atomic', 'true');
+    el.style.position = 'fixed';
+    el.style.top = '8px';
+    el.style.right = '8px';
+    el.style.zIndex = '100';
+    el.style.padding = '6px 8px';
+    el.style.background = 'rgba(15,23,42,0.70)'; // slate-900/70
+    el.style.color = '#fff';
+    el.style.borderRadius = '9999px';
+    el.style.display = 'flex';
+    el.style.alignItems = 'center';
+    el.style.gap = '6px';
+    el.style.fontSize = '12px';
+    el.style.boxShadow = '0 2px 8px rgba(0,0,0,0.25)';
+    el.style.backdropFilter = 'saturate(140%) blur(6px)';
+    el.style.webkitBackdropFilter = 'saturate(140%) blur(6px)';
+
+    // spinner
+    const spinner = document.createElement('span');
+    spinner.setAttribute('aria-hidden', 'true');
+    spinner.style.width = '10px';
+    spinner.style.height = '10px';
+    spinner.style.border = '2px solid rgba(255,255,255,0.25)';
+    spinner.style.borderTopColor = '#fde68a'; // amber-200
+    spinner.style.borderRadius = '9999px';
+    spinner.style.display = 'inline-block';
+    spinner.style.animation = 'mini-spin 0.75s linear infinite';
+
+    const text = document.createElement('span');
+    text.textContent = 'Translating';
+    text.style.opacity = '0.9';
+
+    el.appendChild(spinner);
+    el.appendChild(text);
+
+    // inject keyframes once
+    if (!document.getElementById('mini-spin-style')) {
+      const style = document.createElement('style');
+      style.id = 'mini-spin-style';
+      style.textContent = '@keyframes mini-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }';
+      document.head.appendChild(style);
+    }
+
+    document.body.appendChild(el);
+    return el;
+  } catch {
+    return null;
+  }
+}
+
+function showIndicator() {
+  indicatorCount++;
+  const el = ensureIndicator();
+  if (el) el.style.opacity = '1';
+}
+
+function hideIndicatorSoon() {
+  indicatorCount = Math.max(0, indicatorCount - 1);
+  if (indicatorCount === 0) {
+    const el = document.getElementById('mini-translate-indicator');
+    if (!el) return;
+    // Fade out subtly
+    el.style.transition = 'opacity 160ms ease-in';
+    el.style.opacity = '0';
+    setTimeout(() => {
+      // Keep element mounted to avoid layout shift; we just keep it invisible
+      // Could remove if needed: el.remove()
+    }, 200);
+  }
+}
+
+export async function enhancePageTranslations(locale: string, defaultLocale = 'en', root?: Node) {
   if (locale === defaultLocale) return;
 
   const endpoint = '/api/translate/cache';
-  const allTextNodes = collectTextNodes(document.body);
-  const uniqueTexts = Array.from(new Set(allTextNodes.map((n) => n.textContent || '')));
+  const container = root ?? document.body;
+  const nodes = collectTextNodes(container);
+  const uniqueTexts = Array.from(new Set(nodes.map((n) => n.textContent || '')));
   if (uniqueTexts.length === 0) return;
 
-  // Very small, unobtrusive toast using existing toaster (top edge on mobile, bottom-right on desktop via default viewport CSS)
-  // We avoid importing react hooks here; use imperative toast API to keep this file framework-agnostic
-  const toastApi = ((): {update: (p: any) => void; dismiss: () => void} | null => {
-    try {
-      // dynamic import to avoid bundling if not needed
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const { toast } = require('@/hooks/use-toast');
-      const t = toast({
-        title: 'Translating…',
-        description: 'Applying language in the background',
-        duration: 999999, // we will dismiss manually
-      });
-      return { update: t.update, dismiss: t.dismiss };
-    } catch {
-      return null;
+  showIndicator();
+  try {
+    const initial = await fetchTranslations(endpoint, { locale, defaultLocale, texts: uniqueTexts });
+    if (!initial) {
+      return;
     }
-  })();
+    const initialMap = new Map<string, string>();
+    uniqueTexts.forEach((t, i) => initialMap.set(t, initial.translations[i]));
+    applyTranslationsToDom(nodes, initialMap);
 
-  const initial = await fetchTranslations(endpoint, { locale, defaultLocale, texts: uniqueTexts });
-  if (!initial) {
-    toastApi?.dismiss();
-    return;
+    // remaining texts are those that still equal their originals
+    let remaining = uniqueTexts.filter((t) => (initialMap.get(t) ?? t) === t);
+    if (remaining.length === 0) return;
+
+    // Backoff-bounded retry loop
+    const retryDelaysMs = [400, 800, 1200, 2000, 3000, 3000];
+    for (let i = 0; i < retryDelaysMs.length && remaining.length > 0; i++) {
+      await new Promise((r) => setTimeout(r, retryDelaysMs[i]));
+      const res = await fetchTranslations(endpoint, { locale, defaultLocale, texts: remaining });
+      if (!res) continue;
+      const map = new Map<string, string>();
+      remaining.forEach((t, idx) => map.set(t, res.translations[idx]));
+      applyTranslationsToDom(nodes, map);
+      // prune those that translated now
+      remaining = remaining.filter((t) => (map.get(t) ?? t) === t);
+    }
+  } finally {
+    hideIndicatorSoon();
   }
-  const initialMap = new Map<string, string>();
-  uniqueTexts.forEach((t, i) => initialMap.set(t, initial.translations[i]));
-  applyTranslationsToDom(allTextNodes, initialMap);
-
-  // Determine which texts still need translation (cache misses returned as originals)
-  let missing = computeMissingTexts(allTextNodes, initialMap);
-
-  if (missing.length === 0) {
-    toastApi?.dismiss();
-    return;
-  }
-
-  // Backoff-bounded retry loop: quick retries first, then spaced retries; total < ~10s
-  const retryDelaysMs = [400, 800, 1200, 2000, 3000, 3000];
-  for (let i = 0; i < retryDelaysMs.length && missing.length > 0; i++) {
-    await new Promise((r) => setTimeout(r, retryDelaysMs[i]));
-    const res = await fetchTranslations(endpoint, { locale, defaultLocale, texts: missing });
-    if (!res) continue;
-    const map = new Map<string, string>();
-    missing.forEach((t, idx) => map.set(t, res.translations[idx]));
-    // Apply newly available translations only
-    applyTranslationsToDom(allTextNodes, map);
-    // Recompute missing based on what remains unchanged
-    missing = computeMissingTexts(allTextNodes, map);
-  }
-
-  // Final small update and dismiss shortly after
-  if (missing.length === 0) {
-    toastApi?.update({ title: 'Translated', description: 'Language applied' });
-  } else {
-    toastApi?.update({ title: 'Partial translation', description: 'Some items will update soon' });
-  }
-  setTimeout(() => toastApi?.dismiss(), 900);
 }
 
 
