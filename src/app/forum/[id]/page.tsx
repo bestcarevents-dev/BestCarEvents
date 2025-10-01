@@ -325,11 +325,25 @@ export default function PostDetailPage() {
       const db = getFirestore(app);
       
       try {
+        // Resolve full name and avatar from Firestore profile, fallback to auth
+        let authorName = '';
+        let authorAvatar: string | null | undefined = null;
+        try {
+          const userSnap = await getDoc(doc(db, 'users', currentUser.uid));
+          const data = userSnap.exists() ? (userSnap.data() as any) : undefined;
+          const full = [data?.firstName, data?.lastName].filter(Boolean).join(' ').trim();
+          authorName = full || currentUser.displayName || currentUser.email?.split('@')[0] || 'Anonymous';
+          authorAvatar = (data?.photoURL as string) || currentUser.photoURL || null;
+        } catch {
+          authorName = currentUser.displayName || currentUser.email?.split('@')[0] || 'Anonymous';
+          authorAvatar = currentUser.photoURL || null;
+        }
+
         await addDoc(collection(db, "forum_posts", postId, "comments"), {
           content: newComment,
           author: {
-            name: currentUser.displayName || currentUser.email?.split('@')[0] || 'Anonymous',
-            avatar: currentUser.photoURL,
+            name: authorName,
+            avatar: authorAvatar,
             id: currentUser.uid
           },
           createdAt: new Date(),
@@ -350,7 +364,7 @@ export default function PostDetailPage() {
           if (postOwnerId && postOwnerId !== currentUser.uid) {
             const userSnap = await getDoc(doc(db, 'users', postOwnerId));
             const ownerEmail = (userSnap.data() as any)?.email;
-            const actorName = currentUser.displayName || currentUser.email?.split('@')[0] || 'Someone';
+            const actorName = authorName || 'Someone';
             if (ownerEmail) {
               fetch('/api/emails/forum-activity', {
                 method: 'POST',
@@ -376,11 +390,25 @@ export default function PostDetailPage() {
       const db = getFirestore(app);
       
       try {
+        // Resolve full name and avatar from Firestore profile, fallback to auth
+        let authorName = '';
+        let authorAvatar: string | null | undefined = null;
+        try {
+          const userSnap = await getDoc(doc(db, 'users', currentUser.uid));
+          const data = userSnap.exists() ? (userSnap.data() as any) : undefined;
+          const full = [data?.firstName, data?.lastName].filter(Boolean).join(' ').trim();
+          authorName = full || currentUser.displayName || currentUser.email?.split('@')[0] || 'Anonymous';
+          authorAvatar = (data?.photoURL as string) || currentUser.photoURL || null;
+        } catch {
+          authorName = currentUser.displayName || currentUser.email?.split('@')[0] || 'Anonymous';
+          authorAvatar = currentUser.photoURL || null;
+        }
+
         await addDoc(collection(db, "forum_posts", postId, "comments", commentId, "replies"), {
           content: replyContent,
           author: {
-            name: currentUser.displayName || currentUser.email?.split('@')[0] || 'Anonymous',
-            avatar: currentUser.photoURL,
+            name: authorName,
+            avatar: authorAvatar,
             id: currentUser.uid
           },
           createdAt: new Date(),
@@ -401,7 +429,7 @@ export default function PostDetailPage() {
           if (postOwnerId && postOwnerId !== currentUser.uid) {
             const userSnap = await getDoc(doc(db, 'users', postOwnerId));
             const ownerEmail = (userSnap.data() as any)?.email;
-            const actorName = currentUser.displayName || currentUser.email?.split('@')[0] || 'Someone';
+            const actorName = authorName || 'Someone';
             if (ownerEmail) {
               fetch('/api/emails/forum-activity', {
                 method: 'POST',

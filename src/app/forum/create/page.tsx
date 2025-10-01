@@ -10,8 +10,8 @@ import { Label } from "@/components/ui/label";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { ArrowLeft, UploadCloud, X, Hash, ChevronDown, ChevronRight } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { getFirestore, collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { useEffect, useRef, useState } from "react";
+import { getFirestore, collection, addDoc, serverTimestamp, doc, getDoc } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { app } from "@/lib/firebase";
 import { getAuth, onAuthStateChanged, User as FirebaseUser } from 'firebase/auth';
@@ -23,6 +23,7 @@ export default function CreatePostPage() {
     const [loading, setLoading] = useState(false);
     const [isMarkdownOpen, setIsMarkdownOpen] = useState(false);
     const [imagePreview, setImagePreview] = useState<string | null>(null);
+    const [showPreview, setShowPreview] = useState(false);
     
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
@@ -30,6 +31,94 @@ export default function CreatePostPage() {
     const [tags, setTags] = useState<string[]>([]);
     const [newTag, setNewTag] = useState('');
     const [selectedImage, setSelectedImage] = useState<File | null>(null);
+    const contentRef = useRef<HTMLTextAreaElement | null>(null);
+
+    // Simple markdown renderer for live preview (mirrors post page)
+    const renderMarkdown = (text: string, images?: string[]) => {
+      let result = text
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.*?)\*/g, '<em>$1</em>')
+        .replace(/`(.*?)`/g, '<code class="bg-gray-100 px-1 rounded text-sm">$1</code>')
+        .replace(/^### (.*$)/gim, '<h3 class="text-lg font-bold mt-4 mb-2">$1</h3>')
+        .replace(/^## (.*$)/gim, '<h2 class="text-xl font-bold mt-4 mb-2">$1</h2>')
+        .replace(/^# (.*$)/gim, '<h1 class="text-2xl font-bold mt-4 mb-2">$1</h1>')
+        .replace(/^- (.*$)/gim, '<li class="ml-4">$1</li>')
+        .replace(/^1\. (.*$)/gim, '<li class="ml-4">$1</li>')
+        .replace(/\n\n/g, '</p><p>')
+        .replace(/^(.+)$/gm, '<p>$1</p>')
+        .replace(/<p><\/p>/g, '')
+        .replace(/<p><h/g, '<h')
+        .replace(/<\/h><\/p>/g, '</h>')
+        .replace(/<p><li/g, '<ul><li')
+        .replace(/<\/li><\/p>/g, '</li></ul>');
+
+      if (images && images.length > 0) {
+        const imageHtml = images.map((image, index) => `
+          <div class="my-4">
+            <img src="${image}" alt="Post image ${index + 1}" class="max-w-full h-auto rounded-lg shadow-md" />
+          </div>
+        `).join('');
+        result += imageHtml;
+      }
+      return result;
+    };
+
+    // Formatting helpers
+    const surroundSelection = (before: string, after?: string) => {
+      const el = contentRef.current;
+      if (!el) return;
+      const start = el.selectionStart || 0;
+      const end = el.selectionEnd || 0;
+      const a = content.slice(0, start);
+      const selected = content.slice(start, end);
+      const b = content.slice(end);
+      const close = after === undefined ? before : after;
+      const next = `${a}${before}${selected || 'text'}${close}${b}`;
+      setContent(next);
+      requestAnimationFrame(() => {
+        const cursor = start + before.length + (selected ? selected.length : 4);
+        el.focus();
+        el.setSelectionRange(cursor, cursor);
+      });
+    };
+
+    const prefixLines = (prefix: string) => {
+      const el = contentRef.current;
+      if (!el) return;
+      const start = el.selectionStart || 0;
+      const end = el.selectionEnd || 0;
+      const a = content.slice(0, start);
+      const selected = content.slice(start, end) || 'item';
+      const b = content.slice(end);
+      const transformed = selected.split('\n').map(line => `${prefix}${line || 'item'}`).join('\n');
+      const next = `${a}${transformed}${b}`;
+      setContent(next);
+      requestAnimationFrame(() => {
+        const cursor = start + transformed.length;
+        el.focus();
+        el.setSelectionRange(cursor, cursor);
+      });
+    };
+    const makeHeading = (level: 1 | 2 | 3) => prefixLines('#'.repeat(level) + ' ');
+    const makeQuote = () => prefixLines('> ');
+    const makeCodeBlock = () => surroundSelection('```\n', '\n```');
+    const makeInlineCode = () => surroundSelection('`');
+    const makeBold = () => surroundSelection('**');
+    const makeItalic = () => surroundSelection('*');
+    const makeUL = () => prefixLines('- ');
+    const makeOL = () => prefixLines('1. ');
+    const makeLink = () => {
+      const url = typeof window !== 'undefined' ? (window.prompt('Enter URL', 'https://') || '') : '';
+      const el = contentRef.current;
+      if (!el) return;
+      const start = el.selectionStart || 0;
+      const end = el.selectionEnd || 0;
+      const a = content.slice(0, start);
+      const selected = content.slice(start, end) || 'link text';
+      const b = content.slice(end);
+      const next = `${a}[${selected}](${url || 'https://'})${b}`;
+      setContent(next);
+    };
 
     useEffect(() => {
       const auth = getAuth(app);
@@ -123,6 +212,20 @@ export default function CreatePostPage() {
           imageUrl = await getDownloadURL(imageRef);
         }
 
+        // Resolve full name and avatar from Firestore profile, fallback to auth
+        let authorName = '';
+        let authorAvatar: string | null | undefined = null;
+        try {
+          const userSnap = await getDoc(doc(db, 'users', currentUser.uid));
+          const data = userSnap.exists() ? (userSnap.data() as any) : undefined;
+          const full = [data?.firstName, data?.lastName].filter(Boolean).join(' ').trim();
+          authorName = full || currentUser.displayName || currentUser.email?.split('@')[0] || 'Anonymous';
+          authorAvatar = (data?.photoURL as string) || currentUser.photoURL || null;
+        } catch {
+          authorName = currentUser.displayName || currentUser.email?.split('@')[0] || 'Anonymous';
+          authorAvatar = currentUser.photoURL || null;
+        }
+
         const postData = {
           title: title.trim(),
           content: content.trim(),
@@ -130,8 +233,8 @@ export default function CreatePostPage() {
           tags,
           images: imageUrl ? [imageUrl] : [],
           author: {
-            name: currentUser.displayName || currentUser.email?.split('@')[0] || 'Anonymous',
-            avatar: currentUser.photoURL,
+            name: authorName,
+            avatar: authorAvatar,
             id: currentUser.uid
           },
           createdAt: serverTimestamp(),
@@ -262,12 +365,36 @@ export default function CreatePostPage() {
                     </div>
                   </CardHeader>
                   <CardContent className="p-6">
-                    <Textarea
-                      placeholder="Write your post content here... You can use markdown formatting like **bold**, *italic*, - lists, etc."
-                      value={content}
-                      onChange={(e) => setContent(e.target.value)}
-                      className="min-h-[300px] resize-none bg-white border-gray-300 text-gray-900 placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400"
-                    />
+                    <div className="flex flex-wrap gap-2 pb-3 border-b border-gray-200 mb-4">
+                      <Button type="button" variant="outline" size="sm" onClick={makeBold} className="border-gray-300">Bold</Button>
+                      <Button type="button" variant="outline" size="sm" onClick={makeItalic} className="border-gray-300">Italic</Button>
+                      <Button type="button" variant="outline" size="sm" onClick={() => makeHeading(1)} className="border-gray-300">H1</Button>
+                      <Button type="button" variant="outline" size="sm" onClick={() => makeHeading(2)} className="border-gray-300">H2</Button>
+                      <Button type="button" variant="outline" size="sm" onClick={() => makeHeading(3)} className="border-gray-300">H3</Button>
+                      <Button type="button" variant="outline" size="sm" onClick={makeUL} className="border-gray-300">List</Button>
+                      <Button type="button" variant="outline" size="sm" onClick={makeOL} className="border-gray-300">1.</Button>
+                      <Button type="button" variant="outline" size="sm" onClick={makeQuote} className="border-gray-300">Quote</Button>
+                      <Button type="button" variant="outline" size="sm" onClick={makeInlineCode} className="border-gray-300">Code</Button>
+                      <Button type="button" variant="outline" size="sm" onClick={makeCodeBlock} className="border-gray-300">Code Block</Button>
+                      <Button type="button" variant="outline" size="sm" onClick={makeLink} className="border-gray-300">Link</Button>
+                      <div className="ml-auto">
+                        <Button type="button" variant="outline" size="sm" onClick={() => setShowPreview((p) => !p)} className="border-gray-300">
+                          {showPreview ? 'Edit' : 'Preview'}
+                        </Button>
+                      </div>
+                    </div>
+
+                    {!showPreview ? (
+                      <Textarea
+                        placeholder="Write your post content here... Use the toolbar to format."
+                        value={content}
+                        onChange={(e) => setContent(e.target.value)}
+                        ref={contentRef}
+                        className="min-h-[300px] resize-none bg-white border-gray-300 text-gray-900 placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400"
+                      />
+                    ) : (
+                      <div className="prose max-w-none text-gray-700 leading-relaxed min-h-[300px] p-4 bg-gray-50 rounded border border-gray-200" dangerouslySetInnerHTML={{ __html: renderMarkdown(content, imagePreview ? [imagePreview] : []) }} />
+                    )}
                     <p className="text-sm text-gray-500 mt-2">
                       {content.length} characters
                     </p>
