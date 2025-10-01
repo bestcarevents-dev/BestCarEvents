@@ -100,25 +100,11 @@ export default function CreatePostPage() {
       });
     };
     const makeHeading = (level: 1 | 2 | 3) => prefixLines('#'.repeat(level) + ' ');
-    const makeQuote = () => prefixLines('> ');
-    const makeCodeBlock = () => surroundSelection('```\n', '\n```');
     const makeInlineCode = () => surroundSelection('`');
     const makeBold = () => surroundSelection('**');
     const makeItalic = () => surroundSelection('*');
     const makeUL = () => prefixLines('- ');
     const makeOL = () => prefixLines('1. ');
-    const makeLink = () => {
-      const url = typeof window !== 'undefined' ? (window.prompt('Enter URL', 'https://') || '') : '';
-      const el = contentRef.current;
-      if (!el) return;
-      const start = el.selectionStart || 0;
-      const end = el.selectionEnd || 0;
-      const a = content.slice(0, start);
-      const selected = content.slice(start, end) || 'link text';
-      const b = content.slice(end);
-      const next = `${a}[${selected}](${url || 'https://'})${b}`;
-      setContent(next);
-    };
 
     useEffect(() => {
       const auth = getAuth(app);
@@ -158,11 +144,8 @@ export default function CreatePostPage() {
       { name: 'Heading 3', syntax: '### Heading', example: '### Section Heading' },
       { name: 'Unordered List', syntax: '- item', example: '- First item\n- Second item\n- Third item' },
       { name: 'Ordered List', syntax: '1. item', example: '1. First item\n2. Second item\n3. Third item' },
-      { name: 'Link', syntax: '[text](url)', example: '[Visit our website](https://example.com)' },
       { name: 'Image', syntax: '![alt](url)', example: '![Car image](https://example.com/car.jpg)' },
       { name: 'Code Inline', syntax: '`code`', example: 'Use `console.log()` for debugging' },
-      { name: 'Code Block', syntax: '```\ncode\n```', example: '```\nfunction hello() {\n  return "Hello World!";\n}\n```' },
-      { name: 'Quote', syntax: '> text', example: '> This is a quote from someone' },
       { name: 'Horizontal Rule', syntax: '---', example: '---' },
       { name: 'Strikethrough', syntax: '~~text~~', example: '~~This text is crossed out~~' },
       { name: 'Highlight', syntax: '==text==', example: '==This text is highlighted==' }
@@ -366,17 +349,14 @@ export default function CreatePostPage() {
                   </CardHeader>
                   <CardContent className="p-6">
                     <div className="flex flex-wrap gap-2 pb-3 border-b border-gray-200 mb-4">
-                      <Button type="button" variant="outline" size="sm" onClick={makeBold} className="border-gray-300">Bold</Button>
-                      <Button type="button" variant="outline" size="sm" onClick={makeItalic} className="border-gray-300">Italic</Button>
-                      <Button type="button" variant="outline" size="sm" onClick={() => makeHeading(1)} className="border-gray-300">H1</Button>
-                      <Button type="button" variant="outline" size="sm" onClick={() => makeHeading(2)} className="border-gray-300">H2</Button>
-                      <Button type="button" variant="outline" size="sm" onClick={() => makeHeading(3)} className="border-gray-300">H3</Button>
-                      <Button type="button" variant="outline" size="sm" onClick={makeUL} className="border-gray-300">List</Button>
-                      <Button type="button" variant="outline" size="sm" onClick={makeOL} className="border-gray-300">1.</Button>
-                      <Button type="button" variant="outline" size="sm" onClick={makeQuote} className="border-gray-300">Quote</Button>
-                      <Button type="button" variant="outline" size="sm" onClick={makeInlineCode} className="border-gray-300">Code</Button>
-                      <Button type="button" variant="outline" size="sm" onClick={makeCodeBlock} className="border-gray-300">Code Block</Button>
-                      <Button type="button" variant="outline" size="sm" onClick={makeLink} className="border-gray-300">Link</Button>
+                      <Button type="button" variant="outline" size="sm" onClick={makeBold} className="border-gray-300 text-gray-700 hover:bg-gray-50">Bold</Button>
+                      <Button type="button" variant="outline" size="sm" onClick={makeItalic} className="border-gray-300 text-gray-700 hover:bg-gray-50">Italic</Button>
+                      <Button type="button" variant="outline" size="sm" onClick={() => makeHeading(1)} className="border-gray-300 text-gray-700 hover:bg-gray-50">H1</Button>
+                      <Button type="button" variant="outline" size="sm" onClick={() => makeHeading(2)} className="border-gray-300 text-gray-700 hover:bg-gray-50">H2</Button>
+                      <Button type="button" variant="outline" size="sm" onClick={() => makeHeading(3)} className="border-gray-300 text-gray-700 hover:bg-gray-50">H3</Button>
+                      <Button type="button" variant="outline" size="sm" onClick={makeUL} className="border-gray-300 text-gray-700 hover:bg-gray-50">List</Button>
+                      <Button type="button" variant="outline" size="sm" onClick={makeOL} className="border-gray-300 text-gray-700 hover:bg-gray-50">1.</Button>
+                      <Button type="button" variant="outline" size="sm" onClick={makeInlineCode} className="border-gray-300 text-gray-700 hover:bg-gray-50">Code</Button>
                       <div className="ml-auto">
                         <Button type="button" variant="outline" size="sm" onClick={() => setShowPreview((p) => !p)} className="border-gray-300">
                           {showPreview ? 'Edit' : 'Preview'}
