@@ -5,11 +5,20 @@ import { enhancePageTranslations } from '@/lib/translate/clientEnhancer';
 
 export default function EnhancerClient({ locale, defaultLocale = 'en' }: {locale: string; defaultLocale?: string}) {
   const pathname = usePathname();
+  const dbg = (...args: any[]) => {
+    try {
+      if (typeof window !== 'undefined' && (window as any).__DEBUG_TRANSLATE) {
+        // eslint-disable-next-line no-console
+        console.log('[translate/enhancer]', ...args);
+      }
+    } catch {}
+  };
   useEffect(() => {
     // Run after each navigation and locale change
     const run = async () => {
       // Give the DOM a tick to settle after navigation
       await new Promise((r) => setTimeout(r, 50));
+      dbg('navigation enhance', { pathname, locale });
       enhancePageTranslations(locale, defaultLocale);
     };
     run();
@@ -30,8 +39,10 @@ export default function EnhancerClient({ locale, defaultLocale = 'en' }: {locale
         // If many changes happened, do a single pass on body for efficiency
         if (roots.length === 0) return;
         if (roots.length > 5) {
+          dbg('observer batch -> body', { batches: roots.length });
           await enhancePageTranslations(locale, defaultLocale);
         } else {
+          dbg('observer batch -> roots', { batches: roots.length });
           for (const root of roots) {
             await enhancePageTranslations(locale, defaultLocale, root);
           }
@@ -40,6 +51,7 @@ export default function EnhancerClient({ locale, defaultLocale = 'en' }: {locale
     };
 
     const observer = new MutationObserver((mutations) => {
+      dbg('mutations', { count: mutations.length });
       for (const m of mutations) {
         if (m.type === 'childList') {
           pendingRoots.add(m.target);

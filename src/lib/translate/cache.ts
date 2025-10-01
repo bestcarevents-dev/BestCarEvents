@@ -12,19 +12,31 @@ class FirestoreCache implements CacheProvider {
     this.collectionName = collectionName;
   }
   async get(key: string): Promise<string | null> {
+    const DEBUG = process.env.TRANSLATE_DEBUG === '1' || process.env.TRANSLATE_DEBUG === 'true';
     const admin = getAdmin();
+    const t0 = Date.now();
     const snap = await admin.firestore().collection(this.collectionName).doc(key).get();
+    if (DEBUG) {
+      // eslint-disable-next-line no-console
+      console.log('[translate/cache:get]', { key, ms: Date.now() - t0, exists: snap.exists });
+    }
     if (!snap.exists) return null;
     const data = snap.data() as {value: string} | undefined;
     return data?.value ?? null;
   }
   async set(key: string, value: string): Promise<void> {
+    const DEBUG = process.env.TRANSLATE_DEBUG === '1' || process.env.TRANSLATE_DEBUG === 'true';
     const admin = getAdmin();
+    const t0 = Date.now();
     await admin
       .firestore()
       .collection(this.collectionName)
       .doc(key)
       .set({value, updatedAt: admin.firestore.FieldValue.serverTimestamp()});
+    if (DEBUG) {
+      // eslint-disable-next-line no-console
+      console.log('[translate/cache:set]', { key, ms: Date.now() - t0 });
+    }
   }
 }
 

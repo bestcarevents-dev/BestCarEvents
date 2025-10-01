@@ -20,6 +20,11 @@ export async function ensureTranslationsAsync(
   if (missing.length === 0) return;
 
   try {
+    const DEBUG = process.env.TRANSLATE_DEBUG === '1' || process.env.TRANSLATE_DEBUG === 'true';
+    if (DEBUG) {
+      // eslint-disable-next-line no-console
+      console.log('[translate/fallback] translating missing', { count: missing.length, targetLocale, sourceLocale });
+    }
     const {translations} = await translateBatch({
       texts: missing,
       sourceLocale,
@@ -31,8 +36,17 @@ export async function ensureTranslationsAsync(
         return cache.set(cacheKeyFrom(computeStableHash(original), targetLocale), t);
       })
     );
+    if (DEBUG) {
+      // eslint-disable-next-line no-console
+      console.log('[translate/fallback] persisted translations', { count: translations.length });
+    }
   } catch (e) {
     // Swallow errors to avoid blocking render
+    const DEBUG = process.env.TRANSLATE_DEBUG === '1' || process.env.TRANSLATE_DEBUG === 'true';
+    if (DEBUG) {
+      // eslint-disable-next-line no-console
+      console.log('[translate/fallback] error', e);
+    }
   }
 }
 

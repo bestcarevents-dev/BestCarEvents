@@ -146,11 +146,21 @@ export async function translateBatch({texts, sourceLocale, targetLocale}: Transl
   });
 
   if (toTranslate.length === 0) {
+    const DEBUG = process.env.TRANSLATE_DEBUG === '1' || process.env.TRANSLATE_DEBUG === 'true';
+    if (DEBUG) {
+      // eslint-disable-next-line no-console
+      console.log('[translate/batch] cache only', { sourceLocale, targetLocale, ...log });
+    }
     return {translations: output, log};
   }
 
   const chunks = chunkTextsPreserveOrder(toTranslate.map((t) => t.text));
   let startIdx = 0;
+  const DEBUG = process.env.TRANSLATE_DEBUG === '1' || process.env.TRANSLATE_DEBUG === 'true';
+  if (DEBUG) {
+    // eslint-disable-next-line no-console
+    console.log('[translate/batch] will translate', { sourceLocale, targetLocale, chunks: chunks.length, toTranslate: toTranslate.length, totalChars });
+  }
 
   for (const chunk of chunks) {
     let attempts = 0;
@@ -190,6 +200,10 @@ export async function translateBatch({texts, sourceLocale, targetLocale}: Transl
     }
   }
 
+  if (DEBUG) {
+    // eslint-disable-next-line no-console
+    console.log('[translate/batch] done', { sourceLocale, targetLocale, ...log });
+  }
   return {translations: output, log};
 }
 

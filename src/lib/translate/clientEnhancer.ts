@@ -6,6 +6,15 @@ type FetchPayload = {
   texts: string[];
 };
 
+function dbg(...args: any[]) {
+  try {
+    if (typeof window !== 'undefined' && (window as any).__DEBUG_TRANSLATE) {
+      // eslint-disable-next-line no-console
+      console.log('[translate/client]', ...args);
+    }
+  } catch {}
+}
+
 function collectTextNodes(root: Node): Text[] {
   const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
     acceptNode: (n: Node) => {
@@ -23,13 +32,21 @@ function collectTextNodes(root: Node): Text[] {
 }
 
 async function fetchTranslations(endpoint: string, payload: FetchPayload) {
+  const start = (typeof performance !== 'undefined' ? performance.now() : Date.now());
+  dbg('fetchTranslations ->', { count: payload.texts.length, locale: payload.locale });
   const res = await fetch(endpoint, {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify(payload),
   });
-  if (!res.ok) return null;
-  return (await res.json()) as {translations: string[]};
+  const ms = ((typeof performance !== 'undefined' ? performance.now() : Date.now()) - start).toFixed(0);
+  if (!res.ok) {
+    dbg('fetchTranslations <- error', { status: res.status, ms });
+    return null;
+  }
+  const json = (await res.json()) as {translations: string[]};
+  dbg('fetchTranslations <-', { received: json?.translations?.length ?? 0, ms });
+  return json;
 }
 
 function applyTranslationsToDom(nodes: Text[], sourceToTranslated: Map<string, string>) {
@@ -154,6 +171,7 @@ function showIndicator() {
   }
   el.style.transition = 'opacity 120ms ease-out';
   el.style.opacity = '1';
+  dbg('indicator show', { indicatorCount });
 }
 
 function hideIndicatorSoon() {
@@ -167,6 +185,7 @@ function hideIndicatorSoon() {
       el.style.transition = 'opacity 160ms ease-in';
       el.style.opacity = '0';
     }, 800);
+    dbg('indicator hide soon');
   }
 }
 
@@ -186,18 +205,22 @@ export async function enhancePageTranslations(locale: string, defaultLocale = 'e
   const now = Date.now();
   const isSubtree = !!root && root !== document.body;
   if (isSubtree && now - lastEnhanceAt < 600) {
+    dbg('throttle skip subtree enhance', { sinceLastMs: now - lastEnhanceAt, texts: uniqueTexts.length });
     return;
   }
 
+  dbg('enhance start', { locale, isSubtree, texts: uniqueTexts.length });
   showIndicator();
   try {
     if (isEnhancing && isSubtree) {
       // Another pass is already enhancing the DOM; rely on it to cover recent changes
+      dbg('skip subtree; already enhancing');
       return;
     }
     isEnhancing = true;
     const initial = await fetchTranslations(endpoint, { locale, defaultLocale, texts: uniqueTexts });
     if (!initial) {
+      dbg('initial fetch failed');
       return;
     }
     const initialMap = new Map<string, string>();
@@ -206,6 +229,7 @@ export async function enhancePageTranslations(locale: string, defaultLocale = 'e
 
     // remaining texts are those that still equal their originals
     let remaining = uniqueTexts.filter((t) => (initialMap.get(t) ?? t) === t);
+    dbg('remaining after initial', { remaining: remaining.length });
     if (remaining.length === 0) return;
 
     // Backoff-bounded retry loop (shorter for subtree updates)
@@ -219,10 +243,12 @@ export async function enhancePageTranslations(locale: string, defaultLocale = 'e
       applyTranslationsToDom(nodes, map);
       // prune those that translated now
       remaining = remaining.filter((t) => (map.get(t) ?? t) === t);
+      dbg('retry pass', { attempt: i + 1, remaining: remaining.length });
     }
   } finally {
     isEnhancing = false;
     lastEnhanceAt = Date.now();
+    dbg('enhance end');
     hideIndicatorSoon();
   }
 }
