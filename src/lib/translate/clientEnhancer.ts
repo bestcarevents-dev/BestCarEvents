@@ -34,7 +34,13 @@ function collectTextNodes(root: Node): Text[] {
 async function fetchTranslations(endpoint: string, payload: FetchPayload) {
   const start = (typeof performance !== 'undefined' ? performance.now() : Date.now());
   dbg('fetchTranslations ->', { count: payload.texts.length, locale: payload.locale });
-  const res = await fetch(endpoint, {
+  let url = endpoint;
+  try {
+    if (typeof window !== 'undefined' && (window as any).__DEBUG_TRANSLATE) {
+      url = `${endpoint}?debug=1`;
+    }
+  } catch {}
+  const res = await fetch(url, {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify(payload),

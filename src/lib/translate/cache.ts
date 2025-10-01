@@ -12,7 +12,7 @@ class FirestoreCache implements CacheProvider {
     this.collectionName = collectionName;
   }
   async get(key: string): Promise<string | null> {
-    const DEBUG = process.env.TRANSLATE_DEBUG === '1' || process.env.TRANSLATE_DEBUG === 'true';
+    const DEBUG = (global as any).__TRANSLATE_DEBUG === true || process.env.TRANSLATE_DEBUG === '1' || process.env.TRANSLATE_DEBUG === 'true';
     const admin = getAdmin();
     const t0 = Date.now();
     const snap = await admin.firestore().collection(this.collectionName).doc(key).get();
@@ -25,7 +25,7 @@ class FirestoreCache implements CacheProvider {
     return data?.value ?? null;
   }
   async set(key: string, value: string): Promise<void> {
-    const DEBUG = process.env.TRANSLATE_DEBUG === '1' || process.env.TRANSLATE_DEBUG === 'true';
+    const DEBUG = (global as any).__TRANSLATE_DEBUG === true || process.env.TRANSLATE_DEBUG === '1' || process.env.TRANSLATE_DEBUG === 'true';
     const admin = getAdmin();
     const t0 = Date.now();
     await admin

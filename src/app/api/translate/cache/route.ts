@@ -13,11 +13,16 @@ type Payload = {
 
 export async function POST(req: NextRequest) {
   try {
+    const url = new URL(req.url);
+    const debugParam = url.searchParams.get('debug');
+    const reqDebug = debugParam === '1' || debugParam === 'true';
     const {locale, defaultLocale = 'en', texts} = (await req.json()) as Payload;
     if (!locale || !Array.isArray(texts)) {
       return NextResponse.json({error: 'Invalid payload'}, {status: 400});
     }
-    const DEBUG = process.env.TRANSLATE_DEBUG === '1' || process.env.TRANSLATE_DEBUG === 'true';
+    const DEBUG = reqDebug || process.env.TRANSLATE_DEBUG === '1' || process.env.TRANSLATE_DEBUG === 'true';
+    // Make debug flag available to cache provider
+    if (DEBUG) (global as any).__TRANSLATE_DEBUG = true;
     const t0 = Date.now();
     const keys = texts.map((t) => cacheKeyFrom(computeStableHash(t), locale));
     const values = await Promise.all(keys.map((k) => cache.get(k)));
