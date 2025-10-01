@@ -21,7 +21,12 @@ export async function POST(req: NextRequest) {
     const keys = texts.map((t) => cacheKeyFrom(computeStableHash(t), locale));
     const values = await Promise.all(keys.map((k) => cache.get(k)));
 
-    const translations = texts.map((t, i) => values[i] ?? t);
+    const translations = texts.map((t, i) => {
+      const v = values[i] ?? t;
+      const cleaned = String(v).replace(/^\s*(italiano|italian|it)\s*:\s*/i, '').trim();
+      if (!cleaned || /^\s*(italiano|italian|it)\s*:?\s*$/i.test(cleaned)) return t;
+      return cleaned;
+    });
 
     const anyMissing = values.some((v) => !v);
     if (anyMissing) {

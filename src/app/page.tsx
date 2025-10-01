@@ -258,7 +258,13 @@ const PromoAnnouncement = ({ copy }: { copy: NonNullable<HomepageContent["promo"
 
             {/* Subcopy */}
             <p className="mt-6 md:mt-8 text-[#2a2a2a] text-base md:text-lg max-w-2xl mx-auto text-center leading-relaxed">
-              <span className="font-bold text-[#C3A76D]">{copy.carsLinePrefix}</span> Enjoy <span className="font-bold text-[#C3A76D]">{copy.carsLineHighlight}</span> listing period!
+              <span className="font-bold text-[#C3A76D]">{copy.carsLinePrefix}</span>
+              <span>{' '}</span>
+              <span>Enjoy</span>
+              <span>{' '}</span>
+              <span className="font-bold text-[#C3A76D]">{copy.carsLineHighlight}</span>
+              <span>{' '}</span>
+              <span>listing period!</span>
             </p>
 
             {/* CTA Button */}

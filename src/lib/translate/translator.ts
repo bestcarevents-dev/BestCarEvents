@@ -17,6 +17,17 @@ export type TranslateBatchLog = {
 
 const MAX_PER_REQUEST = 5000;
 
+function sanitizeTranslated(original: string, translated: string | null | undefined, _targetLocale: string): string {
+  if (!translated) return original;
+  let out = String(translated);
+  // Remove language labels like "italiano:" prefixes that sometimes leak through
+  out = out.replace(/^\s*(italiano|italian|it)\s*:\s*/i, '');
+  // Normalize surrounding whitespace; rendering layers will re-apply original padding
+  out = out.trim();
+  if (!out || /^\s*(italiano|italian|it)\s*:?\s*$/i.test(out)) return original;
+  return out;
+}
+
 function chunkTextsPreserveOrder(texts: string[]): string[][] {
   const chunks: string[][] = [];
   let current: string[] = [];
@@ -82,7 +93,7 @@ async function translateChunk(texts: string[], source: string, target: string): 
       try {
         const [resp] = await translationClient.translateText(reqWithGlossary as any);
         const translations = resp.glossaryTranslations?.length ? resp.glossaryTranslations : resp.translations || [];
-        return translations.map((t) => t.translatedText || '');
+        return translations.map((t, idx) => sanitizeTranslated(texts[idx] || '', t.translatedText || '', target));
       } catch (e: any) {
         const code = e?.code;
         const msg = String(e?.message || '');
@@ -98,7 +109,7 @@ async function translateChunk(texts: string[], source: string, target: string): 
     try {
       const [resp] = await translationClient.translateText(baseReq);
       const translations = resp.translations || [];
-      return translations.map((t) => t.translatedText || '');
+      return translations.map((t, idx) => sanitizeTranslated(texts[idx] || '', t.translatedText || '', target));
     } catch (e: any) {
       lastError = e;
       continue;
@@ -151,14 +162,14 @@ export async function translateBatch({texts, sourceLocale, targetLocale}: Transl
         for (let i = 0; i < translated.length; i++) {
           const originalIndex = toTranslate[startIdx + i].index;
           const translatedText = translated[i];
-          output[originalIndex] = translatedText;
+          output[originalIndex] = sanitizeTranslated(toTranslate[startIdx + i].text, translatedText, targetLocale);
         }
         // persist to cache
         await Promise.all(
           translated.map((t, i) => {
             const original = chunk[i];
             const key = cacheKeyFrom(computeStableHash(original), targetLocale);
-            return cache.set(key, t);
+            return cache.set(key, sanitizeTranslated(original, t, targetLocale));
           })
         );
         startIdx += chunk.length;
