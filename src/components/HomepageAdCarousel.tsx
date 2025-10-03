@@ -130,7 +130,8 @@ export default function HomepageAdCarousel() {
 
       {/* Ads Grid: show more items, no carousel */}
       <div className={`grid gap-6 ${isMobile ? 'grid-cols-1' : 'grid-cols-3'}`}>
-        {/* Advertise placeholder card */}
+        {ads.map(renderAdContent)}
+        {/* Advertise placeholder card at the end */}
         <Card className="flex flex-col h-full bg-white border border-yellow-200/60 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
           <div className="relative w-full h-48 flex items-center justify-center bg-gradient-to-br from-yellow-50 to-amber-50">
             <Badge className="absolute top-3 left-3 text-xs bg-yellow-600 text-white font-semibold">
@@ -151,7 +152,6 @@ export default function HomepageAdCarousel() {
             </Link>
           </CardContent>
         </Card>
-        {ads.map(renderAdContent)}
       </div>
     </div>
   );
