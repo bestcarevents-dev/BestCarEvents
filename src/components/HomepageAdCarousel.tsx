@@ -128,21 +128,29 @@ export default function HomepageAdCarousel() {
         </p>
       </div>
 
-      {/* Subtle callout to advertise with us */}
-      <div className="mb-6">
-        <div className="mx-auto max-w-3xl rounded-lg border border-yellow-100 bg-yellow-50/60 px-4 py-3 text-center">
-          <span className="text-sm text-gray-700 mr-1">This spot could be yours —</span>
-          <Link
-            href="/advertise/advertise"
-            className="inline-flex items-center text-sm font-semibold text-yellow-700 hover:text-yellow-800 underline decoration-yellow-300 hover:decoration-yellow-500 underline-offset-4"
-          >
-            advertise with us now
-          </Link>
-        </div>
-      </div>
-
       {/* Ads Grid: show more items, no carousel */}
       <div className={`grid gap-6 ${isMobile ? 'grid-cols-1' : 'grid-cols-3'}`}>
+        {/* Advertise placeholder card */}
+        <Card className="flex flex-col h-full bg-white border border-yellow-200/60 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
+          <div className="relative w-full h-48 flex items-center justify-center bg-gradient-to-br from-yellow-50 to-amber-50">
+            <Badge className="absolute top-3 left-3 text-xs bg-yellow-600 text-white font-semibold">
+              Ad
+            </Badge>
+            <div className="text-center px-4">
+              <div className="text-base font-headline font-semibold text-gray-900">This spot could be yours</div>
+              <div className="text-sm text-gray-600 mt-1">Promote your automotive service or product</div>
+            </div>
+          </div>
+          <CardContent className="p-4">
+            <Link 
+              href="/advertise/advertise" 
+              className="inline-flex items-center justify-center w-full rounded-md bg-yellow-600 text-white text-sm font-semibold py-2 hover:bg-yellow-700 transition-colors"
+            >
+              Advertise with us
+              <span className="ml-1">→</span>
+            </Link>
+          </CardContent>
+        </Card>
         {ads.map(renderAdContent)}
       </div>
     </div>
