@@ -9,11 +9,13 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { markNotificationAsRead } from "@/lib/notifications";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 export default function AdminAdEditNotificationsPage() {
   const [items, setItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [marking, setMarking] = useState<string | null>(null);
+  const [diffOpen, setDiffOpen] = useState<null | { id: string; changes: Array<{ field: string; before: any; after: any }> }>(null);
   const db = useMemo(() => getFirestore(app), []);
 
   useEffect(() => {
@@ -113,6 +115,11 @@ export default function AdminAdEditNotificationsPage() {
                               Edit Ad
                             </Link>
                           </Button>
+                          {Array.isArray(n.data?.changes) && n.data.changes.length > 0 && (
+                            <Button size="sm" variant="secondary" onClick={() => setDiffOpen({ id: n.id, changes: n.data.changes })}>
+                              View Changes
+                            </Button>
+                          )}
                         </TableCell>
                       </TableRow>
                     );
@@ -123,8 +130,53 @@ export default function AdminAdEditNotificationsPage() {
           </div>
         </CardContent>
       </Card>
+
+    {/* Diff Modal */}
+    <Dialog open={!!diffOpen} onOpenChange={(o) => { if (!o) setDiffOpen(null); }}>
+      <DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>Ad Changes</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-4">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Field</TableHead>
+                <TableHead>Old</TableHead>
+                <TableHead>New</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {(diffOpen?.changes || []).map((c, idx) => (
+                <TableRow key={idx}>
+                  <TableCell className="align-top whitespace-nowrap font-medium">{c.field}</TableCell>
+                  <TableCell className="align-top">
+                    <pre className="whitespace-pre-wrap break-words text-xs bg-muted p-2 rounded border">{formatValue(c.before)}</pre>
+                  </TableCell>
+                  <TableCell className="align-top">
+                    <pre className="whitespace-pre-wrap break-words text-xs bg-muted p-2 rounded border">{formatValue(c.after)}</pre>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      </DialogContent>
+    </Dialog>
     </div>
   );
+}
+
+function formatValue(val: any): string {
+  try {
+    if (val === null || val === undefined) return String(val);
+    if (typeof val === 'string') return val;
+    if (typeof val === 'number' || typeof val === 'boolean') return String(val);
+    if (Array.isArray(val)) return JSON.stringify(val, null, 2);
+    return JSON.stringify(val, null, 2);
+  } catch {
+    return String(val);
+  }
 }
 
 

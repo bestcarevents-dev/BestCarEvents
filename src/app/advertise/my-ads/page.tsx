@@ -1194,6 +1194,31 @@ export default function MyAdsPage() {
                 const existing = ads.find(a => a.id === editModal.id);
                 const existingUrls = Array.isArray(existing?.imageUrls) ? existing!.imageUrls : [];
                 const finalImageUrls = [...newImageUrls, ...existingUrls];
+                // Compute changes (before vs after) for payload fields and images
+                const changes: Array<{ field: string; before: any; after: any }> = [];
+                if (existing) {
+                  for (const key of Object.keys(payload)) {
+                    const beforeVal = (existing as any)[key];
+                    const afterVal = (payload as any)[key];
+                    const same = JSON.stringify(beforeVal) === JSON.stringify(afterVal);
+                    if (!same) {
+                      changes.push({ field: key, before: beforeVal ?? null, after: afterVal ?? null });
+                    }
+                  }
+                  // imageUrls diff
+                  const beforeImgs = Array.isArray(existingUrls) ? existingUrls : [];
+                  const sameImages = JSON.stringify(beforeImgs) === JSON.stringify(finalImageUrls);
+                  if (!sameImages) {
+                    changes.push({ field: 'imageUrls', before: beforeImgs, after: finalImageUrls });
+                  }
+                } else {
+                  // If no existing found, treat all provided as changes
+                  for (const key of Object.keys(payload)) {
+                    changes.push({ field: key, before: null, after: (payload as any)[key] });
+                  }
+                  changes.push({ field: 'imageUrls', before: [], after: finalImageUrls });
+                }
+
                 await updateDoc(docRef, { ...payload, imageUrls: finalImageUrls, updatedAt: new Date() });
                 // Fire admin notification (non-blocking)
                 try {
@@ -1201,7 +1226,7 @@ export default function MyAdsPage() {
                     adId: editModal.id,
                     userId: currentUser?.uid,
                     userEmail: currentUser?.email,
-                    adSummary: { updatedFields: Object.keys(payload), imageCount: finalImageUrls.length }
+                    adSummary: { updatedFields: changes.map(c => c.field), imageCount: finalImageUrls.length, changes }
                   });
                 } catch (e) {
                   // ignore
