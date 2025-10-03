@@ -21,9 +21,18 @@ export default function EventCard({ documentId, id, name, date, location, image,
   return (
     <Link href={href} passHref>
       <Card className="overflow-hidden flex flex-col group bg-transparent border-0 shadow-none rounded-none cursor-pointer">
-          <div className="relative overflow-hidden rounded-2xl">
-            <Image src={image} alt={name} width={600} height={400} className="object-cover aspect-video w-full group-hover:scale-105 transition-transform duration-500 ease-in-out" data-ai-hint={hint}/>
-             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-black/0" />
+          <div className="relative overflow-hidden rounded-2xl bg-[#EDE7DA]">
+            <div className="relative aspect-video">
+              <Image
+                src={image}
+                alt={name}
+                fill
+                className="object-contain w-full h-full"
+                data-ai-hint={hint}
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+              />
+            </div>
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-black/0" />
           </div>
           <CardContent className="p-0 pt-5 flex-grow flex flex-col">
               <div className="flex items-center gap-4 text-sm text-gray-600 mb-2">
