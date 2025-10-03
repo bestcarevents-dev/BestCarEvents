@@ -25,6 +25,7 @@ import { createAuctionRequestNotification } from "@/lib/notifications";
 import ConsentCheckbox from "@/components/form/ConsentCheckbox";
 import LocationPicker, { type LocationData } from "@/components/LocationPicker";
 import { Switch } from "@/components/ui/switch";
+import TagInput from "@/components/form/TagInput";
 
 const auctionSchema = z.object({
   auctionName: z.string().min(5, "Auction name is required"),
@@ -46,7 +47,7 @@ const auctionSchema = z.object({
   
   // Details
   description: z.string().min(20, "A detailed description of the auction event is required"),
-  auctionType: z.enum(["Online", "In-Person", "Hybrid"]),
+  auctionType: z.string().min(1, "Auction type is required"),
   viewingTimes: z.string().optional(),
 
   // Organizer Info
@@ -308,21 +309,21 @@ export default function RegisterAuctionPage() {
 
               <fieldset className="space-y-6 border-t border-gray-200 pt-6">
                   <legend className="text-xl font-semibold font-headline text-gray-900">Registration & Logistics</legend>
-                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                       <div className="space-y-2">
-                          <Label className="text-gray-700 font-medium">Auction Type</Label>
-                          <Controller name="auctionType" control={control} render={({ field }) => (
-                              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                <SelectTrigger className="bg-white border-gray-300 text-gray-900 focus:border-yellow-400 focus:ring-yellow-400">
-                                  <SelectValue placeholder="Select..." />
-                                </SelectTrigger>
-                                <SelectContent className="bg-white border border-gray-200 text-gray-900">
-                                  <SelectItem value="Online">Online</SelectItem>
-                                  <SelectItem value="In-Person">In-Person</SelectItem>
-                                  <SelectItem value="Hybrid">Hybrid</SelectItem>
-                                </SelectContent>
-                              </Select>
-                          )} />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-2">
+                          <Label className="text-gray-700 font-medium">Auction Type(s)</Label>
+                          <Controller
+                            name="auctionType"
+                            control={control}
+                            render={({ field }) => (
+                              <TagInput
+                                value={field.value as unknown as string}
+                                onChange={field.onChange}
+                                placeholder="e.g., Online, In-Person, Hybrid or custom"
+                                helperText="Type a value and press Enter to add multiple types."
+                              />
+                            )}
+                          />
                           {errors.auctionType && <p className="text-red-500 text-sm">{errors.auctionType.message}</p>}
                       </div>
                   </div>

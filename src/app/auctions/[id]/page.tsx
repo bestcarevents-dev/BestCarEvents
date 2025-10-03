@@ -121,7 +121,7 @@ export default function AuctionDetailsPage() {
               <h2 className="text-xl font-bold font-headline mb-3 text-gray-900">Event Information</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-gray-900">
                 <div className="flex items-center gap-2"><Calendar className="w-4 h-4 text-yellow-600" /><span className="font-semibold">Start:</span> <span>{formatDate(auction.startDate)}</span></div>
-                <div className="flex items-center gap-2"><Calendar className="w-4 h-4 text-yellow-600" /><span className="font-semibold">End:</span> <span>{formatDate(auction.endDate)}</span></div>
+                <div className="flex items-center gap-2"><Calendar className="w-4 h-4 text-yellow-600" /><span className="font-semibold">end-date:</span> <span>{formatDate(auction.endDate)}</span></div>
                 <div className="flex items-center gap-2"><Users className="w-4 h-4 text-yellow-600" /><span className="font-semibold">Viewing:</span> <span>{auction.viewingTimes || 'N/A'}</span></div>
                 <div className="flex items-center gap-2"><Star className="w-4 h-4 text-yellow-600" /><span className="font-semibold">Type:</span> <span>{auction.auctionType}</span></div>
               </div>
