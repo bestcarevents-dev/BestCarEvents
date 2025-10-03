@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { app } from "@/lib/firebase";
-import { getFirestore, collection, query, where, getDocs, orderBy, limit, updateDoc, doc } from "firebase/firestore";
+import { getFirestore, collection, query, where, onSnapshot } from "firebase/firestore";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
@@ -17,25 +17,28 @@ export default function AdminAdEditNotificationsPage() {
   const db = useMemo(() => getFirestore(app), []);
 
   useEffect(() => {
-    const load = async () => {
-      setLoading(true);
-      try {
-        const q = query(
-          collection(db, "notifications"),
-          where("type", "==", "partner_ad_edit"),
-          orderBy("createdAt", "desc"),
-          limit(200)
-        );
-        const snap = await getDocs(q as any);
-        const list = snap.docs.map((d) => ({ id: d.id, ...(d.data() as any) }));
-        setItems(list);
-      } catch (e) {
-        console.error("Failed to load ad edit notifications", e);
-      } finally {
-        setLoading(false);
-      }
+    setLoading(true);
+    const qRef = query(
+      collection(db, "notifications"),
+      where("type", "==", "partner_ad_edit")
+    );
+    const unsub = onSnapshot(qRef as any, (snap) => {
+      const list = snap.docs.map((d) => ({ id: d.id, ...(d.data() as any) }));
+      // Sort client-side by createdAt desc when available
+      list.sort((a: any, b: any) => {
+        const aTs = a?.createdAt?.seconds ? a.createdAt.seconds : (a?.createdAt ? new Date(a.createdAt).getTime() / 1000 : 0);
+        const bTs = b?.createdAt?.seconds ? b.createdAt.seconds : (b?.createdAt ? new Date(b.createdAt).getTime() / 1000 : 0);
+        return bTs - aTs;
+      });
+      setItems(list);
+      setLoading(false);
+    }, (err) => {
+      console.error("Failed to subscribe ad edit notifications", err);
+      setLoading(false);
+    });
+    return () => {
+      try { unsub(); } catch {}
     };
-    load();
   }, [db]);
 
   const handleMarkRead = async (id: string) => {

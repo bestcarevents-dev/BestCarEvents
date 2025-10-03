@@ -144,8 +144,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       unsubscribers.push(unsubContact);
 
       // partner ad edit notifications unread count
-      const unsubAdEdits = onSnapshot(query(collection(db, "notifications"), where("status", "==", "unread"), where("type", "==", "partner_ad_edit")), (snap) => {
-        setCounts((prev) => ({ ...prev, adEdits: snap.size }));
+      const unsubAdEdits = onSnapshot(query(collection(db, "notifications"), where("type", "==", "partner_ad_edit")), (snap) => {
+        const unread = snap.docs.filter((d) => (d.data() as any)?.status !== 'read').length;
+        setCounts((prev) => ({ ...prev, adEdits: unread }));
       });
       unsubscribers.push(unsubAdEdits);
     } catch (e) {
