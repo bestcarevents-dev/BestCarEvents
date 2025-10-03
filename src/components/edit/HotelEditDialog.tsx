@@ -50,8 +50,11 @@ export default function HotelEditDialog({ open, onOpenChange, documentId, initia
   const [contactEmail, setContactEmail] = useState<string>(initial.contactEmail || "");
   const [features, setFeatures] = useState<string>(initial.features || "");
   const [saving, setSaving] = useState(false);
-  const [selectedImage, setSelectedImage] = useState<File | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  // Existing images on the listing
+  const [currentImages, setCurrentImages] = useState<string[]>(Array.isArray((initial as any)?.imageUrls) ? ((initial as any).imageUrls as string[]) : ((initial as any)?.imageUrl ? [((initial as any).imageUrl as string)] : []));
+  // Files selected to be added in this edit session (not yet uploaded)
+  const [filesToAdd, setFilesToAdd] = useState<File[]>([]);
+  const [filePreviews, setFilePreviews] = useState<string[]>([]);
   const { toast } = useToast();
 
   // Ensure values are refreshed when opening
@@ -74,8 +77,9 @@ export default function HotelEditDialog({ open, onOpenChange, documentId, initia
         ? ((initial as any).features as string[]).join(", ")
         : initial.features || "";
       setFeatures(feat);
-      setSelectedImage(null);
-      setPreviewUrl(null);
+      setCurrentImages(Array.isArray((initial as any)?.imageUrls) ? ((initial as any).imageUrls as string[]) : ((initial as any)?.imageUrl ? [((initial as any).imageUrl as string)] : []));
+      setFilesToAdd([]);
+      setFilePreviews([]);
     }
   }, [open, documentId, initial]);
 
@@ -104,20 +108,28 @@ export default function HotelEditDialog({ open, onOpenChange, documentId, initia
         toast({ title: "Not found", description: "This hotel no longer exists.", variant: "destructive" });
         return;
       }
-      if (selectedImage) {
+      // Upload newly added files, if any
+      const uploadedUrls: string[] = [];
+      if (filesToAdd.length > 0) {
         const storage = getStorage(app);
-        const storageRef = ref(storage, `hotels/${documentId}/${Date.now()}_${selectedImage.name}`);
-        await uploadBytes(storageRef, selectedImage);
-        const url = await getDownloadURL(storageRef);
-        // Prefer multiple images field if exists; otherwise use imageUrl
-        payload.imageUrls = Array.isArray((snap.data() as any)?.imageUrls)
-          ? [url, ...((snap.data() as any).imageUrls as string[])].slice(0, 10)
-          : [url];
-        payload.imageUrl = url;
+        for (const file of filesToAdd) {
+          const storageRef = ref(storage, `hotels/${documentId}/${Date.now()}_${file.name}`);
+          await uploadBytes(storageRef, file);
+          const url = await getDownloadURL(storageRef);
+          uploadedUrls.push(url);
+        }
       }
-      if (!hasFieldChanges && !selectedImage) {
+      // Determine if images changed (either removed or added)
+      const initialImages = Array.isArray((initial as any)?.imageUrls) ? ((initial as any).imageUrls as string[]) : ((initial as any)?.imageUrl ? [((initial as any).imageUrl as string)] : []);
+      const imagesChanged = filesToAdd.length > 0 || JSON.stringify(currentImages) !== JSON.stringify(initialImages);
+      if (!hasFieldChanges && !imagesChanged) {
         toast({ title: "No changes", description: "Nothing to update.", variant: "destructive" });
         return;
+      }
+      if (imagesChanged) {
+        const finalImages = [...uploadedUrls, ...currentImages].slice(0, 10);
+        payload.imageUrls = finalImages;
+        payload.imageUrl = finalImages[0] || "";
       }
       await updateDoc(docRef, payload);
       toast({ title: "Saved", description: "Hotel updated successfully." });
@@ -156,29 +168,60 @@ export default function HotelEditDialog({ open, onOpenChange, documentId, initia
             />
           </div>
           <div className="space-y-2">
-            <Label className="text-foreground">Main image</Label>
-            <div className="flex items-center gap-4">
-              <div className="w-28 h-20 rounded-md overflow-hidden border bg-muted/40 flex items-center justify-center">
-                {previewUrl ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={previewUrl} alt="Preview" className="object-cover w-full h-full" />
-                ) : (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={(initial as any)?.imageUrl || (Array.isArray((initial as any)?.imageUrls) ? (initial as any).imageUrls[0] : "/placeholder.jpg")} alt="Current" className="object-cover w-full h-full" />
-                )}
-              </div>
-              <div>
-                <Input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => {
-                    const file = e.target.files?.[0] || null;
-                    setSelectedImage(file);
-                    setPreviewUrl(file ? URL.createObjectURL(file) : null);
-                  }}
-                />
-                <p className="text-xs text-muted-foreground mt-1">Upload a new image. JPG/PNG, up to 5MB.</p>
-              </div>
+            <Label className="text-foreground">Images</Label>
+            {/* Current images with remove option */}
+            <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
+              {currentImages.length === 0 && (
+                <div className="col-span-full text-sm text-muted-foreground">No images currently attached.</div>
+              )}
+              {currentImages.map((url, idx) => (
+                <div key={url + idx} className="relative border rounded-md overflow-hidden bg-muted/40">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={url} alt={`Image ${idx + 1}`} className="object-cover w-full h-24" />
+                  <button
+                    type="button"
+                    className="absolute top-1 right-1 px-2 py-0.5 text-xs rounded bg-red-600 text-white"
+                    onClick={() => setCurrentImages((prev) => prev.filter((_, i) => i !== idx))}
+                  >
+                    Remove
+                  </button>
+                </div>
+              ))}
+            </div>
+            {/* Add new images */}
+            <div className="mt-3">
+              <Input
+                type="file"
+                multiple
+                accept="image/*"
+                onChange={(e) => {
+                  const files = Array.from(e.target.files || []);
+                  if (files.length === 0) return;
+                  setFilesToAdd((prev) => [...prev, ...files]);
+                  setFilePreviews((prev) => [...prev, ...files.map((f) => URL.createObjectURL(f))]);
+                }}
+              />
+              <p className="text-xs text-muted-foreground mt-1">Add one or more images. JPG/PNG, up to 5MB each. Max 10 total.</p>
+              {filePreviews.length > 0 && (
+                <div className="mt-3 grid grid-cols-3 sm:grid-cols-4 gap-3">
+                  {filePreviews.map((p, idx) => (
+                    <div key={p + idx} className="relative border rounded-md overflow-hidden bg-muted/40">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={p} alt={`New ${idx + 1}`} className="object-cover w-full h-24" />
+                      <button
+                        type="button"
+                        className="absolute top-1 right-1 px-2 py-0.5 text-xs rounded bg-gray-700 text-white"
+                        onClick={() => {
+                          setFilesToAdd((prev) => prev.filter((_, i) => i !== idx));
+                          setFilePreviews((prev) => prev.filter((_, i) => i !== idx));
+                        }}
+                      >
+                        Undo
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
           <div className="space-y-1">
