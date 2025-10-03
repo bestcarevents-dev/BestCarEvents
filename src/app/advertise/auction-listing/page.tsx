@@ -98,7 +98,7 @@ export default function AuctionListingPage() {
       const fetchByUser = async (col: string) => {
         const snap = await getDocs(collection(db, col));
         return snap.docs
-          .map((doc) => ({ id: doc.id, ...doc.data() }))
+          .map((d) => ({ documentId: d.id, ...d.data() }))
           .filter(
             (item: any) =>
               item.uploadedByUserId === currentUser.uid ||
@@ -176,7 +176,7 @@ export default function AuctionListingPage() {
         const fetchByUser = async (col: string) => {
           const snap = await getDocs(collection(db, col));
           return snap.docs
-            .map((doc) => ({ id: doc.id, ...doc.data() }))
+            .map((d) => ({ documentId: d.id, ...d.data() }))
             .filter(
               (item: any) =>
                 item.uploadedByUserId === currentUser.uid ||
@@ -275,7 +275,7 @@ export default function AuctionListingPage() {
         const fetchByUser = async (col: string) => {
           const snap = await getDocs(collection(db, col));
           return snap.docs
-            .map((doc) => ({ id: doc.id, ...doc.data() }))
+            .map((d) => ({ documentId: d.id, ...d.data() }))
             .filter(
               (item: any) =>
                 item.uploadedByUserId === currentUser.uid ||
@@ -809,7 +809,7 @@ export default function AuctionListingPage() {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {auctions.map((auction) => (
-                  <Card key={auction.id} className="overflow-hidden">
+                  <Card key={auction.documentId || auction.id} className="overflow-hidden">
                     <CardHeader className="pb-3">
                       <div className="flex items-start justify-between">
                         <div className="flex-1 min-w-0">
@@ -829,7 +829,7 @@ export default function AuctionListingPage() {
                                 setEditModal({
                                   open: true,
                                   col: "auctions",
-                                  id: auction.id,
+                                  id: auction.documentId || auction.id,
                                   fieldName: "auctionName",
                                   label: "Auction Name",
                                   currentValue: auction.auctionName || "",
@@ -839,13 +839,13 @@ export default function AuctionListingPage() {
                               Edit
                             </DropdownMenuItem>
                             <DropdownMenuItem asChild>
-                              <Link href={`/auctions/${auction.id}`}>
+                              <Link href={`/auctions/${auction.documentId || auction.id}`}>
                                 <Eye className="w-4 h-4 mr-2" />
                                 View
                               </Link>
                             </DropdownMenuItem>
                             <DropdownMenuItem
-                              onClick={() => handleDeactivate('auctions', auction.id)}
+                              onClick={() => handleDeactivate('auctions', auction.documentId || auction.id)}
                               disabled={auction.deactivated}
                             >
                               Deactivate
@@ -889,7 +889,7 @@ export default function AuctionListingPage() {
                       </div>
 
                       <div className="mt-4">
-                        <Dialog open={advertiseModal?.open && advertiseModal.col === 'auctions' && advertiseModal.id === auction.id} onOpenChange={(open) => {
+                        <Dialog open={advertiseModal?.open && advertiseModal.col === 'auctions' && advertiseModal.id === (auction.documentId || auction.id)} onOpenChange={(open) => {
                           if (!open) {
                             setAdvertiseModal(null);
                             setSelectedFeatureType(null);
@@ -902,7 +902,7 @@ export default function AuctionListingPage() {
                               disabled={auction.featured || auction.deactivated}
                               className="w-full"
                               onClick={() => {
-                                setAdvertiseModal({ open: true, col: 'auctions', id: auction.id });
+                                setAdvertiseModal({ open: true, col: 'auctions', id: auction.documentId || auction.id });
                                 setSelectedFeatureType(null);
                               }}
                             >
@@ -982,7 +982,7 @@ export default function AuctionListingPage() {
                               <Button
                                 className="w-full text-lg py-4"
                                 disabled={advertiseLoading || !selectedFeatureType}
-                                onClick={() => handleAdvertise('auctions', auction.id)}
+                                onClick={() => handleAdvertise('auctions', auction.documentId || auction.id)}
                               >
                                 {advertiseLoading ? "Processing..." : `Feature ${selectedFeatureType === 'standard' ? 'Standard' : 'Premium'}`}
                               </Button>
@@ -1010,9 +1010,9 @@ export default function AuctionListingPage() {
           if (!o) setEditModal(null);
         }}
         documentId={editModal?.id || ""}
-        initial={{ auctionName: auctions.find((a) => a.id === editModal?.id)?.auctionName, auctionHouse: auctions.find((a) => a.id === editModal?.id)?.auctionHouse }}
+        initial={{ auctionName: auctions.find((a) => (a.documentId || a.id) === editModal?.id)?.auctionName, auctionHouse: auctions.find((a) => (a.documentId || a.id) === editModal?.id)?.auctionHouse }}
         onSaved={(update) => {
-          setAuctions((prev) => prev.map((a) => (a.id === editModal?.id ? { ...a, ...update } : a)));
+          setAuctions((prev) => prev.map((a) => ((a.documentId || a.id) === editModal?.id ? { ...a, ...update } : a)));
         }}
       />
     </div>
