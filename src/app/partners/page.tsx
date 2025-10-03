@@ -95,7 +95,7 @@ export default function PartnersPage() {
                   </div>
                 </div>
                 <div className="mt-16 w-full flex flex-col items-center">
-                  <h3 className="text-xl font-bold font-headline text-yellow-600 mb-1 text-center group-hover:underline transition-all">{partner.businessName}</h3>
+                  <h3 className="text-xl font-bold font-headline text-yellow-600 mb-1 text-center group-hover:underline transition-all notranslate" translate="no" data-no-translate>{partner.businessName}</h3>
                   <div className="flex flex-wrap items-center gap-2 mb-2 text-gray-600 justify-center">
                     {partner.categories?.map((cat: string) => (
                       <span key={cat} className="inline-block bg-gradient-to-r from-yellow-100 to-yellow-200 text-yellow-800 text-xs font-semibold px-3 py-1 rounded-full shadow-sm">{cat}</span>

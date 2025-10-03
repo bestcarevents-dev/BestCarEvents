@@ -56,7 +56,7 @@ export default function ClubDetailPage() {
               <Image src={club.logoUrl || "/placeholder.jpg"} alt={club.clubName} width={128} height={128} className="object-contain w-full h-full" unoptimized />
             </div>
           </div>
-          <h1 className="text-4xl md:text-5xl font-extrabold font-headline text-yellow-600 drop-shadow-lg animate-fade-in-up">{club.clubName}</h1>
+          <h1 className="text-4xl md:text-5xl font-extrabold font-headline text-yellow-600 drop-shadow-lg animate-fade-in-up notranslate" translate="no" data-no-translate>{club.clubName}</h1>
           <div className="flex items-center justify-center gap-3 mt-2 animate-fade-in-up">
             <Users className="w-5 h-5 text-yellow-800" />
             <span className="text-lg font-medium text-gray-900">{club.privacyMode ? [club.city, club.region].filter(Boolean).join(", ") : (club.location || [club.addressLine, club.city, club.region, club.country].filter(Boolean).join(", "))}</span>

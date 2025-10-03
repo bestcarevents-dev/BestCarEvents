@@ -57,7 +57,7 @@ const ServiceCard = ({ id, serviceName, serviceType, description, location, pric
       
       <CardContent className="p-4 bg-white">
         <div className="flex items-start justify-between mb-2">
-          <h3 className="font-headline font-bold text-lg text-gray-900 group-hover:text-[#80A0A9] transition-colors">
+          <h3 className="font-headline font-bold text-lg text-gray-900 group-hover:text-[#80A0A9] transition-colors notranslate" translate="no" data-no-translate>
             {serviceName}
           </h3>
           {rating && (

@@ -442,8 +442,8 @@ function CarHotelsPageContent() {
                             </Link>
                           </CardHeader>
                           <CardContent className="p-6 flex-grow">
-                            <CardTitle className="font-headline text-gray-900">
-                              <Link href={`/hotels/${hotel.documentId}`} className="hover:text-[#80A0A9] transition-colors">{hotel.hotelName}</Link>
+                            <CardTitle className="font-headline text-gray-900 notranslate" translate="no" data-no-translate>
+                              <Link href={`/hotels/${hotel.documentId}`} className="hover:text-[#80A0A9] transition-colors notranslate">{hotel.hotelName}</Link>
                             </CardTitle>
                             <CardDescription className="text-gray-600">{hotel.city}, {hotel.state}</CardDescription>
                             <ul className="mt-4 space-y-2 text-sm text-gray-600">
@@ -492,8 +492,8 @@ function CarHotelsPageContent() {
                         </Link>
                       </CardHeader>
                       <CardContent className="p-6 flex-grow">
-                        <CardTitle className="font-headline text-gray-900">
-                          <Link href={`/hotels/${hotel.documentId}`} className="hover:text-[#80A0A9] transition-colors">{hotel.hotelName}</Link>
+                        <CardTitle className="font-headline text-gray-900 notranslate" translate="no" data-no-translate>
+                          <Link href={`/hotels/${hotel.documentId}`} className="hover:text-[#80A0A9] transition-colors notranslate">{hotel.hotelName}</Link>
                         </CardTitle>
                         <CardDescription className="text-gray-600">{hotel.city}, {hotel.state}</CardDescription>
                         <ul className="mt-4 space-y-2 text-sm text-gray-600">

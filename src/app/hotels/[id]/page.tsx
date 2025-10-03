@@ -123,7 +123,7 @@ export default function HotelDetailPage() {
         {/* Main Info */}
         <div className="lg:col-span-2 space-y-8">
           <div>
-            <h1 className="text-4xl md:text-5xl font-extrabold font-headline text-primary mb-2">{hotel.hotelName}</h1>
+            <h1 className="text-4xl md:text-5xl font-extrabold font-headline text-primary mb-2 notranslate" translate="no" data-no-translate>{hotel.hotelName}</h1>
             <div className="flex flex-wrap items-center gap-2 mb-1">
               <MapPin className="w-5 h-5 text-muted-foreground" />
               <span className="text-lg text-muted-foreground">

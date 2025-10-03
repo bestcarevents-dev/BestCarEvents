@@ -105,7 +105,7 @@ export default function CarDetailsPage() {
       <div className="md:hidden mb-6">
         <div className="flex items-start justify-between gap-3">
           <div>
-            <h1 className="text-2xl font-extrabold font-headline text-gray-900">{car.year} {car.make} {car.model}</h1>
+            <h1 className="text-2xl font-extrabold font-headline text-gray-900 notranslate" translate="no" data-no-translate>{car.year} {car.make} {car.model}</h1>
             <div className="flex flex-wrap gap-2 mt-2">
               {highlightBadges.map(badge => (
                 <Badge key={badge} className="bg-yellow-600 text-white">{badge}</Badge>
@@ -125,7 +125,7 @@ export default function CarDetailsPage() {
       <div className="hidden md:block relative -mt-24 mb-10 z-10">
         <div className="flex flex-wrap items-end justify-between gap-4 md:gap-6 bg-gradient-to-t from-black/80 to-transparent px-6 lg:px-8 pt-12 lg:pt-16 pb-6 lg:pb-8 rounded-b-3xl">
           <div className="min-w-0 flex-1">
-            <h1 className="text-3xl lg:text-5xl font-extrabold font-headline text-white drop-shadow-lg leading-tight break-words">
+            <h1 className="text-3xl lg:text-5xl font-extrabold font-headline text-white drop-shadow-lg leading-tight break-words notranslate" translate="no" data-no-translate>
               {car.year} {car.make} {car.model}
             </h1>
             <div className="flex flex-wrap gap-2 mt-2">

@@ -28,6 +28,11 @@ function collectTexts(node: ReactNode, bucket: Set<string>) {
     const t: any = element.type as any;
     const tagName = typeof t === 'string' ? t : undefined;
     if (tagName === 'script' || tagName === 'style' || tagName === 'noscript') return;
+    // Respect opt-out markers
+    const className: any = (element.props && element.props.className) || '';
+    const hasNoTranslateAttr = !!(element.props && (element.props['data-no-translate'] || element.props.translate === 'no'));
+    const hasNoTranslateClass = typeof className === 'string' && className.split(' ').includes('notranslate');
+    if (hasNoTranslateAttr || hasNoTranslateClass) return;
     collectTexts(element.props?.children, bucket);
     return;
   }
@@ -46,6 +51,11 @@ function replaceTexts(node: ReactNode, translate: (s: string) => string): ReactN
     const t: any = element.type as any;
     const tagName = typeof t === 'string' ? t : undefined;
     if (tagName === 'script' || tagName === 'style' || tagName === 'noscript') return node;
+    // Respect opt-out markers
+    const className: any = (element.props && element.props.className) || '';
+    const hasNoTranslateAttr = !!(element.props && (element.props['data-no-translate'] || element.props.translate === 'no'));
+    const hasNoTranslateClass = typeof className === 'string' && className.split(' ').includes('notranslate');
+    if (hasNoTranslateAttr || hasNoTranslateClass) return node;
     const newChildren = replaceTexts(element.props?.children, translate);
     return React.cloneElement(element, element.props, newChildren);
   }

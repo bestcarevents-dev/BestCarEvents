@@ -103,7 +103,7 @@ export default function AuctionDetailsPage() {
         {/* Main Details */}
         <div className="lg:col-span-2 space-y-6">
           <div>
-            <h1 className="text-3xl md:text-4xl font-extrabold font-headline text-yellow-600 mb-2">{auction.auctionName}</h1>
+            <h1 className="text-3xl md:text-4xl font-extrabold font-headline text-yellow-600 mb-2 notranslate" translate="no" data-no-translate>{auction.auctionName}</h1>
             <div className="flex flex-wrap items-center gap-2 mb-3">
               <MapPin className="w-4 h-4 text-gray-600" />
               <span className="text-gray-700">{auction.privacyMode ? [auction.city, auction.state].filter(Boolean).join(", ") : (auction.location || [auction.address, auction.city, auction.state, auction.country].filter(Boolean).join(", "))}</span>

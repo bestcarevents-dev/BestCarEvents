@@ -100,7 +100,7 @@ export default function ServiceDetailsPage({ params }: { params: { id: string } 
                 {/* Keep overlay for desktop only; move content out on mobile */}
                 <div className="hidden sm:flex absolute left-0 bottom-0 w-full bg-gradient-to-t from-black/80 to-transparent p-8 flex-col gap-4">
                     <div>
-                        <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold font-headline text-white drop-shadow-lg animate-pop-in leading-tight">{service.serviceName}</h1>
+                        <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold font-headline text-white drop-shadow-lg animate-pop-in leading-tight notranslate" translate="no" data-no-translate>{service.serviceName}</h1>
                         <div className="flex flex-wrap gap-2 mt-2">
                             <Badge className="bg-yellow-600 text-white animate-bounce-in">{service.serviceType}</Badge>
                             {service.featured && (
@@ -119,7 +119,7 @@ export default function ServiceDetailsPage({ params }: { params: { id: string } 
             </div>
             {/* Mobile title and badges below image to avoid cramped overlay */}
             <div className="sm:hidden mb-6">
-                <h1 className="text-2xl font-extrabold font-headline text-gray-900 leading-tight">{service.serviceName}</h1>
+                <h1 className="text-2xl font-extrabold font-headline text-gray-900 leading-tight notranslate" translate="no" data-no-translate>{service.serviceName}</h1>
                 <div className="flex flex-wrap gap-2 mt-2">
                     <Badge className="bg-yellow-600 text-white text-xs">{service.serviceType}</Badge>
                     {service.featured && (

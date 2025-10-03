@@ -23,6 +23,17 @@ function collectTextNodes(root: Node): Text[] {
       if (n.parentElement && ['SCRIPT', 'STYLE', 'NOSCRIPT'].includes(n.parentElement.tagName)) {
         return NodeFilter.FILTER_REJECT;
       }
+      // Respect opt-out markers on parent elements
+      if (n.parentElement) {
+        const el = n.parentElement as HTMLElement;
+        if (el.getAttribute('data-no-translate') != null || el.getAttribute('translate') === 'no') {
+          return NodeFilter.FILTER_REJECT;
+        }
+        const cls = el.className || '';
+        if (typeof cls === 'string' && cls.split(' ').includes('notranslate')) {
+          return NodeFilter.FILTER_REJECT;
+        }
+      }
       return NodeFilter.FILTER_ACCEPT;
     },
   } as any);

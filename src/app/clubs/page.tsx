@@ -440,7 +440,7 @@ function ClubsPageContent() {
                               </div>
                             </div>
                             <div className="mt-12 w-full flex flex-col items-center">
-                              <h3 className="text-xl font-bold font-headline text-[#80A0A9] mb-1 text-center group-hover:underline transition-all">{club.clubName}</h3>
+                              <h3 className="text-xl font-bold font-headline text-[#80A0A9] mb-1 text-center group-hover:underline transition-all notranslate" translate="no" data-no-translate>{club.clubName}</h3>
                               <div className="flex items-center gap-2 mb-2 text-gray-600">
                                 <Users className="w-4 h-4" />
                                 <span>{club.city}, {club.country}</span>
@@ -500,7 +500,7 @@ function ClubsPageContent() {
                           </div>
                         </div>
                         <div className="mt-12 w-full flex flex-col items-center">
-                          <h3 className="text-xl font-bold font-headline text-[#80A0A9] mb-1 text-center group-hover:underline transition-all">{club.clubName}</h3>
+                          <h3 className="text-xl font-bold font-headline text-[#80A0A9] mb-1 text-center group-hover:underline transition-all notranslate" translate="no" data-no-translate>{club.clubName}</h3>
                           <div className="flex items-center gap-2 mb-2 text-gray-600">
                             <Users className="w-4 h-4" />
                             <span>{club.city}, {club.country}</span>

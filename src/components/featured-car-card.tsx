@@ -60,7 +60,7 @@ export default function FeaturedCarCard({ id, name, year, price, image, hint, sp
               <span className="font-semibold tracking-[0.08em] text-[#7D8C91]">{year}</span>
               <div className="h-[1px] w-8 bg-gradient-to-r from-[#C3A76D] to-transparent" />
             </div>
-            <h3 className="mt-1 text-[28px] md:text-[34px] leading-tight font-headline font-extrabold tracking-[-0.01em] text-[#1e1e1e]">
+            <h3 className="mt-1 text-[28px] md:text-[34px] leading-tight font-headline font-extrabold tracking-[-0.01em] text-[#1e1e1e] notranslate" translate="no" data-no-translate>
               {name}
             </h3>
             <p className="mt-3 text-[22px] font-mono font-bold text-[#2a2a2a]">

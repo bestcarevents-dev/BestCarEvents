@@ -79,7 +79,7 @@ export default function PartnerDetailPage() {
               <Image src={partner.logoUrl || "/placeholder.jpg"} alt={partner.businessName} width={128} height={128} className="object-contain w-full h-full" />
             </div>
           </div>
-          <h1 className="text-4xl md:text-5xl font-extrabold font-headline text-yellow-600 drop-shadow-lg animate-fade-in-up">{partner.businessName}</h1>
+          <h1 className="text-4xl md:text-5xl font-extrabold font-headline text-yellow-600 drop-shadow-lg animate-fade-in-up notranslate" translate="no" data-no-translate>{partner.businessName}</h1>
           <div className="flex items-center justify-center gap-3 mt-2 animate-fade-in-up">
             <Badge className="bg-yellow-600 text-white font-bold ml-2 animate-pop">Partner</Badge>
           </div>
