@@ -131,6 +131,22 @@ export default function HomepageAdCarousel() {
       {/* Ads Grid: show more items, no carousel */}
       <div className={`grid gap-6 ${isMobile ? 'grid-cols-1' : 'grid-cols-3'}`}>
         {ads.map(renderAdContent)}
+        {/* Subtle CTA card inviting partners to advertise */}
+        <Link href="/advertise/advertise" className="group" aria-label="Advertise with us">
+          <Card className="flex flex-col h-full bg-white border border-dashed border-yellow-500/30 hover:border-yellow-600/40 transition-colors shadow-sm overflow-hidden">
+            <CardContent className="relative p-6 flex flex-col items-center justify-center text-center min-h-[192px]">
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-yellow-50/50 to-transparent" />
+              <div className="relative">
+                <p className="text-xs uppercase tracking-wide text-gray-500">Your brand here</p>
+                <h4 className="mt-2 text-lg font-headline font-semibold text-gray-900">This spot could be yours</h4>
+                <p className="mt-1 text-sm text-gray-600">Advertise with us now</p>
+                <div className="mt-3 inline-flex items-center text-yellow-700 group-hover:text-yellow-800 font-semibold text-sm">
+                  Get started <span className="ml-1">→</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </Link>
       </div>
     </div>
   );

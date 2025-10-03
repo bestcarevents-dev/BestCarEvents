@@ -535,10 +535,6 @@ const ValueProposition = ({ copy }: { copy: NonNullable<HomepageContent["value"]
                 </div>
             </div>
             
-            {/* Partner Ads Section */}
-            <div className="mt-12 md:mt-20">
-                <HomepageAdCarousel />
-            </div>
         </div>
     </div>
   );
@@ -2337,6 +2333,10 @@ export default function Home() {
 
       <FeaturedCarsSection copy={copy.featuredCars ?? defaultHomepageContent.featuredCars!} />
       <FeaturedEventsSection copy={copy.featuredEvents ?? defaultHomepageContent.featuredEvents!} />
+      {/* Featured Advertisements (Partner Ads) after events */}
+      <div className="container mx-auto px-4 mt-8 md:mt-12">
+        <HomepageAdCarousel />
+      </div>
       <CitiesSliderSection />
       <SimpleGallerySection title={copy.galleries?.location1?.title ?? defaultHomepageContent.galleries!.location1!.title} collectionName="gallery_location1" max={12} />
       <FeaturedAuctionsSection copy={copy.featuredAuctions ?? defaultHomepageContent.featuredAuctions!} />
