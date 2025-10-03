@@ -26,6 +26,7 @@ import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { useToast } from "@/hooks/use-toast";
 import { usePricing } from "@/lib/usePricing";
 import { validateCoupon } from "@/lib/coupon";
+import { createPartnerAdEditNotification } from "@/lib/notifications";
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
@@ -1194,6 +1195,17 @@ export default function MyAdsPage() {
                 const existingUrls = Array.isArray(existing?.imageUrls) ? existing!.imageUrls : [];
                 const finalImageUrls = [...newImageUrls, ...existingUrls];
                 await updateDoc(docRef, { ...payload, imageUrls: finalImageUrls, updatedAt: new Date() });
+                // Fire admin notification (non-blocking)
+                try {
+                  await createPartnerAdEditNotification({
+                    adId: editModal.id,
+                    userId: currentUser?.uid,
+                    userEmail: currentUser?.email,
+                    adSummary: { updatedFields: Object.keys(payload), imageCount: finalImageUrls.length }
+                  });
+                } catch (e) {
+                  // ignore
+                }
                 setAds((prev) => prev.map((a) => (a.id === editModal.id ? { ...a, ...editDraft, imageUrls: finalImageUrls } : a)));
                 setEditModal(null);
               }}

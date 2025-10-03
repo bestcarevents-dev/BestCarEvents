@@ -3,7 +3,7 @@ import { collection, addDoc, serverTimestamp, query, where, getDocs, updateDoc, 
 
 export interface Notification {
   id?: string;
-  type: 'event_request' | 'car_request' | 'auction_request' | 'hotel_request' | 'club_request' | 'service_request' | 'partner_request' | 'newsletter_request' | 'payment';
+  type: 'event_request' | 'car_request' | 'auction_request' | 'hotel_request' | 'club_request' | 'service_request' | 'partner_request' | 'newsletter_request' | 'payment' | 'partner_ad_edit';
   title: string;
   message: string;
   status?: 'unread' | 'read';
@@ -174,3 +174,15 @@ export async function createPaymentNotification(paymentData: any) {
     relatedId: paymentData.paymentId
   });
 } 
+
+export async function createPartnerAdEditNotification(payload: { adId: string; userId?: string; userEmail?: string; adSummary?: any }) {
+  return createNotification({
+    type: 'partner_ad_edit',
+    title: 'Partner Ad Updated',
+    message: `Ad ${payload.adId} was updated`,
+    data: payload.adSummary || null,
+    userId: payload.userId,
+    userEmail: payload.userEmail,
+    relatedId: payload.adId,
+  });
+}

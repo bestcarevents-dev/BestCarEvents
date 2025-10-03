@@ -78,6 +78,7 @@ const NAV_SECTIONS = [
     title: "Advertising & Commerce",
     items: [
       { href: "/admin/featured", icon: Star, label: "Advertisements" },
+      { href: "/admin/ad-edit-notifications", icon: Bell, label: "Ad Edit Notifications" },
       { href: "/admin/payments", icon: CreditCard, label: "Payments" },
       { href: "/admin/coupons", icon: CreditCard, label: "Coupons" },
       { href: "/admin/pricing", icon: CreditCard, label: "Pricing" },
@@ -112,7 +113,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     partners: number;
     newsletters: number;
     contact: number;
-  }>({ events: 0, cars: 0, auctions: 0, hotels: 0, clubs: 0, services: 0, partners: 0, newsletters: 0, contact: 0 });
+    adEdits: number;
+  }>({ events: 0, cars: 0, auctions: 0, hotels: 0, clubs: 0, services: 0, partners: 0, newsletters: 0, contact: 0, adEdits: 0 });
 
   useEffect(() => {
     const db = getFirestore(app);
@@ -140,6 +142,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         setCounts((prev) => ({ ...prev, contact: snap.size }));
       });
       unsubscribers.push(unsubContact);
+
+      // partner ad edit notifications unread count
+      const unsubAdEdits = onSnapshot(query(collection(db, "notifications"), where("status", "==", "unread"), where("type", "==", "partner_ad_edit")), (snap) => {
+        setCounts((prev) => ({ ...prev, adEdits: snap.size }));
+      });
+      unsubscribers.push(unsubAdEdits);
     } catch (e) {
       console.error("Failed to subscribe admin sidebar counts", e);
     }
@@ -170,6 +178,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         return 0;
       case "/admin/contact-requests":
         return counts.contact;
+      case "/admin/ad-edit-notifications":
+        return counts.adEdits;
       default:
         return 0;
     }
