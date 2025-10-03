@@ -46,9 +46,10 @@ import {
   SheetContent,
   SheetTrigger,
 } from "@/components/ui/sheet"
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { getFirestore, collection, getDocs, query, where, onSnapshot } from "firebase/firestore";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { app } from "@/lib/firebase";
 
 const NAV_SECTIONS = [
@@ -103,6 +104,9 @@ const NAV_SECTIONS = [
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
+  const [checkingAccess, setCheckingAccess] = useState(true);
+  const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
   const [counts, setCounts] = useState<{
     events: number;
     cars: number;
@@ -116,7 +120,46 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     adEdits: number;
   }>({ events: 0, cars: 0, auctions: 0, hotels: 0, clubs: 0, services: 0, partners: 0, newsletters: 0, contact: 0, adEdits: 0 });
 
+  // Auth + role check: ensure we have both auth and user query result before allowing access
   useEffect(() => {
+    const auth = getAuth(app);
+    const unsubscribe = onAuthStateChanged(auth, async (u) => {
+      if (!u || !u.email) {
+        setIsAdmin(false);
+        setCheckingAccess(false);
+        return;
+      }
+      try {
+        const db = getFirestore(app);
+        const qUsers = query(collection(db, "users"), where("email", "==", u.email));
+        const snap = await getDocs(qUsers);
+        let allowed = false;
+        snap.forEach((d) => {
+          const data = d.data() as any;
+          if (data?.userType === "admin") allowed = true;
+        });
+        setIsAdmin(allowed);
+      } catch (e) {
+        console.error("Failed to verify admin access", e);
+        setIsAdmin(false);
+      } finally {
+        setCheckingAccess(false);
+      }
+    });
+    return () => unsubscribe();
+  }, []);
+
+  // Redirect non-admins only after checks are complete
+  useEffect(() => {
+    if (checkingAccess) return;
+    if (isAdmin === false) {
+      try { router.replace("/"); } catch {}
+    }
+  }, [checkingAccess, isAdmin, router]);
+
+  useEffect(() => {
+    // Only attach subscriptions after admin access is confirmed
+    if (isAdmin !== true) return;
     const db = getFirestore(app);
     const unsubscribers: Array<() => void> = [];
     try {
@@ -157,7 +200,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         try { u(); } catch {}
       });
     };
-  }, []);
+  }, [isAdmin]);
 
   const getBadgeCount = (href: string) => {
     switch (href) {
@@ -185,6 +228,15 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         return 0;
     }
   };
+
+  // Loader while verifying access (prevents premature redirects for valid admins)
+  if (checkingAccess || isAdmin !== true) {
+    return (
+      <div className="min-h-screen w-full flex items-center justify-center">
+        <div className="text-sm text-muted-foreground">Checking admin access...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
