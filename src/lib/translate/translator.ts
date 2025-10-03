@@ -17,15 +17,26 @@ export type TranslateBatchLog = {
 
 const MAX_PER_REQUEST = 5000;
 
-function sanitizeTranslated(original: string, translated: string | null | undefined, _targetLocale: string): string {
-  if (!translated) return original;
-  let out = String(translated);
-  // Remove language labels like "italiano:" prefixes that sometimes leak through
-  out = out.replace(/^\s*(italiano|italian|it)\s*:\s*/i, '');
-  // Normalize surrounding whitespace; rendering layers will re-apply original padding
-  out = out.trim();
-  if (!out || /^\s*(italiano|italian|it)\s*:?\s*$/i.test(out)) return original;
-  return out;
+function sanitizeTranslated(original: string, translated: string | null | undefined, targetLocale: string): string {
+	if (!translated) return original;
+	let out = String(translated);
+	// Remove language labels like "italiano:" prefixes that sometimes leak through
+	out = out.replace(/^\s*(italiano|italian|it)\s*:\s*/i, '');
+	// Normalize surrounding whitespace; rendering layers will re-apply original padding
+	out = out.trim();
+	if (!out || /^\s*(italiano|italian|it)\s*:?\s*$/i.test(out)) return original;
+
+	// Locale-specific fixes
+	if (targetLocale?.toLowerCase().startsWith('it')) {
+		// Ensure the label "End" translates to "Fine"
+		const origTrim = String(original || '').trim();
+		if (/^end\s*:?$/i.test(origTrim)) {
+			const hasColon = /:\s*$/.test(origTrim);
+			return `Fine${hasColon ? ':' : ''}`;
+		}
+	}
+
+	return out;
 }
 
 function chunkTextsPreserveOrder(texts: string[]): string[][] {
