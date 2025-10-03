@@ -17,11 +17,6 @@ export default async function Footer() {
               <span className="text-xl font-bold font-headline tracking-tighter text-foreground">BestCarEvents</span>
             </Link>
             <p className="text-sm max-w-xs">The premier destination for automotive enthusiasts to discover events, buy and sell unique cars, and connect with a vibrant community.</p>
-             <div className="flex mt-6 space-x-4">
-                <Link href="#" className="hover:text-[#E0D8C1] transition-colors"><Facebook size={20}/></Link>
-                <Link href="#" className="hover:text-[#E0D8C1] transition-colors"><Twitter size={20}/></Link>
-                <Link href="#" className="hover:text-[#E0D8C1] transition-colors"><Instagram size={20}/></Link>
-              </div>
           </div>
 
           <div className="md:col-span-8 grid grid-cols-2 md:grid-cols-4 gap-8">

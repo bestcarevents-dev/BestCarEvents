@@ -200,10 +200,10 @@ export default function AdvertisePage() {
     let description = '';
     if (bannerPaymentModal.type === 'homepage') {
       amount = getPrice('banner.homepage', BANNER_PRICES.homepage);
-      description = 'Homepage Banner Advertisement';
+      description = 'Homepage Banner (All Pages + Category)';
     } else if (bannerPaymentModal.type === 'category') {
       amount = getPrice('banner.category', BANNER_PRICES.category);
-      description = 'Category Page Banner Advertisement';
+      description = 'Category Page Banner';
     }
     if (!amount || !description) {
       setBannerPaymentError('Invalid payment details.');
@@ -255,10 +255,10 @@ export default function AdvertisePage() {
     let description = '';
     if (bannerPaymentModal.type === 'homepage') {
       amount = getPrice('banner.homepage', BANNER_PRICES.homepage);
-      description = 'Homepage Banner Advertisement';
+      description = 'Homepage Banner (All Pages + Category)';
     } else if (bannerPaymentModal.type === 'category') {
       amount = getPrice('banner.category', BANNER_PRICES.category);
-      description = 'Category Page Banner Advertisement';
+      description = 'Category Page Banner';
     }
     if (!amount || !description) {
       throw new Error('Invalid payment details');
@@ -343,7 +343,7 @@ export default function AdvertisePage() {
     setBannerStripeClientSecret(null);
     toast({
       title: "Payment Successful",
-      description: `You have purchased 1 ${bannerPaymentModal.type === 'homepage' ? 'Homepage Banner' : 'Category Page Banner'} Credit!`,
+      description: `You have purchased 1 ${bannerPaymentModal.type === 'homepage' ? 'Homepage Banner (All Pages + Category)' : 'Category Page Banner'} Credit!`,
     });
     // Refresh user document
     if (currentUser) {
