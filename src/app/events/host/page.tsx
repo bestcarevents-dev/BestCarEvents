@@ -30,6 +30,7 @@ import ConsentCheckbox from "@/components/form/ConsentCheckbox";
 const eventSchema = z.object({
   eventName: z.string().min(5, "Event name must be at least 5 characters"),
   eventDate: z.date({ required_error: "Event date is required" }),
+  endDate: z.date().optional(),
   location: z.string().min(5, "Location is required"),
   locationData: z.custom<LocationData>((v) => !!v && typeof v === 'object').refine((v: any) => v?.formattedAddress && typeof v.latitude === 'number' && typeof v.longitude === 'number', {
     message: "Please select a valid location from suggestions or map",
@@ -131,6 +132,7 @@ export default function HostEventPage() {
       const raw = {
         eventName: data.eventName,
         eventDate: data.eventDate,
+        endDate: data.endDate,
         location: data.location,
         locationData: data.locationData,
         addressLine: data.addressLine,
@@ -258,6 +260,37 @@ export default function HostEventPage() {
                         )}
                     />
                     {errors.eventDate && <p className="text-red-500 text-sm">{errors.eventDate.message as string}</p>}
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="endDate" className="text-gray-700 font-medium">End Date (Optional)</Label>
+                    <Controller
+                        name="endDate"
+                        control={control}
+                        render={({ field }) => (
+                            <Popover>
+                                <PopoverTrigger asChild>
+                                    <Button
+                                        variant={"outline"}
+                                        className={cn(
+                                            "w-full justify-start text-left font-normal bg-white border-gray-300 text-gray-900 hover:bg-gray-50 focus:border-yellow-400 focus:ring-yellow-400",
+                                            !field.value && "text-gray-500"
+                                        )}
+                                    >
+                                        <CalendarIcon className="mr-2 h-4 w-4" />
+                                        {field.value ? format(field.value, "PPP") : <span>Pick an end date</span>}
+                                    </Button>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-auto p-0 bg-white border border-gray-200 text-gray-900">
+                                    <Calendar
+                                        mode="single"
+                                        selected={field.value as any}
+                                        onSelect={field.onChange}
+                                        initialFocus
+                                    />
+                                </PopoverContent>
+                            </Popover>
+                        )}
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="addressLine" className="text-gray-700 font-medium">Address</Label>

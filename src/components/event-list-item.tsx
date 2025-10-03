@@ -9,13 +9,14 @@ export type EventListItemProps = {
   documentId?: string;
   name: string;
   date: string;
+  endDate?: string;
   location: string;
   image: string;
   hint: string;
   description: string;
 };
 
-export default function EventListItem({ id, documentId, name, date, location, image, hint, description }: EventListItemProps) {
+export default function EventListItem({ id, documentId, name, date, endDate, location, image, hint, description }: EventListItemProps) {
   const resolvedId = typeof documentId !== 'undefined' ? documentId : (typeof id !== 'undefined' ? String(id) : '');
   const href = resolvedId ? `/events/${resolvedId}` : '/events';
   return (
@@ -45,7 +46,7 @@ export default function EventListItem({ id, documentId, name, date, location, im
             <div className="flex flex-wrap items-center gap-2 md:gap-3 text-sm mb-4">
               <span className="inline-flex items-center gap-2 rounded-[10px] border border-[#D9CEB6] bg-[#F4F0E7] px-3 py-1 text-[#7A6E57]">
                 <Calendar className="w-4 h-4 text-[#7D8C91]" />
-                {date}
+                {endDate ? `${date} - ${endDate}` : date}
               </span>
               <span className="inline-flex items-center gap-2 rounded-[10px] border border-[#D9CEB6] bg-[#F4F0E7] px-3 py-1 text-[#7A6E57]">
                 <MapPin className="w-4 h-4 text-[#7D8C91]" />

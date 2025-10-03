@@ -436,7 +436,8 @@ function EventsPageContent() {
                                  documentId={event.documentId}
                                  featured={true} 
                                  name={event.eventName || event.name || `Event #${index + 1}`} 
-                                 date={event.eventDate ? new Date(event.eventDate.seconds * 1000).toLocaleDateString() : event.date} 
+                                 date={event.eventDate ? new Date(event.eventDate.seconds * 1000).toLocaleDateString() : (event.date || '')}
+                                 endDate={event.endDate ? (event.endDate.seconds ? new Date(event.endDate.seconds * 1000).toLocaleDateString() : new Date(event.endDate).toLocaleDateString()) : undefined}
                                  location={event.location} 
                                  image={event.imageUrl || event.image} 
                                  hint={event.eventType || event.hint} 
@@ -471,7 +472,8 @@ function EventsPageContent() {
                              documentId={event.documentId}
                              featured={false} 
                              name={event.eventName || event.name || `Event #${index + 1}`} 
-                             date={event.eventDate ? new Date(event.eventDate.seconds * 1000).toLocaleDateString() : event.date} 
+                             date={event.eventDate ? new Date(event.eventDate.seconds * 1000).toLocaleDateString() : (event.date || '')}
+                             endDate={event.endDate ? (event.endDate.seconds ? new Date(event.endDate.seconds * 1000).toLocaleDateString() : new Date(event.endDate).toLocaleDateString()) : undefined}
                              location={event.location} 
                              image={event.imageUrl || event.image} 
                              hint={event.eventType || event.hint} 

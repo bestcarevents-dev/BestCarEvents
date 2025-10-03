@@ -40,6 +40,7 @@ type EventData = {
   id: string;
   eventName?: string;
   eventDate?: any;
+  endDate?: any;
   location?: string;
   description?: string;
   image?: string;
@@ -912,6 +913,7 @@ const FeaturedEventsSection = ({ copy }: { copy: NonNullable<HomepageContent["fe
                             documentId={event.id}
                             name={event.eventName || "Event"}
                             date={formatDate(event.eventDate)}
+                            endDate={event.endDate ? formatDate(event.endDate) : undefined}
                             location={event.location || "TBD"}
                             image={event.imageUrl || event.image || "https://via.placeholder.com/600x400?text=No+Image"}
                             hint={event.hint || "event"}
@@ -931,6 +933,7 @@ const FeaturedEventsSection = ({ copy }: { copy: NonNullable<HomepageContent["fe
                           documentId={event.id}
                           name={event.eventName || "Event"}
                           date={formatDate(event.eventDate)}
+                          endDate={event.endDate ? formatDate(event.endDate) : undefined}
                           location={event.location || "TBD"}
                           image={event.imageUrl || event.image || "https://via.placeholder.com/600x400?text=No+Image"}
                           hint={event.hint || "event"}

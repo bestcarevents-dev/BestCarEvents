@@ -418,6 +418,7 @@ export default function EventsListingPage() {
     columns: [
       { label: "Name", key: "eventName" },
       { label: "Date", key: "eventDate" },
+      { label: "End Date", key: "endDate" },
       { label: "Location", key: "location" },
       { label: "Status", key: "status" },
       { label: "Featured", key: "featured" },
@@ -807,9 +808,17 @@ export default function EventsListingPage() {
                         <div className="flex items-center gap-2 text-sm">
                           <Calendar className="w-4 h-4 text-muted-foreground" />
                           <span className="text-muted-foreground">Event Date:</span>
-                          <span>{event.eventDate?.seconds 
-                            ? new Date(event.eventDate.seconds * 1000).toLocaleDateString()
-                            : event.eventDate?.toString() || 'TBD'}</span>
+                          <span>
+                            {(() => {
+                              const start = event.eventDate?.seconds ? new Date(event.eventDate.seconds * 1000) : (event.eventDate ? new Date(event.eventDate) : null);
+                              const end = event.endDate?.seconds ? new Date(event.endDate.seconds * 1000) : (event.endDate ? new Date(event.endDate) : null);
+                              if (!start) return 'TBD';
+                              const s = start.toLocaleDateString();
+                              if (!end) return s;
+                              const e = end.toLocaleDateString();
+                              return `${s} - ${e}`;
+                            })()}
+                          </span>
                         </div>
                         
                         <div className="flex items-center gap-2 text-sm">

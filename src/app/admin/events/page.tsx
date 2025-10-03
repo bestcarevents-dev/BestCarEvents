@@ -22,6 +22,7 @@ interface EventRequest {
   id: string;
   eventName: string;
   eventDate: any;
+  endDate?: any;
   location: string;
   description: string;
   organizerName: string;
@@ -104,6 +105,7 @@ export default function PendingEventsPage() {
       const approvedEventData: Omit<EventRequest, 'id' | 'status' | 'submittedAt'> = {
           eventName: request.eventName,
           eventDate: request.eventDate,
+          endDate: request.endDate,
           location: request.location,
           description: request.description,
           organizerName: request.organizerName,
@@ -216,6 +218,7 @@ export default function PendingEventsPage() {
                   <TableHead>Image</TableHead>
                   <TableHead>Event Name</TableHead>
                   <TableHead>Date</TableHead>
+                <TableHead>End Date</TableHead>
                   <TableHead>Location</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Actions</TableHead>
@@ -231,6 +234,7 @@ export default function PendingEventsPage() {
                     </TableCell>
                     <TableCell>{request.eventName}</TableCell>
                     <TableCell>{request.eventDate?.seconds ? new Date(request.eventDate.seconds * 1000).toLocaleDateString() : 'N/A'}</TableCell>
+                    <TableCell>{request.endDate?.seconds ? new Date(request.endDate.seconds * 1000).toLocaleDateString() : (request.endDate ? new Date(request.endDate as any).toLocaleDateString() : '-')}</TableCell>
                     <TableCell>{request.location}</TableCell>
                     <TableCell>
                       <Badge variant={request.status === 'pending' ? 'default' : request.status === 'approved' ? 'secondary' : 'destructive'}>{request.status}</Badge>
@@ -272,6 +276,7 @@ export default function PendingEventsPage() {
                   <TableHead>Image</TableHead>
                   <TableHead>Event Name</TableHead>
                   <TableHead>Date</TableHead>
+                <TableHead>End Date</TableHead>
                   <TableHead>Location</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Featured</TableHead>
@@ -289,6 +294,7 @@ export default function PendingEventsPage() {
                     </TableCell>
                     <TableCell>{request.eventName}</TableCell>
                     <TableCell>{request.eventDate?.seconds ? new Date(request.eventDate.seconds * 1000).toLocaleDateString() : 'N/A'}</TableCell>
+                    <TableCell>{request.endDate?.seconds ? new Date(request.endDate.seconds * 1000).toLocaleDateString() : (request.endDate ? new Date(request.endDate as any).toLocaleDateString() : '-')}</TableCell>
                     <TableCell>{request.location}</TableCell>
                     <TableCell>
                       <Badge variant="secondary">Approved</Badge>

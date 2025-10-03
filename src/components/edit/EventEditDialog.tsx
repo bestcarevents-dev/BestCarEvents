@@ -16,6 +16,8 @@ type EventEditDialogProps = {
   documentId: string;
   initial: {
     eventName?: string;
+    eventDate?: any;
+    endDate?: any;
     location?: string;
     description?: string;
     organizerName?: string;
@@ -37,6 +39,8 @@ type EventEditDialogProps = {
 
 export default function EventEditDialog({ open, onOpenChange, documentId, initial, onSaved }: EventEditDialogProps) {
   const [eventName, setEventName] = useState<string>(initial.eventName || "");
+  const [eventDate, setEventDate] = useState<string>(initial.eventDate?.seconds ? new Date(initial.eventDate.seconds * 1000).toISOString().slice(0, 10) : (initial.eventDate ? new Date(initial.eventDate as any).toISOString().slice(0, 10) : ""));
+  const [endDate, setEndDate] = useState<string>(initial.endDate?.seconds ? new Date(initial.endDate.seconds * 1000).toISOString().slice(0, 10) : (initial.endDate ? new Date(initial.endDate as any).toISOString().slice(0, 10) : ""));
   const [location, setLocation] = useState<string>(initial.location || "");
   const [description, setDescription] = useState<string>(initial.description || "");
   const [organizerName, setOrganizerName] = useState<string>(initial.organizerName || "");
@@ -61,6 +65,8 @@ export default function EventEditDialog({ open, onOpenChange, documentId, initia
   useEffect(() => {
     if (open) {
       setEventName(initial.eventName || "");
+      setEventDate(initial.eventDate?.seconds ? new Date(initial.eventDate.seconds * 1000).toISOString().slice(0, 10) : (initial.eventDate ? new Date(initial.eventDate as any).toISOString().slice(0, 10) : ""));
+      setEndDate(initial.endDate?.seconds ? new Date(initial.endDate.seconds * 1000).toISOString().slice(0, 10) : (initial.endDate ? new Date(initial.endDate as any).toISOString().slice(0, 10) : ""));
       setLocation(initial.location || "");
       setDescription(initial.description || "");
       setOrganizerName(initial.organizerName || "");
@@ -82,6 +88,12 @@ export default function EventEditDialog({ open, onOpenChange, documentId, initia
   const handleSave = async () => {
     const payload: Record<string, any> = {};
     if (eventName.trim() !== (initial.eventName || "")) payload.eventName = eventName.trim();
+    if (eventDate.trim() !== (initial.eventDate ? (initial.eventDate?.seconds ? new Date(initial.eventDate.seconds * 1000).toISOString().slice(0, 10) : new Date(initial.eventDate as any).toISOString().slice(0, 10)) : "")) {
+      payload.eventDate = eventDate ? new Date(eventDate) : undefined;
+    }
+    if (endDate.trim() !== (initial.endDate ? (initial.endDate?.seconds ? new Date(initial.endDate.seconds * 1000).toISOString().slice(0, 10) : new Date(initial.endDate as any).toISOString().slice(0, 10)) : "")) {
+      payload.endDate = endDate ? new Date(endDate) : null;
+    }
     if (location.trim() !== (initial.location || "")) payload.location = location.trim();
     if (description.trim() !== (initial.description || "")) payload.description = description.trim();
     if (organizerName.trim() !== (initial.organizerName || "")) payload.organizerName = organizerName.trim();
@@ -173,6 +185,14 @@ export default function EventEditDialog({ open, onOpenChange, documentId, initia
             </div>
           </div>
           <div className="space-y-1">
+          <Label htmlFor="eventDate" className="text-foreground">Event date</Label>
+          <Input id="eventDate" type="date" value={eventDate} onChange={(e) => setEventDate(e.target.value)} className="text-foreground" />
+        </div>
+        <div className="space-y-1">
+          <Label htmlFor="endDate" className="text-foreground">End date (optional)</Label>
+          <Input id="endDate" type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} className="text-foreground" />
+        </div>
+        <div className="space-y-1">
             <Label htmlFor="eventName" className="text-foreground">Event name</Label>
             <Input id="eventName" value={eventName} onChange={(e) => setEventName(e.target.value)} placeholder="e.g. Cars & Coffee" className="text-foreground" />
           </div>

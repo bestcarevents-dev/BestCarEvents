@@ -165,7 +165,17 @@ export default function EventDetailsPage({ params }: { params: { id: string } })
                 <div className="flex flex-col items-center bg-white border border-gray-200 rounded-xl shadow-lg px-4 sm:px-6 py-4 sm:py-6 animate-pop-in">
                     <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-600 mb-2" />
                     <div className="text-sm sm:text-lg font-semibold text-yellow-600 mb-1">Date</div>
-                    <div className="text-base sm:text-xl font-bold text-gray-900 text-center">{event.eventDate?.seconds ? new Date(event.eventDate.seconds * 1000).toLocaleDateString() : event.eventDate || event.date}</div>
+                    <div className="text-base sm:text-xl font-bold text-gray-900 text-center">
+                      {(() => {
+                        const start = event.eventDate?.seconds ? new Date(event.eventDate.seconds * 1000) : (event.eventDate ? new Date(event.eventDate) : null);
+                        const end = event.endDate?.seconds ? new Date(event.endDate.seconds * 1000) : (event.endDate ? new Date(event.endDate) : null);
+                        if (!start) return event.date || 'TBD';
+                        const startStr = start.toLocaleDateString();
+                        if (!end) return startStr;
+                        const endStr = end.toLocaleDateString();
+                        return `${startStr} - ${endStr}`;
+                      })()}
+                    </div>
                 </div>
                 <div className="flex flex-col items-center bg-white border border-gray-200 rounded-xl shadow-lg px-4 sm:px-6 py-4 sm:py-6 animate-pop-in">
                     <MapPin className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-600 mb-2" />

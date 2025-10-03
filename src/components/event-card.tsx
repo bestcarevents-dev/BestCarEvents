@@ -9,13 +9,14 @@ type EventCardProps = {
   id?: string | number;
   name: string;
   date: string;
+  endDate?: string;
   location: string;
   image: string;
   hint: string;
   featured?: boolean;
 };
 
-export default function EventCard({ documentId, id, name, date, location, image, hint, featured }: EventCardProps) {
+export default function EventCard({ documentId, id, name, date, endDate, location, image, hint, featured }: EventCardProps) {
   const resolvedId = typeof documentId !== 'undefined' ? documentId : (typeof id !== 'undefined' ? String(id) : '');
   const href = resolvedId ? `/events/${resolvedId}` : '/events';
   return (
@@ -38,7 +39,7 @@ export default function EventCard({ documentId, id, name, date, location, image,
               <div className="flex items-center gap-4 text-sm text-gray-600 mb-2">
                   <div className="flex items-center gap-1.5">
                       <Calendar className="w-4 h-4" />
-                      <span>{date}</span>
+                      <span>{endDate ? `${date} - ${endDate}` : date}</span>
                   </div>
                   <div className="flex items-center gap-1.5">
                       <MapPin className="w-4 h-4" />
