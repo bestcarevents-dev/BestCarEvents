@@ -486,10 +486,6 @@ const GallerySection = ({
               ))}
             </div>
             
-            {/* Partner Ads Section */}
-            <div className="mt-12 md:mt-20">
-                <HomepageAdCarousel />
-            </div>
             {/* Organic floating elements for artistic touch */}
             <div className="absolute top-10 left-10 w-4 h-4 bg-yellow-400/20 rounded-full animate-pulse"></div>
             <div className="absolute top-20 right-20 w-6 h-6 bg-[#80A0A9]/20 rounded-full animate-pulse delay-1000"></div>
@@ -539,6 +535,10 @@ const ValueProposition = ({ copy }: { copy: NonNullable<HomepageContent["value"]
                 </div>
             </div>
             
+            {/* Partner Ads Section */}
+            <div className="mt-12 md:mt-20">
+                <HomepageAdCarousel />
+            </div>
         </div>
     </div>
   );

@@ -128,25 +128,22 @@ export default function HomepageAdCarousel() {
         </p>
       </div>
 
+      {/* Subtle callout to advertise with us */}
+      <div className="mb-6">
+        <div className="mx-auto max-w-3xl rounded-lg border border-yellow-100 bg-yellow-50/60 px-4 py-3 text-center">
+          <span className="text-sm text-gray-700 mr-1">This spot could be yours —</span>
+          <Link
+            href="/advertise/advertise"
+            className="inline-flex items-center text-sm font-semibold text-yellow-700 hover:text-yellow-800 underline decoration-yellow-300 hover:decoration-yellow-500 underline-offset-4"
+          >
+            advertise with us now
+          </Link>
+        </div>
+      </div>
+
       {/* Ads Grid: show more items, no carousel */}
       <div className={`grid gap-6 ${isMobile ? 'grid-cols-1' : 'grid-cols-3'}`}>
         {ads.map(renderAdContent)}
-        {/* Subtle CTA card inviting partners to advertise */}
-        <Link href="/advertise/advertise" className="group" aria-label="Advertise with us">
-          <Card className="flex flex-col h-full bg-white border border-dashed border-yellow-500/30 hover:border-yellow-600/40 transition-colors shadow-sm overflow-hidden">
-            <CardContent className="relative p-6 flex flex-col items-center justify-center text-center min-h-[192px]">
-              <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-yellow-50/50 to-transparent" />
-              <div className="relative">
-                <p className="text-xs uppercase tracking-wide text-gray-500">Your brand here</p>
-                <h4 className="mt-2 text-lg font-headline font-semibold text-gray-900">This spot could be yours</h4>
-                <p className="mt-1 text-sm text-gray-600">Advertise with us now</p>
-                <div className="mt-3 inline-flex items-center text-yellow-700 group-hover:text-yellow-800 font-semibold text-sm">
-                  Get started <span className="ml-1">→</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </Link>
       </div>
     </div>
   );
