@@ -741,7 +741,7 @@ export default function ClubListingPage() {
                 <Users className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
                 <h3 className="text-lg font-medium mb-2">No club listings found</h3>
                 <p className="text-muted-foreground mb-4">Start by creating your first club listing.</p>
-                <Button onClick={() => router.push('/clubs/submit')}>
+                <Button onClick={() => router.push('/clubs/register')}>
                   Create First Club
                 </Button>
               </div>

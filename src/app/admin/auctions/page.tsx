@@ -64,11 +64,11 @@ export default function AdminAuctionsPage() {
       setLoading(true);
       // Fetch pending auctions
       const pendingSnapshot = await getDocs(collection(db, "pendingAuctions"));
-      const pendingData = pendingSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as AuctionRequest));
+      const pendingData = pendingSnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as AuctionRequest));
       setPendingRequests(pendingData);
       // Fetch approved auctions
       const approvedSnapshot = await getDocs(collection(db, "auctions"));
-      const approvedData = approvedSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as AuctionRequest));
+      const approvedData = approvedSnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as AuctionRequest));
       setApprovedRequests(approvedData);
       setLoading(false);
     };
