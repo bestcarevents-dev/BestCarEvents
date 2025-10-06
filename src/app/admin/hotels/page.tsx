@@ -280,6 +280,16 @@ export default function AdminHotelsPage() {
                 {selectedHotel.createdAt && (
                   <DetailItem label="Created At" value={selectedHotel.createdAt?.seconds ? new Date(selectedHotel.createdAt.seconds * 1000).toLocaleString() : selectedHotel.createdAt.toString()} />
                 )}
+
+                <h3 className="font-semibold text-lg mb-2 mt-6">Uploaded By</h3>
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <p className="text-sm text-gray-600 mb-1">
+                    <span className="font-medium">User ID:</span> {selectedHotel.uploadedByUserId || 'N/A'}
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    <span className="font-medium">Email:</span> {selectedHotel.uploadedByUserEmail || 'N/A'}
+                  </p>
+                </div>
               </div>
             </div>
             {tab === "pending" && (

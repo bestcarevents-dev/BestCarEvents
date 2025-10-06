@@ -428,6 +428,16 @@ export default function PendingServicesPage() {
               </div>
               <h3 className="font-semibold text-lg mb-2">Status</h3>
               <Badge variant={selectedService?.status === 'pending' ? 'default' : selectedService?.status === 'approved' ? 'secondary' : 'destructive'}>{selectedService?.status}</Badge>
+
+              <h3 className="font-semibold text-lg mb-2 mt-6">Uploaded By</h3>
+              <div className="bg-gray-50 rounded-lg p-4">
+                <p className="text-sm text-gray-600 mb-1">
+                  <span className="font-medium">User ID:</span> {selectedService?.userId || 'N/A'}
+                </p>
+                <p className="text-sm text-gray-600">
+                  <span className="font-medium">Email:</span> {selectedService?.userEmail || 'N/A'}
+                </p>
+              </div>
             </div>
           </div>
         </DialogContent>
