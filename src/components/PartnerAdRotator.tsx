@@ -68,9 +68,42 @@ export default function PartnerAdRotator({ page, maxVisible = 4, rotateIntervalM
                   </Badge>
                 </div>
                 <CardContent className="p-3">
-                  <h4 className="text-sm font-semibold text-gray-900 truncate mb-1 group-hover:text-yellow-600 transition-colors">
+                  <h4 className="text-sm font-semibold text-gray-900 truncate mb-2 group-hover:text-yellow-600 transition-colors">
                     {title}
                   </h4>
+
+                  {/* Display link, price, or other relevant info */}
+                  {(() => {
+                    const isWebsiteOrGeneralBusiness = ad.adType === "Website" || ad.adType === "General Business";
+
+                    if (isWebsiteOrGeneralBusiness && ad.url) {
+                      const href = /^https?:\/\//i.test(ad.url) ? ad.url : `https://${ad.url}`;
+                      return (
+                        <div className="text-blue-600 font-semibold text-xs mb-2 truncate">
+                          <a href={href} target="_blank" rel="noopener noreferrer" className="hover:underline">
+                            {ad.url}
+                          </a>
+                        </div>
+                      );
+                    } else if (ad.price && ad.priceRange) {
+                      return (
+                        <div className="mb-2">
+                          <div className="text-green-600 font-bold text-sm">{ad.price}</div>
+                          <div className="text-green-600 font-semibold text-xs">{ad.priceRange}</div>
+                        </div>
+                      );
+                    } else if (ad.price) {
+                      return (
+                        <div className="text-green-600 font-bold text-sm mb-2">{ad.price}</div>
+                      );
+                    } else if (ad.priceRange) {
+                      return (
+                        <div className="text-green-600 font-semibold text-sm mb-2">{ad.priceRange}</div>
+                      );
+                    }
+                    return null;
+                  })()}
+
                   <p className="text-xs text-gray-600 line-clamp-2">
                     {ad.description}
                   </p>
