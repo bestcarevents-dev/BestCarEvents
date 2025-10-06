@@ -29,7 +29,7 @@ export default function EventListItem({ id, documentId, name, date, endDate, loc
               src={image}
               alt={name}
               fill
-              className="object-cover transition-transform duration-[900ms] ease-out group-hover:scale-[1.05]"
+              className="object-contain transition-transform duration-[900ms] ease-out group-hover:scale-[1.05]"
               data-ai-hint={hint}
             />
             <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(80%_60%_at_70%_20%,rgba(255,255,255,0.18)_0%,rgba(255,255,255,0)_60%)]" />

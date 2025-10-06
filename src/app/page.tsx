@@ -67,45 +67,15 @@ const CitiesSliderSection = () => {
           return first || null;
         };
 
-        const [carsSnap, eventsSnap, hotelsSnap, clubsSnap, auctionsSnap, othersSnap] = await Promise.all([
-          getDocs(collection(db, "cars")),
-          getDocs(collection(db, "events")),
-          getDocs(collection(db, "hotels")),
-          getDocs(collection(db, "clubs")),
-          getDocs(collection(db, "auctions")),
-          getDocs(collection(db, "others")),
-        ]);
+        // Only fetch cities from events collection
+        const eventsSnap = await getDocs(collection(db, "events"));
 
         const citySet = new Set<string>();
 
-        carsSnap.docs.forEach(d => {
-          const data: any = d.data();
-          const c = extractCity(data?.location) || extractCity(data?.city);
-          if (c) citySet.add(c);
-        });
         eventsSnap.docs.forEach(d => {
           const data: any = d.data();
+          // Prefer .city attribute, fallback to extracting from .location
           const c = extractCity(data?.city) || extractCity(data?.location);
-          if (c) citySet.add(c);
-        });
-        hotelsSnap.docs.forEach(d => {
-          const data: any = d.data();
-          const c = extractCity(data?.city) || extractCity(data?.location);
-          if (c) citySet.add(c);
-        });
-        clubsSnap.docs.forEach(d => {
-          const data: any = d.data();
-          const c = extractCity(data?.city) || extractCity(data?.location);
-          if (c) citySet.add(c);
-        });
-        auctionsSnap.docs.forEach(d => {
-          const data: any = d.data();
-          const c = extractCity(data?.city) || extractCity(data?.location);
-          if (c) citySet.add(c);
-        });
-        othersSnap.docs.forEach(d => {
-          const data: any = d.data();
-          const c = extractCity(data?.location) || extractCity(data?.city);
           if (c) citySet.add(c);
         });
 

@@ -28,7 +28,7 @@ export default function EventCard({ documentId, id, name, date, endDate, locatio
                 src={image}
                 alt={name}
                 fill
-                className="object-cover w-full h-full"
+                className="object-contain w-full h-full"
                 data-ai-hint={hint}
                 sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
               />
