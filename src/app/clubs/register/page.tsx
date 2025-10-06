@@ -1,7 +1,5 @@
 "use client";
-/**
- * @jsxImportSource @emotion/react
- */
+//test
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { getFirestore, collection, addDoc } from "firebase/firestore";
