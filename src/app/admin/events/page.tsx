@@ -120,6 +120,8 @@ export default function PendingEventsPage() {
           rulesUrl: request.rulesUrl,
           sponsors: request.sponsors,
           websiteUrl: request.websiteUrl,
+          uploadedByUserId: request.uploadedByUserId,
+          uploadedByUserEmail: request.uploadedByUserEmail,
       };
       // Remove undefined fields so Firestore doesn't get undefined values
       const cleaned: Record<string, any> = Object.fromEntries(
