@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { app } from "@/lib/firebase";
 import { getFirestore, doc, updateDoc, getDoc } from "firebase/firestore";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -24,6 +24,16 @@ export default function CarEditDialog({ open, onOpenChange, documentId, initial,
   const [description, setDescription] = useState<string>(initial.description || "");
   const [saving, setSaving] = useState(false);
   const { toast } = useToast();
+
+  // Sync all fields when dialog opens or initial data changes
+  useEffect(() => {
+    if (open) {
+      setLocation(initial.location || "");
+      setPrice(initial.price != null ? String(initial.price) : "");
+      setCurrency(initial.currency || "");
+      setDescription(initial.description || "");
+    }
+  }, [open, documentId, initial]);
 
   const handleSave = async () => {
     const payload: Record<string, any> = {};

@@ -111,7 +111,7 @@ export default function ForumPage() {
         <div className="container mx-auto px-4 py-8">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-12">
                 <div className="text-center md:text-left mb-4 md:mb-0">
-                    <h1 className="text-4xl md:text-5xl font-extrabold font-headline text-gray-900">{header.title}</h1>
+                    <h1 className="text-4xl md:text-5xl font-extrabold font-headline text-gray-900 notranslate" translate="no" data-no-translate>{header.title}</h1>
                     <p className="mt-4 text-lg text-gray-700 max-w-2xl">
                     {header.description}
                     </p>

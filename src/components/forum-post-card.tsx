@@ -77,7 +77,7 @@ export default function ForumPostCard({
                   <Star className="w-4 h-4 text-[#80A0A9]" />
                 )}
               </div>
-              <h3 className="text-xl font-headline font-bold text-gray-900 group-hover:text-[#80A0A9] transition-colors line-clamp-2 mb-2">
+              <h3 className="text-xl font-headline font-bold text-gray-900 group-hover:text-[#80A0A9] transition-colors line-clamp-2 mb-2 notranslate" translate="no" data-no-translate>
                 {title}
               </h3>
               <p className="text-sm text-gray-600 line-clamp-3 mb-3">
@@ -86,7 +86,7 @@ export default function ForumPostCard({
               <div className="flex items-center gap-4 text-xs text-gray-500">
                 <div className="flex items-center gap-1">
                   <User className="w-3 h-3" />
-                  <span>{author.name}</span>
+                  <span className="notranslate" translate="no" data-no-translate>{author.name}</span>
                 </div>
                 <div className="flex items-center gap-1">
                   <Clock className="w-3 h-3" />

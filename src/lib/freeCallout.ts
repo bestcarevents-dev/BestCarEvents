@@ -23,7 +23,7 @@ export const defaultFreeCallouts: Record<FreeCalloutSection, FreeCalloutContent>
     title: "List or Join Events — Always Free",
     icon: "sparkles",
     messages: [
-      "Join a community of enthusiasts — No fees, no subscription.",
+      "Join a community of enthusiasts — No subscription.",
       "Discover premium car events — Promote or find events for free.",
       "List your event or join one — Free of charge.",
       "Worldwide exposure. Zero fees.",
@@ -33,7 +33,7 @@ export const defaultFreeCallouts: Record<FreeCalloutSection, FreeCalloutContent>
     title: "Promote or Join Auctions — Free",
     icon: "megaphone",
     messages: [
-      "Join a community of enthusiasts — No fees, no subscription.",
+      "Join a community of enthusiasts — No subscription.",
       "Discover premium car auctions — Showcase or find auctions for free.",
       "List your auction or bid — Free of charge.",
       "Worldwide exposure. Zero fees.",
@@ -43,7 +43,7 @@ export const defaultFreeCallouts: Record<FreeCalloutSection, FreeCalloutContent>
     title: "Reach Car Travelers — Free Listings",
     icon: "gift",
     messages: [
-      "Join a community of enthusiasts — No fees, no subscription.",
+      "Join a community of enthusiasts — No subscription.",
       "Showcase car-friendly hotels — Get discovered for free.",
       "List your hotel — Free of charge.",
       "Worldwide exposure. Zero fees.",
@@ -54,7 +54,7 @@ export const defaultFreeCallouts: Record<FreeCalloutSection, FreeCalloutContent>
     icon: "sparkles",
     messages: [
       "Posting all services is free.",
-      "Reach car enthusiasts — No fees, no subscription.",
+      "Reach car enthusiasts — No subscription.",
       "Register your service today at no cost.",
     ],
     ctaHref: "/others/register",
@@ -64,7 +64,7 @@ export const defaultFreeCallouts: Record<FreeCalloutSection, FreeCalloutContent>
     title: "Grow Your Club — Free to Register",
     icon: "sparkles",
     messages: [
-      "Join a community of enthusiasts — No fees, no subscription.",
+      "Join a community of enthusiasts — No subscription.",
       "Promote your car club — Get members for free.",
       "Register your club or join one — Free of charge.",
       "Worldwide exposure. Zero fees.",

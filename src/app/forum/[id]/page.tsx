@@ -499,11 +499,11 @@ export default function PostDetailPage() {
                         </Avatar>
                         <div className="flex-1">
                             <div className="flex items-center gap-2 mb-2">
-                                <h1 className="text-2xl font-bold text-gray-900">{post.title}</h1>
+                                <h1 className="text-2xl font-bold text-gray-900 notranslate" translate="no" data-no-translate>{post.title}</h1>
                                 {post.featured && <Badge className="bg-yellow-500 text-white">Featured</Badge>}
                             </div>
                             <div className="flex items-center gap-4 text-sm text-gray-500 mb-3">
-                                <span className="font-medium text-gray-900">{post.author.name}</span>
+                                <span className="font-medium text-gray-900 notranslate" translate="no" data-no-translate>{post.author.name}</span>
                                 <span>•</span>
                                 <span>{formatDate(post.createdAt)}</span>
                                 <span>•</span>
@@ -630,7 +630,7 @@ export default function PostDetailPage() {
                                     </Avatar>
                                     <div className="flex-1">
                                         <div className="flex items-center gap-2 mb-2">
-                                            <span className="font-medium text-gray-900">{comment.author.name}</span>
+                                            <span className="font-medium text-gray-900 notranslate" translate="no" data-no-translate>{comment.author.name}</span>
                                             <span className="text-sm text-gray-500">{formatDate(comment.createdAt)}</span>
                                         </div>
                                         <p className="text-gray-700 mb-3 whitespace-pre-wrap">{comment.content}</p>
@@ -716,7 +716,7 @@ export default function PostDetailPage() {
                                                             </Avatar>
                                                             <div className="flex-1">
                                                                 <div className="flex items-center gap-2 mb-1">
-                                                                    <span className="font-medium text-gray-900 text-sm">{reply.author.name}</span>
+                                                                    <span className="font-medium text-gray-900 text-sm notranslate" translate="no" data-no-translate>{reply.author.name}</span>
                                                                     <span className="text-xs text-gray-500">{formatDate(reply.createdAt)}</span>
                                                                 </div>
                                                                 <p className="text-gray-700 text-sm whitespace-pre-wrap">{reply.content}</p>
