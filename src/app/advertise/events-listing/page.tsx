@@ -990,25 +990,49 @@ export default function EventsListingPage() {
       )}
 
       <Dialog open={!!attendeesModal?.open} onOpenChange={(o) => !o && setAttendeesModal(null)}>
-        <DialogContent className="max-w-lg">
+        <DialogContent className="max-w-xl">
           <DialogHeader>
-            <DialogTitle>Event Registrations</DialogTitle>
+            <DialogTitle className="flex items-center gap-2">
+              Event Registrations
+              {attendeesModal?.attendees && (
+                <span className="ml-2 text-xs px-2 py-0.5 rounded-full bg-yellow-100 text-yellow-800 border border-yellow-200">
+                  {attendeesModal.attendees.length}
+                </span>
+              )}
+            </DialogTitle>
             <DialogDescription>People who registered for this event.</DialogDescription>
           </DialogHeader>
-          <div className="space-y-2 max-h-[400px] overflow-auto">
-            {attendeesModal?.attendees && attendeesModal.attendees.length > 0 ? (
-              attendeesModal.attendees.map((a, i) => (
-                <div key={i} className="flex items-center justify-between border rounded px-3 py-2">
-                  <div className="text-sm">
-                    <div className="font-medium">{a.email || a.uid || "Unknown"}</div>
-                    {a.uid && <div className="text-xs text-muted-foreground">UID: {a.uid}</div>}
-                  </div>
-                </div>
-              ))
-            ) : (
-              <div className="text-sm text-muted-foreground">No registrations yet.</div>
-            )}
-          </div>
+
+          {attendeesModal?.attendees && attendeesModal.attendees.length > 0 ? (
+            <div className="max-h-[420px] overflow-auto">
+              <div className="grid grid-cols-1 gap-3">
+                {attendeesModal.attendees.map((a, i) => {
+                  const label = a?.email || "Unknown";
+                  const initial = (label?.charAt(0) || "?").toUpperCase();
+                  return (
+                    <div
+                      key={i}
+                      className="flex items-center gap-3 rounded-lg border border-gray-200 bg-white px-4 py-3 shadow-sm"
+                    >
+                      <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#F4F0E7] text-[#7A6E57] font-semibold">
+                        {initial}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="font-medium truncate">{label}</div>
+                        <div className="text-xs text-muted-foreground">Registered attendee</div>
+                      </div>
+                      <div className="text-[10px] uppercase tracking-wide px-2 py-1 rounded-full bg-green-100 text-green-700 border border-green-200">
+                        Active
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          ) : (
+            <div className="text-sm text-muted-foreground">No registrations yet.</div>
+          )}
+
           <DialogFooter>
             <DialogClose asChild>
               <Button variant="outline">Close</Button>
