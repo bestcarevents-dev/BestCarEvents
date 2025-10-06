@@ -40,7 +40,7 @@ export default function PartnerAdRotator({ page, maxVisible = 4, rotateIntervalM
   }, [page]);
 
   if (!ads.length) return null;
-
+  
   const displayAds = ads.slice(0, isMobile ? 1 : maxVisible);
 
   return (
@@ -74,29 +74,29 @@ export default function PartnerAdRotator({ page, maxVisible = 4, rotateIntervalM
 
                   {/* Display link, price, or other relevant info */}
                   {(() => {
-                    const isWebsiteOrGeneralBusiness = ad.adType === "Website" || ad.adType === "General Business";
-
-                    if (isWebsiteOrGeneralBusiness && ad.url) {
-                      const href = /^https?:\/\//i.test(ad.url) ? ad.url : `https://${ad.url}`;
+        const isWebsiteOrGeneralBusiness = ad.adType === "Website" || ad.adType === "General Business";
+        
+        if (isWebsiteOrGeneralBusiness && ad.url) {
+          const href = /^https?:\/\//i.test(ad.url) ? ad.url : `https://${ad.url}`;
                       return (
                         <div className="text-blue-600 font-semibold text-xs mb-2 truncate">
-                          <a href={href} target="_blank" rel="noopener noreferrer" className="hover:underline">
+              <a href={href} target="_blank" rel="noopener noreferrer" className="hover:underline">
                             {ad.url}
-                          </a>
-                        </div>
-                      );
-                    } else if (ad.price && ad.priceRange) {
+              </a>
+            </div>
+          );
+        } else if (ad.price && ad.priceRange) {
                       return (
                         <div className="mb-2">
                           <div className="text-green-600 font-bold text-sm">{ad.price}</div>
                           <div className="text-green-600 font-semibold text-xs">{ad.priceRange}</div>
-                        </div>
-                      );
-                    } else if (ad.price) {
+            </div>
+          );
+        } else if (ad.price) {
                       return (
                         <div className="text-green-600 font-bold text-sm mb-2">{ad.price}</div>
-                      );
-                    } else if (ad.priceRange) {
+          );
+        } else if (ad.priceRange) {
                       return (
                         <div className="text-green-600 font-semibold text-sm mb-2">{ad.priceRange}</div>
                       );
@@ -105,13 +105,13 @@ export default function PartnerAdRotator({ page, maxVisible = 4, rotateIntervalM
                   })()}
 
                   <p className="text-xs text-gray-600 line-clamp-2">
-                    {ad.description}
+                  {ad.description}
                   </p>
-                </CardContent>
-              </Card>
+            </CardContent>
+          </Card>
             </Link>
-          );
-        })}
+        );
+      })}
       </div>
     </div>
   );

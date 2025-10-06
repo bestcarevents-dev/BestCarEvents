@@ -782,7 +782,7 @@ export default function EventsListingPage() {
                             <DropdownMenuItem asChild>
                               <Link href={`/events/${event.id}`}>
                                 <Eye className="w-4 h-4 mr-2" />
-                                View Registration
+                                View
                               </Link>
                             </DropdownMenuItem>
                             <DropdownMenuItem
@@ -966,6 +966,19 @@ export default function EventsListingPage() {
                             </DialogFooter>
                           </DialogContent>
                         </Dialog>
+
+                        {/* View Registrations button (same as dropdown action) */}
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="w-full mt-2"
+                          onClick={() => {
+                            const attendees = Array.isArray(event.attendees) ? event.attendees : [];
+                            setAttendeesModal({ open: true, attendees });
+                          }}
+                        >
+                          View Registrations
+                        </Button>
                       </div>
                     </CardContent>
                   </Card>
