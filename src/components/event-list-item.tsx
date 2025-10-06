@@ -23,7 +23,7 @@ export default function EventListItem({ id, documentId, name, date, endDate, loc
     <Card className="w-full overflow-hidden rounded-[18px] border border-[#C7BCA3]/60 bg-gradient-to-br from-[#FAF7EE] via-[#F3EADA] to-[#ECE3D1] shadow-[0_10px_30px_rgba(0,0,0,0.10)] transition-all duration-500 hover:shadow-[0_18px_48px_rgba(0,0,0,0.16)]">
       <div className="flex flex-col md:flex-row">
         {/* Framed image with brass rail */}
-        <div className="relative w-full md:w-1/3 aspect-video md:aspect-auto shrink-0 bg-[#EDE7DA]">
+        <div className="relative w-full md:w-1/3 aspect-[4/5] md:aspect-[4/5] shrink-0 bg-[#EDE7DA]">
           <div className="absolute inset-0 m-4 rounded-[14px] border border-[#B49A6A]/55 overflow-hidden shadow-inner bg-gradient-to-br from-[#0b0b0b] to-[#1a1a1a]">
             <Image
               src={image}

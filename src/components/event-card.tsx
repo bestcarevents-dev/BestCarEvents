@@ -23,7 +23,7 @@ export default function EventCard({ documentId, id, name, date, endDate, locatio
     <Link href={href} passHref>
       <Card className="overflow-hidden flex flex-col group bg-transparent border-0 shadow-none rounded-none cursor-pointer">
           <div className="relative overflow-hidden rounded-2xl bg-[#EDE7DA]">
-            <div className="relative aspect-square">
+            <div className="relative aspect-[4/5]">
               <Image
                 src={image}
                 alt={name}
