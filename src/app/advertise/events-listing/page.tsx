@@ -992,37 +992,38 @@ export default function EventsListingPage() {
       <Dialog open={!!attendeesModal?.open} onOpenChange={(o) => !o && setAttendeesModal(null)}>
         <DialogContent className="max-w-xl">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
+            <DialogTitle className="flex items-center gap-2 text-gray-900">
               Event Registrations
               {attendeesModal?.attendees && (
-                <span className="ml-2 text-xs px-2 py-0.5 rounded-full bg-yellow-100 text-yellow-800 border border-yellow-200">
+                <span className="ml-2 text-xs px-2 py-0.5 rounded-full bg-[#E0D8C1] text-[#1f1f1f] border border-[#D9CEB6]">
                   {attendeesModal.attendees.length}
                 </span>
               )}
             </DialogTitle>
-            <DialogDescription>People who registered for this event.</DialogDescription>
+            <DialogDescription className="text-gray-600">People who registered for this event.</DialogDescription>
           </DialogHeader>
 
           {attendeesModal?.attendees && attendeesModal.attendees.length > 0 ? (
             <div className="max-h-[420px] overflow-auto">
-              <div className="grid grid-cols-1 gap-3">
+              <div className="grid grid-cols-1 gap-2.5">
                 {attendeesModal.attendees.map((a, i) => {
                   const label = a?.email || "Unknown";
                   const initial = (label?.charAt(0) || "?").toUpperCase();
                   return (
                     <div
                       key={i}
-                      className="flex items-center gap-3 rounded-lg border border-gray-200 bg-white px-4 py-3 shadow-sm"
+                      className="flex items-center gap-3 rounded-lg border border-[#D9CEB6] bg-white px-4 py-3"
                     >
-                      <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#F4F0E7] text-[#7A6E57] font-semibold">
+                      <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#E0D8C1] text-[#3b3b3b] font-semibold">
                         {initial}
                       </div>
                       <div className="min-w-0 flex-1">
-                        <div className="font-medium truncate">{label}</div>
-                        <div className="text-xs text-muted-foreground">Registered attendee</div>
+                        <div className="font-medium truncate text-gray-900">{label}</div>
+                        <div className="text-xs text-gray-500">Registered attendee</div>
                       </div>
-                      <div className="text-[10px] uppercase tracking-wide px-2 py-1 rounded-full bg-green-100 text-green-700 border border-green-200">
-                        Active
+                      <div className="flex items-center gap-1 text-xs text-gray-700">
+                        <span className="inline-block h-1.5 w-1.5 rounded-full bg-[#80A0A9]"></span>
+                        <span>Confirmed</span>
                       </div>
                     </div>
                   );
@@ -1030,7 +1031,7 @@ export default function EventsListingPage() {
               </div>
             </div>
           ) : (
-            <div className="text-sm text-muted-foreground">No registrations yet.</div>
+            <div className="text-sm text-gray-600">No registrations yet.</div>
           )}
 
           <DialogFooter>
