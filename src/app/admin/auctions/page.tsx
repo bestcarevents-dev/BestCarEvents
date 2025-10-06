@@ -314,6 +314,16 @@ export default function AdminAuctionsPage() {
                 <h3 className="font-semibold text-lg mb-2">Organizer Information</h3>
                 <DetailItem label="Name" value={selectedAuction.organizerName} />
                 <DetailItem label="Contact Email" value={selectedAuction.organizerContact} />
+
+                <h3 className="font-semibold text-lg mb-2 mt-6">Uploaded By</h3>
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <p className="text-sm text-gray-600 mb-1">
+                    <span className="font-medium">User ID:</span> {selectedAuction.uploadedByUserId || 'N/A'}
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    <span className="font-medium">Email:</span> {selectedAuction.uploadedByUserEmail || 'N/A'}
+                  </p>
+                </div>
               </div>
             </div>
             {tab === "pending" && (

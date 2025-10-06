@@ -293,6 +293,16 @@ export default function PendingCarsPage() {
                   <h3 className="font-semibold text-lg mb-2">Seller Information</h3>
                   <DetailItem label="Name" value={selectedCar.sellerName} />
                   <DetailItem label="Contact Email" value={selectedCar.sellerContact} />
+
+                  <h3 className="font-semibold text-lg mb-2 mt-6">Uploaded By</h3>
+                  <div className="bg-gray-50 rounded-lg p-4">
+                    <p className="text-sm text-gray-600 mb-1">
+                      <span className="font-medium">User ID:</span> {selectedCar.uploadedByUserId || 'N/A'}
+                    </p>
+                    <p className="text-sm text-gray-600">
+                      <span className="font-medium">Email:</span> {selectedCar.uploadedByUserEmail || 'N/A'}
+                    </p>
+                  </div>
                 </div>
               </div>
               {tab === "pending" && (
