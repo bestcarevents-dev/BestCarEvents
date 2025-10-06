@@ -782,7 +782,7 @@ export default function EventsListingPage() {
                             <DropdownMenuItem asChild>
                               <Link href={`/events/${event.id}`}>
                                 <Eye className="w-4 h-4 mr-2" />
-                                View
+                                View Registration
                               </Link>
                             </DropdownMenuItem>
                             <DropdownMenuItem
