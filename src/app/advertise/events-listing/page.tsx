@@ -992,7 +992,7 @@ export default function EventsListingPage() {
       <Dialog open={!!attendeesModal?.open} onOpenChange={(o) => !o && setAttendeesModal(null)}>
         <DialogContent className="max-w-xl">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-gray-900">
+            <DialogTitle className="flex items-center gap-2 text-white">
               Event Registrations
               {attendeesModal?.attendees && (
                 <span className="ml-2 text-xs px-2 py-0.5 rounded-full bg-[#E0D8C1] text-[#1f1f1f] border border-[#D9CEB6]">
@@ -1000,7 +1000,7 @@ export default function EventsListingPage() {
                 </span>
               )}
             </DialogTitle>
-            <DialogDescription className="text-gray-600">People who registered for this event.</DialogDescription>
+            <DialogDescription className="text-white/80">People who registered for this event.</DialogDescription>
           </DialogHeader>
 
           {attendeesModal?.attendees && attendeesModal.attendees.length > 0 ? (
