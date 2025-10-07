@@ -52,6 +52,7 @@ export default async function Footer() {
               <ul className="mt-4 space-y-3">
                  <li><Link href="/about" className="text-sm hover:text-[#E0D8C1] transition-colors">About Us</Link></li>
                  <li><Link href="/contact" className="text-sm hover:text-[#E0D8C1] transition-colors">Contact</Link></li>
+                 <li><Link href="/faq" className="text-sm hover:text-[#E0D8C1] transition-colors">FAQ</Link></li>
                  <li><Link href="/terms" className="text-sm hover:text-[#E0D8C1] transition-colors">Terms of Service</Link></li>
                  <li><Link href="/privacy" className="text-sm hover:text-[#E0D8C1] transition-colors">Privacy Policy</Link></li>
               </ul>

@@ -128,6 +128,10 @@ export default function HotelEditDialog({ open, onOpenChange, documentId, initia
       }
       if (imagesChanged) {
         const finalImages = [...uploadedUrls, ...currentImages].slice(0, 10);
+        if (finalImages.length === 0) {
+          toast({ title: "At least one image required", description: "Please keep at least one image.", variant: "destructive" });
+          return;
+        }
         payload.imageUrls = finalImages;
         payload.imageUrl = finalImages[0] || "";
       }
@@ -180,8 +184,9 @@ export default function HotelEditDialog({ open, onOpenChange, documentId, initia
                   <img src={url} alt={`Image ${idx + 1}`} className="object-cover w-full h-24" />
                   <button
                     type="button"
-                    className="absolute top-1 right-1 px-2 py-0.5 text-xs rounded bg-red-600 text-white"
+                    className="absolute top-1 right-1 px-2 py-0.5 text-xs rounded bg-red-600 text-white disabled:opacity-50"
                     onClick={() => setCurrentImages((prev) => prev.filter((_, i) => i !== idx))}
+                    disabled={currentImages.length <= 1}
                   >
                     Remove
                   </button>

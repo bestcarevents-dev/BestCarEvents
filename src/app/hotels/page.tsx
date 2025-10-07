@@ -445,7 +445,7 @@ function CarHotelsPageContent() {
                             <CardTitle className="font-headline text-gray-900 notranslate" translate="no" data-no-translate>
                               <Link href={`/hotels/${hotel.documentId}`} className="hover:text-[#80A0A9] transition-colors notranslate">{hotel.hotelName}</Link>
                             </CardTitle>
-                            <CardDescription className="text-gray-600">{hotel.city}, {hotel.state}</CardDescription>
+                            <CardDescription className="text-gray-600">{[hotel.city, hotel.state].filter(Boolean).join(', ')}</CardDescription>
                             <ul className="mt-4 space-y-2 text-sm text-gray-600">
                               {(hotel.features || []).slice(0, 3).map((feature: string) => (
                                 <li key={feature} className="flex items-center">
@@ -495,7 +495,7 @@ function CarHotelsPageContent() {
                         <CardTitle className="font-headline text-gray-900 notranslate" translate="no" data-no-translate>
                           <Link href={`/hotels/${hotel.documentId}`} className="hover:text-[#80A0A9] transition-colors notranslate">{hotel.hotelName}</Link>
                         </CardTitle>
-                        <CardDescription className="text-gray-600">{hotel.city}, {hotel.state}</CardDescription>
+                        <CardDescription className="text-gray-600">{[hotel.city, hotel.state].filter(Boolean).join(', ')}</CardDescription>
                         <ul className="mt-4 space-y-2 text-sm text-gray-600">
                           {(hotel.features || []).map((feature: string) => (
                             <li key={feature} className="flex items-center">

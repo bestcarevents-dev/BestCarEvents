@@ -258,7 +258,7 @@ export default function HotelDetailPage() {
               )}
               <div className="flex items-center gap-2">
                 <MapPin className="w-5 h-5 text-muted-foreground" />
-                <span className="text-base">{hotel.city}, {hotel.state}, {hotel.country}</span>
+                <span className="text-base">{[hotel.city, hotel.state, hotel.country].filter(Boolean).join(', ')}</span>
               </div>
             </CardContent>
           </Card>
