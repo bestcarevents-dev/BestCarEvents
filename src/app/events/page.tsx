@@ -154,21 +154,15 @@ function EventsPageContent() {
 
       return filtered;
     }, [events, searchQuery, selectedCity, selectedState, selectedCountry, selectedEventType, selectedVehicleFocus, selectedEntryFee, sortBy]);
-    // Build city options from events, including fallback extraction from location and shared whitelist
-    const sharedPrefs = useFormPreferences("shared");
+    // Build city options strictly from the explicit event.city field
     const cities = useMemo(() => {
       const set = new Set<string>();
-      const extractCity = (value?: string | null) => {
-        if (!value || typeof value !== 'string') return null;
-        return value.split(',')[0]?.trim() || null;
-      };
       for (const ev of events) {
-        const c = (ev.city || extractCity(ev.location)) as string | null;
-        if (c) set.add(c);
+        const value = typeof ev.city === 'string' ? ev.city.trim() : '';
+        if (value) set.add(value);
       }
-      const list = Array.from(set).sort((a, b) => a.localeCompare(b));
-      return list.length > 0 ? list : (sharedPrefs.data?.citiesWhitelist || []);
-    }, [events, sharedPrefs.data?.citiesWhitelist]);
+      return Array.from(set).sort((a, b) => a.localeCompare(b));
+    }, [events]);
 
     const cityOptions = useMemo(() => {
       if (selectedCity !== 'all' && selectedCity && !cities.includes(selectedCity)) {

@@ -56,12 +56,12 @@ export default function PartnerAdRotator({ page, maxVisible = 4, rotateIntervalM
           return (
             <Link key={ad.id} href={`/partners/ad/${ad.id}`} className="block group">
               <Card className="bg-white border border-gray-200 hover:border-gray-300 transition-all duration-200 hover:shadow-md">
-                <div className="relative w-full aspect-video bg-gray-100 overflow-hidden">
+                <div className="relative w-full aspect-video bg-white overflow-hidden">
                   <Image
                     src={ad.imageUrls?.[0] || "/placeholder.jpg"}
                     alt={title}
                     fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-300"
+                    className="object-contain"
                   />
                   <Badge className="absolute top-2 left-2 text-xs bg-yellow-600 text-white">
                     Ad

@@ -84,7 +84,7 @@ export default function HomepageAdCarousel() {
             src={ad.imageUrls?.[0] || "/placeholder.jpg"} 
             alt={ad.title || ad.shopName || "Ad"} 
             fill 
-            className="object-cover group-hover:scale-105 transition-transform duration-300" 
+            className="object-contain bg-white" 
             sizes="(max-width: 768px) 100vw, 33vw"
           />
           <Badge className="absolute top-3 left-3 text-xs bg-yellow-600 text-white font-semibold">

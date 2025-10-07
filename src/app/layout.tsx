@@ -5,6 +5,7 @@ import StripeReceiptClient from '@/components/StripeReceiptClient';
 import Header from '@/components/layout/header';
 import Footer from '@/components/layout/footer';
 import GlobalNewsletterProvider from '@/components/GlobalNewsletterProvider';
+import BannedUserProvider from '@/components/BannedUserProvider';
 import FreeListingsProvider from '@/components/FreeListingsProvider';
 import { LanguageProvider } from '@/contexts/LanguageContext';
 import { cn } from '@/lib/utils';
@@ -67,6 +68,7 @@ export default async function RootLayout({
         <LanguageProvider>
           <GlobalNewsletterProvider>
             <FreeListingsProvider>
+              <BannedUserProvider>
               <NavigationProgress />
               <Header />
               <LuxuryLightboxProvider>
@@ -91,6 +93,7 @@ export default async function RootLayout({
               <Footer />
               <Toaster />
               <OrganizationJsonLd />
+              </BannedUserProvider>
             </FreeListingsProvider>
           </GlobalNewsletterProvider>
         </LanguageProvider>

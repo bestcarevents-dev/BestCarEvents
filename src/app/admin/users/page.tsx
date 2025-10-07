@@ -18,7 +18,7 @@ import { MoreHorizontal } from "lucide-react";
 interface UserData {
   id: string;
   email: string;
-  userType: "regular" | "admin";
+  userType: "regular" | "admin" | "banned";
   createdAt: any; // Firebase Timestamp
 }
 
@@ -38,7 +38,7 @@ export default function ManageUsersPage() {
     fetchUsers();
   }, [db]);
 
-  const handleUserTypeChange = async (userId: string, newUserType: "regular" | "admin") => {
+  const handleUserTypeChange = async (userId: string, newUserType: "regular" | "admin" | "banned") => {
     try {
       const userRef = doc(db, "users", userId);
       await updateDoc(userRef, { userType: newUserType });
@@ -69,11 +69,17 @@ export default function ManageUsersPage() {
                 <TableRow key={user.id}>
                   <TableCell className="font-medium">{user.email}</TableCell>
                   <TableCell>
-                    <Badge variant={user.userType === "admin" ? "default" : "secondary"}>
-                      {user.userType}
-                    </Badge>
+                    {
+                      user.userType === "banned" ? (
+                        <Badge variant="destructive">banned</Badge>
+                      ) : (
+                        <Badge variant={user.userType === "admin" ? "default" : "secondary"}>
+                          {user.userType}
+                        </Badge>
+                      )
+                    }
                   </TableCell>
-                  <TableCell>{new Date(user.createdAt.seconds * 1000).toLocaleDateString()}</TableCell>
+                  <TableCell>{user.createdAt?.seconds ? new Date(user.createdAt.seconds * 1000).toLocaleDateString() : "-"}</TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
@@ -87,6 +93,12 @@ export default function ManageUsersPage() {
                         <DropdownMenuItem onClick={() => handleUserTypeChange(user.id, user.userType === "admin" ? "regular" : "admin")}>
                           Make {user.userType === "admin" ? "Regular" : "Admin"}
                         </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        {user.userType === "banned" ? (
+                          <DropdownMenuItem onClick={() => handleUserTypeChange(user.id, "regular")}>Unban User</DropdownMenuItem>
+                        ) : (
+                          <DropdownMenuItem onClick={() => handleUserTypeChange(user.id, "banned")}>Ban User</DropdownMenuItem>
+                        )}
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </TableCell>

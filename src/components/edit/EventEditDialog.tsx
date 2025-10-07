@@ -59,6 +59,7 @@ export default function EventEditDialog({ open, onOpenChange, documentId, initia
   const [saving, setSaving] = useState(false);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [imageUrls, setImageUrls] = useState<string[]>(Array.isArray(initial.imageUrls) ? initial.imageUrls : (initial.imageUrl ? [initial.imageUrl] : []));
   const { toast } = useToast();
 
   // Sync all fields when opening or switching document
@@ -82,6 +83,7 @@ export default function EventEditDialog({ open, onOpenChange, documentId, initia
       setWebsiteUrl(initial.websiteUrl || "");
       setSelectedImage(null);
       setPreviewUrl(null);
+      setImageUrls(Array.isArray(initial.imageUrls) ? initial.imageUrls : (initial.imageUrl ? [initial.imageUrl] : []));
     }
   }, [open, documentId, initial]);
 
@@ -130,9 +132,21 @@ export default function EventEditDialog({ open, onOpenChange, documentId, initia
         const url = await getDownloadURL(storageRef);
         // Persist under imageUrl for existing UI and add to array if present
         const data = snap.data() as any;
-        payload.imageUrl = url;
-        if (Array.isArray(data?.imageUrls)) {
-          payload.imageUrls = [url, ...data.imageUrls].slice(0, 10);
+        const updatedList = [url, ...imageUrls];
+        payload.imageUrl = updatedList[0];
+        payload.imageUrls = Array.isArray(data?.imageUrls) ? [...updatedList] : updatedList;
+        setImageUrls(updatedList);
+      }
+      // Allow removal of existing images, but ensure at least one remains
+      if (!selectedImage && Array.isArray(imageUrls)) {
+        if (imageUrls.length === 0) {
+          toast({ title: "At least one image required", description: "Please keep at least one image.", variant: "destructive" });
+          return;
+        }
+        // Persist any reordering/removal
+        if (JSON.stringify(imageUrls) !== JSON.stringify(initial.imageUrls || (initial.imageUrl ? [initial.imageUrl] : []))) {
+          payload.imageUrl = imageUrls[0];
+          payload.imageUrls = imageUrls;
         }
       }
       if (!hasFieldChanges && !selectedImage) {
@@ -160,29 +174,45 @@ export default function EventEditDialog({ open, onOpenChange, documentId, initia
         <div className="space-y-4">
           <div className="space-y-2">
             <Label className="text-foreground">Event image</Label>
-            <div className="flex items-center gap-4">
-              <div className="w-28 h-20 rounded-md overflow-hidden border bg-muted/40 flex items-center justify-center">
-                {previewUrl ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={previewUrl} alt="Preview" className="object-cover w-full h-full" />
-                ) : (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={(initial as any)?.imageUrl || "/placeholder.jpg"} alt="Current" className="object-cover w-full h-full" />
-                )}
+          <div className="space-y-2">
+            {/* Current images list with remove buttons */}
+            {imageUrls.length > 0 ? (
+              <div className="grid grid-cols-3 gap-2">
+                {imageUrls.map((url, idx) => (
+                  <div key={url + idx} className="relative border rounded-md overflow-hidden bg-muted/40">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={url} alt={`Image ${idx + 1}`} className="object-cover w-full h-24" />
+                    <button
+                      type="button"
+                      className="absolute top-1 right-1 text-xs px-2 py-0.5 rounded bg-red text-white disabled:opacity-50"
+                      onClick={() => {
+                        if (imageUrls.length <= 1) return;
+                        setImageUrls((prev) => prev.filter((_, i) => i !== idx));
+                      }}
+                      disabled={imageUrls.length <= 1}
+                    >
+                      Remove
+                    </button>
+                  </div>
+                ))}
               </div>
-              <div>
-                <Input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => {
-                    const file = e.target.files?.[0] || null;
-                    setSelectedImage(file);
-                    setPreviewUrl(file ? URL.createObjectURL(file) : null);
-                  }}
-                />
-                <p className="text-xs text-muted-foreground mt-1">Upload a new image. JPG/PNG, up to 5MB.</p>
-              </div>
+            ) : (
+              <div className="text-sm text-muted-foreground">No images available.</div>
+            )}
+            <div>
+              <Input
+                type="file"
+                accept="image/*"
+                onChange={(e) => {
+                  const file = e.target.files?.[0] || null;
+                  setSelectedImage(file);
+                  setPreviewUrl(file ? URL.createObjectURL(file) : null);
+                }}
+              />
+              <p className="text-xs text-muted-foreground mt-1">Upload a new image. JPG/PNG, up to 5MB.</p>
             </div>
+            <p className="text-xs text-muted-foreground">You must keep at least one image.</p>
+          </div>
           </div>
           <div className="space-y-1">
           <Label htmlFor="eventDate" className="text-foreground">Event date</Label>

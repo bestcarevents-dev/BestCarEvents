@@ -13,8 +13,8 @@ type CarEditDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   documentId: string;
-  initial: { location?: string; price?: number; currency?: string; description?: string };
-  onSaved?: (update: Partial<{ location: string; price: number; currency: string; description: string }>) => void;
+  initial: { location?: string; price?: number; currency?: string; description?: string; images?: string[] };
+  onSaved?: (update: Partial<{ location: string; price: number; currency: string; description: string; images: string[] }>) => void;
 };
 
 export default function CarEditDialog({ open, onOpenChange, documentId, initial, onSaved }: CarEditDialogProps) {
@@ -22,6 +22,7 @@ export default function CarEditDialog({ open, onOpenChange, documentId, initial,
   const [price, setPrice] = useState<string>(initial.price != null ? String(initial.price) : "");
   const [currency, setCurrency] = useState<string>(initial.currency || "");
   const [description, setDescription] = useState<string>(initial.description || "");
+  const [images, setImages] = useState<string[]>(Array.isArray(initial.images) ? initial.images : []);
   const [saving, setSaving] = useState(false);
   const { toast } = useToast();
 
@@ -32,6 +33,7 @@ export default function CarEditDialog({ open, onOpenChange, documentId, initial,
       setPrice(initial.price != null ? String(initial.price) : "");
       setCurrency(initial.currency || "");
       setDescription(initial.description || "");
+      setImages(Array.isArray(initial.images) ? initial.images : []);
     }
   }, [open, documentId, initial]);
 
@@ -50,6 +52,13 @@ export default function CarEditDialog({ open, onOpenChange, documentId, initial,
     }
     if (currency.trim() !== (initial.currency || "")) payload.currency = currency.trim();
     if (description.trim() !== (initial.description || "")) payload.description = description.trim();
+    if (JSON.stringify(images) !== JSON.stringify(initial.images || [])) {
+      if (images.length === 0) {
+        toast({ title: "At least one image required", description: "Please keep at least one image.", variant: "destructive" });
+        return;
+      }
+      payload.images = images;
+    }
     if (Object.keys(payload).length === 0) {
       toast({ title: "No changes", description: "Nothing to update.", variant: "destructive" });
       return;
@@ -82,6 +91,33 @@ export default function CarEditDialog({ open, onOpenChange, documentId, initial,
           <DialogDescription className="text-muted-foreground">Update basic details only.</DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
+          <div className="space-y-2">
+            <Label className="text-foreground">Images</Label>
+            {images.length > 0 ? (
+              <div className="grid grid-cols-3 gap-2">
+                {images.map((url, idx) => (
+                  <div key={url + idx} className="relative border rounded-md overflow-hidden bg-muted/40">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={url} alt={`Image ${idx + 1}`} className="object-cover w-full h-24" />
+                    <button
+                      type="button"
+                      className="absolute top-1 right-1 text-xs px-2 py-0.5 rounded bg-red text-white disabled:opacity-50"
+                      onClick={() => {
+                        if (images.length <= 1) return;
+                        setImages((prev) => prev.filter((_, i) => i !== idx));
+                      }}
+                      disabled={images.length <= 1}
+                    >
+                      Remove
+                    </button>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-sm text-muted-foreground">No images available.</div>
+            )}
+            <p className="text-xs text-muted-foreground">You must keep at least one image.</p>
+          </div>
           <div className="space-y-1">
             <Label htmlFor="carLocation" className="text-foreground">Location</Label>
             <Input id="carLocation" value={location} onChange={(e) => setLocation(e.target.value)} placeholder="City, Country" className="text-foreground" />
