@@ -126,6 +126,19 @@ export default function AdminFaqPage() {
     });
   };
 
+  const remove = async (index: number) => {
+    const it = items[index];
+    const confirmed = typeof window !== 'undefined' ? window.confirm('Delete this question?') : true;
+    if (!confirmed) return;
+    try {
+      if (it.id) {
+        await deleteDoc(doc(db, "faqs", it.id));
+      }
+    } finally {
+      setItems((prev) => prev.filter((_, i) => i !== index));
+    }
+  };
+
   if (!isAuthed) return <div className="text-sm text-muted-foreground">Please sign in…</div>;
   if (loading) return <div className="text-sm text-muted-foreground">Loading…</div>;
 
@@ -153,6 +166,7 @@ export default function AdminFaqPage() {
                     <div className="flex items-center gap-2">
                       <Button variant="outline" size="sm" onClick={() => move(idx, -1)} disabled={idx === 0}>Up</Button>
                       <Button variant="outline" size="sm" onClick={() => move(idx, 1)} disabled={idx === items.length - 1}>Down</Button>
+                      <Button variant="outline" size="sm" className="text-red-600 border-red-600 hover:bg-red-50" onClick={() => remove(idx)}>Delete</Button>
                     </div>
                   </CardTitle>
                   <CardDescription>Question and answer block</CardDescription>

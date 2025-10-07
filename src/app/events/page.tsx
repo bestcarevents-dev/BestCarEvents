@@ -101,9 +101,13 @@ function EventsPageContent() {
 
     // Filter and sort events
     const filteredAndSortedEvents = useMemo(() => {
-      const extractCity = (value?: string | null) => {
-        if (!value || typeof value !== 'string') return "";
-        return value.split(',')[0]?.trim() || "";
+      const parseLocation = (value?: string | null) => {
+        if (!value || typeof value !== 'string') return { city: '', state: '', country: '' };
+        const parts = value.split(',').map((p) => p.trim()).filter(Boolean);
+        const city = parts[0] || '';
+        const country = parts.length >= 2 ? parts[parts.length - 1] : '';
+        const state = parts.length >= 3 ? parts[1] : (parts.length === 2 ? '' : '');
+        return { city, state, country };
       };
       let filtered = events.filter(event => {
         const matchesSearch = searchQuery === "" || 
@@ -113,15 +117,18 @@ function EventsPageContent() {
           event.city?.toLowerCase().includes(searchQuery.toLowerCase()) ||
           event.country?.toLowerCase().includes(searchQuery.toLowerCase());
         
-        const eventCity = (event.city || extractCity(event.location || "")).toLowerCase();
+        const parsed = parseLocation(event.location || "");
+        const eventCity = (event.city || parsed.city).toLowerCase();
         const matchesCity = selectedCity === "all" || 
           eventCity === selectedCity.toLowerCase();
         
+        const eventState = (event.state || parsed.state).toLowerCase();
         const matchesState = selectedState === "all" || 
-          event.state?.toLowerCase() === selectedState.toLowerCase();
+          eventState === selectedState.toLowerCase();
         
+        const eventCountry = (event.country || parsed.country).toLowerCase();
         const matchesCountry = selectedCountry === "all" || 
-          event.country?.toLowerCase() === selectedCountry.toLowerCase();
+          eventCountry === selectedCountry.toLowerCase();
         
         const matchesEventType = selectedEventType === "all" || 
           event.eventType?.toLowerCase() === selectedEventType.toLowerCase();
@@ -154,14 +161,24 @@ function EventsPageContent() {
 
       return filtered;
     }, [events, searchQuery, selectedCity, selectedState, selectedCountry, selectedEventType, selectedVehicleFocus, selectedEntryFee, sortBy]);
-    // Build city options strictly from the explicit event.city field
+    // Build city/state/country options from events (explicit fields + parsed from location)
     const cities = useMemo(() => {
-      const set = new Set<string>();
+      const map = new Map<string, string>();
       for (const ev of events) {
-        const value = typeof ev.city === 'string' ? ev.city.trim() : '';
-        if (value) set.add(value);
+        const loc = typeof ev.location === 'string' ? ev.location : '';
+        const parts = loc ? loc.split(',').map((p: string) => p.trim()).filter(Boolean) : [];
+        const parsedCity = parts[0] || '';
+        const candidates = [
+          typeof ev.city === 'string' ? ev.city.trim() : '',
+          parsedCity,
+        ];
+        for (const c of candidates) {
+          if (!c) continue;
+          const key = c.toLowerCase();
+          if (!map.has(key)) map.set(key, c);
+        }
       }
-      return Array.from(set).sort((a, b) => a.localeCompare(b));
+      return Array.from(map.values()).sort((a, b) => a.localeCompare(b));
     }, [events]);
 
     const cityOptions = useMemo(() => {
@@ -171,6 +188,57 @@ function EventsPageContent() {
       return cities;
     }, [cities, selectedCity]);
 
+    const states = useMemo(() => {
+      const map = new Map<string, string>();
+      for (const ev of events) {
+        const loc = typeof ev.location === 'string' ? ev.location : '';
+        const parts = loc ? loc.split(',').map((p: string) => p.trim()).filter(Boolean) : [];
+        const parsedState = parts.length >= 3 ? parts[1] : '';
+        const candidates = [
+          typeof ev.state === 'string' ? ev.state.trim() : '',
+          parsedState,
+        ];
+        for (const s of candidates) {
+          if (!s) continue;
+          const key = s.toLowerCase();
+          if (!map.has(key)) map.set(key, s);
+        }
+      }
+      return Array.from(map.values()).sort((a, b) => a.localeCompare(b));
+    }, [events]);
+
+    const stateOptions = useMemo(() => {
+      if (selectedState !== 'all' && selectedState && !states.includes(selectedState)) {
+        return [selectedState, ...states];
+      }
+      return states;
+    }, [states, selectedState]);
+
+    const countries = useMemo(() => {
+      const map = new Map<string, string>();
+      for (const ev of events) {
+        const loc = typeof ev.location === 'string' ? ev.location : '';
+        const parts = loc ? loc.split(',').map((p: string) => p.trim()).filter(Boolean) : [];
+        const parsedCountry = parts.length >= 2 ? parts[parts.length - 1] : '';
+        const candidates = [
+          typeof ev.country === 'string' ? ev.country.trim() : '',
+          parsedCountry,
+        ];
+        for (const c of candidates) {
+          if (!c) continue;
+          const key = c.toLowerCase();
+          if (!map.has(key)) map.set(key, c);
+        }
+      }
+      return Array.from(map.values()).sort((a, b) => a.localeCompare(b));
+    }, [events]);
+
+    const countryOptions = useMemo(() => {
+      if (selectedCountry !== 'all' && selectedCountry && !countries.includes(selectedCountry)) {
+        return [selectedCountry, ...countries];
+      }
+      return countries;
+    }, [countries, selectedCountry]);
 
     // Separate featured and regular events
     const featuredEvents = filteredAndSortedEvents.filter(event => event.featured === true);
@@ -334,7 +402,9 @@ function EventsPageContent() {
                    </SelectTrigger>
                    <SelectContent>
                       <SelectItem value="all">Any State</SelectItem>
-                      {/* Add states from events data if available */}
+                      {stateOptions.map((state) => (
+                        <SelectItem key={state} value={state}>{state}</SelectItem>
+                      ))}
                    </SelectContent>
                 </Select>
                 <Select value={selectedCountry} onValueChange={setSelectedCountry}>
@@ -343,7 +413,9 @@ function EventsPageContent() {
                    </SelectTrigger>
                    <SelectContent>
                       <SelectItem value="all">Any Country</SelectItem>
-                      {/* Add countries from events data if available */}
+                      {countryOptions.map((country) => (
+                        <SelectItem key={country} value={country}>{country}</SelectItem>
+                      ))}
                    </SelectContent>
                 </Select>
                 <Select value={selectedEventType} onValueChange={setSelectedEventType}>
