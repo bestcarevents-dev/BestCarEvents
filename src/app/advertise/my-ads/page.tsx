@@ -1145,14 +1145,39 @@ export default function MyAdsPage() {
             {/* Images */}
             <div className="space-y-2">
               <Label className="text-foreground">Images</Label>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-3">
                 {(editDraft.imageUrls || []).map((img: string, idx: number) => (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img key={idx} src={img} alt="Ad" className="w-24 h-24 object-contain bg-white border rounded" />
+                  <div key={idx} className="relative">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={img} alt="Ad" className="w-24 h-24 object-contain bg-white border rounded" />
+                    <button
+                      type="button"
+                      className="absolute -top-2 -right-2 bg-destructive text-white rounded-full w-6 h-6 flex items-center justify-center text-xs"
+                      aria-label="Remove image"
+                      onClick={() => {
+                        setEditDraft((p: any) => ({ ...p, imageUrls: (p.imageUrls || []).filter((_: string, i: number) => i !== idx) }));
+                      }}
+                    >
+                      ×
+                    </button>
+                  </div>
                 ))}
                 {editImagePreviews.map((src, idx) => (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img key={`new-${idx}`} src={src} alt="New" className="w-24 h-24 object-contain bg-white border rounded" />
+                  <div key={`new-${idx}`} className="relative">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={src} alt="New" className="w-24 h-24 object-contain bg-white border rounded" />
+                    <button
+                      type="button"
+                      className="absolute -top-2 -right-2 bg-destructive text-white rounded-full w-6 h-6 flex items-center justify-center text-xs"
+                      aria-label="Remove image"
+                      onClick={() => {
+                        setEditImages((prev) => prev.filter((_, i) => i !== idx));
+                        setEditImagePreviews((prev) => prev.filter((_, i) => i !== idx));
+                      }}
+                    >
+                      ×
+                    </button>
+                  </div>
                 ))}
               </div>
               <Input type="file" multiple accept="image/*" onChange={(e) => {
@@ -1160,7 +1185,7 @@ export default function MyAdsPage() {
                 setEditImages(files as File[]);
                 setEditImagePreviews(files.map(f => URL.createObjectURL(f)));
               }} className="text-foreground" />
-              <p className="text-xs text-muted-foreground">Adding images will upload and append to existing ones.</p>
+              <p className="text-xs text-muted-foreground">You must have at least 1 image. You can remove images using the × button.</p>
             </div>
           </div>
           <DialogFooter>
@@ -1178,7 +1203,7 @@ export default function MyAdsPage() {
                 if (payload.website && !/^https?:\/\//i.test(payload.website)) {
                   payload.website = `https://${payload.website}`;
                 }
-                delete payload.imageUrls;
+                // We'll compute imageUrls separately; keep other payload fields
                 delete payload.adType; // adType stays as-is in DB unless changing type is supported
                 // Upload new images if any
                 let newImageUrls: string[] = [];
@@ -1192,8 +1217,12 @@ export default function MyAdsPage() {
                 }
                 const docRef = doc(db, "partnerAds", editModal.id);
                 const existing = ads.find(a => a.id === editModal.id);
-                const existingUrls = Array.isArray(existing?.imageUrls) ? existing!.imageUrls : [];
-                const finalImageUrls = [...newImageUrls, ...existingUrls];
+                const currentUrls = Array.isArray(editDraft.imageUrls) ? editDraft.imageUrls : (Array.isArray(existing?.imageUrls) ? existing!.imageUrls : []);
+                const finalImageUrls = [...currentUrls, ...newImageUrls];
+                if (finalImageUrls.length < 1) {
+                  toast({ title: "At least 1 image required", description: "Please add at least one image before saving.", variant: "destructive" });
+                  return;
+                }
                 // Compute changes (before vs after) for payload fields and images
                 const changes: Array<{ field: string; before: any; after: any }> = [];
                 if (existing) {
@@ -1206,7 +1235,7 @@ export default function MyAdsPage() {
                     }
                   }
                   // imageUrls diff
-                  const beforeImgs = Array.isArray(existingUrls) ? existingUrls : [];
+                  const beforeImgs = Array.isArray(existing?.imageUrls) ? existing!.imageUrls : [];
                   const sameImages = JSON.stringify(beforeImgs) === JSON.stringify(finalImageUrls);
                   if (!sameImages) {
                     changes.push({ field: 'imageUrls', before: beforeImgs, after: finalImageUrls });
