@@ -163,7 +163,7 @@ function EventsPageContent() {
     }, [events, searchQuery, selectedCity, selectedState, selectedCountry, selectedEventType, selectedVehicleFocus, selectedEntryFee, sortBy]);
     // Build city/state/country options from events (explicit fields + parsed from location)
     const cities = useMemo(() => {
-      const map = new Map<string, string>();
+      const map = new globalThis.Map<string, string>();
       for (const ev of events) {
         const loc = typeof ev.location === 'string' ? ev.location : '';
         const parts = loc ? loc.split(',').map((p: string) => p.trim()).filter(Boolean) : [];
@@ -189,7 +189,7 @@ function EventsPageContent() {
     }, [cities, selectedCity]);
 
     const states = useMemo(() => {
-      const map = new Map<string, string>();
+      const map = new globalThis.Map<string, string>();
       for (const ev of events) {
         const loc = typeof ev.location === 'string' ? ev.location : '';
         const parts = loc ? loc.split(',').map((p: string) => p.trim()).filter(Boolean) : [];
@@ -215,7 +215,7 @@ function EventsPageContent() {
     }, [states, selectedState]);
 
     const countries = useMemo(() => {
-      const map = new Map<string, string>();
+      const map = new globalThis.Map<string, string>();
       for (const ev of events) {
         const loc = typeof ev.location === 'string' ? ev.location : '';
         const parts = loc ? loc.split(',').map((p: string) => p.trim()).filter(Boolean) : [];
