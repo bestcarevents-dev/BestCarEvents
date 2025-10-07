@@ -446,20 +446,7 @@ function CarHotelsPageContent() {
                               <Link href={`/hotels/${hotel.documentId}`} className="hover:text-[#80A0A9] transition-colors notranslate">{hotel.hotelName}</Link>
                             </CardTitle>
                             <CardDescription className="text-gray-600">{[hotel.city, hotel.state].filter(Boolean).join(', ')}</CardDescription>
-                            <ul className="mt-4 space-y-2 text-sm text-gray-600">
-                              {(hotel.features || []).slice(0, 3).map((feature: string) => (
-                                <li key={feature} className="flex items-center">
-                                  <svg className="w-4 h-4 mr-2 text-[#80A0A9]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>
-                                  {feature}
-                                </li>
-                              ))}
-                            </ul>
                           </CardContent>
-                          <CardFooter className="p-6 pt-0">
-                            <Button asChild variant="outline" className="w-full border-[#80A0A9] text-[#80A0A9] hover:bg-[#80A0A9]/10">
-                              <Link href={`/hotels/${hotel.documentId}`}>View Services</Link>
-                            </Button>
-                          </CardFooter>
                         </Card>
                       ))}
                     </div>
@@ -496,20 +483,7 @@ function CarHotelsPageContent() {
                           <Link href={`/hotels/${hotel.documentId}`} className="hover:text-[#80A0A9] transition-colors notranslate">{hotel.hotelName}</Link>
                         </CardTitle>
                         <CardDescription className="text-gray-600">{[hotel.city, hotel.state].filter(Boolean).join(', ')}</CardDescription>
-                        <ul className="mt-4 space-y-2 text-sm text-gray-600">
-                          {(hotel.features || []).map((feature: string) => (
-                            <li key={feature} className="flex items-center">
-                              <svg className="w-4 h-4 mr-2 text-[#80A0A9]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>
-                              {feature}
-                            </li>
-                          ))}
-                        </ul>
                       </CardContent>
-                      <CardFooter className="p-6 pt-0">
-                        <Button asChild variant="outline" className="w-full border-[#80A0A9] text-[#80A0A9] hover:bg-[#80A0A9]/10">
-                          <Link href={`/hotels/${hotel.documentId}`}>View Services</Link>
-                        </Button>
-                      </CardFooter>
                     </Card>
                   ))}
                 </div>
