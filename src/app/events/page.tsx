@@ -37,7 +37,6 @@ function EventsPageContent() {
     // Search and filter state
     const [searchQuery, setSearchQuery] = useState("");
     const [selectedCity, setSelectedCity] = useState("all");
-    const [selectedState, setSelectedState] = useState("all");
     const [selectedCountry, setSelectedCountry] = useState("all");
     const [selectedEventType, setSelectedEventType] = useState("all");
     const [selectedVehicleFocus, setSelectedVehicleFocus] = useState("all");
@@ -123,10 +122,6 @@ function EventsPageContent() {
         const matchesCity = selectedCity === "all" || 
           eventCity === selectedCity.toLowerCase();
         
-        const eventState = (event.state || parsed.state).toLowerCase();
-        const matchesState = selectedState === "all" || 
-          eventState === selectedState.toLowerCase();
-        
         const eventCountry = (event.country || parsed.country).toLowerCase();
         const matchesCountry = selectedCountry === "all" || 
           eventCountry === selectedCountry.toLowerCase();
@@ -141,7 +136,7 @@ function EventsPageContent() {
           (selectedEntryFee === "free" && (event.entryFee === 0 || event.entryFee === "0")) ||
           (selectedEntryFee === "paid" && (event.entryFee !== 0 && event.entryFee !== "0"));
         
-        return matchesSearch && matchesCity && matchesState && matchesCountry && matchesEventType && matchesVehicleFocus && matchesEntryFee;
+        return matchesSearch && matchesCity && matchesCountry && matchesEventType && matchesVehicleFocus && matchesEntryFee;
       });
 
       // Sort events
@@ -161,7 +156,7 @@ function EventsPageContent() {
       });
 
       return filtered;
-    }, [events, searchQuery, selectedCity, selectedState, selectedCountry, selectedEventType, selectedVehicleFocus, selectedEntryFee, sortBy]);
+    }, [events, searchQuery, selectedCity, selectedCountry, selectedEventType, selectedVehicleFocus, selectedEntryFee, sortBy]);
     // Build city/state/country options from events (city strictly from explicit field)
     const cities = useMemo(() => {
       const map = new globalThis.Map<string, string>();
@@ -181,31 +176,6 @@ function EventsPageContent() {
       return cities;
     }, [cities, selectedCity]);
 
-    const states = useMemo(() => {
-      const map = new globalThis.Map<string, string>();
-      for (const ev of events) {
-        const loc = typeof ev.location === 'string' ? ev.location : '';
-        const parts = loc ? loc.split(',').map((p: string) => p.trim()).filter(Boolean) : [];
-        const parsedState = parts.length >= 3 ? parts[1] : '';
-        const candidates = [
-          typeof ev.state === 'string' ? ev.state.trim() : '',
-          parsedState,
-        ];
-        for (const s of candidates) {
-          if (!s) continue;
-          const key = s.toLowerCase();
-          if (!map.has(key)) map.set(key, s);
-        }
-      }
-      return Array.from(map.values()).sort((a, b) => a.localeCompare(b));
-    }, [events]);
-
-    const stateOptions = useMemo(() => {
-      if (selectedState !== 'all' && selectedState && !states.includes(selectedState)) {
-        return [selectedState, ...states];
-      }
-      return states;
-    }, [states, selectedState]);
 
     const countries = useMemo(() => {
       const map = new globalThis.Map<string, string>();
@@ -250,7 +220,6 @@ function EventsPageContent() {
     const handleResetFilters = () => {
       setSearchQuery("");
       setSelectedCity("all");
-      setSelectedState("all");
       setSelectedCountry("all");
       setSelectedEventType("all");
       setSelectedVehicleFocus("all");
@@ -389,17 +358,6 @@ function EventsPageContent() {
                       ))}
                    </SelectContent>
                 </Select>
-                <Select value={selectedState} onValueChange={setSelectedState}>
-                   <SelectTrigger className="bg-white border-[#80A0A9]/50 text-gray-900 focus:border-[#80A0A9]">
-                     <SelectValue placeholder="State: Any" />
-                   </SelectTrigger>
-                   <SelectContent>
-                      <SelectItem value="all">Any State</SelectItem>
-                      {stateOptions.map((state) => (
-                        <SelectItem key={state} value={state}>{state}</SelectItem>
-                      ))}
-                   </SelectContent>
-                </Select>
                 <Select value={selectedCountry} onValueChange={setSelectedCountry}>
                    <SelectTrigger className="bg-white border-[#80A0A9]/50 text-gray-900 focus:border-[#80A0A9]">
                      <SelectValue placeholder="Country: Any" />
@@ -464,7 +422,7 @@ function EventsPageContent() {
                    <div className="py-12 text-center text-gray-600">Loading events...</div>
                  ) : filteredAndSortedEvents.length === 0 ? (
                    <div className="py-12 text-center text-gray-600">
-                     {searchQuery || selectedCity !== "all" || selectedState !== "all" || selectedCountry !== "all" || selectedEventType !== "all" || selectedVehicleFocus !== "all" || selectedEntryFee !== "all" ? "No events found matching your criteria." : "No events found."}
+                     {searchQuery || selectedCity !== "all" || selectedCountry !== "all" || selectedEventType !== "all" || selectedVehicleFocus !== "all" || selectedEntryFee !== "all" ? "No events found matching your criteria." : "No events found."}
                    </div>
                  ) : (
                  <>
