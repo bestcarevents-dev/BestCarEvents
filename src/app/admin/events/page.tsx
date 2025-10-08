@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { getFirestore, collection, getDocs, doc, updateDoc, deleteDoc, addDoc } from "firebase/firestore";
+import { getFirestore, collection, getDocs, doc, updateDoc, deleteDoc, addDoc, getDoc } from "firebase/firestore";
 import { app } from "@/lib/firebase";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -101,33 +101,20 @@ export default function PendingEventsPage() {
 
   const handleApprove = async (request: EventRequest) => {
     try {
-      // When approving, only transfer the relevant fields to the 'events' collection
-      const approvedEventData: Omit<EventRequest, 'id' | 'status' | 'submittedAt'> = {
-          eventName: request.eventName,
-          eventDate: request.eventDate,
-          endDate: request.endDate,
-          location: request.location,
-          description: request.description,
-          organizerName: request.organizerName,
-          organizerContact: request.organizerContact,
-          imageUrl: request.imageUrl,
-          eventType: request.eventType,
-          vehicleFocus: request.vehicleFocus,
-          expectedAttendance: request.expectedAttendance,
-          entryFee: request.entryFee,
-          scheduleHighlights: request.scheduleHighlights,
-          activities: request.activities,
-          rulesUrl: request.rulesUrl,
-          sponsors: request.sponsors,
-          websiteUrl: request.websiteUrl,
-          uploadedByUserId: request.uploadedByUserId,
-          uploadedByUserEmail: request.uploadedByUserEmail,
+      // Fetch full pending document to ensure we carry over ALL attributes
+      const pendingRef = doc(db, "pendingEvents", request.id);
+      const pendingSnap = await getDoc(pendingRef);
+      const fullData = pendingSnap.exists() ? pendingSnap.data() : {};
+
+      // Compose final approved event payload preserving all original fields
+      const eventPayload: Record<string, any> = {
+        ...fullData,
+        status: "approved",
+        submittedAt: (fullData as any)?.submittedAt ?? request.submittedAt,
+        createdAt: new Date(),
       };
-      // Remove undefined fields so Firestore doesn't get undefined values
-      const cleaned: Record<string, any> = Object.fromEntries(
-        Object.entries(approvedEventData).filter(([, v]) => v !== undefined)
-      );
-      await addDoc(collection(db, "events"), { ...cleaned, status: "approved", submittedAt: request.submittedAt, createdAt: new Date() });
+
+      await addDoc(collection(db, "events"), eventPayload);
       await deleteDoc(doc(db, "pendingEvents", request.id));
       setPendingRequests(pendingRequests.filter(r => r.id !== request.id));
       setSelectedEvent(null); // Close modal after action
