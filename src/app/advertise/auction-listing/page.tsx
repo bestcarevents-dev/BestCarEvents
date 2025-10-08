@@ -860,7 +860,7 @@ export default function AuctionListingPage() {
                           <Calendar className="w-4 h-4 text-muted-foreground" />
                           <span className="text-muted-foreground">Start Date:</span>
                           <span>{auction.startDate?.seconds 
-                            ? new Date(auction.startDate.seconds * 1000).toLocaleDateString()
+                            ? new Date(auction.startDate.seconds * 1000).toLocaleDateString('en-GB')
                             : auction.startDate?.toString() || 'TBD'}</span>
                         </div>
                         

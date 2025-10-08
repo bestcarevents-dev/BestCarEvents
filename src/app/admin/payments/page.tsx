@@ -72,7 +72,7 @@ export default function PaymentsPage() {
   const formatDate = (date: any) => {
     if (!date) return "N/A";
     const dateObj = date.toDate?.() || new Date(date);
-    return dateObj.toLocaleDateString() + " " + dateObj.toLocaleTimeString();
+    return dateObj.toLocaleDateString('en-GB') + " " + dateObj.toLocaleTimeString('en-GB');
   };
 
   const formatAmount = (amount: number, currency: string = "USD") => {

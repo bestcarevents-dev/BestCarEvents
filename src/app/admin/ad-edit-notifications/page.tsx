@@ -103,7 +103,7 @@ export default function AdminAdEditNotificationsPage() {
                         <TableCell className="whitespace-nowrap max-w-[16rem] truncate">{n.userEmail || "-"}</TableCell>
                         <TableCell className="whitespace-nowrap max-w-[22rem] truncate">{Array.isArray(n.data?.updatedFields) ? n.data.updatedFields.join(", ") : "-"}</TableCell>
                         <TableCell className="whitespace-nowrap">{typeof n.data?.imageCount === "number" ? n.data.imageCount : "-"}</TableCell>
-                        <TableCell className="whitespace-nowrap">{created ? created.toLocaleString() : "-"}</TableCell>
+                        <TableCell className="whitespace-nowrap">{created ? created.toLocaleString('en-GB') : "-"}</TableCell>
                         <TableCell className="whitespace-nowrap flex gap-2">
                           {n.status !== "read" && (
                             <Button size="sm" variant="outline" disabled={marking === n.id} onClick={() => handleMarkRead(n.id)}>

@@ -839,7 +839,7 @@ const FeaturedEventsSection = ({ copy }: { copy: NonNullable<HomepageContent["fe
   const formatDate = (eventDate: any) => {
     if (!eventDate) return "TBD";
     const date = eventDate.seconds ? new Date(eventDate.seconds * 1000) : new Date(eventDate);
-    return date.toLocaleDateString('en-US', { 
+    return date.toLocaleDateString('en-GB', { 
       month: 'long', 
       day: 'numeric', 
       year: 'numeric' 
@@ -1074,7 +1074,7 @@ const FeaturedAuctionsSection = ({ copy }: { copy: NonNullable<HomepageContent["
   const formatDate = (startDate: any) => {
     if (!startDate) return "TBD";
     const date = startDate.seconds ? new Date(startDate.seconds * 1000) : new Date(startDate);
-    return date.toLocaleDateString('en-US', { 
+    return date.toLocaleDateString('en-GB', { 
       month: 'short', 
       day: 'numeric' 
     });
@@ -1608,7 +1608,7 @@ const FeaturedClubsSection = ({ copy }: { copy: NonNullable<HomepageContent["fea
   const formatDate = (createdAt: any) => {
     if (!createdAt) return "New";
     const date = createdAt.seconds ? new Date(createdAt.seconds * 1000) : new Date(createdAt);
-    return date.toLocaleDateString('en-US', { 
+    return date.toLocaleDateString('en-GB', { 
       month: 'short', 
       day: 'numeric' 
     });

@@ -196,9 +196,9 @@ export default function AdminHotelsPage() {
               </TableCell>
               <TableCell>
                 {request.feature_end?.seconds
-                  ? new Date(request.feature_end.seconds * 1000).toLocaleString()
+                  ? new Date(request.feature_end.seconds * 1000).toLocaleString('en-GB')
                   : (request.feature_end
-                      ? (new Date(request.feature_end as any)).toLocaleString()
+                      ? (new Date(request.feature_end as any)).toLocaleString('en-GB')
                       : '-')}
               </TableCell>
               <TableCell className="text-right">
@@ -278,7 +278,7 @@ export default function AdminHotelsPage() {
                 <DetailItem label="Name" value={selectedHotel.contactName} />
                 <DetailItem label="Email" value={selectedHotel.contactEmail} />
                 {selectedHotel.createdAt && (
-                  <DetailItem label="Created At" value={selectedHotel.createdAt?.seconds ? new Date(selectedHotel.createdAt.seconds * 1000).toLocaleString() : selectedHotel.createdAt.toString()} />
+                  <DetailItem label="Created At" value={selectedHotel.createdAt?.seconds ? new Date(selectedHotel.createdAt.seconds * 1000).toLocaleString('en-GB') : selectedHotel.createdAt.toString()} />
                 )}
 
                 <h3 className="font-semibold text-lg mb-2 mt-6">Uploaded By</h3>

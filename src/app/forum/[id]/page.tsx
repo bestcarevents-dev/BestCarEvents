@@ -463,7 +463,7 @@ export default function PostDetailPage() {
     const formatDate = (timestamp: any) => {
       if (!timestamp) return 'Unknown date';
       const date = timestamp.seconds ? new Date(timestamp.seconds * 1000) : new Date(timestamp);
-      return date.toLocaleDateString('en-US', { 
+      return date.toLocaleDateString('en-GB', { 
         year: 'numeric', 
         month: 'short', 
         day: 'numeric',

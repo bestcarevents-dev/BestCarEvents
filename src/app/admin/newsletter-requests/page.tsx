@@ -150,7 +150,7 @@ export default function NewsletterRequestsPage() {
                   </TableCell>
                   <TableCell>
                     {request.createdAt?.seconds 
-                      ? new Date(request.createdAt.seconds * 1000).toLocaleDateString()
+                      ? new Date(request.createdAt.seconds * 1000).toLocaleDateString('en-GB')
                       : "N/A"
                     }
                   </TableCell>
@@ -247,7 +247,7 @@ export default function NewsletterRequestsPage() {
                   <p className="text-sm font-semibold text-muted-foreground">Created</p>
                   <p className="text-md">
                     {selectedRequest?.createdAt?.seconds 
-                      ? new Date(selectedRequest.createdAt.seconds * 1000).toLocaleString()
+                      ? new Date(selectedRequest.createdAt.seconds * 1000).toLocaleString('en-GB')
                       : "N/A"
                     }
                   </p>

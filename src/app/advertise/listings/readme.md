@@ -274,7 +274,7 @@
                               ? item.type || "N/A"
                               : col.key === "eventDate" || col.key === "startDate"
                               ? item[col.key]?.seconds
-                                ? new Date(item[col.key].seconds * 1000).toLocaleDateString()
+                                ? new Date(item[col.key].seconds * 1000).toLocaleDateString('en-GB')
                                 : item[col.key]?.toString() || "-"
                               : item[col.key] || "-"}
                           </TableCell>

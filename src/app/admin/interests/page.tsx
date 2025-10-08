@@ -275,9 +275,9 @@ export default function AdminInterestsPage() {
   const formatDate = (ts: any) => {
     try {
       if (!ts) return '';
-      if (ts.seconds) return new Date(ts.seconds * 1000).toLocaleDateString();
+      if (ts.seconds) return new Date(ts.seconds * 1000).toLocaleDateString('en-GB');
       const d = new Date(ts);
-      return isNaN(d.getTime()) ? '' : d.toLocaleDateString();
+      return isNaN(d.getTime()) ? '' : d.toLocaleDateString('en-GB');
     } catch { return ''; }
   };
 

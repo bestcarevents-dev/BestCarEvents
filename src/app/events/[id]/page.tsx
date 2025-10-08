@@ -170,9 +170,9 @@ export default function EventDetailsPage({ params }: { params: { id: string } })
                         const start = event.eventDate?.seconds ? new Date(event.eventDate.seconds * 1000) : (event.eventDate ? new Date(event.eventDate) : null);
                         const end = event.endDate?.seconds ? new Date(event.endDate.seconds * 1000) : (event.endDate ? new Date(event.endDate) : null);
                         if (!start) return event.date || 'TBD';
-                        const startStr = start.toLocaleDateString();
+                        const startStr = start.toLocaleDateString('en-GB');
                         if (!end) return startStr;
-                        const endStr = end.toLocaleDateString();
+                        const endStr = end.toLocaleDateString('en-GB');
                         return `${startStr} - ${endStr}`;
                       })()}
                     </div>

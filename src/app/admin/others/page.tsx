@@ -317,9 +317,9 @@ export default function PendingServicesPage() {
                       </TableCell>
                       <TableCell>
                         {request.feature_end?.seconds
-                          ? new Date(request.feature_end.seconds * 1000).toLocaleString()
+                          ? new Date(request.feature_end.seconds * 1000).toLocaleString('en-GB')
                           : (request.feature_end
-                              ? (new Date(request.feature_end as any)).toLocaleString()
+                              ? (new Date(request.feature_end as any)).toLocaleString('en-GB')
                               : '-')}
                       </TableCell>
                       <TableCell onClick={e => e.stopPropagation()}>

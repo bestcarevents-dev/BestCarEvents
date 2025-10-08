@@ -813,9 +813,9 @@ export default function EventsListingPage() {
                               const start = event.eventDate?.seconds ? new Date(event.eventDate.seconds * 1000) : (event.eventDate ? new Date(event.eventDate) : null);
                               const end = event.endDate?.seconds ? new Date(event.endDate.seconds * 1000) : (event.endDate ? new Date(event.endDate) : null);
                               if (!start) return 'TBD';
-                              const s = start.toLocaleDateString();
+                              const s = start.toLocaleDateString('en-GB');
                               if (!end) return s;
-                              const e = end.toLocaleDateString();
+                              const e = end.toLocaleDateString('en-GB');
                               return `${s} - ${e}`;
                             })()}
                           </span>

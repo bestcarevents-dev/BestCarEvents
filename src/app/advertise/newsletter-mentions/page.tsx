@@ -701,7 +701,7 @@ export default function NewsletterMentionsPage() {
                     </TableCell>
                     <TableCell className="whitespace-nowrap px-2">
                       {request.createdAt?.seconds 
-                        ? new Date(request.createdAt.seconds * 1000).toLocaleDateString()
+                        ? new Date(request.createdAt.seconds * 1000).toLocaleDateString('en-GB')
                         : "N/A"
                       }
                     </TableCell>

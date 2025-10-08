@@ -171,7 +171,7 @@ export default function PartnerDetailPage() {
                 {partner.createdAt && (
                   <div className="flex items-center gap-3 animate-fade-in-up">
                     <Calendar className="w-5 h-5 text-gray-700" />
-                    <span className="text-sm text-gray-700">Joined {partner.createdAt.seconds ? new Date(partner.createdAt.seconds * 1000).toLocaleDateString() : partner.createdAt.toString()}</span>
+                    <span className="text-sm text-gray-700">Joined {partner.createdAt.seconds ? new Date(partner.createdAt.seconds * 1000).toLocaleDateString('en-GB') : partner.createdAt.toString()}</span>
                   </div>
                 )}
                 {partner.phone && (

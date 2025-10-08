@@ -119,7 +119,7 @@ export default function ClubDetailPage() {
                 {club.createdAt && (
                   <div className="flex items-center gap-3 animate-fade-in-up">
                     <Calendar className="w-5 h-5 text-yellow-800" />
-                    <span className="text-sm text-gray-600">Joined {club.createdAt.seconds ? new Date(club.createdAt.seconds * 1000).toLocaleDateString() : club.createdAt.toString()}</span>
+                    <span className="text-sm text-gray-600">Joined {club.createdAt.seconds ? new Date(club.createdAt.seconds * 1000).toLocaleDateString('en-GB') : club.createdAt.toString()}</span>
                   </div>
                 )}
               </CardContent>

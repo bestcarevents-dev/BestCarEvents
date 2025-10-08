@@ -98,7 +98,7 @@ export default function AdminPartnersPage() {
                   <TableCell>
                     <Badge variant="secondary">Approved</Badge>
                   </TableCell>
-                  <TableCell>{request.createdAt?.seconds ? new Date(request.createdAt.seconds * 1000).toLocaleString() : (request.createdAt ? request.createdAt.toString() : "-")}</TableCell>
+                  <TableCell>{request.createdAt?.seconds ? new Date(request.createdAt.seconds * 1000).toLocaleString('en-GB') : (request.createdAt ? request.createdAt.toString() : "-")}</TableCell>
                   <TableCell>
                     <Button variant="destructive" size="sm" onClick={e => { e.stopPropagation(); handleDeleteApproved(request.id); }}>Delete</Button>
                   </TableCell>

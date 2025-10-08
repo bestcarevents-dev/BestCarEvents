@@ -234,7 +234,7 @@ export default function AdminClubsPage() {
                     <TableCell>
                       <Badge variant="secondary">Approved</Badge>
                     </TableCell>
-                    <TableCell>{request.createdAt?.seconds ? new Date(request.createdAt.seconds * 1000).toLocaleString() : (request.createdAt ? request.createdAt.toString() : "-")}</TableCell>
+                    <TableCell>{request.createdAt?.seconds ? new Date(request.createdAt.seconds * 1000).toLocaleString('en-GB') : (request.createdAt ? request.createdAt.toString() : "-")}</TableCell>
                     <TableCell>
                       <Badge variant={(request.featured || request.listing_type === 'featured') ? 'default' : 'outline'}>
                         {(request.featured || request.listing_type === 'featured') ? 'Yes' : 'No'}
@@ -242,9 +242,9 @@ export default function AdminClubsPage() {
                     </TableCell>
                     <TableCell>
                       {request.feature_end?.seconds
-                        ? new Date(request.feature_end.seconds * 1000).toLocaleString()
+                        ? new Date(request.feature_end.seconds * 1000).toLocaleString('en-GB')
                         : (request.feature_end
-                            ? (new Date(request.feature_end as any)).toLocaleString()
+                            ? (new Date(request.feature_end as any)).toLocaleString('en-GB')
                             : '-')}
                     </TableCell>
                     <TableCell>
@@ -302,7 +302,7 @@ export default function AdminClubsPage() {
                 <DetailItem label="Name" value={selectedClub.contactName} />
                 <DetailItem label="Email" value={selectedClub.contactEmail} />
                 {selectedClub.createdAt && (
-                  <DetailItem label="Created At" value={selectedClub.createdAt?.seconds ? new Date(selectedClub.createdAt.seconds * 1000).toLocaleString() : selectedClub.createdAt.toString()} />
+                  <DetailItem label="Created At" value={selectedClub.createdAt?.seconds ? new Date(selectedClub.createdAt.seconds * 1000).toLocaleString('en-GB') : selectedClub.createdAt.toString()} />
                 )}
 
                 <h3 className="font-semibold text-lg mb-2 mt-6">Uploaded By</h3>

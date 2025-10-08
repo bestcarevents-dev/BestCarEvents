@@ -79,7 +79,7 @@ export default function ManageUsersPage() {
                       )
                     }
                   </TableCell>
-                  <TableCell>{user.createdAt?.seconds ? new Date(user.createdAt.seconds * 1000).toLocaleDateString() : "-"}</TableCell>
+                  <TableCell>{user.createdAt?.seconds ? new Date(user.createdAt.seconds * 1000).toLocaleDateString('en-GB') : "-"}</TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>

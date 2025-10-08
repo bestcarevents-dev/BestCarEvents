@@ -295,7 +295,7 @@ export default function AdminNewsletterPage() {
                           </TableCell>
                           <TableCell>
                             {r.createdAt?.seconds
-                              ? new Date(r.createdAt.seconds * 1000).toLocaleDateString()
+                              ? new Date(r.createdAt.seconds * 1000).toLocaleDateString('en-GB')
                               : "N/A"}
                           </TableCell>
                           <TableCell>
@@ -350,7 +350,7 @@ export default function AdminNewsletterPage() {
                       <div className="text-xs text-muted-foreground">Created</div>
                       <div className="text-sm">
                         {selectedRequest.createdAt?.seconds
-                          ? new Date(selectedRequest.createdAt.seconds * 1000).toLocaleString()
+                          ? new Date(selectedRequest.createdAt.seconds * 1000).toLocaleString('en-GB')
                           : "N/A"}
                       </div>
                     </div>

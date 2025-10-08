@@ -222,8 +222,8 @@ export default function PendingEventsPage() {
                       )}
                     </TableCell>
                     <TableCell>{request.eventName}</TableCell>
-                    <TableCell>{request.eventDate?.seconds ? new Date(request.eventDate.seconds * 1000).toLocaleDateString() : 'N/A'}</TableCell>
-                    <TableCell>{request.endDate?.seconds ? new Date(request.endDate.seconds * 1000).toLocaleDateString() : (request.endDate ? new Date(request.endDate as any).toLocaleDateString() : '-')}</TableCell>
+                    <TableCell>{request.eventDate?.seconds ? new Date(request.eventDate.seconds * 1000).toLocaleDateString('en-GB') : 'N/A'}</TableCell>
+                    <TableCell>{request.endDate?.seconds ? new Date(request.endDate.seconds * 1000).toLocaleDateString('en-GB') : (request.endDate ? new Date(request.endDate as any).toLocaleDateString('en-GB') : '-')}</TableCell>
                     <TableCell>{request.location}</TableCell>
                     <TableCell>
                       <Badge variant={request.status === 'pending' ? 'default' : request.status === 'approved' ? 'secondary' : 'destructive'}>{request.status}</Badge>
@@ -282,8 +282,8 @@ export default function PendingEventsPage() {
                       )}
                     </TableCell>
                     <TableCell>{request.eventName}</TableCell>
-                    <TableCell>{request.eventDate?.seconds ? new Date(request.eventDate.seconds * 1000).toLocaleDateString() : 'N/A'}</TableCell>
-                    <TableCell>{request.endDate?.seconds ? new Date(request.endDate.seconds * 1000).toLocaleDateString() : (request.endDate ? new Date(request.endDate as any).toLocaleDateString() : '-')}</TableCell>
+                    <TableCell>{request.eventDate?.seconds ? new Date(request.eventDate.seconds * 1000).toLocaleDateString('en-GB') : 'N/A'}</TableCell>
+                    <TableCell>{request.endDate?.seconds ? new Date(request.endDate.seconds * 1000).toLocaleDateString('en-GB') : (request.endDate ? new Date(request.endDate as any).toLocaleDateString('en-GB') : '-')}</TableCell>
                     <TableCell>{request.location}</TableCell>
                     <TableCell>
                       <Badge variant="secondary">Approved</Badge>
@@ -295,9 +295,9 @@ export default function PendingEventsPage() {
                     </TableCell>
                     <TableCell>
                       {request.feature_end?.seconds
-                        ? new Date(request.feature_end.seconds * 1000).toLocaleString()
+                        ? new Date(request.feature_end.seconds * 1000).toLocaleString('en-GB')
                         : (request.feature_end
-                            ? (new Date(request.feature_end as any)).toLocaleString()
+                            ? (new Date(request.feature_end as any)).toLocaleString('en-GB')
                             : '-')}
                     </TableCell>
                     <TableCell onClick={e => e.stopPropagation()}>
@@ -352,7 +352,7 @@ export default function PendingEventsPage() {
               <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
                 <div>
                   <p className="text-sm font-semibold text-muted-foreground">Date</p>
-                  <p className="text-md">{selectedEvent?.eventDate?.seconds ? new Date(selectedEvent.eventDate.seconds * 1000).toLocaleDateString() : 'N/A'}</p>
+                  <p className="text-md">{selectedEvent?.eventDate?.seconds ? new Date(selectedEvent.eventDate.seconds * 1000).toLocaleDateString('en-GB') : 'N/A'}</p>
                 </div>
                 <div>
                   <p className="text-sm font-semibold text-muted-foreground">Location</p>

@@ -81,7 +81,7 @@ export default function AdminContactRequestsPage() {
                         </TableCell>
                         <TableCell>
                           {created ? (
-                            <Badge variant="outline">{created.toLocaleString()}</Badge>
+                            <Badge variant="outline">{created.toLocaleString('en-GB')}</Badge>
                           ) : (
                             <span className="text-muted-foreground">—</span>
                           )}

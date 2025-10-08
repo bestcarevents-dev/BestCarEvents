@@ -43,8 +43,8 @@ export default function AuctionDetailsPage() {
   // Format dates
   const formatDate = (dateObj: any) => {
     if (!dateObj) return "-";
-    if (dateObj.seconds) return new Date(dateObj.seconds * 1000).toLocaleDateString();
-    if (typeof dateObj === "string" || typeof dateObj === "number") return new Date(dateObj).toLocaleDateString();
+    if (dateObj.seconds) return new Date(dateObj.seconds * 1000).toLocaleDateString('en-GB');
+    if (typeof dateObj === "string" || typeof dateObj === "number") return new Date(dateObj).toLocaleDateString('en-GB');
     return "-";
   };
 
