@@ -118,7 +118,8 @@ function EventsPageContent() {
           event.country?.toLowerCase().includes(searchQuery.toLowerCase());
         
         const parsed = parseLocation(event.location || "");
-        const eventCity = (event.city || parsed.city).toLowerCase();
+        // Strict city filter: use only explicit city field
+        const eventCity = (event.city || '').toLowerCase();
         const matchesCity = selectedCity === "all" || 
           eventCity === selectedCity.toLowerCase();
         
@@ -161,22 +162,14 @@ function EventsPageContent() {
 
       return filtered;
     }, [events, searchQuery, selectedCity, selectedState, selectedCountry, selectedEventType, selectedVehicleFocus, selectedEntryFee, sortBy]);
-    // Build city/state/country options from events (explicit fields + parsed from location)
+    // Build city/state/country options from events (city strictly from explicit field)
     const cities = useMemo(() => {
       const map = new globalThis.Map<string, string>();
       for (const ev of events) {
-        const loc = typeof ev.location === 'string' ? ev.location : '';
-        const parts = loc ? loc.split(',').map((p: string) => p.trim()).filter(Boolean) : [];
-        const parsedCity = parts[0] || '';
-        const candidates = [
-          typeof ev.city === 'string' ? ev.city.trim() : '',
-          parsedCity,
-        ];
-        for (const c of candidates) {
-          if (!c) continue;
-          const key = c.toLowerCase();
-          if (!map.has(key)) map.set(key, c);
-        }
+        const c = typeof ev.city === 'string' ? ev.city.trim() : '';
+        if (!c) continue;
+        const key = c.toLowerCase();
+        if (!map.has(key)) map.set(key, c);
       }
       return Array.from(map.values()).sort((a, b) => a.localeCompare(b));
     }, [events]);

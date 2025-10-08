@@ -62,7 +62,7 @@ export default function HeroSearch() {
           const set = new Set<string>();
           snap.docs.forEach(d => {
             const data: any = d.data();
-            const c = extractCity(data?.city) || extractCity(data?.location);
+            const c = extractCity(data?.city); // strictly use city
             if (c) set.add(c);
           });
           setEventsCities(Array.from(set).sort((a, b) => a.localeCompare(b)));
