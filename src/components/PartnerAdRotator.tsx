@@ -72,20 +72,11 @@ export default function PartnerAdRotator({ page, maxVisible = 4, rotateIntervalM
                     {title}
                   </h4>
 
-                  {/* Display link, price, or other relevant info */}
+                  {/* Display price or other relevant info (website link hidden per requirement) */}
                   {(() => {
         const isWebsiteOrGeneralBusiness = ad.adType === "Website" || ad.adType === "General Business";
         
-        if (isWebsiteOrGeneralBusiness && ad.url) {
-          const href = /^https?:\/\//i.test(ad.url) ? ad.url : `https://${ad.url}`;
-                      return (
-                        <div className="text-blue-600 font-semibold text-xs mb-2 truncate">
-              <a href={href} target="_blank" rel="noopener noreferrer" className="hover:underline">
-                            {ad.url}
-              </a>
-            </div>
-          );
-        } else if (ad.price && ad.priceRange) {
+        if (ad.price && ad.priceRange) {
                       return (
                         <div className="mb-2">
                           <div className="text-green-600 font-bold text-sm">{ad.price}</div>

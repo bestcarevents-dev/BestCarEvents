@@ -41,6 +41,8 @@ export default function EventEditDialog({ open, onOpenChange, documentId, initia
   const [eventName, setEventName] = useState<string>(initial.eventName || "");
   const [eventDate, setEventDate] = useState<string>(initial.eventDate?.seconds ? new Date(initial.eventDate.seconds * 1000).toISOString().slice(0, 10) : (initial.eventDate ? new Date(initial.eventDate as any).toISOString().slice(0, 10) : ""));
   const [endDate, setEndDate] = useState<string>(initial.endDate?.seconds ? new Date(initial.endDate.seconds * 1000).toISOString().slice(0, 10) : (initial.endDate ? new Date(initial.endDate as any).toISOString().slice(0, 10) : ""));
+  const [eventDateInputType, setEventDateInputType] = useState<"text" | "date">(eventDate ? "date" : "text");
+  const [endDateInputType, setEndDateInputType] = useState<"text" | "date">(endDate ? "date" : "text");
   const [location, setLocation] = useState<string>(initial.location || "");
   const [description, setDescription] = useState<string>(initial.description || "");
   const [organizerName, setOrganizerName] = useState<string>(initial.organizerName || "");
@@ -68,6 +70,8 @@ export default function EventEditDialog({ open, onOpenChange, documentId, initia
       setEventName(initial.eventName || "");
       setEventDate(initial.eventDate?.seconds ? new Date(initial.eventDate.seconds * 1000).toISOString().slice(0, 10) : (initial.eventDate ? new Date(initial.eventDate as any).toISOString().slice(0, 10) : ""));
       setEndDate(initial.endDate?.seconds ? new Date(initial.endDate.seconds * 1000).toISOString().slice(0, 10) : (initial.endDate ? new Date(initial.endDate as any).toISOString().slice(0, 10) : ""));
+      setEventDateInputType((initial.eventDate?.seconds || initial.eventDate) ? "date" : "text");
+      setEndDateInputType((initial.endDate?.seconds || initial.endDate) ? "date" : "text");
       setLocation(initial.location || "");
       setDescription(initial.description || "");
       setOrganizerName(initial.organizerName || "");
@@ -216,11 +220,29 @@ export default function EventEditDialog({ open, onOpenChange, documentId, initia
           </div>
           <div className="space-y-1">
           <Label htmlFor="eventDate" className="text-foreground">Event date</Label>
-          <Input id="eventDate" type="date" value={eventDate} onChange={(e) => setEventDate(e.target.value)} className="text-foreground" />
+          <Input
+            id="eventDate"
+            type={eventDateInputType}
+            value={eventDate}
+            placeholder="dd/mm/yyyy"
+            onFocus={() => setEventDateInputType("date")}
+            onBlur={() => { if (!eventDate) setEventDateInputType("text"); }}
+            onChange={(e) => setEventDate(e.target.value)}
+            className="text-foreground"
+          />
         </div>
         <div className="space-y-1">
           <Label htmlFor="endDate" className="text-foreground">End date (optional)</Label>
-          <Input id="endDate" type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} className="text-foreground" />
+          <Input
+            id="endDate"
+            type={endDateInputType}
+            value={endDate}
+            placeholder="dd/mm/yyyy"
+            onFocus={() => setEndDateInputType("date")}
+            onBlur={() => { if (!endDate) setEndDateInputType("text"); }}
+            onChange={(e) => setEndDate(e.target.value)}
+            className="text-foreground"
+          />
         </div>
         <div className="space-y-1">
             <Label htmlFor="eventName" className="text-foreground">Event name</Label>
