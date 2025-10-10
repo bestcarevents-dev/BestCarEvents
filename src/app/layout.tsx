@@ -36,11 +36,6 @@ const fontBody = Lora({
 export const metadata: Metadata = {
   title: 'BestCarEvents',
   description: 'Your premier destination for car events and the automotive marketplace.',
-  icons: {
-    icon: '/logo.png',
-    shortcut: '/logo.png',
-    apple: '/logo.png',
-  },
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:9002'),
   openGraph: {
     siteName: 'BestCarEvents',
