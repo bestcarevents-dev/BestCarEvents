@@ -75,6 +75,13 @@ const eventSchema = z.object({
     .refine((val) => val === true, {
       message: "You must confirm you have required consent and rights",
     }),
+}).refine((data) => {
+  if (!data.endDate) return true;
+  // end date must be strictly after eventDate if provided
+  return data.endDate > data.eventDate;
+}, {
+  message: "End date must be after the start date",
+  path: ["endDate"],
 });
 
 type EventFormData = z.infer<typeof eventSchema>;
@@ -94,6 +101,15 @@ export default function HostEventPage() {
       mediaConsent: false,
     }
   });
+  const startDate = watch("eventDate");
+  const endDate = watch("endDate");
+
+  // If start date changes and endDate is invalid (<= start), clear it
+  useEffect(() => {
+    if (startDate && endDate && endDate <= startDate) {
+      setValue("endDate", undefined as any, { shouldValidate: true, shouldDirty: true });
+    }
+  }, [startDate]);
   const locationSectionRef = useRef<HTMLDivElement | null>(null);
 
   const onInvalid = (errs: any) => {
@@ -261,37 +277,42 @@ export default function HostEventPage() {
                     />
                     {errors.eventDate && <p className="text-red-500 text-sm">{errors.eventDate.message as string}</p>}
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="endDate" className="text-gray-700 font-medium">End Date (Optional)</Label>
-                    <Controller
-                        name="endDate"
-                        control={control}
-                        render={({ field }) => (
-                            <Popover>
-                                <PopoverTrigger asChild>
-                                    <Button
-                                        variant={"outline"}
-                                        className={cn(
-                                            "w-full justify-start text-left font-normal bg-white border-gray-300 text-gray-900 hover:bg-gray-50 focus:border-yellow-400 focus:ring-yellow-400",
-                                            !field.value && "text-gray-500"
-                                        )}
-                                    >
-                                        <CalendarIcon className="mr-2 h-4 w-4" />
-                                        {field.value ? format(field.value, "PPP") : <span>Pick an end date</span>}
-                                    </Button>
-                                </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0 bg-white border border-gray-200 text-gray-900">
-                                    <Calendar
-                                        mode="single"
-                                        selected={field.value as any}
-                                        onSelect={field.onChange}
-                                        initialFocus
-                                    />
-                                </PopoverContent>
-                            </Popover>
-                        )}
-                    />
-                  </div>
+                  {startDate && (
+                    <div className="space-y-2">
+                      <Label htmlFor="endDate" className="text-gray-700 font-medium">End Date (Optional)</Label>
+                      <Controller
+                          name="endDate"
+                          control={control}
+                          render={({ field }) => (
+                              <Popover>
+                                  <PopoverTrigger asChild>
+                                      <Button
+                                          variant={"outline"}
+                                          className={cn(
+                                              "w-full justify-start text-left font-normal bg-white border-gray-300 text-gray-900 hover:bg-gray-50 focus:border-yellow-400 focus:ring-yellow-400",
+                                              !field.value && "text-gray-500"
+                                          )}
+                                      >
+                                          <CalendarIcon className="mr-2 h-4 w-4" />
+                                          {field.value ? format(field.value, "PPP") : <span>Pick an end date</span>}
+                                      </Button>
+                                  </PopoverTrigger>
+                                  <PopoverContent className="w-auto p-0 bg-white border border-gray-200 text-gray-900">
+                                      <Calendar
+                                          mode="single"
+                                          selected={field.value as any}
+                                          onSelect={field.onChange}
+                                          // only allow dates strictly after the start date
+                                          disabled={(date) => startDate ? date <= startDate : false}
+                                          initialFocus
+                                      />
+                                  </PopoverContent>
+                              </Popover>
+                          )}
+                      />
+                      {errors.endDate && <p className="text-red-500 text-sm">{String(errors.endDate.message)}</p>}
+                    </div>
+                  )}
                   <div className="space-y-2">
                     <Label htmlFor="addressLine" className="text-gray-700 font-medium">Address</Label>
                     <Input id="addressLine" {...register("addressLine")} className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400" />
