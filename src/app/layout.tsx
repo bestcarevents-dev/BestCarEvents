@@ -17,6 +17,7 @@ import NavigationProgress from '@/components/NavigationProgress';
 import OnboardingGuard from '@/components/OnboardingGuard';
 import LuxuryLightboxProvider from '@/components/LuxuryLightboxProvider';
 import OrganizationJsonLd from '@/components/OrganizationJsonLd';
+import { GoogleAnalytics } from '@next/third-parties/google';
 export const dynamic = 'force-dynamic';
 
 const fontHeadline = Cinzel({
@@ -93,6 +94,9 @@ export default async function RootLayout({
               <Footer />
               <Toaster />
               <OrganizationJsonLd />
+              {process.env.NODE_ENV === 'production' && (
+                <GoogleAnalytics gaId="G-6BCGKB7Q41" />
+              )}
               </BannedUserProvider>
             </FreeListingsProvider>
           </GlobalNewsletterProvider>
