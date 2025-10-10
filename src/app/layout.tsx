@@ -34,14 +34,48 @@ const fontBody = Lora({
 
 
 export const metadata: Metadata = {
-  title: 'BestCarEvents',
-  description: 'Your premier destination for car events and the automotive marketplace.',
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:9002'),
+  title: {
+    default: 'BestCarEvents',
+    template: '%s | BestCarEvents',
+  },
+  description: 'Your premier destination for car events, auctions, clubs, and the automotive marketplace.',
+  keywords: [
+    'bestcarevents',
+    'best car events',
+    'car events',
+    'auto events',
+    'car meets',
+    'car shows',
+    'car auctions',
+    'cars for sale',
+  ],
+  alternates: {
+    canonical: '/',
+  },
   openGraph: {
     siteName: 'BestCarEvents',
+    type: 'website',
+    images: ['/logo.png'],
   },
   twitter: {
     site: '@BestCarEvents',
+    card: 'summary_large_image',
+    images: ['/logo.png'],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-snippet': -1,
+      'max-image-preview': 'large',
+      'max-video-preview': -1,
+    },
+  },
+  verification: {
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
   },
 };
 

@@ -33,6 +33,8 @@ export function buildMetadata(options: {
 	description: string;
 	canonicalPath: string;
 	imageUrl?: string;
+    keywords?: string[];
+    robots?: Metadata['robots'];
 }): Metadata {
 	const base = getSiteUrl();
 	const canonical = toAbsoluteUrl(options.canonicalPath, base);
@@ -40,6 +42,7 @@ export function buildMetadata(options: {
 		title: options.title,
 		description: options.description,
 		alternates: { canonical },
+		keywords: options.keywords,
 		openGraph: {
 			title: options.title,
 			description: options.description,
@@ -52,6 +55,17 @@ export function buildMetadata(options: {
 			title: options.title,
 			description: options.description,
 			images: options.imageUrl ? [options.imageUrl] : undefined,
+		},
+		robots: options.robots || {
+			index: true,
+			follow: true,
+			googleBot: {
+				index: true,
+				follow: true,
+				'max-snippet': -1,
+				'max-image-preview': 'large',
+				'max-video-preview': -1,
+			},
 		},
 	};
 }

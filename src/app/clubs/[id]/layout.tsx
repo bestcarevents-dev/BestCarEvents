@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { getAdmin } from '@/lib/firebase-admin';
 import { buildMetadata, pickImageUrl, toAbsoluteUrl } from '@/lib/seo';
+import BreadcrumbJsonLd from '@/components/BreadcrumbJsonLd';
 
 type Props = { params: { id: string } };
 
@@ -21,7 +22,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default function ClubIdLayout({ children }: { children: React.ReactNode }) {
-  return children;
+  return (
+    <>
+      <BreadcrumbJsonLd items={[{ name: 'Home', item: '/' }, { name: 'Clubs', item: '/clubs' }]} />
+      {children}
+    </>
+  );
 }
 
 
