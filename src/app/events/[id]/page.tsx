@@ -133,7 +133,9 @@ export default function EventDetailsPage({ params }: { params: { id: string } })
                     <div>
                         <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold font-headline text-white drop-shadow-lg animate-pop-in leading-tight">{event.eventName}</h1>
                         <div className="flex flex-wrap gap-2 mt-2">
-                            <Badge className="bg-yellow-600 text-white animate-bounce-in">{event.eventType}</Badge>
+                            {(Array.isArray(event.eventTypes) && event.eventTypes.length ? event.eventTypes : (event.eventType ? [event.eventType] : [])).map((t: any, i: number) => (
+                              <Badge key={String(t)+i} className="bg-yellow-600 text-white animate-bounce-in">{String(t)}</Badge>
+                            ))}
                             {event.vehicleFocus && <Badge className="bg-yellow-500 text-white animate-bounce-in">{event.vehicleFocus}</Badge>}
                         </div>
                     </div>
@@ -147,7 +149,9 @@ export default function EventDetailsPage({ params }: { params: { id: string } })
             <div className="sm:hidden mb-6">
                 <h1 className="text-2xl font-extrabold font-headline text-gray-900 leading-tight">{event.eventName}</h1>
                 <div className="flex flex-wrap gap-2 mt-2">
-                    <Badge className="bg-yellow-600 text-white text-xs">{event.eventType}</Badge>
+                    {(Array.isArray(event.eventTypes) && event.eventTypes.length ? event.eventTypes : (event.eventType ? [event.eventType] : [])).map((t: any, i: number) => (
+                      <Badge key={String(t)+i} className="bg-yellow-600 text-white text-xs">{String(t)}</Badge>
+                    ))}
                     {event.vehicleFocus && (
                         <Badge className="bg-yellow-500 text-white text-xs">{event.vehicleFocus}</Badge>
                     )}
@@ -185,7 +189,10 @@ export default function EventDetailsPage({ params }: { params: { id: string } })
                 <div className="flex flex-col items-center bg-white border border-gray-200 rounded-xl shadow-lg px-4 sm:px-6 py-4 sm:py-6 animate-pop-in">
                     <Tag className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-600 mb-2" />
                     <div className="text-sm sm:text-lg font-semibold text-yellow-600 mb-1">Type</div>
-                    <div className="text-base sm:text-xl font-bold text-gray-900 text-center">{event.eventType}</div>
+                    <div className="text-base sm:text-xl font-bold text-gray-900 text-center">
+                      {(Array.isArray(event.eventTypes) && event.eventTypes.length ? event.eventTypes : (event.eventType ? [event.eventType] : []))
+                        .map((t: any) => String(t)).join(', ')}
+                    </div>
                 </div>
                 {event.expectedAttendance && (
                     <div className="flex flex-col items-center bg-white border border-gray-200 rounded-xl shadow-lg px-4 sm:px-6 py-4 sm:py-6 animate-pop-in">

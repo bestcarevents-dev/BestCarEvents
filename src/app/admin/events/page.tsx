@@ -360,7 +360,7 @@ export default function PendingEventsPage() {
                 </div>
                 <div>
                   <p className="text-sm font-semibold text-muted-foreground">Type</p>
-                  <p className="text-md">{selectedEvent?.eventType || 'N/A'}</p>
+                  <p className="text-md">{Array.isArray((selectedEvent as any)?.eventTypes) && (selectedEvent as any)?.eventTypes.length ? (selectedEvent as any).eventTypes.join(', ') : (selectedEvent?.eventType || 'N/A')}</p>
                 </div>
                 <div>
                   <p className="text-sm font-semibold text-muted-foreground">Vehicle Focus</p>

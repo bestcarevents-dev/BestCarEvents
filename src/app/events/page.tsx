@@ -126,8 +126,17 @@ function EventsPageContent() {
         const matchesCountry = selectedCountry === "all" || 
           eventCountry === selectedCountry.toLowerCase();
         
-        const matchesEventType = selectedEventType === "all" || 
-          event.eventType?.toLowerCase() === selectedEventType.toLowerCase();
+        const matchesEventType = (() => {
+          if (selectedEventType === "all") return true;
+          const target = selectedEventType.toLowerCase();
+          if (Array.isArray(event.eventTypes)) {
+            return event.eventTypes.some((t: any) => String(t).toLowerCase() === target);
+          }
+          if (typeof event.eventType === 'string') {
+            return event.eventType.toLowerCase() === target;
+          }
+          return false;
+        })();
 
         const matchesVehicleFocus = selectedVehicleFocus === "all" || 
           event.vehicleFocus?.toLowerCase() === selectedVehicleFocus.toLowerCase();
@@ -456,8 +465,8 @@ function EventsPageContent() {
                                 date={event.eventDate ? new Date(event.eventDate.seconds * 1000).toLocaleDateString('en-GB') : (event.date || '')}
                                 endDate={event.endDate ? (event.endDate.seconds ? new Date(event.endDate.seconds * 1000).toLocaleDateString('en-GB') : new Date(event.endDate).toLocaleDateString('en-GB')) : undefined}
                                  location={event.location} 
-                                 image={event.imageUrl || event.image} 
-                                 hint={event.eventType || event.hint} 
+                                image={event.imageUrl || event.image} 
+                                hint={(Array.isArray(event.eventTypes) && event.eventTypes.length ? event.eventTypes.join(", ") : (event.eventType || event.hint))} 
                                />
                              ))}
                            </div>
@@ -493,7 +502,7 @@ function EventsPageContent() {
                             endDate={event.endDate ? (event.endDate.seconds ? new Date(event.endDate.seconds * 1000).toLocaleDateString('en-GB') : new Date(event.endDate).toLocaleDateString('en-GB')) : undefined}
                              location={event.location} 
                              image={event.imageUrl || event.image} 
-                             hint={event.eventType || event.hint} 
+                             hint={(Array.isArray(event.eventTypes) && event.eventTypes.length ? event.eventTypes.join(", ") : (event.eventType || event.hint))} 
                            />
                          ))}
                        </div>

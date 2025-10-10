@@ -27,6 +27,8 @@ import LocationPicker, { type LocationData } from "@/components/LocationPicker";
 import { Switch } from "@/components/ui/switch";
 import ConsentCheckbox from "@/components/form/ConsentCheckbox";
 
+const EVENT_TYPE_OPTIONS = ["Car Show", "Race", "Meetup", "Rally", "Other"] as const;
+
 const eventSchema = z.object({
   eventName: z.string().min(5, "Event name must be at least 5 characters"),
   eventDate: z.date({ required_error: "Event date is required" }),
@@ -51,7 +53,9 @@ const eventSchema = z.object({
     ),
   
   // New Fields for Comprehensive Event Details
-  eventType: z.enum(["Car Show", "Race", "Meetup", "Rally", "Other"], { required_error: "Event type is required" }),
+  eventTypes: z
+    .array(z.enum(EVENT_TYPE_OPTIONS))
+    .nonempty("Select at least one event type"),
   vehicleFocus: z.string().optional(), // e.g., Classic Cars, JDM, Muscle Cars, Electric Vehicles
   expectedAttendance: z.preprocess(
     (v) => (v === "" || v === null || typeof v === "undefined" || Number.isNaN(v as any) ? undefined : v),
@@ -99,6 +103,7 @@ export default function HostEventPage() {
     defaultValues: {
       privacyMode: false,
       mediaConsent: false,
+      eventTypes: [] as any,
     }
   });
   const startDate = watch("eventDate");
@@ -160,7 +165,9 @@ export default function HostEventPage() {
         organizerName: data.organizerName,
         organizerContact: data.organizerContact,
         imageUrl,
-        eventType: data.eventType,
+        // Persist both array and legacy single value for backward compatibility
+        eventTypes: data.eventTypes,
+        eventType: Array.isArray(data.eventTypes) && data.eventTypes.length > 0 ? data.eventTypes[0] : undefined,
         vehicleFocus: data.vehicleFocus,
         expectedAttendance: data.expectedAttendance,
         entryFee: data.entryFee,
@@ -349,24 +356,35 @@ export default function HostEventPage() {
               {/* New Fields */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                      <Label className="text-gray-700 font-medium">Event Type</Label>
+                      <Label className="text-gray-700 font-medium">Event Types</Label>
                       <Controller
-                          name="eventType"
-                          control={control}
-                          render={({ field }) => (
-                              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                  <SelectTrigger className="bg-white border-gray-300 text-gray-900 focus:border-yellow-400 focus:ring-yellow-400"><SelectValue placeholder="Select event type" /></SelectTrigger>
-                                  <SelectContent className="bg-white border border-gray-200 text-gray-900">
-                                      <SelectItem value="Car Show">Car Show</SelectItem>
-                                      <SelectItem value="Race">Race</SelectItem>
-                                      <SelectItem value="Meetup">Meetup</SelectItem>
-                                      <SelectItem value="Rally">Rally</SelectItem>
-                                      <SelectItem value="Other">Other</SelectItem>
-                                  </SelectContent>
-                              </Select>
-                          )}
+                        name="eventTypes"
+                        control={control}
+                        render={({ field }) => (
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            {EVENT_TYPE_OPTIONS.map((opt) => {
+                              const checked = Array.isArray(field.value) ? field.value.includes(opt) : false;
+                              return (
+                                <label key={opt} className="flex items-center gap-2 p-2 border border-gray-200 rounded-md bg-white cursor-pointer">
+                                  <input
+                                    type="checkbox"
+                                    className="h-4 w-4"
+                                    checked={checked}
+                                    onChange={(e) => {
+                                      const next = new Set<string>(Array.isArray(field.value) ? field.value : []);
+                                      if (e.target.checked) next.add(opt); else next.delete(opt);
+                                      field.onChange(Array.from(next));
+                                    }}
+                                  />
+                                  <span className="text-gray-900 text-sm">{opt}</span>
+                                </label>
+                              );
+                            })}
+                          </div>
+                        )}
                       />
-                      {errors.eventType && <p className="text-red-500 text-sm">{errors.eventType.message}</p>}
+                      {errors.eventTypes && <p className="text-red-500 text-sm">{String((errors as any).eventTypes?.message)}</p>}
+                      <p className="text-xs text-gray-500">Select one or more categories. The first one becomes the primary legacy type.</p>
                   </div>
                    <div className="space-y-2">
                       <Label htmlFor="vehicleFocus" className="text-gray-700 font-medium">Vehicle Focus (Optional)</Label>

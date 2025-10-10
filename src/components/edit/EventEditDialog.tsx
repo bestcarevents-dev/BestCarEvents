@@ -23,6 +23,7 @@ type EventEditDialogProps = {
     organizerName?: string;
     organizerContact?: string;
     eventType?: string;
+    eventTypes?: string[];
     vehicleFocus?: string;
     expectedAttendance?: number;
     entryFee?: number;
@@ -47,7 +48,8 @@ export default function EventEditDialog({ open, onOpenChange, documentId, initia
   const [description, setDescription] = useState<string>(initial.description || "");
   const [organizerName, setOrganizerName] = useState<string>(initial.organizerName || "");
   const [organizerContact, setOrganizerContact] = useState<string>(initial.organizerContact || "");
-  const [eventType, setEventType] = useState<string>(initial.eventType || "");
+  const EVENT_TYPE_OPTIONS = ["Car Show", "Race", "Meetup", "Rally", "Other"] as const;
+  const [eventTypes, setEventTypes] = useState<string[]>(Array.isArray(initial.eventTypes) ? initial.eventTypes : (initial.eventType ? [initial.eventType] : []));
   const [vehicleFocus, setVehicleFocus] = useState<string>(initial.vehicleFocus || "");
   const [expectedAttendance, setExpectedAttendance] = useState<string>(
     initial.expectedAttendance != null ? String(initial.expectedAttendance) : ""
@@ -76,7 +78,7 @@ export default function EventEditDialog({ open, onOpenChange, documentId, initia
       setDescription(initial.description || "");
       setOrganizerName(initial.organizerName || "");
       setOrganizerContact(initial.organizerContact || "");
-      setEventType(initial.eventType || "");
+      setEventTypes(Array.isArray(initial.eventTypes) ? initial.eventTypes : (initial.eventType ? [initial.eventType] : []));
       setVehicleFocus(initial.vehicleFocus || "");
       setExpectedAttendance(initial.expectedAttendance != null ? String(initial.expectedAttendance) : "");
       setEntryFee(initial.entryFee != null ? String(initial.entryFee) : "");
@@ -104,7 +106,11 @@ export default function EventEditDialog({ open, onOpenChange, documentId, initia
     if (description.trim() !== (initial.description || "")) payload.description = description.trim();
     if (organizerName.trim() !== (initial.organizerName || "")) payload.organizerName = organizerName.trim();
     if (organizerContact.trim() !== (initial.organizerContact || "")) payload.organizerContact = organizerContact.trim();
-    if (eventType.trim() !== (initial.eventType || "")) payload.eventType = eventType.trim();
+    const initialTypes = Array.isArray(initial.eventTypes) ? initial.eventTypes : (initial.eventType ? [initial.eventType] : []);
+    if (JSON.stringify(eventTypes) !== JSON.stringify(initialTypes)) {
+      payload.eventTypes = eventTypes;
+      payload.eventType = eventTypes[0] || "";
+    }
     if (vehicleFocus.trim() !== (initial.vehicleFocus || "")) payload.vehicleFocus = vehicleFocus.trim();
     if (expectedAttendance.trim() !== (initial.expectedAttendance != null ? String(initial.expectedAttendance) : "")) {
       const n = Number(expectedAttendance);
@@ -268,8 +274,28 @@ export default function EventEditDialog({ open, onOpenChange, documentId, initia
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="space-y-1">
-              <Label htmlFor="eventType" className="text-foreground">Event type</Label>
-              <Input id="eventType" value={eventType} onChange={(e) => setEventType(e.target.value)} placeholder="Car Show / Race / Meetup / ..." className="text-foreground" />
+              <Label className="text-foreground">Event types</Label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {EVENT_TYPE_OPTIONS.map((opt) => {
+                  const checked = eventTypes.includes(opt);
+                  return (
+                    <label key={opt} className="flex items-center gap-2 p-2 border rounded bg-background">
+                      <input
+                        type="checkbox"
+                        className="h-4 w-4"
+                        checked={checked}
+                        onChange={(e) => {
+                          const next = new Set<string>(eventTypes);
+                          if (e.target.checked) next.add(opt); else next.delete(opt);
+                          setEventTypes(Array.from(next));
+                        }}
+                      />
+                      <span className="text-sm">{opt}</span>
+                    </label>
+                  );
+                })}
+              </div>
+              <p className="text-xs text-muted-foreground">First selected will be shown as legacy type.</p>
             </div>
             <div className="space-y-1">
               <Label htmlFor="vehicleFocus" className="text-foreground">Vehicle focus</Label>
