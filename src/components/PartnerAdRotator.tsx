@@ -103,6 +103,22 @@ export default function PartnerAdRotator({ page, maxVisible = 4, rotateIntervalM
             </Link>
         );
       })}
+        {/* Advertise placeholder card at the end, responsive to grid sizes */}
+        <Card className="bg-white border border-yellow-200/60 shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden flex flex-col">
+          <div className="relative w-full aspect-video flex items-center justify-center bg-gradient-to-br from-yellow-50 to-amber-50">
+            <Badge className="absolute top-2 left-2 text-xs bg-yellow-600 text-white">Ad</Badge>
+            <div className="text-center px-4">
+              <div className="text-sm sm:text-base font-headline font-semibold text-gray-900">This spot could be yours</div>
+              <div className="text-xs sm:text-sm text-gray-600 mt-1">Reach our audience with your brand</div>
+            </div>
+          </div>
+          <CardContent className="p-3">
+            <Link href="/advertise/advertise" className="inline-flex items-center justify-center w-full rounded-md bg-yellow-600 text-white text-xs sm:text-sm font-semibold py-2 hover:bg-yellow-700 transition-colors">
+              Advertise with us
+              <span className="ml-1">→</span>
+            </Link>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

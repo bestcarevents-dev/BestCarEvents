@@ -7,7 +7,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import Image from "next/image";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
-import { ExternalLink } from "lucide-react";
 import { formatPrice as formatPriceUtil } from "@/lib/utils";
 
 export default function HomepageAdCarousel() {
@@ -42,22 +41,8 @@ export default function HomepageAdCarousel() {
   const renderAdContent = (ad: any) => {
     // Determine what to display based on ad type
     let displayInfo = null;
-    const truncate = (str: string, n: number) => str.length > n ? str.slice(0, n - 1) + '…' : str;
     
-    // Check if it's a Website or General Business category
-    const isWebsiteOrGeneralBusiness = ad.adType === "Website" || ad.adType === "General Business";
-    
-    if (isWebsiteOrGeneralBusiness && ad.url) {
-      // Display website URL for Website category
-      displayInfo = (
-        <div className="flex items-center gap-1 text-blue-600 font-semibold text-sm mt-2">
-          <ExternalLink className="w-3 h-3" />
-          <a href={ad.url} target="_blank" rel="noopener noreferrer" className="hover:underline">
-            {truncate(ad.url, 35)}
-          </a>
-        </div>
-      );
-    } else if (ad.price && ad.priceRange) {
+    if (ad.price && ad.priceRange) {
       // Display price and price range
       displayInfo = (
         <div className="flex flex-col gap-1 mt-2">
