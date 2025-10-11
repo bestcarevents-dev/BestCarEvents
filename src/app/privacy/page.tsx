@@ -6,125 +6,101 @@ export default function PrivacyPolicyPage() {
           <div className="text-center mb-12">
             <h1 className="text-4xl md:text-5xl font-extrabold font-headline text-gray-900">Privacy Policy</h1>
             <p className="mt-4 text-lg text-gray-600">
-              Last updated: {new Date().toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' })}
+              Last updated: October 2025
             </p>
           </div>
 
           <div className="prose prose-lg max-w-none text-gray-700">
             <section className="mb-8">
-              <h2 className="text-2xl font-bold font-headline text-gray-900 mb-4">1. Information We Collect</h2>
+              <h2 className="text-2xl font-bold font-headline text-gray-900 mb-4">1. Introduction</h2>
               <p className="mb-4">
-                We collect information you provide directly to us, such as when you create an account, post listings, or contact us. This may include:
+                This Privacy Policy explains how Best Car Events by Custoza ("we", "our", "us") collects, uses, and protects personal data when you visit or interact with our website <a href="https://www.bestcarevents.com" target="_blank" rel="noopener noreferrer">www.bestcarevents.com</a>.
               </p>
-              <ul className="list-disc pl-6 mb-4 space-y-2">
-                <li>Name, email address, and contact information</li>
-                <li>Account credentials and profile information</li>
-                <li>Vehicle information and listings</li>
-                <li>Event submissions and registrations</li>
-                <li>Communications with us and other users</li>
-              </ul>
-            </section>
-
-            <section className="mb-8">
-              <h2 className="text-2xl font-bold font-headline text-gray-900 mb-4">2. How We Use Your Information</h2>
-              <p className="mb-4">We use the information we collect to:</p>
-              <ul className="list-disc pl-6 mb-4 space-y-2">
-                <li>Provide, maintain, and improve our services</li>
-                <li>Process transactions and send related information</li>
-                <li>Send technical notices and support messages</li>
-                <li>Respond to your comments and questions</li>
-                <li>Communicate with you about products, services, and events</li>
-                <li>Monitor and analyze trends and usage</li>
-              </ul>
-            </section>
-
-            <section className="mb-8">
-              <h2 className="text-2xl font-bold font-headline text-gray-900 mb-4">3. Information Sharing</h2>
               <p className="mb-4">
-                We do not sell, trade, or otherwise transfer your personal information to third parties without your consent, except as described in this policy. We may share your information with:
-              </p>
-              <ul className="list-disc pl-6 mb-4 space-y-2">
-                <li>Service providers who assist in our operations</li>
-                <li>Legal authorities when required by law</li>
-                <li>Other users as part of the service functionality</li>
-                <li>Business partners with your explicit consent</li>
-              </ul>
-            </section>
-
-            <section className="mb-8">
-              <h2 className="text-2xl font-bold font-headline text-gray-900 mb-4">4. Data Security</h2>
-              <p className="mb-4">
-                We implement appropriate security measures to protect your personal information against unauthorized access, alteration, disclosure, or destruction. However, no method of transmission over the internet is 100% secure.
+                We are committed to protecting your privacy and handling your personal data responsibly, in accordance with the Swiss Federal Act on Data Protection (FADP).
               </p>
             </section>
 
             <section className="mb-8">
-              <h2 className="text-2xl font-bold font-headline text-gray-900 mb-4">5. Cookies and Tracking</h2>
-              <p className="mb-4">
-                We use cookies and similar tracking technologies to enhance your experience on our platform. You can control cookie settings through your browser preferences.
-              </p>
-            </section>
-
-            <section className="mb-8">
-              <h2 className="text-2xl font-bold font-headline text-gray-900 mb-4">6. Third-Party Services</h2>
-              <p className="mb-4">
-                Our service may contain links to third-party websites or services. We are not responsible for the privacy practices of these external sites.
-              </p>
-            </section>
-
-            <section className="mb-8">
-              <h2 className="text-2xl font-bold font-headline text-gray-900 mb-4">7. Your Rights</h2>
-              <p className="mb-4">You have the right to:</p>
-              <ul className="list-disc pl-6 mb-4 space-y-2">
-                <li>Access and update your personal information</li>
-                <li>Request deletion of your account and data</li>
-                <li>Opt-out of marketing communications</li>
-                <li>Request information about data processing</li>
-                <li>Lodge a complaint with supervisory authorities</li>
-              </ul>
-            </section>
-
-            <section className="mb-8">
-              <h2 className="text-2xl font-bold font-headline text-gray-900 mb-4">8. Data Retention</h2>
-              <p className="mb-4">
-                We retain your personal information for as long as necessary to provide our services and fulfill the purposes outlined in this policy, unless a longer retention period is required by law.
-              </p>
-            </section>
-
-            <section className="mb-8">
-              <h2 className="text-2xl font-bold font-headline text-gray-900 mb-4">9. Children's Privacy</h2>
-              <p className="mb-4">
-                Our service is not intended for children under 13 years of age. We do not knowingly collect personal information from children under 13.
-              </p>
-            </section>
-
-            <section className="mb-8">
-              <h2 className="text-2xl font-bold font-headline text-gray-900 mb-4">10. International Transfers</h2>
-              <p className="mb-4">
-                Your information may be transferred to and processed in countries other than your own. We ensure appropriate safeguards are in place for such transfers.
-              </p>
-            </section>
-
-            <section className="mb-8">
-              <h2 className="text-2xl font-bold font-headline text-gray-900 mb-4">11. Changes to This Policy</h2>
-              <p className="mb-4">
-                We may update this Privacy Policy from time to time. We will notify you of any changes by posting the new policy on this page and updating the "Last updated" date.
-              </p>
-            </section>
-
-            <section className="mb-8">
-              <h2 className="text-2xl font-bold font-headline text-gray-900 mb-4">12. Contact Us</h2>
-              <p className="mb-4">
-                If you have any questions about this Privacy Policy, please contact us at:
-              </p>
+              <h2 className="text-2xl font-bold font-headline text-gray-900 mb-4">2. Controller</h2>
+              <p className="mb-4">The data controller responsible for the processing of your personal data is:</p>
               <div className="bg-gray-50 p-4 rounded-lg">
                 <p className="text-gray-700">
-                  Email: privacy@bestcarevents.com<br />
-                  Address: [Your Business Address]<br />
-                  Phone: [Your Phone Number]
+                  Best Car Events by Custoza<br />
+                  Vicolo Ponte Vecchio 1<br />
+                  CH-6988 Ponte Tresa, Switzerland<br />
+                  <span role="img" aria-label="email">📧</span> <a href="mailto:info@bestcarevents.com">info@bestcarevents.com</a>
                 </p>
               </div>
             </section>
+
+            <section className="mb-8">
+              <h2 className="text-2xl font-bold font-headline text-gray-900 mb-4">3. Data We Collect</h2>
+              <p className="mb-4">We may collect the following categories of personal data when you use our website:</p>
+              <ul className="list-disc pl-6 mb-4 space-y-2">
+                <li>Contact information (e.g. name, email address) when you contact us or submit event listings.</li>
+                <li>Technical data such as IP address, browser type, operating system, and website usage statistics.</li>
+                <li>Voluntary information you provide when submitting content, registering, or requesting a service.</li>
+              </ul>
+            </section>
+
+            <section className="mb-8">
+              <h2 className="text-2xl font-bold font-headline text-gray-900 mb-4">4. Purpose of Data Processing</h2>
+              <p className="mb-4">We process your data for the following purposes:</p>
+              <ul className="list-disc pl-6 mb-4 space-y-2">
+                <li>To operate, maintain, and improve our website and services.</li>
+                <li>To communicate with users, respond to inquiries, and manage listings or promotions.</li>
+                <li>To ensure compliance with legal obligations and website security.</li>
+              </ul>
+            </section>
+
+            <section className="mb-8">
+              <h2 className="text-2xl font-bold font-headline text-gray-900 mb-4">5. Use of Cookies and Analytics</h2>
+              <p className="mb-4">
+                We may use cookies and similar technologies to improve your browsing experience and to analyze website usage (for example, via Google Analytics).
+              </p>
+              <p className="mb-4">You can adjust your browser settings to refuse cookies. Some parts of the site may not function properly without them.</p>
+            </section>
+
+            <section className="mb-8">
+              <h2 className="text-2xl font-bold font-headline text-gray-900 mb-4">6. Disclosure of Data</h2>
+              <p className="mb-4">We do not sell, rent, or trade your personal data.</p>
+              <p className="mb-4">
+                Data may be shared only with trusted technical service providers who support us in hosting, analytics, or maintenance — always under Swiss or equivalent data-protection standards.
+              </p>
+            </section>
+
+            <section className="mb-8">
+              <h2 className="text-2xl font-bold font-headline text-gray-900 mb-4">7. Data Storage and Security</h2>
+              <p className="mb-4">
+                Your personal data is stored securely on servers located in Switzerland or the EU. We take appropriate technical and organizational measures to protect your data from unauthorized access, loss, or misuse.
+              </p>
+            </section>
+
+            <section className="mb-8">
+              <h2 className="text-2xl font-bold font-headline text-gray-900 mb-4">8. Your Rights</h2>
+              <p className="mb-4">Under Swiss law, you have the right to:</p>
+              <ul className="list-disc pl-6 mb-4 space-y-2">
+                <li>Request access to your personal data;</li>
+                <li>Request correction or deletion of inaccurate or outdated data;</li>
+                <li>Withdraw consent for data processing at any time.</li>
+              </ul>
+              <p className="mb-4">To exercise these rights, please contact us at <a href="mailto:info@bestcarevents.com">info@bestcarevents.com</a>.</p>
+            </section>
+
+            <section className="mb-8">
+              <h2 className="text-2xl font-bold font-headline text-gray-900 mb-4">9. Retention Period</h2>
+              <p className="mb-4">We store personal data only as long as necessary for the purposes stated or as required by law.</p>
+            </section>
+
+            <section className="mb-8">
+              <h2 className="text-2xl font-bold font-headline text-gray-900 mb-4">10. Changes to This Policy</h2>
+              <p className="mb-4">
+                We may update this Privacy Policy from time to time. The latest version will always be published on our website with the date of last update.
+              </p>
+            </section>
+
+            <p className="mt-8 text-sm text-gray-500">Last updated: October 2025</p>
           </div>
         </div>
       </div>
