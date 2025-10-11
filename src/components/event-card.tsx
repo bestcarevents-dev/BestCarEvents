@@ -46,7 +46,7 @@ export default function EventCard({ documentId, id, name, date, endDate, locatio
                       <span>{location}</span>
                   </div>
               </div>
-              <h3 className="text-xl font-headline font-bold leading-tight text-gray-900 group-hover:text-yellow-600 transition-colors flex-grow">{name}</h3>
+              <h3 className="text-xl font-headline font-bold leading-tight text-gray-900 group-hover:text-yellow-600 transition-colors flex-grow notranslate" translate="no" data-no-translate>{name}</h3>
               <div className="flex justify-end items-center mt-auto pt-4">
                   {/* Arrow icon remains, but the whole card is now the link */}
                   <div className="p-2 -mr-2">

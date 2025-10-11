@@ -43,7 +43,7 @@ export default function AdminStaticPages() {
   const [isAuthed, setIsAuthed] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState<StaticPageKey | null>(null);
-  const [state, setState] = useState<EditorState>({ about: createDefaultState(), contact: createDefaultState(), privacy: createDefaultState() });
+  const [state, setState] = useState<EditorState>({ about: createDefaultState(), contact: createDefaultState(), privacy: createDefaultState(), impressum: createDefaultState() });
   const [uploading, setUploading] = useState<Record<string, boolean>>({});
   const storage = getStorage(app);
 
@@ -119,6 +119,27 @@ export default function AdminStaticPages() {
               tiktok: "",
               telegram: "",
               whatsapp: "",
+            },
+          },
+          impressum: {
+            title: data.impressum.title,
+            subtitle: data.impressum.subtitle || "",
+            body: data.impressum.body,
+            images: data.impressum.images || [],
+            contact: {
+              email: data.impressum.contact?.email || "",
+              phone: data.impressum.contact?.phone || "",
+              address: data.impressum.contact?.address || "",
+              mapEmbedUrl: data.impressum.contact?.mapEmbedUrl || "",
+              instagram: data.impressum.contact?.instagram || "",
+              facebook: data.impressum.contact?.facebook || "",
+              twitter: data.impressum.contact?.twitter || "",
+              youtube: data.impressum.contact?.youtube || "",
+              linkedin: data.impressum.contact?.linkedin || "",
+              website: data.impressum.contact?.website || "",
+              tiktok: data.impressum.contact?.tiktok || "",
+              telegram: data.impressum.contact?.telegram || "",
+              whatsapp: data.impressum.contact?.whatsapp || "",
             },
           },
         });
@@ -279,7 +300,7 @@ export default function AdminStaticPages() {
           <TabsTrigger value="privacy">Privacy</TabsTrigger>
         </TabsList>
 
-        {(["about", "contact", "privacy"] as StaticPageKey[]).map((key) => (
+        {(["about", "contact", "privacy", "impressum"] as StaticPageKey[]).map((key) => (
           <TabsContent key={key} value={key}>
             <Card>
               <CardHeader>

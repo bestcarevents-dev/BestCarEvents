@@ -95,6 +95,7 @@ const NAV_SECTIONS = [
       { href: "/admin/faq", icon: Settings, label: "FAQ" },
       { href: "/admin/static-pages", icon: Settings, label: "Static Pages" },
       { href: "/admin/static-pages#privacy", icon: Settings, label: "Privacy Policy" },
+      { href: "/admin/impressum", icon: Settings, label: "Impressum" },
       { href: "/admin/auth-images", icon: Settings, label: "Auth Images" },
       { href: "/admin/interests", icon: Settings, label: "Interests" },
       { href: "/admin/form-preferences", icon: Settings, label: "Form Preferences" },

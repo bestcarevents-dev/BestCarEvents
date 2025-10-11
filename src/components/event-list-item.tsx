@@ -54,8 +54,8 @@ export default function EventListItem({ id, documentId, name, date, endDate, loc
               </span>
             </div>
             {/* Title */}
-            <h3 className="font-headline text-[26px] md:text-[30px] tracking-[0.02em] mb-3">
-              <Link href={href} className="text-[#1d1d1d] hover:text-[#2a2a2a] transition">
+            <h3 className="font-headline text-[26px] md:text-[30px] tracking-[0.02em] mb-3 notranslate" translate="no" data-no-translate>
+              <Link href={href} className="text-[#1d1d1d] hover:text-[#2a2a2a] transition notranslate" translate="no" data-no-translate>
                 {name}
               </Link>
             </h3>

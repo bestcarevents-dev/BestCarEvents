@@ -79,7 +79,9 @@ export default function HomepageAdCarousel() {
         <CardContent className="p-4 flex flex-col flex-grow">
           <Link 
             href={`/partners/ad/${ad.id}`} 
-            className="hover:underline text-lg font-headline font-semibold text-gray-900 line-clamp-2 mb-2"
+            className="hover:underline text-lg font-headline font-semibold text-gray-900 line-clamp-2 mb-2 notranslate"
+            translate="no"
+            data-no-translate
           >
             {ad.title || ad.shopName || ad.providerName || ad.experienceName || ad.serviceName || ad.websiteName || ad.businessName}
           </Link>

@@ -142,6 +142,7 @@ type AuctionData = {
   startDate?: any;
   endDate?: any;
   imageUrl?: string;
+  imageUrls?: string[]; // some docs may store an array; prefer first
   auctionType?: string;
   featured?: boolean;
   status?: string;
@@ -1366,8 +1367,8 @@ const FeaturedHotelsSection = ({ copy }: { copy: NonNullable<HomepageContent["fe
                               )}
                             </CardHeader>
                             <CardContent className="p-6 flex-grow">
-                              <CardTitle className="font-headline tracking-[-0.01em] bg-gradient-to-r from-[#1d1d1d] via-[#2a2a2a] to-[#1d1d1d] bg-clip-text text-transparent">
-                                <Link href={`/hotels/${hotel.id}`} className="hover:opacity-90 transition">
+                              <CardTitle className="font-headline tracking-[-0.01em] bg-gradient-to-r from-[#1d1d1d] via-[#2a2a2a] to-[#1d1d1d] bg-clip-text text-transparent notranslate" translate="no" data-no-translate>
+                                <Link href={`/hotels/${hotel.id}`} className="hover:opacity-90 transition notranslate" translate="no" data-no-translate>
                                   {hotel.hotelName || "Hotel"}
                                 </Link>
                               </CardTitle>
@@ -1418,8 +1419,8 @@ const FeaturedHotelsSection = ({ copy }: { copy: NonNullable<HomepageContent["fe
                             )}
                           </CardHeader>
                           <CardContent className="p-6 flex-grow">
-                            <CardTitle className="font-headline text-gray-900">
-                              <Link href={`/hotels/${hotel.id}`} className="hover:text-yellow-600 transition-colors">
+                            <CardTitle className="font-headline text-gray-900 notranslate" translate="no" data-no-translate>
+                              <Link href={`/hotels/${hotel.id}`} className="hover:text-yellow-600 transition-colors notranslate" translate="no" data-no-translate>
                                 {hotel.hotelName || "Hotel"}
                               </Link>
                             </CardTitle>
