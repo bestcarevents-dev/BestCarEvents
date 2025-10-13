@@ -109,6 +109,17 @@ function EventsPageContent() {
         return { city, state, country };
       };
       let filtered = events.filter(event => {
+        // Date filtering: keep events that have not fully passed.
+        // If an endDate exists, use it; otherwise, fall back to eventDate. Keep items where date >= start of today.
+        const startOfToday = new Date();
+        startOfToday.setHours(0, 0, 0, 0);
+        const parseDate = (d: any): Date | null => {
+          if (!d) return null;
+          return d?.seconds ? new Date(d.seconds * 1000) : new Date(d);
+        };
+        const eventEnd = parseDate(event?.endDate) || parseDate(event?.eventDate);
+        const isUpcomingOrOngoing = !eventEnd || eventEnd.getTime() >= startOfToday.getTime();
+
         const matchesSearch = searchQuery === "" || 
           event.eventName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
           event.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -145,7 +156,7 @@ function EventsPageContent() {
           (selectedEntryFee === "free" && (event.entryFee === 0 || event.entryFee === "0")) ||
           (selectedEntryFee === "paid" && (event.entryFee !== 0 && event.entryFee !== "0"));
         
-        return matchesSearch && matchesCity && matchesCountry && matchesEventType && matchesVehicleFocus && matchesEntryFee;
+        return isUpcomingOrOngoing && matchesSearch && matchesCity && matchesCountry && matchesEventType && matchesVehicleFocus && matchesEntryFee;
       });
 
       // Sort events

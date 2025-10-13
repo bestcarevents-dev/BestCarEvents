@@ -93,6 +93,16 @@ function AuctionsPageContent() {
   // Filter and sort auctions
   const filteredAndSortedAuctions = useMemo(() => {
     let filtered = auctions.filter(auction => {
+      // Date filtering: auctions have a single relevant date for visibility.
+      // Keep auctions where endDate (if present) or startDate (fallback) is >= start of today.
+      const startOfToday = new Date();
+      startOfToday.setHours(0, 0, 0, 0);
+      const parseDate = (d: any): Date | null => {
+        if (!d) return null;
+        return d?.seconds ? new Date(d.seconds * 1000) : new Date(d);
+      };
+      const lastRelevantDate = parseDate(auction?.endDate) || parseDate(auction?.startDate);
+      const isUpcomingOrOngoing = !lastRelevantDate || lastRelevantDate.getTime() >= startOfToday.getTime();
       const matchesSearch = searchQuery === "" || 
         auction.auctionName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         auction.auctionHouse?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -113,7 +123,7 @@ function AuctionsPageContent() {
       const matchesAuctionType = selectedAuctionType === "all" || 
         auction.auctionType?.toLowerCase() === selectedAuctionType.toLowerCase();
       
-      return matchesSearch && matchesCity && matchesState && matchesCountry && matchesAuctionType;
+      return isUpcomingOrOngoing && matchesSearch && matchesCity && matchesState && matchesCountry && matchesAuctionType;
     });
 
     // Sort auctions

@@ -764,7 +764,18 @@ const FeaturedEventsSection = ({ copy }: { copy: NonNullable<HomepageContent["fe
             id: doc.id,
             ...doc.data() 
           } as EventData))
-          .filter(event => event.status === "approved");
+          .filter(event => event.status === "approved")
+          // Exclude past events: if endDate exists use it, else eventDate; keep dates >= start of today
+          .filter(event => {
+            const startOfToday = new Date();
+            startOfToday.setHours(0, 0, 0, 0);
+            const parseDate = (d: any): Date | null => {
+              if (!d) return null;
+              return (d as any)?.seconds ? new Date((d as any).seconds * 1000) : new Date(d as any);
+            };
+            const lastRelevant = parseDate((event as any).endDate) || parseDate((event as any).eventDate);
+            return !lastRelevant || lastRelevant.getTime() >= startOfToday.getTime();
+          });
 
         // Separate featured events and normal events
         const featuredEvents = allEvents.filter(event => event.feature_type === "featured");
@@ -997,10 +1008,21 @@ const FeaturedAuctionsSection = ({ copy }: { copy: NonNullable<HomepageContent["
             id: doc.id,
             ...doc.data() 
           } as AuctionData));
+        // Exclude past auctions: use endDate if present, else startDate; keep >= start of today
+        const startOfToday = new Date();
+        startOfToday.setHours(0, 0, 0, 0);
+        const parseDate = (d: any): Date | null => {
+          if (!d) return null;
+          return (d as any)?.seconds ? new Date((d as any).seconds * 1000) : new Date(d as any);
+        };
+        const nonPastAuctions = allAuctions.filter(a => {
+          const lastRelevant = parseDate((a as any).endDate) || parseDate((a as any).startDate);
+          return !lastRelevant || lastRelevant.getTime() >= startOfToday.getTime();
+        });
 
         // Separate featured auctions and normal auctions
-        const featuredAuctions = allAuctions.filter(auction => auction.featured === true);
-        const normalAuctions = allAuctions.filter(auction => auction.featured !== true);
+        const featuredAuctions = nonPastAuctions.filter(auction => auction.featured === true);
+        const normalAuctions = nonPastAuctions.filter(auction => auction.featured !== true);
 
         let finalAuctions: AuctionData[] = [];
 
