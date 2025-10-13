@@ -41,7 +41,7 @@ export default function EventCard({ documentId, id, name, date, endDate, locatio
                       <Calendar className="w-4 h-4" />
                       <span>{endDate ? `${date} - ${endDate}` : date}</span>
                   </div>
-                  <div className="flex items-center gap-1.5">
+                  <div className="flex items-center gap-1.5 notranslate" translate="no" data-no-translate>
                       <MapPin className="w-4 h-4" />
                       <span>{location}</span>
                   </div>

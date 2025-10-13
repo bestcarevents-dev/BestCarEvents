@@ -48,7 +48,7 @@ export default function EventListItem({ id, documentId, name, date, endDate, loc
                 <Calendar className="w-4 h-4 text-[#7D8C91]" />
                 {endDate ? `${date} - ${endDate}` : date}
               </span>
-              <span className="inline-flex items-center gap-2 rounded-[10px] border border-[#D9CEB6] bg-[#F4F0E7] px-3 py-1 text-[#7A6E57]">
+              <span className="inline-flex items-center gap-2 rounded-[10px] border border-[#D9CEB6] bg-[#F4F0E7] px-3 py-1 text-[#7A6E57] notranslate" translate="no" data-no-translate>
                 <MapPin className="w-4 h-4 text-[#7D8C91]" />
                 {location}
               </span>

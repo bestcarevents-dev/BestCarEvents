@@ -45,8 +45,8 @@ export default function CarCard({ id, name, price, location, image, hint, type =
         {type !== 'auction' && <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-yellow-500 via-amber-400 to-yellow-600 opacity-80" />}
       </div>
       <CardContent className="p-5 sm:p-6 flex-grow flex flex-col">
-        <h3 className="text-xl sm:text-[1.35rem] font-headline leading-tight tracking-[0.02em] text-[#1f1f1f]" translate="no" data-no-translate>
-          <span className="text-[#1f1f1f] group-hover:opacity-90 transition-opacity notranslate">{name}</span>
+        <h3 className="text-xl sm:text-[1.35rem] font-headline leading-tight tracking-[0.02em] text-[#1f1f1f] notranslate" translate="no" data-no-translate>
+          <span className="text-[#1f1f1f] group-hover:opacity-90 transition-opacity notranslate" translate="no" data-no-translate>{name}</span>
         </h3>
         <div className="flex justify-between items-center mt-auto pt-4">
             <p className={`text-2xl font-semibold ${type === 'auction' ? 'text-[#2a2a2a]' : 'text-[#2a2a2a]'}`}>{displayPrice}</p>

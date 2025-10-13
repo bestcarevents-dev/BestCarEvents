@@ -1372,7 +1372,7 @@ const FeaturedHotelsSection = ({ copy }: { copy: NonNullable<HomepageContent["fe
                                   {hotel.hotelName || "Hotel"}
                                 </Link>
                               </CardTitle>
-                              <CardDescription className="text-[#7A6E57]">
+                              <CardDescription className="text-[#7A6E57] notranslate" translate="no" data-no-translate>
                                 {hotel.city || ""}, {hotel.state || ""}
                               </CardDescription>
                               <ul className="mt-4 space-y-2 text-sm text-gray-600">
@@ -1424,7 +1424,7 @@ const FeaturedHotelsSection = ({ copy }: { copy: NonNullable<HomepageContent["fe
                                 {hotel.hotelName || "Hotel"}
                               </Link>
                             </CardTitle>
-                            <CardDescription className="text-gray-600">
+                            <CardDescription className="text-gray-600 notranslate" translate="no" data-no-translate>
                               {hotel.city || ""}, {hotel.state || ""}
                             </CardDescription>
                             <ul className="mt-4 space-y-2 text-sm text-gray-600">
@@ -1666,10 +1666,10 @@ const FeaturedClubsSection = ({ copy }: { copy: NonNullable<HomepageContent["fea
                                 </div>
                               </div>
                               <div className="w-full flex flex-col items-center flex-grow space-y-3">
-                                <h3 className="text-xl font-bold font-headline text-yellow-600 text-center group-hover:underline transition-all">
+                                <h3 className="text-xl font-bold font-headline text-yellow-600 text-center group-hover:underline transition-all notranslate" translate="no" data-no-translate>
                                   {club.clubName || "Club"}
                                 </h3>
-                                <div className="flex items-center gap-2 text-muted-foreground">
+                                <div className="flex items-center gap-2 text-muted-foreground notranslate" translate="no" data-no-translate>
                                   <Users className="w-4 h-4" />
                                   <span>{club.city || ""}, {club.country || ""}</span>
                                 </div>

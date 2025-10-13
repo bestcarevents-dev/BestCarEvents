@@ -1,5 +1,23 @@
 import { fetchImpressum } from "@/lib/impressum";
 
+const PHRASE = "Best Car Events by Custoza";
+function withNoTranslate(text: string) {
+  const parts = (text ?? "").split(PHRASE);
+  if (parts.length === 1) return text;
+  const out: any[] = [];
+  parts.forEach((part, idx) => {
+    out.push(part);
+    if (idx < parts.length - 1) {
+      out.push(
+        <span key={`nt-${idx}`} className="notranslate" translate="no" data-no-translate>
+          {PHRASE}
+        </span>
+      );
+    }
+  });
+  return out;
+}
+
 export default async function ImpressumPage() {
   const content = await fetchImpressum();
   return (
@@ -16,8 +34,8 @@ export default async function ImpressumPage() {
           <div className="prose prose-lg max-w-none text-gray-700">
             {content.sections.map((section) => (
               <section key={section.id} className="mb-8">
-                <h2 className="text-2xl font-bold font-headline text-gray-900 mb-4">{section.title}</h2>
-                <div className="whitespace-pre-wrap">{section.content}</div>
+                <h2 className="text-2xl font-bold font-headline text-gray-900 mb-4">{withNoTranslate(section.title)}</h2>
+                <div className="whitespace-pre-wrap">{withNoTranslate(section.content)}</div>
               </section>
             ))}
           </div>
