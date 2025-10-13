@@ -214,6 +214,15 @@ function AuctionsPageContent() {
     return types;
   }, [auctions]);
 
+  const formatDate = (startDate: any) => {
+    if (!startDate) return "TBD";
+    const date = startDate.seconds ? new Date(startDate.seconds * 1000) : new Date(startDate);
+    return date.toLocaleDateString('en-GB', {
+      month: 'short',
+      day: 'numeric',
+    });
+  };
+
   const handleSearch = () => {
     setCurrentPage(1);
   };
@@ -444,17 +453,22 @@ function AuctionsPageContent() {
                   <div className="relative bg-white/90 backdrop-blur-sm rounded-3xl border-2 border-[#80A0A9]/60 p-6 shadow-inner">
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                       {featuredAuctions.map((auction, index) => (
-                        <CarCard
-                          key={auction.documentId || index}
-                          id={auction.documentId}
-                          name={auction.auctionName || "Auction"}
-                          price={`${auction.auctionHouse || "Auction House"}`}
-                          location={`${auction.city}, ${auction.state}`}
-                          image={(Array.isArray(auction.imageUrls) && auction.imageUrls.length > 0 ? auction.imageUrls[0] : auction.imageUrl) || "https://via.placeholder.com/600x400?text=No+Image"}
-                          hint={auction.auctionType || "auction"}
-                          type="auction"
-                          featured={true}
-                        />
+                        <div key={auction.documentId || index} className="relative group">
+                          <CarCard
+                            id={auction.documentId}
+                            name={auction.auctionName || "Auction"}
+                            price={`${auction.auctionHouse || "Auction House"}`}
+                            location={`${auction.city}, ${auction.state}`}
+                            image={(Array.isArray(auction.imageUrls) && auction.imageUrls.length > 0 ? auction.imageUrls[0] : auction.imageUrl) || "https://via.placeholder.com/600x400?text=No+Image"}
+                            hint={auction.auctionType || "auction"}
+                            type="auction"
+                            featured={true}
+                          />
+                          <div className="absolute top-4 right-4 bg-[#F4F0E7]/95 border border-[#D9CEB6] text-[#1f1f1f] px-3 py-1.5 rounded-full flex items-center gap-2 text-sm font-semibold shadow">
+                            <Clock className="w-4 h-4 text-[#7D8C91]" />
+                            <span>{formatDate(auction.startDate)}</span>
+                          </div>
+                        </div>
                       ))}
                     </div>
                   </div>
@@ -479,17 +493,22 @@ function AuctionsPageContent() {
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                   {paginatedAuctions.map((auction, index) => (
-                    <CarCard
-                      key={auction.documentId || index}
-                      id={auction.documentId}
-                      name={auction.auctionName || "Auction"}
-                      price={`${auction.auctionHouse || "Auction House"}`}
-                      location={`${auction.city}, ${auction.state}`}
-                      image={(Array.isArray(auction.imageUrls) && auction.imageUrls.length > 0 ? auction.imageUrls[0] : auction.imageUrl) || "https://via.placeholder.com/600x400?text=No+Image"}
-                      hint={auction.auctionType || "auction"}
-                      type="auction"
-                      featured={false}
-                    />
+                    <div key={auction.documentId || index} className="relative group">
+                      <CarCard
+                        id={auction.documentId}
+                        name={auction.auctionName || "Auction"}
+                        price={`${auction.auctionHouse || "Auction House"}`}
+                        location={`${auction.city}, ${auction.state}`}
+                        image={(Array.isArray(auction.imageUrls) && auction.imageUrls.length > 0 ? auction.imageUrls[0] : auction.imageUrl) || "https://via.placeholder.com/600x400?text=No+Image"}
+                        hint={auction.auctionType || "auction"}
+                        type="auction"
+                        featured={false}
+                      />
+                      <div className="absolute top-4 right-4 bg-[#F4F0E7]/95 border border-[#D9CEB6] text-[#1f1f1f] px-3 py-1.5 rounded-full flex items-center gap-2 text-sm font-semibold shadow">
+                        <Clock className="w-4 h-4 text-[#7D8C91]" />
+                        <span>{formatDate(auction.startDate)}</span>
+                      </div>
+                    </div>
                   ))}
                 </div>
                 {paginatedAuctions.length === 0 && (

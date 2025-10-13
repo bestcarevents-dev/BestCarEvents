@@ -13,6 +13,13 @@ function withNoTranslate(text: string) {
           {PHRASE}
         </span>
       );
+      // Ensure a visible separator/space after the brand phrase when the following text
+      // starts immediately without whitespace. This avoids awkward concatenation when
+      // translators collapse leading spaces at element boundaries.
+      const nextPart = parts[idx + 1] ?? "";
+      if (nextPart && !/^\s/.test(nextPart)) {
+        out.push(" ");
+      }
     }
   });
   return out;
