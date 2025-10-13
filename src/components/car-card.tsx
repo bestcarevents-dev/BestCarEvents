@@ -49,7 +49,7 @@ export default function CarCard({ id, name, price, location, image, hint, type =
           <span className="text-[#1f1f1f] group-hover:opacity-90 transition-opacity notranslate" translate="no" data-no-translate>{name}</span>
         </h3>
         <div className="flex justify-between items-center mt-auto pt-4">
-            <p className={`text-2xl font-semibold ${type === 'auction' ? 'text-[#2a2a2a]' : 'text-[#2a2a2a]'}`}>{displayPrice}</p>
+            <p className={`text-2xl font-semibold ${type === 'auction' ? 'text-[#2a2a2a]' : 'text-[#2a2a2a]'} notranslate`} translate="no" data-no-translate>{displayPrice}</p>
             <Button variant="ghost" size="icon" asChild className={`${type === 'auction' ? 'rounded-full border border-[#D9CEB6] text-[#1f1f1f] hover:bg-[#F8F6F1]' : 'rounded-full border border-yellow-500/30 text-gray-800 hover:text-gray-900 bg-white/70 hover:bg-white shadow-sm hover:shadow-md'} transition-all`}>
               <Link href={`/${type === 'auction' ? 'auctions' : 'cars'}/${id}`}>
                 <ArrowRight className="w-6 h-6 transform transition-transform group-hover:translate-x-1"/>

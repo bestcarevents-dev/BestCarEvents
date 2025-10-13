@@ -2,27 +2,42 @@ import { fetchImpressum } from "@/lib/impressum";
 
 const PHRASE = "Best Car Events by Custoza";
 function withNoTranslate(text: string) {
-  const parts = (text ?? "").split(PHRASE);
-  if (parts.length === 1) return text;
-  const out: any[] = [];
-  parts.forEach((part, idx) => {
-    out.push(part);
-    if (idx < parts.length - 1) {
-      out.push(
-        <span key={`nt-${idx}`} className="notranslate" translate="no" data-no-translate>
+  const input = text ?? "";
+  const parts = input.split(PHRASE);
+  if (parts.length === 1) return input;
+  const nodes: any[] = [];
+  let consumeLeadingNewline = false;
+  for (let i = 0; i < parts.length; i++) {
+    let segment = parts[i] as string;
+    if (consumeLeadingNewline) {
+      segment = segment.replace(/^\n+/, "");
+      consumeLeadingNewline = false;
+    }
+    if (segment) nodes.push(segment);
+    if (i < parts.length - 1) {
+      nodes.push(
+        <span key={`nt-${i}`} className="notranslate" translate="no" data-no-translate>
           {PHRASE}
         </span>
       );
-      // Ensure a visible separator/space after the brand phrase when the following text
-      // starts immediately without whitespace. This avoids awkward concatenation when
-      // translators collapse leading spaces at element boundaries.
-      const nextPart = parts[idx + 1] ?? "";
-      if (nextPart && !/^\s/.test(nextPart)) {
-        out.push(" ");
+      const nextPart = parts[i + 1] ?? "";
+      // If the next part begins with one or more newlines, insert equivalent <br/>s
+      // and consume those newlines from the next segment to preserve layout reliably
+      // across translators that may drop raw newlines at element boundaries.
+      const newlineMatch = nextPart.match(/^\n+/);
+      if (newlineMatch) {
+        const count = newlineMatch[0].length;
+        for (let k = 0; k < count; k++) {
+          nodes.push(<br key={`br-${i}-${k}`} />);
+        }
+        consumeLeadingNewline = true;
+      } else if (nextPart && !/^\s/.test(nextPart)) {
+        // Otherwise, ensure a separating space if the next text starts immediately.
+        nodes.push(" ");
       }
     }
-  });
-  return out;
+  }
+  return nodes;
 }
 
 export default async function ImpressumPage() {
