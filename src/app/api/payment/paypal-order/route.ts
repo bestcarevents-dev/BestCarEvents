@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/firebase';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+
 export async function POST(req: NextRequest) {
   const { amount, description, couponCode, category } = await req.json();
   if (!amount || !description) {
@@ -39,9 +42,20 @@ export async function POST(req: NextRequest) {
         }
       } catch {}
     }
+    // Determine PayPal environment and credentials
+    const clientId = process.env.PAYPAL_CLIENT_ID;
+    const secret = process.env.PAYPAL_SECRET;
+    if (!clientId || !secret) {
+      return NextResponse.json({ error: 'PayPal credentials not configured' }, { status: 500 });
+    }
+    const PAYPAL_ENV = process.env.PAYPAL_ENV?.toLowerCase();
+    const PAYPAL_BASE = (PAYPAL_ENV === 'live' || PAYPAL_ENV === 'production')
+      ? 'https://api-m.paypal.com'
+      : 'https://api-m.sandbox.paypal.com';
+
     // Get PayPal access token
-    const basicAuth = Buffer.from(`${process.env.PAYPAL_CLIENT_ID}:${process.env.PAYPAL_SECRET}`).toString('base64');
-    const tokenRes = await fetch('https://api-m.sandbox.paypal.com/v1/oauth2/token', {
+    const basicAuth = Buffer.from(`${clientId}:${secret}`).toString('base64');
+    const tokenRes = await fetch(`${PAYPAL_BASE}/v1/oauth2/token`, {
       method: 'POST',
       headers: {
         'Authorization': `Basic ${basicAuth}`,
@@ -49,13 +63,18 @@ export async function POST(req: NextRequest) {
       },
       body: 'grant_type=client_credentials',
     });
+    if (!tokenRes.ok) {
+      const errText = await tokenRes.text().catch(() => '');
+      console.error('PayPal token error:', tokenRes.status, errText);
+      return NextResponse.json({ error: 'Failed to get PayPal access token' }, { status: 500 });
+    }
     const tokenData = await tokenRes.json();
     if (!tokenData.access_token) {
       return NextResponse.json({ error: 'Failed to get PayPal access token' }, { status: 500 });
     }
     
     // Create order
-    const orderRes = await fetch('https://api-m.sandbox.paypal.com/v2/checkout/orders', {
+    const orderRes = await fetch(`${PAYPAL_BASE}/v2/checkout/orders`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${tokenData.access_token}`,
@@ -79,6 +98,11 @@ export async function POST(req: NextRequest) {
       }),
     });
     
+    if (!orderRes.ok) {
+      const errText = await orderRes.text().catch(() => '');
+      console.error('PayPal order creation failed (HTTP):', orderRes.status, errText);
+      return NextResponse.json({ error: 'Failed to create PayPal order' }, { status: 500 });
+    }
     const orderData = await orderRes.json();
     if (!orderData.id) {
       console.error('PayPal order creation failed:', orderData);
