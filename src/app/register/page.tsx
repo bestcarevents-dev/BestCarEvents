@@ -151,11 +151,11 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="w-full h-screen lg:grid lg:grid-cols-2">
+    <div className="w-full min-h-screen lg:grid lg:grid-cols-2">
       {/* reCAPTCHA Enterprise script */}
       <Script src={`https://www.google.com/recaptcha/api.js?render=${process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || ''}`} strategy="afterInteractive" />
-      <div className="flex items-center justify-center py-12 bg-background">
-        <div className="mx-auto grid w-[350px] gap-6">
+      <div className="flex items-center justify-center py-12 bg-background px-4 lg:h-screen overflow-y-auto">
+        <div className="mx-auto grid w-full max-w-[420px] gap-6">
           <div className="grid gap-2 text-center">
             <h1 className="text-3xl font-bold font-headline text-primary">Create an Account</h1>
             <p className="text-muted-foreground">
