@@ -1005,8 +1005,8 @@ const FeaturedAuctionsSection = ({ copy }: { copy: NonNullable<HomepageContent["
         const auctionsSnapshot = await getDocs(auctionsQuery);
         const allAuctions = auctionsSnapshot.docs
           .map(doc => ({ 
-            id: doc.id,
-            ...doc.data() 
+            ...doc.data(),
+            id: doc.id
           } as AuctionData));
         // Exclude past auctions: use endDate if present, else startDate; keep >= start of today
         const startOfToday = new Date();

@@ -124,7 +124,7 @@ export default function EventDetailsPage({ params }: { params: { id: string } })
                       onClick={() => lightbox.open([event.imageUrl || 'https://via.placeholder.com/900x500?text=No+Image'], 0)}
                       type="button"
                     >
-                      <Image src={event.imageUrl || 'https://via.placeholder.com/900x500?text=No+Image'} alt={event.eventName} fill className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-700" unoptimized />
+                      <Image src={event.imageUrl || 'https://via.placeholder.com/900x500?text=No+Image'} alt={event.eventName} fill className="object-contain w-full h-full" unoptimized />
                     </button>
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
                 </div>
