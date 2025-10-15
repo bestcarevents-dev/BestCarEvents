@@ -3,6 +3,7 @@ import { useEffect, useState, useMemo, Suspense } from "react";
 import { getFirestore, collection, getDocs } from "firebase/firestore";
 import { app } from "@/lib/firebase";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import FeaturedPlaceholderCard from "@/components/FeaturedPlaceholderCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
@@ -454,11 +455,13 @@ function CarHotelsPageContent() {
                 </div>
               </div>
             ) : (
-              <div className="mb-8 p-6 bg-[#E0D8C1]/20 rounded-lg border border-dashed border-[#80A0A9]/30">
-                <div className="text-center text-gray-600">
-                  <Star className="w-8 h-8 mx-auto mb-2 text-[#80A0A9]/50" />
-                  <p className="text-sm">No featured hotels at the moment. Check back soon for premium hotels!</p>
-                </div>
+              <div className="mb-8">
+                <FeaturedPlaceholderCard 
+                  title="This spot could be yours"
+                  description="Feature your car hotel to appear here and get more bookings."
+                  ctaHref="/advertise/hotel-listing"
+                  ctaText="Feature your hotel"
+                />
               </div>
             )}
 

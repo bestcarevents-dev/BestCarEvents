@@ -1,5 +1,6 @@
 'use client';
 import CarCard from "@/components/car-card";
+import FeaturedPlaceholderCard from "@/components/FeaturedPlaceholderCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
@@ -475,11 +476,13 @@ function AuctionsPageContent() {
                 </div>
               </div>
             ) : (
-              <div className="mb-8 p-6 bg-[#E0D8C1]/20 rounded-lg border border-dashed border-[#80A0A9]/30">
-                <div className="text-center text-gray-600">
-                  <Star className="w-8 h-8 mx-auto mb-2 text-[#80A0A9]/50" />
-                  <p className="text-sm">No featured auctions at the moment. Check back soon for premium auctions!</p>
-                </div>
+              <div className="mb-8">
+                <FeaturedPlaceholderCard 
+                  title="This spot could be yours"
+                  description="Feature your auction to appear here and reach serious buyers."
+                  ctaHref="/advertise/auction-listing"
+                  ctaText="Feature your auction"
+                />
               </div>
             )}
 

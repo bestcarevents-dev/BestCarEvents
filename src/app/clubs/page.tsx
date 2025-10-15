@@ -1,6 +1,7 @@
 'use client';
 
 import { Button } from "@/components/ui/button";
+import FeaturedPlaceholderCard from "@/components/FeaturedPlaceholderCard";
 import { Input } from "@/components/ui/input";
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -469,11 +470,13 @@ function ClubsPageContent() {
                   </div>
                 </div>
               ) : (
-                <div className="mb-8 p-6 bg-[#E0D8C1]/20 rounded-lg border border-dashed border-[#80A0A9]/30">
-                  <div className="text-center text-gray-600">
-                    <Star className="w-8 h-8 mx-auto mb-2 text-[#80A0A9]/50" />
-                    <p className="text-sm">No featured clubs at the moment. Check back soon for premium clubs!</p>
-                  </div>
+                <div className="mb-8">
+                  <FeaturedPlaceholderCard 
+                    title="This spot could be yours"
+                    description="Feature your club to appear here and attract new members."
+                    ctaHref="/advertise/club-listing"
+                    ctaText="Feature your club"
+                  />
                 </div>
               )}
 

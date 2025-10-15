@@ -1,6 +1,7 @@
 'use client'
 
 import EventCard from "@/components/event-card";
+import FeaturedPlaceholderCard from "@/components/FeaturedPlaceholderCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
@@ -485,11 +486,14 @@ function EventsPageContent() {
                        </div>
                      </div>
                    ) : (
-                     <div className="mb-8 p-6 bg-gray-100 rounded-lg border border-dashed border-gray-300">
-                       <div className="text-center text-gray-600">
-                         <Star className="w-8 h-8 mx-auto mb-2 text-yellow-500/50" />
-                         <p className="text-sm">No featured events at the moment. Check back soon for premium events!</p>
-                       </div>
+                     <div className="mb-8">
+                       {/* Placeholder when there are no featured events */}
+                       <FeaturedPlaceholderCard 
+                         title="This spot could be yours"
+                         description="Feature your event to appear here and reach more enthusiasts."
+                         ctaHref="/advertise/events-listing"
+                         ctaText="Feature your event"
+                       />
                      </div>
                    )}
 

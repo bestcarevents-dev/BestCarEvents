@@ -84,7 +84,7 @@ export default function LoginPage() {
       <Script src={`https://www.google.com/recaptcha/api.js?render=${process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || ''}`} strategy="afterInteractive" />
       <div className="relative flex-1 hidden w-full h-full lg:block">
           <Image
-              src={bgUrl || "https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?q=80&w=2700&auto=format&fit=crop"}
+              src={bgUrl || "/loginbanner.avif"}
               alt="Stylish white sports car"
               layout="fill"
               objectFit="cover"
