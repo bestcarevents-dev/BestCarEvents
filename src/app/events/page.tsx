@@ -485,17 +485,31 @@ function EventsPageContent() {
                          </div>
                        </div>
                      </div>
-                   ) : (
-                     <div className="mb-8">
-                       {/* Placeholder when there are no featured events */}
-                       <FeaturedPlaceholderCard 
-                         title="This spot could be yours"
-                         description="Feature your event to appear here and reach more enthusiasts."
-                         ctaHref="/advertise/events-listing"
-                         ctaText="Feature your event"
-                       />
-                     </div>
-                   )}
+                  ) : (
+                    <div className="mb-12">
+                      <div className="flex items-center gap-3 mb-6">
+                        <div className="p-2 bg-[#E0D8C1]/20 rounded-full">
+                          <Star className="w-6 h-6 text-[#80A0A9]" />
+                        </div>
+                        <h2 className="text-2xl font-headline font-bold text-gray-900">Featured Events</h2>
+                        <div className="flex-1 h-px bg-gradient-to-r from-yellow-400/50 to-transparent"></div>
+                      </div>
+                      <div className="relative group">
+                        <div className="absolute inset-0 bg-gradient-to-r from-yellow-400/20 via-yellow-300/20 to-yellow-400/20 rounded-3xl border-2 border-yellow-400/40 shadow-lg group-hover:shadow-xl transition-shadow duration-300"></div>
+                        <div className="absolute inset-0 bg-gradient-to-r from-yellow-400/5 via-transparent to-yellow-400/5 rounded-3xl"></div>
+                        <div className="relative bg-white/90 backdrop-blur-sm rounded-3xl border-2 border-yellow-400/60 p-6 shadow-inner">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                            <FeaturedPlaceholderCard 
+                              title="This spot could be yours"
+                              description="Feature your event to appear here and reach more enthusiasts."
+                              ctaHref="/advertise/events-listing"
+                              ctaText="Feature your event"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
 
                    {/* Regular Events Grid */}
                    {regularEvents.length > 0 && (

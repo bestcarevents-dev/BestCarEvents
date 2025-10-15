@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Star } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -22,32 +21,30 @@ export default function FeaturedPlaceholderCard({
   className,
 }: FeaturedPlaceholderCardProps) {
   return (
-    <div className={cn("mx-auto max-w-3xl", className)}>
-      <Card className="bg-white border border-gray-200 hover:border-gray-300 transition-all duration-200 hover:shadow-md rounded-2xl overflow-hidden">
-        <div className="relative w-full aspect-video bg-white">
-          <div className="absolute inset-0 bg-gradient-to-br from-gray-50 via-white to-gray-100" />
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="flex items-center gap-3 text-gray-500">
-              <Star className="w-6 h-6 text-yellow-500/70" />
-              <span className="text-sm md:text-base">Premium placement</span>
-            </div>
+    <Card className={cn("bg-white border border-gray-200 hover:border-gray-300 transition-all duration-200 hover:shadow-sm rounded-xl overflow-hidden", className)}>
+      <div className="relative w-full aspect-video bg-gray-50">
+        <div className="absolute top-2 left-2 inline-flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-semibold bg-yellow-600 text-white">
+          <Star className="w-3 h-3" />
+          <span>Featured</span>
+        </div>
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="text-center px-3">
+            <div className="text-xs text-gray-500">Premium placement</div>
+            <div className="mt-1 text-sm font-medium text-gray-800">{title}</div>
           </div>
         </div>
-        <CardContent className="p-5 md:p-6">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-            <div>
-              <h3 className="text-lg md:text-xl font-semibold text-gray-900">{title}</h3>
-              {description && (
-                <p className="text-sm text-gray-600 mt-1">{description}</p>
-              )}
-            </div>
-            <Button asChild className="bg-[#80A0A9] hover:bg-[#80A0A9]/90 text-white">
-              <Link href={ctaHref}>{ctaText}</Link>
-            </Button>
+      </div>
+      <CardContent className="p-4">
+        <div className="flex items-center justify-between gap-2">
+          <div className="text-sm text-gray-600 line-clamp-2">
+            {description}
           </div>
-        </CardContent>
-      </Card>
-    </div>
+          <Link href={ctaHref} className="text-sm font-medium text-[#80A0A9] hover:text-[#80A0A9]/80 whitespace-nowrap">
+            {ctaText}
+          </Link>
+        </div>
+      </CardContent>
+    </Card>
   );
 }
 
