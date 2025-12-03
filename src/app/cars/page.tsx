@@ -275,11 +275,11 @@ function CarsPageContent() {
         {isFreeCarListing && (
           <div className="mb-8">
             <FreeCallout
-              title="List Your Car — Free until 31st November 2025"
+              title="List Your Car — Free until 31st December 2025"
               icon="sparkles"
               messages={[
-                "Sell smarter. Free car listings until 31st November 2025.",
-                "Launch offer: List for free until 31st November 2025.",
+                "Sell smarter. Free car listings until 31st December 2025.",
+                "Launch offer: List for free until 31st December 2025.",
                 "Zero listing fees — Get maximum exposure.",
               ]}
             />

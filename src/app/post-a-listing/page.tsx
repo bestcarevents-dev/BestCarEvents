@@ -65,7 +65,7 @@ export default function PostAListingPage() {
               🚗 Car Listings - Special Launch Offer!
             </h2>
             <p className="text-lg text-gray-700 mb-6 font-medium">
-              Car listings are normally paid, but we're offering them <span className="font-bold text-yellow-600">completely FREE until 31st November 2025</span>!
+            Car listings are normally paid, but we're offering them <span className="font-bold text-yellow-600">completely FREE until 31st December 2025</span>!
             </p>
             <Button asChild size="lg" className="font-bold rounded-full bg-yellow-600 hover:bg-yellow-700 text-white px-8 py-4 text-lg">
               <Link href="/cars/sell">

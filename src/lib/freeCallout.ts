@@ -11,7 +11,14 @@ export interface FreeCalloutContent {
   ctaHref?: string;
   ctaText?: string;
   icon: FreeCalloutIcon;
+  promoLabel?: string;
+  promoText?: string;
+  promoHighlight?: string;
 }
+
+const DEFAULT_PROMO_LABEL = "Cars:";
+const DEFAULT_PROMO_TEXT = "Free car listings until";
+const DEFAULT_PROMO_HIGHLIGHT = "31st December 2025";
 
 type FreeCalloutDoc = Partial<Record<FreeCalloutSection, Partial<FreeCalloutContent>>>;
 
@@ -22,6 +29,9 @@ export const defaultFreeCallouts: Record<FreeCalloutSection, FreeCalloutContent>
   events: {
     title: "List or Join Events — Always Free",
     icon: "sparkles",
+    promoLabel: DEFAULT_PROMO_LABEL,
+    promoText: DEFAULT_PROMO_TEXT,
+    promoHighlight: DEFAULT_PROMO_HIGHLIGHT,
     messages: [
       "Join a community of enthusiasts — No subscription.",
       "Discover premium car events — Promote or find events for free.",
@@ -32,6 +42,9 @@ export const defaultFreeCallouts: Record<FreeCalloutSection, FreeCalloutContent>
   auctions: {
     title: "Promote or Join Auctions — Free",
     icon: "megaphone",
+    promoLabel: DEFAULT_PROMO_LABEL,
+    promoText: DEFAULT_PROMO_TEXT,
+    promoHighlight: DEFAULT_PROMO_HIGHLIGHT,
     messages: [
       "Join a community of enthusiasts — No subscription.",
       "Discover premium car auctions — Showcase or find auctions for free.",
@@ -42,6 +55,9 @@ export const defaultFreeCallouts: Record<FreeCalloutSection, FreeCalloutContent>
   hotels: {
     title: "Reach Car Travelers — Free Listings",
     icon: "gift",
+    promoLabel: DEFAULT_PROMO_LABEL,
+    promoText: DEFAULT_PROMO_TEXT,
+    promoHighlight: DEFAULT_PROMO_HIGHLIGHT,
     messages: [
       "Join a community of enthusiasts — No subscription.",
       "Showcase car-friendly hotels — Get discovered for free.",
@@ -52,6 +68,9 @@ export const defaultFreeCallouts: Record<FreeCalloutSection, FreeCalloutContent>
   others: {
     title: "Post Your Services — Always Free",
     icon: "sparkles",
+    promoLabel: DEFAULT_PROMO_LABEL,
+    promoText: DEFAULT_PROMO_TEXT,
+    promoHighlight: DEFAULT_PROMO_HIGHLIGHT,
     messages: [
       "Posting all services is free.",
       "Reach car enthusiasts — No subscription.",
@@ -63,6 +82,9 @@ export const defaultFreeCallouts: Record<FreeCalloutSection, FreeCalloutContent>
   clubs: {
     title: "Grow Your Club — Free to Register",
     icon: "sparkles",
+    promoLabel: DEFAULT_PROMO_LABEL,
+    promoText: DEFAULT_PROMO_TEXT,
+    promoHighlight: DEFAULT_PROMO_HIGHLIGHT,
     messages: [
       "Join a community of enthusiasts — No subscription.",
       "Promote your car club — Get members for free.",
@@ -86,6 +108,9 @@ export async function fetchFreeCallout(section: FreeCalloutSection): Promise<Fre
     ctaHref: stored.ctaHref ?? defaults.ctaHref,
     ctaText: stored.ctaText ?? defaults.ctaText,
     icon: stored.icon ?? defaults.icon,
+    promoLabel: stored.promoLabel ?? defaults.promoLabel ?? DEFAULT_PROMO_LABEL,
+    promoText: stored.promoText ?? defaults.promoText ?? DEFAULT_PROMO_TEXT,
+    promoHighlight: stored.promoHighlight ?? defaults.promoHighlight ?? DEFAULT_PROMO_HIGHLIGHT,
   };
 }
 
@@ -110,6 +135,9 @@ export async function fetchAllFreeCallouts(): Promise<Record<FreeCalloutSection,
       ctaHref: stored.ctaHref ?? defaults.ctaHref,
       ctaText: stored.ctaText ?? defaults.ctaText,
       icon: stored.icon ?? defaults.icon,
+      promoLabel: stored.promoLabel ?? defaults.promoLabel ?? DEFAULT_PROMO_LABEL,
+      promoText: stored.promoText ?? defaults.promoText ?? DEFAULT_PROMO_TEXT,
+      promoHighlight: stored.promoHighlight ?? defaults.promoHighlight ?? DEFAULT_PROMO_HIGHLIGHT,
     };
   });
   return result;

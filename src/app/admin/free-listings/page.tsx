@@ -142,6 +142,29 @@ export default function AdminFreeListingsPage() {
                     ))}
                     <Button variant="secondary" onClick={() => addMessage(section)}>Add Message</Button>
                   </div>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="space-y-2">
+                      <Label>Promo Label</Label>
+                      <Input
+                        value={callouts[section]?.promoLabel ?? ""}
+                        onChange={(e) => handleCalloutChange(section, "promoLabel", e.target.value)}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Promo Text</Label>
+                      <Input
+                        value={callouts[section]?.promoText ?? ""}
+                        onChange={(e) => handleCalloutChange(section, "promoText", e.target.value)}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Promo Highlight</Label>
+                      <Input
+                        value={callouts[section]?.promoHighlight ?? ""}
+                        onChange={(e) => handleCalloutChange(section, "promoHighlight", e.target.value)}
+                      />
+                    </div>
+                  </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label>CTA Href</Label>

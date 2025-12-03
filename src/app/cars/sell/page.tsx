@@ -478,10 +478,10 @@ export default function SellCarPage() {
               </div>
               <h3 className="text-xl font-semibold mb-2">🎉 Promotional Offer!</h3>
               <p className="text-lg text-muted-foreground mb-4">
-                Free car listings until <span className="font-bold text-primary">31st November 2025</span>
+                Free car listings until <span className="font-bold text-primary">31st December 2025</span>
               </p>
               <p className="text-sm text-muted-foreground">
-                Sell smarter. No listing fees until 31st November 2025. Submit your car with up to 5 images at no cost.
+                Sell smarter. No listing fees until 31st December 2025. Submit your car with up to 5 images at no cost.
               </p>
             </div>
           </CardContent>

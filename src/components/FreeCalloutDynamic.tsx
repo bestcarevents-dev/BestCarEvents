@@ -35,6 +35,9 @@ export default function FreeCalloutDynamic({ section, className }: Props) {
         messages={content.messages}
         ctaHref={content.ctaHref}
         ctaText={content.ctaText}
+        promoLabel={content.promoLabel}
+        promoText={content.promoText}
+        promoHighlight={content.promoHighlight}
         className={className}
       />
     </div>

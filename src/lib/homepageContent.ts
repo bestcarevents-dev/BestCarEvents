@@ -31,7 +31,7 @@ export const defaultHomepageContent: HomepageContent = {
     mainHeading: "ALL LISTINGS ARE FREE",
     chips: ["🏨 Hotels", "👥 Clubs", "🎪 Events", "🔨 Auctions", "🛠️ Services"],
     carsLinePrefix: "Cars:",
-    carsLineHighlight: "Free until 31st November 2025",
+    carsLineHighlight: "Free until 31st December 2025",
     ctaLabel: "Post a Listing",
     ctaHref: "/post-a-listing",
   },
@@ -59,7 +59,7 @@ export const defaultHomepageContent: HomepageContent = {
   },
   featuredCars: {
     title: "Featured Cars",
-    description: "Explore a selection of exceptional vehicles. Car listings are free until 31st November 2025.",
+    description: "Explore a selection of exceptional vehicles. Car listings are free until 31st December 2025.",
     ctaLabel: "View Marketplace",
     ctaHref: "/cars",
   },
