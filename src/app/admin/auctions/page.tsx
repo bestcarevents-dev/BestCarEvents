@@ -37,6 +37,7 @@ interface AuctionRequest {
   viewingTimes?: string;
   organizerName: string;
   organizerContact: string;
+  website?: string | null;
   imageUrl: string;
   status: "pending" | "approved" | "rejected";
   featured?: boolean;
@@ -314,6 +315,21 @@ export default function AdminAuctionsPage() {
                 <h3 className="font-semibold text-lg mb-2">Organizer Information</h3>
                 <DetailItem label="Name" value={selectedAuction.organizerName} />
                 <DetailItem label="Contact Email" value={selectedAuction.organizerContact} />
+                {selectedAuction.website && (
+                  <DetailItem 
+                    label="Website" 
+                    value={
+                      <a 
+                        href={selectedAuction.website} 
+                        target="_blank" 
+                        rel="noopener noreferrer" 
+                        className="text-blue-600 hover:underline"
+                      >
+                        {selectedAuction.website}
+                      </a>
+                    } 
+                  />
+                )}
 
                 <h3 className="font-semibold text-lg mb-2 mt-6">Uploaded By</h3>
                 <div className="bg-gray-50 rounded-lg p-4">

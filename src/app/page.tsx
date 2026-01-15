@@ -147,6 +147,7 @@ type AuctionData = {
   featured?: boolean;
   status?: string;
   createdAt?: any;
+  website?: string | null;
 };
 
 type HotelData = {

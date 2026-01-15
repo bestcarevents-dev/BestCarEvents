@@ -7,7 +7,7 @@ import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Calendar, Mail, ArrowLeft, ArrowRight, Clock, Star, Users } from "lucide-react";
+import { MapPin, Calendar, Mail, ArrowLeft, ArrowRight, Clock, Star, Users, Globe } from "lucide-react";
 import Image from "next/image";
 import { useLuxuryLightbox } from "@/components/LuxuryLightboxProvider";
 
@@ -124,6 +124,20 @@ export default function AuctionDetailsPage() {
                 <div className="flex items-center gap-2"><Calendar className="w-4 h-4 text-yellow-600" /><span className="font-semibold">End Date:</span> <span>{formatDate(auction.endDate)}</span></div>
                 <div className="flex items-center gap-2"><Users className="w-4 h-4 text-yellow-600" /><span className="font-semibold">Viewing:</span> <span>{auction.viewingTimes || 'N/A'}</span></div>
                 <div className="flex items-center gap-2"><Star className="w-4 h-4 text-yellow-600" /><span className="font-semibold">Type:</span> <span>{auction.auctionType}</span></div>
+                {auction.website && (
+                  <div className="flex items-center gap-2 sm:col-span-2">
+                    <Globe className="w-4 h-4 text-yellow-600" />
+                    <span className="font-semibold">Website:</span> 
+                    <a 
+                      href={auction.website} 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="text-yellow-700 hover:text-yellow-800 underline break-all"
+                    >
+                      {auction.website}
+                    </a>
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -136,6 +150,19 @@ export default function AuctionDetailsPage() {
               <h2 className="text-2xl font-headline font-bold text-gray-900">Contact Organizer</h2>
               <div className="flex items-center gap-2 text-gray-900"><Mail className="w-4 h-4 text-yellow-600" /><a href={`mailto:${auction.organizerContact}?subject=Inquiry about ${auction.auctionName}`} className="underline text-yellow-700">{auction.organizerContact}</a></div>
               <div className="flex items-center gap-2 text-gray-900"><MapPin className="w-4 h-4 text-yellow-600" /><span>{auction.privacyMode ? [auction.city, auction.state].filter(Boolean).join(", ") : (auction.location || [auction.address, auction.city, auction.state, auction.country].filter(Boolean).join(", "))}</span></div>
+              {auction.website && (
+                <div className="flex items-center gap-2 text-gray-900">
+                  <Globe className="w-4 h-4 text-yellow-600" />
+                  <a 
+                    href={auction.website} 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="underline text-yellow-700 hover:text-yellow-800 break-all"
+                  >
+                    Visit Website
+                  </a>
+                </div>
+              )}
               {(auction.locationData?.latitude && auction.locationData?.longitude) || auction.location ? (
                 <div className="w-full overflow-hidden rounded-lg border">
                   {auction.locationData?.latitude && auction.locationData?.longitude ? (

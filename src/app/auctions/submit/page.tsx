@@ -53,6 +53,7 @@ const auctionSchema = z.object({
   // Organizer Info
   organizerName: z.string().min(3, "Organizer name is required"),
   organizerContact: z.string().email("Invalid email address"),
+  website: z.string().optional().or(z.literal("")),
   
   // Media
   image: z
@@ -123,6 +124,12 @@ export default function RegisterAuctionPage() {
       await uploadBytes(imageRef, data.image);
       const imageUrl = await getDownloadURL(imageRef);
 
+      // Format website URL - add https:// if not present
+      let formattedWebsite = data.website?.trim() || null;
+      if (formattedWebsite && !formattedWebsite.match(/^https?:\/\//i)) {
+        formattedWebsite = `https://${formattedWebsite}`;
+      }
+
       const auctionData = {
         auctionName: data.auctionName,
         auctionHouse: data.auctionHouse,
@@ -140,6 +147,7 @@ export default function RegisterAuctionPage() {
         viewingTimes: data.viewingTimes,
         organizerName: data.organizerName,
         organizerContact: data.organizerContact,
+        website: formattedWebsite,
         imageUrl,
         privacyMode: !!(data as any).privacyMode,
         mediaConsent: !!(data as any).mediaConsent,
@@ -366,6 +374,12 @@ export default function RegisterAuctionPage() {
                           <Input id="organizerContact" type="email" {...register("organizerContact")} className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400" />
                           {errors.organizerContact && <p className="text-red-500 text-sm">{errors.organizerContact.message}</p>}
                       </div>
+                  </div>
+                   <div className="space-y-2">
+                      <Label htmlFor="website" className="text-gray-700 font-medium">Website <span className="text-gray-500 font-normal">(Optional)</span></Label>
+                      <Input id="website" type="text" placeholder="example.com or www.example.com" {...register("website")} className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-500 focus:border-yellow-400 focus:ring-yellow-400" />
+                      <p className="text-xs text-gray-500">You can enter a website without https://</p>
+                      {errors.website && <p className="text-red-500 text-sm">{errors.website.message}</p>}
                   </div>
               </fieldset>
 

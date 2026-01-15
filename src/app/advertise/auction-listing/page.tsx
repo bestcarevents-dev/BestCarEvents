@@ -880,6 +880,22 @@ export default function AuctionListingPage() {
                           </Badge>
                         </div>
 
+                        {auction.website && (
+                          <div className="flex items-center gap-2 text-sm">
+                            <MapPin className="w-4 h-4 text-muted-foreground" />
+                            <span className="text-muted-foreground">Website:</span>
+                            <a 
+                              href={auction.website} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="text-blue-600 hover:underline truncate"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              {auction.website.replace(/^https?:\/\//, '').substring(0, 30)}
+                            </a>
+                          </div>
+                        )}
+
                         {auction.deactivated && (
                           <div className="flex items-center gap-2 text-sm">
                             <span className="text-muted-foreground">Status:</span>
@@ -1010,7 +1026,11 @@ export default function AuctionListingPage() {
           if (!o) setEditModal(null);
         }}
         documentId={editModal?.id || ""}
-        initial={{ auctionName: auctions.find((a) => (a.documentId || a.id) === editModal?.id)?.auctionName, auctionHouse: auctions.find((a) => (a.documentId || a.id) === editModal?.id)?.auctionHouse }}
+        initial={{ 
+          auctionName: auctions.find((a) => (a.documentId || a.id) === editModal?.id)?.auctionName, 
+          auctionHouse: auctions.find((a) => (a.documentId || a.id) === editModal?.id)?.auctionHouse,
+          website: auctions.find((a) => (a.documentId || a.id) === editModal?.id)?.website
+        }}
         onSaved={(update) => {
           setAuctions((prev) => prev.map((a) => ((a.documentId || a.id) === editModal?.id ? { ...a, ...update } : a)));
         }}

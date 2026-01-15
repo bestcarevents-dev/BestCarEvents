@@ -13,13 +13,14 @@ type AuctionEditDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   documentId: string;
-  initial: { auctionName?: string; auctionHouse?: string };
-  onSaved?: (update: Partial<{ auctionName: string; auctionHouse: string }>) => void;
+  initial: { auctionName?: string; auctionHouse?: string; website?: string | null };
+  onSaved?: (update: Partial<{ auctionName: string; auctionHouse: string; website: string | null }>) => void;
 };
 
 export default function AuctionEditDialog({ open, onOpenChange, documentId, initial, onSaved }: AuctionEditDialogProps) {
   const [auctionName, setAuctionName] = useState<string>(initial.auctionName || "");
   const [auctionHouse, setAuctionHouse] = useState<string>(initial.auctionHouse || "");
+  const [website, setWebsite] = useState<string>(initial.website || "");
   const [saving, setSaving] = useState(false);
   const { toast } = useToast();
 
@@ -28,13 +29,22 @@ export default function AuctionEditDialog({ open, onOpenChange, documentId, init
     if (open) {
       setAuctionName(initial.auctionName || "");
       setAuctionHouse(initial.auctionHouse || "");
+      setWebsite(initial.website || "");
     }
-  }, [open, documentId, initial.auctionName, initial.auctionHouse]);
+  }, [open, documentId, initial.auctionName, initial.auctionHouse, initial.website]);
 
   const handleSave = async () => {
-    const payload: Record<string, string> = {};
+    const payload: Record<string, string | null> = {};
     if (auctionName.trim() !== (initial.auctionName || "")) payload.auctionName = auctionName.trim();
     if (auctionHouse.trim() !== (initial.auctionHouse || "")) payload.auctionHouse = auctionHouse.trim();
+    let trimmedWebsite = website.trim();
+    if (trimmedWebsite !== (initial.website || "")) {
+      // Auto-format URL - add https:// if not present
+      if (trimmedWebsite && !trimmedWebsite.match(/^https?:\/\//i)) {
+        trimmedWebsite = `https://${trimmedWebsite}`;
+      }
+      payload.website = trimmedWebsite || null;
+    }
     if (Object.keys(payload).length === 0) {
       toast({ title: "No changes", description: "Nothing to update.", variant: "destructive" });
       return;
@@ -73,7 +83,12 @@ export default function AuctionEditDialog({ open, onOpenChange, documentId, init
           </div>
           <div className="space-y-1">
             <Label htmlFor="auctionHouse" className="text-foreground">Auction house</Label>
-            <Input id="auctionHouse" value={auctionHouse} onChange={(e) => setAuctionHouse(e.target.value)} placeholder="e.g. RM Sotheby’s" className="text-foreground" />
+            <Input id="auctionHouse" value={auctionHouse} onChange={(e) => setAuctionHouse(e.target.value)} placeholder="e.g. RM Sotheby's" className="text-foreground" />
+          </div>
+          <div className="space-y-1">
+            <Label htmlFor="website" className="text-foreground">Website <span className="text-muted-foreground text-xs">(Optional)</span></Label>
+            <Input id="website" type="text" value={website} onChange={(e) => setWebsite(e.target.value)} placeholder="example.com" className="text-foreground" />
+            <p className="text-xs text-muted-foreground">No need to add https://</p>
           </div>
         </div>
         <DialogFooter>
