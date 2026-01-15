@@ -25,32 +25,54 @@ const featureIcons: Record<string, React.ReactNode> = {
 };
 
 export default function HotelDetailPage() {
-  const { id } = useParams();
+  const params = useParams();
   const router = useRouter();
   const [hotel, setHotel] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [carouselIdx, setCarouselIdx] = useState(0);
   const lightbox = useLuxuryLightbox();
 
+  // Extract and validate ID
+  const id = typeof params?.id === 'string' ? params.id : Array.isArray(params?.id) ? params.id[0] : null;
+
   useEffect(() => {
     const fetchHotel = async () => {
-      setLoading(true);
-      const db = getFirestore(app);
-      const ref = doc(db, "hotels", id as string);
-      const snap = await getDoc(ref);
-      if (snap.exists()) {
-        setHotel({ id: snap.id, ...snap.data() });
+      if (!id || typeof id !== 'string' || id.trim() === '') {
+        setLoading(false);
+        return;
       }
-      setLoading(false);
+
+      try {
+        setLoading(true);
+        const db = getFirestore(app);
+        const ref = doc(db, "hotels", id);
+        const snap = await getDoc(ref);
+        if (snap.exists()) {
+          setHotel({ id: snap.id, ...snap.data() });
+        }
+      } catch (error) {
+        console.error("Error fetching hotel:", error);
+      } finally {
+        setLoading(false);
+      }
     };
-    if (id) fetchHotel();
+    fetchHotel();
   }, [id]);
+
+  if (!id) {
+    return <div className="flex flex-col items-center justify-center min-h-[60vh] text-lg text-red-500">
+      Invalid hotel ID
+    </div>;
+  }
 
   if (loading) {
     return <div className="flex items-center justify-center min-h-[60vh] text-lg animate-pulse">Loading hotel details...</div>;
   }
+  
   if (!hotel) {
-    return <div className="flex flex-col items-center justify-center min-h-[60vh] text-lg text-red">Hotel not found.</div>;
+    return <div className="flex flex-col items-center justify-center min-h-[60vh] text-lg text-red-500">
+      Hotel not found
+    </div>;
   }
 
   const images: string[] = hotel.imageUrls || (hotel.imageUrl ? [hotel.imageUrl] : []);

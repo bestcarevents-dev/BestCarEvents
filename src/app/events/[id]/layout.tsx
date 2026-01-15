@@ -3,22 +3,43 @@ import { getAdmin } from '@/lib/firebase-admin';
 import { buildMetadata, pickImageUrl, toAbsoluteUrl } from '@/lib/seo';
 import BreadcrumbJsonLd from '@/components/BreadcrumbJsonLd';
 
+// Force dynamic rendering to prevent build-time errors with dynamic routes
+export const dynamic = 'force-dynamic';
+
 type Props = { params: { id: string } };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const admin = getAdmin();
-  const db = admin.firestore();
-  const snap = await db.collection('events').doc(params.id).get();
-  const data = snap.exists ? snap.data() as any : null;
-  const title = data?.eventName || 'Event Details';
-  const desc = data?.description || 'See event details, location, schedule and register.';
-  const img = pickImageUrl(data) || data?.imageUrl;
-  return buildMetadata({
-    title,
-    description: desc,
-    canonicalPath: `/events/${params.id}`,
-    imageUrl: img ? toAbsoluteUrl(img) : undefined,
-  });
+  // Validate params.id before using it
+  if (!params?.id || typeof params.id !== 'string' || params.id.trim() === '') {
+    return buildMetadata({
+      title: 'Event Details',
+      description: 'See event details, location, schedule and register.',
+      canonicalPath: '/events',
+    });
+  }
+
+  try {
+    const admin = getAdmin();
+    const db = admin.firestore();
+    const snap = await db.collection('events').doc(params.id).get();
+    const data = snap.exists ? snap.data() as any : null;
+    const title = data?.eventName || 'Event Details';
+    const desc = data?.description || 'See event details, location, schedule and register.';
+    const img = pickImageUrl(data) || data?.imageUrl;
+    return buildMetadata({
+      title,
+      description: desc,
+      canonicalPath: `/events/${params.id}`,
+      imageUrl: img ? toAbsoluteUrl(img) : undefined,
+    });
+  } catch (error) {
+    console.error('Error generating event metadata:', error);
+    return buildMetadata({
+      title: 'Event Details',
+      description: 'See event details, location, schedule and register.',
+      canonicalPath: '/events',
+    });
+  }
 }
 
 export default function EventIdLayout({ children }: { children: React.ReactNode }) {

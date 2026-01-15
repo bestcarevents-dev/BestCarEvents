@@ -29,16 +29,28 @@ export default function EventDetailsPage({ params }: { params: { id: string } })
 
     useEffect(() => {
         const fetchEvent = async () => {
-            setLoading(true);
-            const db = getFirestore(app);
-            const ref = doc(db, 'events', params.id);
-            const snap = await getDoc(ref);
-            if (snap.exists()) {
-                setEvent({ id: snap.id, ...snap.data() });
-            } else {
-                setEvent(null);
+            // Validate id before fetching
+            if (!params?.id || typeof params.id !== 'string' || params.id.trim() === '') {
+                setLoading(false);
+                return;
             }
-            setLoading(false);
+
+            try {
+                setLoading(true);
+                const db = getFirestore(app);
+                const ref = doc(db, 'events', params.id);
+                const snap = await getDoc(ref);
+                if (snap.exists()) {
+                    setEvent({ id: snap.id, ...snap.data() });
+                } else {
+                    setEvent(null);
+                }
+            } catch (error) {
+                console.error("Error fetching event:", error);
+                setEvent(null);
+            } finally {
+                setLoading(false);
+            }
         };
         fetchEvent();
     }, [params.id]);
@@ -92,11 +104,23 @@ export default function EventDetailsPage({ params }: { params: { id: string } })
         }
     };
 
+    // Handle invalid or missing ID
+    if (!params?.id) {
+        return <div className="container mx-auto py-12 sm:py-24 text-center text-red-500 text-xl sm:text-2xl font-bold flex flex-col items-center">
+            <Car className="w-8 h-8 sm:w-12 sm:h-12 mb-4" />
+            Invalid event ID
+        </div>;
+    }
+
     if (loading) {
         return <div className="container mx-auto py-12 sm:py-24 text-center text-xl sm:text-2xl font-bold animate-pulse">Loading event details...</div>;
     }
+    
     if (!event) {
-        return <div className="container mx-auto py-12 sm:py-24 text-center text-red text-xl sm:text-2xl font-bold flex flex-col items-center"><Car className="w-8 h-8 sm:w-12 sm:h-12 mb-4 animate-spin" />Event not found.</div>;
+        return <div className="container mx-auto py-12 sm:py-24 text-center text-red-500 text-xl sm:text-2xl font-bold flex flex-col items-center">
+            <Car className="w-8 h-8 sm:w-12 sm:h-12 mb-4" />
+            Event not found
+        </div>;
     }
 
     // Normalize string or array into array of trimmed strings

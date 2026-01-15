@@ -26,7 +26,7 @@ const featureIcons: Record<string, any> = {
 };
 
 export default function CarDetailsPage() {
-  const { id } = useParams();
+  const params = useParams();
   const [car, setCar] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [showContact, setShowContact] = useState(false);
@@ -36,18 +36,32 @@ export default function CarDetailsPage() {
   const lightbox = useLuxuryLightbox();
   const images = car?.images || ["https://via.placeholder.com/800x500?text=No+Image"];
 
+  // Extract and validate ID
+  const id = typeof params?.id === 'string' ? params.id : Array.isArray(params?.id) ? params.id[0] : null;
+
   useEffect(() => {
     const fetchCar = async () => {
-      setLoading(true);
-      const db = getFirestore(app);
-      const docRef = doc(db, "cars", id as string);
-      const docSnap = await getDoc(docRef);
-      if (docSnap.exists()) {
-        setCar({ id: docSnap.id, ...docSnap.data() });
+      // Extra validation to ensure id is valid
+      if (!id || typeof id !== 'string' || id.trim() === '') {
+        setLoading(false);
+        return;
       }
-      setLoading(false);
+      
+      try {
+        setLoading(true);
+        const db = getFirestore(app);
+        const docRef = doc(db, "cars", id);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          setCar({ id: docSnap.id, ...docSnap.data() });
+        }
+      } catch (error) {
+        console.error("Error fetching car:", error);
+      } finally {
+        setLoading(false);
+      }
     };
-    if (id) fetchCar();
+    fetchCar();
   }, [id]);
 
   useEffect(() => {
@@ -58,11 +72,23 @@ export default function CarDetailsPage() {
     return () => emblaApi.off("select", onSelect);
   }, [emblaApi]);
 
+  // Handle invalid or missing ID
+  if (!id) {
+    return <div className="container mx-auto py-24 text-center text-red-500 text-2xl font-bold flex flex-col items-center">
+      <AlertCircle className="w-12 h-12 mb-4" />
+      Invalid car ID
+    </div>;
+  }
+
   if (loading) {
     return <div className="container mx-auto py-24 text-center text-2xl font-bold animate-pulse">Loading car details...</div>;
   }
+  
   if (!car) {
-    return <div className="container mx-auto py-24 text-center text-red text-2xl font-bold flex flex-col items-center"><AlertCircle className="w-12 h-12 mb-4" />Car not found.</div>;
+    return <div className="container mx-auto py-24 text-center text-red-500 text-2xl font-bold flex flex-col items-center">
+      <AlertCircle className="w-12 h-12 mb-4" />
+      Car not found
+    </div>;
   }
 
   // Highlight badges

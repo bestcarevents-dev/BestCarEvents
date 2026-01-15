@@ -14,32 +14,54 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { formatPrice as formatPriceUtil } from "@/lib/utils";
 
 export default function PartnerAdDetailPage() {
-  const { id } = useParams();
+  const params = useParams();
   const router = useRouter();
   const [ad, setAd] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [carouselIdx, setCarouselIdx] = useState(0);
   const [zoomOpen, setZoomOpen] = useState(false);
 
+  // Extract and validate ID
+  const id = typeof params?.id === 'string' ? params.id : Array.isArray(params?.id) ? params.id[0] : null;
+
   useEffect(() => {
     const fetchAd = async () => {
-      setLoading(true);
-      const db = getFirestore(app);
-      const ref = doc(db, "partnerAds", id as string);
-      const snap = await getDoc(ref);
-      if (snap.exists()) {
-        setAd({ id: snap.id, ...snap.data() });
+      if (!id || typeof id !== 'string' || id.trim() === '') {
+        setLoading(false);
+        return;
       }
-      setLoading(false);
+
+      try {
+        setLoading(true);
+        const db = getFirestore(app);
+        const ref = doc(db, "partnerAds", id);
+        const snap = await getDoc(ref);
+        if (snap.exists()) {
+          setAd({ id: snap.id, ...snap.data() });
+        }
+      } catch (error) {
+        console.error("Error fetching ad:", error);
+      } finally {
+        setLoading(false);
+      }
     };
-    if (id) fetchAd();
+    fetchAd();
   }, [id]);
+
+  if (!id) {
+    return <div className="flex flex-col items-center justify-center min-h-[60vh] text-lg text-red-500">
+      Invalid ad ID
+    </div>;
+  }
 
   if (loading) {
     return <div className="flex items-center justify-center min-h-[60vh] text-lg text-gray-600 animate-pulse">Loading ad details...</div>;
   }
+  
   if (!ad) {
-    return <div className="flex flex-col items-center justify-center min-h-[60vh] text-lg text-red">Ad not found.</div>;
+    return <div className="flex flex-col items-center justify-center min-h-[60vh] text-lg text-red-500">
+      Ad not found
+    </div>;
   }
 
   const images: string[] = ad.imageUrls || (ad.imageUrl ? [ad.imageUrl] : []);

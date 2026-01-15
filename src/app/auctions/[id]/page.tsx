@@ -12,32 +12,58 @@ import Image from "next/image";
 import { useLuxuryLightbox } from "@/components/LuxuryLightboxProvider";
 
 export default function AuctionDetailsPage() {
-  const { id } = useParams();
+  const params = useParams();
   const router = useRouter();
   const [auction, setAuction] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [carouselIdx, setCarouselIdx] = useState(0);
   const lightbox = useLuxuryLightbox();
 
+  // Extract and validate ID
+  const id = typeof params?.id === 'string' ? params.id : Array.isArray(params?.id) ? params.id[0] : null;
+
   useEffect(() => {
     const fetchAuction = async () => {
-      setLoading(true);
-      const db = getFirestore(app);
-      const docRef = doc(db, "auctions", id as string);
-      const docSnap = await getDoc(docRef);
-      if (docSnap.exists()) {
-        setAuction({ id: docSnap.id, ...docSnap.data() });
+      // Extra validation to ensure id is valid
+      if (!id || typeof id !== 'string' || id.trim() === '') {
+        setLoading(false);
+        return;
       }
-      setLoading(false);
+      
+      try {
+        setLoading(true);
+        const db = getFirestore(app);
+        const docRef = doc(db, "auctions", id);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          setAuction({ id: docSnap.id, ...docSnap.data() });
+        }
+      } catch (error) {
+        console.error("Error fetching auction:", error);
+      } finally {
+        setLoading(false);
+      }
     };
-    if (id) fetchAuction();
+    fetchAuction();
   }, [id]);
+
+  // Handle invalid or missing ID
+  if (!id) {
+    return <div className="container mx-auto py-24 text-center text-red-500 text-2xl font-bold flex flex-col items-center">
+      <Star className="w-12 h-12 mb-4" />
+      Invalid auction ID
+    </div>;
+  }
 
   if (loading) {
     return <div className="container mx-auto py-24 text-center text-2xl font-bold animate-pulse">Loading auction details...</div>;
   }
+  
   if (!auction) {
-    return <div className="container mx-auto py-24 text-center text-red text-2xl font-bold flex flex-col items-center"><Star className="w-12 h-12 mb-4 animate-spin" />Auction not found.</div>;
+    return <div className="container mx-auto py-24 text-center text-red-500 text-2xl font-bold flex flex-col items-center">
+      <Star className="w-12 h-12 mb-4" />
+      Auction not found
+    </div>;
   }
 
   // Format dates

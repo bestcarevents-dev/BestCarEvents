@@ -52,25 +52,49 @@ export default function ServiceDetailsPage({ params }: { params: { id: string } 
 
     useEffect(() => {
         const fetchService = async () => {
-            setLoading(true);
-            const db = getFirestore(app);
-            const ref = doc(db, 'others', params.id);
-            const snap = await getDoc(ref);
-            if (snap.exists()) {
-                setService({ id: snap.id, ...snap.data() } as ServiceDetails);
-            } else {
-                setService(null);
+            // Validate id before fetching
+            if (!params?.id || typeof params.id !== 'string' || params.id.trim() === '') {
+                setLoading(false);
+                return;
             }
-            setLoading(false);
+
+            try {
+                setLoading(true);
+                const db = getFirestore(app);
+                const ref = doc(db, 'others', params.id);
+                const snap = await getDoc(ref);
+                if (snap.exists()) {
+                    setService({ id: snap.id, ...snap.data() } as ServiceDetails);
+                } else {
+                    setService(null);
+                }
+            } catch (error) {
+                console.error("Error fetching service:", error);
+                setService(null);
+            } finally {
+                setLoading(false);
+            }
         };
         fetchService();
     }, [params.id]);
 
+    // Handle invalid or missing ID
+    if (!params?.id) {
+        return <div className="container mx-auto py-12 sm:py-24 text-center text-red-500 text-xl sm:text-2xl font-bold flex flex-col items-center">
+            <Car className="w-8 h-8 sm:w-12 sm:h-12 mb-4" />
+            Invalid service ID
+        </div>;
+    }
+
     if (loading) {
         return <div className="container mx-auto py-12 sm:py-24 text-center text-xl sm:text-2xl font-bold animate-pulse">Loading service details...</div>;
     }
+    
     if (!service) {
-        return <div className="container mx-auto py-12 sm:py-24 text-center text-red text-xl sm:text-2xl font-bold flex flex-col items-center"><Car className="w-8 h-8 sm:w-12 sm:h-12 mb-4 animate-spin" />Service not found.</div>;
+        return <div className="container mx-auto py-12 sm:py-24 text-center text-red-500 text-xl sm:text-2xl font-bold flex flex-col items-center">
+            <Car className="w-8 h-8 sm:w-12 sm:h-12 mb-4" />
+            Service not found
+        </div>;
     }
 
     const ServiceTypeIcon = getServiceTypeIcon(service.serviceType);

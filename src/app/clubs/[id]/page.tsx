@@ -11,29 +11,51 @@ import { Globe, Users, Link as LinkIcon, Mail, Calendar, Star } from "lucide-rea
 import Image from "next/image";
 
 export default function ClubDetailPage() {
-  const { id } = useParams();
+  const params = useParams();
   const [club, setClub] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
+  // Extract and validate ID
+  const id = typeof params?.id === 'string' ? params.id : Array.isArray(params?.id) ? params.id[0] : null;
+
   useEffect(() => {
     const fetchClub = async () => {
-      setLoading(true);
-      const db = getFirestore(app);
-      const docRef = doc(db, "clubs", id as string);
-      const docSnap = await getDoc(docRef);
-      if (docSnap.exists()) {
-        setClub({ id: docSnap.id, ...docSnap.data() });
+      if (!id || typeof id !== 'string' || id.trim() === '') {
+        setLoading(false);
+        return;
       }
-      setLoading(false);
+
+      try {
+        setLoading(true);
+        const db = getFirestore(app);
+        const docRef = doc(db, "clubs", id);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          setClub({ id: docSnap.id, ...docSnap.data() });
+        }
+      } catch (error) {
+        console.error("Error fetching club:", error);
+      } finally {
+        setLoading(false);
+      }
     };
-    if (id) fetchClub();
+    fetchClub();
   }, [id]);
+
+  if (!id) {
+    return <div className="container mx-auto py-24 text-center text-red-500 text-2xl font-bold flex flex-col items-center">
+      Invalid club ID
+    </div>;
+  }
 
   if (loading) {
     return <div className="container mx-auto py-24 text-center text-2xl font-bold animate-pulse">Loading club details...</div>;
   }
+  
   if (!club) {
-    return <div className="container mx-auto py-24 text-center text-red text-2xl font-bold flex flex-col items-center">Club not found.</div>;
+    return <div className="container mx-auto py-24 text-center text-red-500 text-2xl font-bold flex flex-col items-center">
+      Club not found
+    </div>;
   }
 
   return (

@@ -12,24 +12,37 @@ import Image from "next/image";
 import Link from "next/link";
 
 export default function PartnerDetailPage() {
-  const { id } = useParams();
+  const params = useParams();
   const [partner, setPartner] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [ads, setAds] = useState<any[]>([]);
   const [adsLoading, setAdsLoading] = useState(true);
 
+  // Extract and validate ID
+  const id = typeof params?.id === 'string' ? params.id : Array.isArray(params?.id) ? params.id[0] : null;
+
   useEffect(() => {
     const fetchPartner = async () => {
-      setLoading(true);
-      const db = getFirestore(app);
-      const docRef = doc(db, "partners", id as string);
-      const docSnap = await getDoc(docRef);
-      if (docSnap.exists()) {
-        setPartner({ id: docSnap.id, ...docSnap.data() });
+      if (!id || typeof id !== 'string' || id.trim() === '') {
+        setLoading(false);
+        return;
       }
-      setLoading(false);
+
+      try {
+        setLoading(true);
+        const db = getFirestore(app);
+        const docRef = doc(db, "partners", id);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          setPartner({ id: docSnap.id, ...docSnap.data() });
+        }
+      } catch (error) {
+        console.error("Error fetching partner:", error);
+      } finally {
+        setLoading(false);
+      }
     };
-    if (id) fetchPartner();
+    fetchPartner();
   }, [id]);
 
   useEffect(() => {
@@ -53,11 +66,20 @@ export default function PartnerDetailPage() {
     if (partner) fetchAds();
   }, [partner]);
 
+  if (!id) {
+    return <div className="container mx-auto py-24 text-center text-red-500 text-2xl font-bold flex flex-col items-center">
+      Invalid partner ID
+    </div>;
+  }
+
   if (loading) {
     return <div className="container mx-auto py-24 text-center text-2xl font-bold animate-pulse">Loading partner details...</div>;
   }
+  
   if (!partner) {
-    return <div className="container mx-auto py-24 text-center text-red text-2xl font-bold flex flex-col items-center">Partner not found.</div>;
+    return <div className="container mx-auto py-24 text-center text-red-500 text-2xl font-bold flex flex-col items-center">
+      Partner not found
+    </div>;
   }
 
   return (

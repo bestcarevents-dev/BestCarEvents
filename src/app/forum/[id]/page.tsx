@@ -93,7 +93,8 @@ const renderMarkdown = (text: string, images?: string[]) => {
 
 export default function PostDetailPage() {
     const params = useParams();
-    const postId = params.id as string;
+    // Extract and validate ID
+    const postId = typeof params?.id === 'string' ? params.id : Array.isArray(params?.id) ? params.id[0] : '';
     
     const [post, setPost] = useState<ForumPost | null>(null);
     const [comments, setComments] = useState<Comment[]>([]);
