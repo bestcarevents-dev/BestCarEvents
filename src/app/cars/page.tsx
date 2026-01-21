@@ -75,7 +75,7 @@ function CarsPageContent() {
         const db = getFirestore(app);
         const carsQuery = query(collection(db, "cars"), orderBy("createdAt", "desc"));
         const snapshot = await getDocs(carsQuery);
-        const data = snapshot.docs.map(doc => ({ documentId: doc.id, ...doc.data() }));
+        const data = snapshot.docs.map(doc => ({ ...doc.data(), documentId: doc.id }));
         setCars(data);
         setLoading(false);
       };

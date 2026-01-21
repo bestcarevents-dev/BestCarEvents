@@ -68,12 +68,12 @@ export default function PendingServicesPage() {
       setLoading(true);
       // Fetch pending services
       const pendingSnapshot = await getDocs(collection(db, "pendingOthers"));
-      const pendingData = pendingSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as ServiceRequest));
+      const pendingData = pendingSnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as ServiceRequest));
       setPendingRequests(pendingData);
       // Fetch approved services
       const approvedSnapshot = await getDocs(collection(db, "others"));
       const approvedData = approvedSnapshot.docs
-        .map(doc => ({ id: doc.id, ...doc.data() } as ServiceRequest))
+        .map(doc => ({ ...doc.data(), id: doc.id } as ServiceRequest))
         .filter(service => service.status === "approved");
       setApprovedRequests(approvedData);
       setLoading(false);

@@ -29,7 +29,7 @@ export default function HomepageAdCarousel() {
       const db = getFirestore(app);
       const q = query(collection(db, "partnerAds"), where("isHomepage", "==", true));
       const snapshot = await getDocs(q);
-      setAds(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+      setAds(snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id })));
     };
     fetchAds();
   }, []);

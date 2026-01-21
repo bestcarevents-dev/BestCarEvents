@@ -41,7 +41,7 @@ export default function PaymentsPage() {
           limit(100)
         );
         const snapshot = await getDocs(paymentsQuery);
-        const paymentsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Payment));
+        const paymentsData = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as Payment));
         setPayments(paymentsData);
 
         // Calculate stats

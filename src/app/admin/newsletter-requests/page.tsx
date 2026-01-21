@@ -58,7 +58,7 @@ export default function NewsletterRequestsPage() {
     const fetchRequests = async () => {
       setLoading(true);
       const snapshot = await getDocs(collection(db, "newsletterrequests"));
-      const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as NewsletterRequest));
+      const data = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as NewsletterRequest));
       setRequests(data);
       setLoading(false);
     };

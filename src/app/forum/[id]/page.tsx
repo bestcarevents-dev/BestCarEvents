@@ -137,7 +137,7 @@ export default function PostDetailPage() {
       
       const unsubscribe = onSnapshot(q, async (snapshot) => {
         const commentsData = await Promise.all(snapshot.docs.map(async (doc) => {
-          const commentData = { id: doc.id, ...doc.data() } as Comment;
+          const commentData = { ...doc.data(), id: doc.id } as Comment;
           
           // Fetch replies for this comment
           const repliesRef = collection(db, "forum_posts", postId, "comments", doc.id, "replies");

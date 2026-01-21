@@ -84,7 +84,7 @@ function EventsPageContent() {
         const db = getFirestore(app);
         const eventsQuery = query(collection(db, "events"), orderBy("eventDate", "asc"));
         const snapshot = await getDocs(eventsQuery);
-        const data = snapshot.docs.map(doc => ({ documentId: doc.id, ...doc.data() }));
+        const data = snapshot.docs.map(doc => ({ ...doc.data(), documentId: doc.id }));
         setEvents(data);
         setLoading(false);
       };
@@ -467,20 +467,20 @@ function EventsPageContent() {
                          <div className="absolute inset-0 bg-gradient-to-r from-yellow-400/5 via-transparent to-yellow-400/5 rounded-3xl"></div>
                          <div className="relative bg-white/90 backdrop-blur-sm rounded-3xl border-2 border-yellow-400/60 p-6 shadow-inner">
                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                             {featuredEvents.map((event, index) => (
-                               <EventCard 
-                                 key={event.documentId || event.id || index}
-                                 {...event} 
-                                 documentId={event.documentId}
-                                 featured={true} 
-                                 name={event.eventName || event.name || `Event #${index + 1}`} 
-                                date={event.eventDate ? new Date(event.eventDate.seconds * 1000).toLocaleDateString('en-GB') : (event.date || '')}
-                                endDate={event.endDate ? (event.endDate.seconds ? new Date(event.endDate.seconds * 1000).toLocaleDateString('en-GB') : new Date(event.endDate).toLocaleDateString('en-GB')) : undefined}
-                                 location={event.location} 
-                                image={event.imageUrl || event.image} 
-                                hint={(Array.isArray(event.eventTypes) && event.eventTypes.length ? event.eventTypes.join(", ") : (event.eventType || event.hint))} 
-                               />
-                             ))}
+                            {featuredEvents.map((event, index) => (
+                              <EventCard 
+                                key={event.documentId || event.id || index}
+                                documentId={event.documentId}
+                                id={event.documentId}
+                                featured={true} 
+                                name={event.eventName || event.name || `Event #${index + 1}`} 
+                               date={event.eventDate ? new Date(event.eventDate.seconds * 1000).toLocaleDateString('en-GB') : (event.date || '')}
+                               endDate={event.endDate ? (event.endDate.seconds ? new Date(event.endDate.seconds * 1000).toLocaleDateString('en-GB') : new Date(event.endDate).toLocaleDateString('en-GB')) : undefined}
+                                location={event.location} 
+                               image={event.imageUrl || event.image} 
+                               hint={(Array.isArray(event.eventTypes) && event.eventTypes.length ? event.eventTypes.join(", ") : (event.eventType || event.hint))} 
+                              />
+                            ))}
                            </div>
                          </div>
                        </div>
@@ -520,20 +520,20 @@ function EventsPageContent() {
                          <div className="flex-1 h-px bg-gradient-to-r from-yellow-600/50 to-transparent"></div>
                        </div>
                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                         {paginatedEvents.map((event, index) => (
-                           <EventCard 
-                             key={event.documentId || event.id || index} 
-                             {...event} 
-                             documentId={event.documentId}
-                             featured={false} 
-                             name={event.eventName || event.name || `Event #${index + 1}`} 
-                            date={event.eventDate ? new Date(event.eventDate.seconds * 1000).toLocaleDateString('en-GB') : (event.date || '')}
-                            endDate={event.endDate ? (event.endDate.seconds ? new Date(event.endDate.seconds * 1000).toLocaleDateString('en-GB') : new Date(event.endDate).toLocaleDateString('en-GB')) : undefined}
-                             location={event.location} 
-                             image={event.imageUrl || event.image} 
-                             hint={(Array.isArray(event.eventTypes) && event.eventTypes.length ? event.eventTypes.join(", ") : (event.eventType || event.hint))} 
-                           />
-                         ))}
+                        {paginatedEvents.map((event, index) => (
+                          <EventCard 
+                            key={event.documentId || event.id || index} 
+                            documentId={event.documentId}
+                            id={event.documentId}
+                            featured={false} 
+                            name={event.eventName || event.name || `Event #${index + 1}`} 
+                           date={event.eventDate ? new Date(event.eventDate.seconds * 1000).toLocaleDateString('en-GB') : (event.date || '')}
+                           endDate={event.endDate ? (event.endDate.seconds ? new Date(event.endDate.seconds * 1000).toLocaleDateString('en-GB') : new Date(event.endDate).toLocaleDateString('en-GB')) : undefined}
+                            location={event.location} 
+                            image={event.imageUrl || event.image} 
+                            hint={(Array.isArray(event.eventTypes) && event.eventTypes.length ? event.eventTypes.join(", ") : (event.eventType || event.hint))} 
+                          />
+                        ))}
                        </div>
                        {paginatedEvents.length === 0 && (
                          <div className="text-center py-12 text-gray-600">

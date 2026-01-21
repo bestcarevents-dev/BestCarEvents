@@ -53,12 +53,12 @@ export default function PartnerDetailPage() {
       // Query by uploadedByUserId or uploadedByUserEmail
       let q = query(collection(db, "partnerAds"), where("uploadedByUserId", "==", partner.uploadedByUserId || ""));
       let snapshot = await getDocs(q);
-      let adsList = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      let adsList = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
       // If no ads found by userId, try by email
       if (adsList.length === 0 && partner.uploadedByUserEmail) {
         q = query(collection(db, "partnerAds"), where("uploadedByUserEmail", "==", partner.uploadedByUserEmail));
         snapshot = await getDocs(q);
-        adsList = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        adsList = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
       }
       setAds(adsList);
       setAdsLoading(false);

@@ -105,7 +105,7 @@ export default function MyAdsPage() {
       
       const adsQuery = query(collection(db, "partnerAds"), where("uploadedByUserId", "==", currentUser.uid));
       const snapshot = await getDocs(adsQuery);
-      const items = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      const items = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
       const getTime = (ad: any) => {
         const candidates = [ad.submittedAt, ad.createdAt, ad.uploadedAt, ad.created, ad.timestamp, ad.updatedAt];
         for (const t of candidates) {

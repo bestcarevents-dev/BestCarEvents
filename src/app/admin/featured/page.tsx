@@ -31,7 +31,7 @@ export default function AdminFeaturedPage() {
       for (const type of listingTypes) {
         const snap = await getDocs(collection(db, type.col));
         const featured = snap.docs
-          .map(doc => ({ id: doc.id, ...doc.data() }))
+          .map(doc => ({ ...doc.data(), id: doc.id }))
           .filter((item: any) => item.featured === true)
           .map((item: any) => ({ ...item, _type: type.label, _col: type.col, _viewPath: type.viewPath, _nameKey: type.nameKey, _emailKey: type.emailKey }));
         all = all.concat(featured);
@@ -50,7 +50,7 @@ export default function AdminFeaturedPage() {
       setAdsLoading(true);
       const db = getFirestore(app);
       const snap = await getDocs(collection(db, "partnerAds"));
-      setPartnerAds(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+      setPartnerAds(snap.docs.map(doc => ({ ...doc.data(), id: doc.id })));
       setAdsLoading(false);
     };
     fetchPartnerAds();

@@ -34,7 +34,7 @@ export default function PartnerAdRotator({ page, maxVisible = 4, rotateIntervalM
       const db = getFirestore(app);
       const q = query(collection(db, "partnerAds"), where("page", "==", page));
       const snapshot = await getDocs(q);
-      setAds(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+      setAds(snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id })));
     };
     fetchAds();
   }, [page]);

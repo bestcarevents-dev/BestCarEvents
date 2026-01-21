@@ -43,7 +43,7 @@ export default function AdminPartnersPage() {
       setLoading(true);
       // Fetch approved partners
       const approvedSnapshot = await getDocs(collection(db, "partners"));
-      const approvedData = approvedSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as PartnerRequest));
+      const approvedData = approvedSnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as PartnerRequest));
       setApprovedRequests(approvedData);
       setLoading(false);
     };

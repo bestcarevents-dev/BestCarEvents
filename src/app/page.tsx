@@ -762,8 +762,8 @@ const FeaturedEventsSection = ({ copy }: { copy: NonNullable<HomepageContent["fe
         const eventsSnapshot = await getDocs(eventsQuery);
         const allEvents = eventsSnapshot.docs
           .map(doc => ({ 
-            id: doc.id,
-            ...doc.data() 
+            ...doc.data(),
+            id: doc.id  // Firestore document ID (overrides any id in data)
           } as EventData))
           .filter(event => event.status === "approved")
           // Exclude past events: if endDate exists use it, else eventDate; keep dates >= start of today
@@ -1007,6 +1007,7 @@ const FeaturedAuctionsSection = ({ copy }: { copy: NonNullable<HomepageContent["
         const allAuctions = auctionsSnapshot.docs
           .map(doc => ({ 
             ...doc.data(),
+            id: doc.id  // Firestore document ID (overrides any id in data)
             id: doc.id
           } as AuctionData));
         // Exclude past auctions: use endDate if present, else startDate; keep >= start of today
@@ -1261,8 +1262,8 @@ const FeaturedHotelsSection = ({ copy }: { copy: NonNullable<HomepageContent["fe
         const hotelsSnapshot = await getDocs(hotelsQuery);
         const allHotels = hotelsSnapshot.docs
           .map(doc => ({ 
-            id: doc.id,
-            ...doc.data() 
+            ...doc.data(),
+            id: doc.id  // Firestore document ID (overrides any id in data) 
           } as HotelData));
 
         // Separate featured hotels and normal hotels
@@ -1551,7 +1552,8 @@ const FeaturedClubsSection = ({ copy }: { copy: NonNullable<HomepageContent["fea
         const clubsSnapshot = await getDocs(clubsQuery);
         const allClubs = clubsSnapshot.docs
           .map(doc => ({ 
-            id: doc.id,
+            ...doc.data(),
+            id: doc.id  // Firestore document ID (overrides any id in data)
             ...doc.data() 
           } as ClubData));
 
@@ -1899,8 +1901,8 @@ const FeaturedOtherServicesSection = ({ copy }: { copy: NonNullable<HomepageCont
         const servicesSnapshot = await getDocs(servicesQuery);
         const allServices = servicesSnapshot.docs
           .map(doc => ({ 
-            id: doc.id,
-            ...doc.data() 
+            ...doc.data(),
+            id: doc.id  // Firestore document ID (overrides any id in data)
           } as OtherServiceData))
           .filter(service => service.status === "approved");
 

@@ -60,11 +60,11 @@ export default function AdminClubsPage() {
       setLoading(true);
       // Fetch pending clubs
       const pendingSnapshot = await getDocs(collection(db, "pendingClubs"));
-      const pendingData = pendingSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as ClubRequest));
+      const pendingData = pendingSnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as ClubRequest));
       setPendingRequests(pendingData);
       // Fetch approved clubs
       const approvedSnapshot = await getDocs(collection(db, "clubs"));
-      const approvedData = approvedSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as ClubRequest));
+      const approvedData = approvedSnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as ClubRequest));
       setApprovedRequests(approvedData);
       setLoading(false);
     };

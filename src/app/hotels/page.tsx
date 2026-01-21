@@ -76,7 +76,7 @@ function CarHotelsPageContent() {
       setLoading(true);
       const db = getFirestore(app);
       const snapshot = await getDocs(collection(db, "hotels"));
-      const data = snapshot.docs.map(doc => ({ documentId: doc.id, ...doc.data() }));
+      const data = snapshot.docs.map(doc => ({ ...doc.data(), documentId: doc.id }));
       setHotels(data);
       setLoading(false);
     };

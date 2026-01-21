@@ -36,7 +36,7 @@ export async function getUnreadNotifications() {
   try {
     const q = query(collection(db, 'notifications'), where('status', '==', 'unread'));
     const snapshot = await getDocs(q);
-    return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Notification));
+    return snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as Notification));
   } catch (error) {
     console.error('Error fetching notifications:', error);
     return [];

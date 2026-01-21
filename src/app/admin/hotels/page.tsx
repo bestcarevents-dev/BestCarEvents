@@ -62,11 +62,11 @@ export default function AdminHotelsPage() {
       setLoading(true);
       // Fetch pending hotels
       const pendingSnapshot = await getDocs(collection(db, "pendingHotels"));
-      const pendingData = pendingSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as HotelRequest));
+      const pendingData = pendingSnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as HotelRequest));
       setPendingRequests(pendingData);
       // Fetch approved hotels
       const approvedSnapshot = await getDocs(collection(db, "hotels"));
-      const approvedData = approvedSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as HotelRequest));
+      const approvedData = approvedSnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as HotelRequest));
       setApprovedRequests(approvedData);
       setLoading(false);
     };

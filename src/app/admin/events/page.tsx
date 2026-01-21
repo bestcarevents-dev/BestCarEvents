@@ -68,12 +68,12 @@ export default function PendingEventsPage() {
       setLoading(true);
       // Fetch pending events
       const pendingSnapshot = await getDocs(collection(db, "pendingEvents"));
-      const pendingData = pendingSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as EventRequest));
+      const pendingData = pendingSnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as EventRequest));
       setPendingRequests(pendingData);
       // Fetch approved events
       const approvedSnapshot = await getDocs(collection(db, "events"));
       const approvedData = approvedSnapshot.docs
-        .map(doc => ({ id: doc.id, ...doc.data() } as EventRequest))
+        .map(doc => ({ ...doc.data(), id: doc.id } as EventRequest))
         .filter(event => event.status === "approved");
       setApprovedRequests(approvedData);
       setLoading(false);

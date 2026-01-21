@@ -50,7 +50,7 @@ export default function ForumPage() {
         const db = getFirestore(app);
         const postsQuery = query(collection(db, "forum_posts"), orderBy("createdAt", "desc"));
         const snapshot = await getDocs(postsQuery);
-        const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as ForumPost[];
+        const data = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id })) as ForumPost[];
         setPosts(data);
         setLoading(false);
       };

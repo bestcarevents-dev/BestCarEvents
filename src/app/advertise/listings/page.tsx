@@ -116,7 +116,7 @@ export default function DashboardPage() {
       const fetchByUser = async (col: string) => {
         const snap = await getDocs(collection(db, col));
         return snap.docs
-          .map((doc) => ({ id: doc.id, ...doc.data() }))
+          .map((doc) => ({ ...doc.data(), id: doc.id }))
           .filter(
             (item: any) =>
               item.uploadedByUserId === currentUser.uid ||
@@ -164,7 +164,7 @@ export default function DashboardPage() {
       const fetchByUser = async (col: string) => {
         const snap = await getDocs(collection(db, col));
         return snap.docs
-          .map((doc) => ({ id: doc.id, ...doc.data() }))
+          .map((doc) => ({ ...doc.data(), id: doc.id }))
           .filter(
             (item: any) =>
               item.uploadedByUserId === currentUser.uid ||
@@ -244,7 +244,7 @@ export default function DashboardPage() {
       const fetchByUser = async (col: string) => {
         const snap = await getDocs(collection(db, col));
         return snap.docs
-          .map((doc) => ({ id: doc.id, ...doc.data() }))
+          .map((doc) => ({ ...doc.data(), id: doc.id }))
           .filter(
             (item: any) =>
               item.uploadedByUserId === currentUser.uid ||

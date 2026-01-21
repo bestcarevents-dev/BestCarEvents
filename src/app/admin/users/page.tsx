@@ -31,7 +31,7 @@ export default function ManageUsersPage() {
     const fetchUsers = async () => {
       setLoading(true);
       const querySnapshot = await getDocs(collection(db, "users"));
-      const usersData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as UserData));
+      const usersData = querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as UserData));
       setUsers(usersData);
       setLoading(false);
     };

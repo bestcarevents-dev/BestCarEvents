@@ -78,7 +78,7 @@ function ClubsPageContent() {
       const db = getFirestore(app);
       const clubsQuery = query(collection(db, "clubs"), orderBy("createdAt", "desc"));
       const snapshot = await getDocs(clubsQuery);
-      const data = snapshot.docs.map(doc => ({ documentId: doc.id, ...doc.data() }));
+      const data = snapshot.docs.map(doc => ({ ...doc.data(), documentId: doc.id }));
       setClubs(data);
       setLoading(false);
     };

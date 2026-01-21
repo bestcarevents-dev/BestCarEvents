@@ -76,7 +76,7 @@ function AuctionsPageContent() {
       const db = getFirestore(app);
       const auctionsQuery = query(collection(db, "auctions"), orderBy("startDate", "asc"));
       const snapshot = await getDocs(auctionsQuery);
-      const data = snapshot.docs.map(doc => ({ documentId: doc.id, ...doc.data() }));
+      const data = snapshot.docs.map(doc => ({ ...doc.data(), documentId: doc.id }));
       setAuctions(data);
       setLoading(false);
     };
