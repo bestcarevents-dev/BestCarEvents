@@ -36,20 +36,20 @@ export default function EventDetailsPage({ params }: { params: { id: string } })
             }
 
             try {
-                setLoading(true);
-                const db = getFirestore(app);
-                const ref = doc(db, 'events', params.id);
-                const snap = await getDoc(ref);
-                if (snap.exists()) {
-                    setEvent({ id: snap.id, ...snap.data() });
-                } else {
-                    setEvent(null);
-                }
+            setLoading(true);
+            const db = getFirestore(app);
+            const ref = doc(db, 'events', params.id);
+            const snap = await getDoc(ref);
+            if (snap.exists()) {
+                setEvent({ id: snap.id, ...snap.data() });
+            } else {
+                setEvent(null);
+            }
             } catch (error) {
                 console.error("Error fetching event:", error);
                 setEvent(null);
             } finally {
-                setLoading(false);
+            setLoading(false);
             }
         };
         fetchEvent();

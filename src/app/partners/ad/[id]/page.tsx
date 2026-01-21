@@ -32,17 +32,17 @@ export default function PartnerAdDetailPage() {
       }
 
       try {
-        setLoading(true);
-        const db = getFirestore(app);
+      setLoading(true);
+      const db = getFirestore(app);
         const ref = doc(db, "partnerAds", id);
-        const snap = await getDoc(ref);
-        if (snap.exists()) {
-          setAd({ id: snap.id, ...snap.data() });
-        }
+      const snap = await getDoc(ref);
+      if (snap.exists()) {
+        setAd({ id: snap.id, ...snap.data() });
+      }
       } catch (error) {
         console.error("Error fetching ad:", error);
       } finally {
-        setLoading(false);
+      setLoading(false);
       }
     };
     fetchAd();

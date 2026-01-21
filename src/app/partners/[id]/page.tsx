@@ -29,17 +29,17 @@ export default function PartnerDetailPage() {
       }
 
       try {
-        setLoading(true);
-        const db = getFirestore(app);
+      setLoading(true);
+      const db = getFirestore(app);
         const docRef = doc(db, "partners", id);
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          setPartner({ id: docSnap.id, ...docSnap.data() });
-        }
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        setPartner({ id: docSnap.id, ...docSnap.data() });
+      }
       } catch (error) {
         console.error("Error fetching partner:", error);
       } finally {
-        setLoading(false);
+      setLoading(false);
       }
     };
     fetchPartner();

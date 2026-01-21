@@ -1553,7 +1553,6 @@ const FeaturedClubsSection = ({ copy }: { copy: NonNullable<HomepageContent["fea
           .map(doc => ({ 
             ...doc.data(),
             id: doc.id  // Firestore document ID (overrides any id in data)
-            ...doc.data() 
           } as ClubData));
 
         // Separate featured clubs and normal clubs

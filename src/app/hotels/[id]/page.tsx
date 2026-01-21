@@ -43,17 +43,17 @@ export default function HotelDetailPage() {
       }
 
       try {
-        setLoading(true);
-        const db = getFirestore(app);
+      setLoading(true);
+      const db = getFirestore(app);
         const ref = doc(db, "hotels", id);
-        const snap = await getDoc(ref);
-        if (snap.exists()) {
-          setHotel({ id: snap.id, ...snap.data() });
-        }
+      const snap = await getDoc(ref);
+      if (snap.exists()) {
+        setHotel({ id: snap.id, ...snap.data() });
+      }
       } catch (error) {
         console.error("Error fetching hotel:", error);
       } finally {
-        setLoading(false);
+      setLoading(false);
       }
     };
     fetchHotel();

@@ -26,17 +26,17 @@ export default function ClubDetailPage() {
       }
 
       try {
-        setLoading(true);
-        const db = getFirestore(app);
+      setLoading(true);
+      const db = getFirestore(app);
         const docRef = doc(db, "clubs", id);
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          setClub({ id: docSnap.id, ...docSnap.data() });
-        }
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        setClub({ id: docSnap.id, ...docSnap.data() });
+      }
       } catch (error) {
         console.error("Error fetching club:", error);
       } finally {
-        setLoading(false);
+      setLoading(false);
       }
     };
     fetchClub();

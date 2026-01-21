@@ -31,17 +31,17 @@ export default function AuctionDetailsPage() {
       }
       
       try {
-        setLoading(true);
-        const db = getFirestore(app);
+      setLoading(true);
+      const db = getFirestore(app);
         const docRef = doc(db, "auctions", id);
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          setAuction({ id: docSnap.id, ...docSnap.data() });
-        }
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        setAuction({ id: docSnap.id, ...docSnap.data() });
+      }
       } catch (error) {
         console.error("Error fetching auction:", error);
       } finally {
-        setLoading(false);
+      setLoading(false);
       }
     };
     fetchAuction();

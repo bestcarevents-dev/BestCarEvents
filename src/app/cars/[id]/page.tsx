@@ -48,17 +48,17 @@ export default function CarDetailsPage() {
       }
       
       try {
-        setLoading(true);
-        const db = getFirestore(app);
+      setLoading(true);
+      const db = getFirestore(app);
         const docRef = doc(db, "cars", id);
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          setCar({ id: docSnap.id, ...docSnap.data() });
-        }
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        setCar({ id: docSnap.id, ...docSnap.data() });
+      }
       } catch (error) {
         console.error("Error fetching car:", error);
       } finally {
-        setLoading(false);
+      setLoading(false);
       }
     };
     fetchCar();
