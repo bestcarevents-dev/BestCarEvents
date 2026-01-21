@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -44,16 +44,20 @@ const getServiceTypeIcon = (serviceType: string) => {
   return Wrench;
 };
 
-export default function ServiceDetailsPage({ params }: { params: { id: string } }) {
+export default function ServiceDetailsPage() {
+    const params = useParams();
     const [service, setService] = useState<ServiceDetails | null>(null);
     const [loading, setLoading] = useState(true);
     const router = useRouter();
     const lightbox = useLuxuryLightbox();
 
+    // Extract and validate ID from URL params (Firestore document ID)
+    const id = typeof params?.id === 'string' ? params.id : Array.isArray(params?.id) ? params.id[0] : null;
+
     useEffect(() => {
         const fetchService = async () => {
             // Validate id before fetching
-            if (!params?.id || typeof params.id !== 'string' || params.id.trim() === '') {
+            if (!id || typeof id !== 'string' || id.trim() === '') {
                 setLoading(false);
                 return;
             }
@@ -61,10 +65,10 @@ export default function ServiceDetailsPage({ params }: { params: { id: string } 
             try {
                 setLoading(true);
                 const db = getFirestore(app);
-                const ref = doc(db, 'others', params.id);
+                const ref = doc(db, 'others', id);
                 const snap = await getDoc(ref);
                 if (snap.exists()) {
-                    setService({ id: snap.id, ...snap.data() } as ServiceDetails);
+                    setService({ ...snap.data(), id: snap.id } as ServiceDetails);
                 } else {
                     setService(null);
                 }
@@ -76,10 +80,10 @@ export default function ServiceDetailsPage({ params }: { params: { id: string } 
             }
         };
         fetchService();
-    }, [params.id]);
+    }, [id]);
 
     // Handle invalid or missing ID
-    if (!params?.id) {
+    if (!id) {
         return <div className="container mx-auto py-12 sm:py-24 text-center text-red-500 text-xl sm:text-2xl font-bold flex flex-col items-center">
             <Car className="w-8 h-8 sm:w-12 sm:h-12 mb-4" />
             Invalid service ID

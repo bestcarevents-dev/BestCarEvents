@@ -682,7 +682,7 @@ export default function HotelListingPage() {
                 <Button 
                   variant="outline" 
                   className="w-full sm:w-auto"
-                  onClick={() => router.push('/hotels/submit')}
+                  onClick={() => router.push('/hotels/list')}
                 >
                   List your hotel
                 </Button>
@@ -729,7 +729,7 @@ export default function HotelListingPage() {
                 <Building className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
                 <h3 className="text-lg font-medium mb-2">No hotel listings found</h3>
                 <p className="text-muted-foreground mb-4">Start by creating your first hotel listing.</p>
-                <Button onClick={() => router.push('/hotels/submit')}>
+                <Button onClick={() => router.push('/hotels/list')}>
                   Create First Hotel
                 </Button>
               </div>
