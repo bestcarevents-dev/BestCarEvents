@@ -1008,7 +1008,6 @@ const FeaturedAuctionsSection = ({ copy }: { copy: NonNullable<HomepageContent["
           .map(doc => ({ 
             ...doc.data(),
             id: doc.id  // Firestore document ID (overrides any id in data)
-            id: doc.id
           } as AuctionData));
         // Exclude past auctions: use endDate if present, else startDate; keep >= start of today
         const startOfToday = new Date();
