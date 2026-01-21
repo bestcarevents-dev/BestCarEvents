@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -17,7 +17,7 @@ import { ArrowLeft } from 'lucide-react';
 // This is a mock component for displaying event details.
 // In a real application, you would fetch the event data based on the ID.
 
-export default function EventDetailsPage({ params }: { params: { id: string } }) {
+export default function EventDetailsPage() {
     const [event, setEvent] = useState<any | null>(null);
     const [loading, setLoading] = useState(true);
     const [showDialog, setShowDialog] = useState(false);
@@ -25,12 +25,16 @@ export default function EventDetailsPage({ params }: { params: { id: string } })
     const [currentUser, setCurrentUser] = useState<User | null>(null);
     const [registering, setRegistering] = useState(false);
     const [registerSuccess, setRegisterSuccess] = useState(false);
+    const params = useParams();
     const router = useRouter();
+
+    // Extract the Firestore document id from the route (NOT the stored "id" field in the document)
+    const id = typeof params?.id === 'string' ? params.id : Array.isArray(params?.id) ? params.id[0] : null;
 
     useEffect(() => {
         const fetchEvent = async () => {
             // Validate id before fetching
-            if (!params?.id || typeof params.id !== 'string' || params.id.trim() === '') {
+            if (!id || typeof id !== 'string' || id.trim() === '') {
                 setLoading(false);
                 return;
             }
@@ -38,7 +42,7 @@ export default function EventDetailsPage({ params }: { params: { id: string } })
             try {
             setLoading(true);
             const db = getFirestore(app);
-            const ref = doc(db, 'events', params.id);
+            const ref = doc(db, 'events', id);
             const snap = await getDoc(ref);
             if (snap.exists()) {
                 setEvent({ id: snap.id, ...snap.data() });
@@ -53,7 +57,7 @@ export default function EventDetailsPage({ params }: { params: { id: string } })
             }
         };
         fetchEvent();
-    }, [params.id]);
+    }, [id]);
 
     useEffect(() => {
         const auth = getAuth(app);
@@ -65,10 +69,11 @@ export default function EventDetailsPage({ params }: { params: { id: string } })
 
     const handleRegister = async () => {
         if (!currentUser) return;
+        if (!id) return;
         setRegistering(true);
         try {
             const db = getFirestore(app);
-            const eventRef = doc(db, 'events', params.id);
+            const eventRef = doc(db, 'events', id);
             // Fetch latest event data to check for duplicates
             const snap = await getDoc(eventRef);
             if (!snap.exists()) throw new Error('Event not found');
@@ -105,7 +110,7 @@ export default function EventDetailsPage({ params }: { params: { id: string } })
     };
 
     // Handle invalid or missing ID
-    if (!params?.id) {
+    if (!id) {
         return <div className="container mx-auto py-12 sm:py-24 text-center text-red-500 text-xl sm:text-2xl font-bold flex flex-col items-center">
             <Car className="w-8 h-8 sm:w-12 sm:h-12 mb-4" />
             Invalid event ID
