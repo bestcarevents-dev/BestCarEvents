@@ -56,7 +56,7 @@ export default function FreeCallout({
 
           {/* Title and divider */}
           <h2 className="font-headline uppercase tracking-[0.2em] text-[#1f1f1f] text-2xl md:text-3xl lg:text-4xl break-words hyphens-auto text-balance leading-tight">
-            ALL LISTINGS ARE FREE
+            {title}
           </h2>
           <div className="mx-auto mt-3 h-[2px] w-24 bg-gradient-to-r from-[#C3A76D] to-[#E7D08A]" />
 
