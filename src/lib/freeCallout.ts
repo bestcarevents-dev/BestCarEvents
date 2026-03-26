@@ -1,15 +1,16 @@
 import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore";
 import { app } from "@/lib/firebase";
 
-export type FreeCalloutSection = "events" | "auctions" | "others" | "clubs" | "hotels";
+export type FreeCalloutSection = "events" | "auctions" | "others" | "clubs" | "hotels" | "cars";
 
 export type FreeCalloutIcon = "gift" | "megaphone" | "sparkles";
 
 export interface FreeCalloutContent {
   title: string;
   messages: string[];
-  ctaHref?: string;
-  ctaText?: string;
+  // Firestore does not accept `undefined`/`null` field values, so keep these as strings.
+  ctaHref: string;
+  ctaText: string;
   icon: FreeCalloutIcon;
   promoLabel?: string;
   promoText?: string;
@@ -32,6 +33,8 @@ export const defaultFreeCallouts: Record<FreeCalloutSection, FreeCalloutContent>
     promoLabel: DEFAULT_PROMO_LABEL,
     promoText: DEFAULT_PROMO_TEXT,
     promoHighlight: DEFAULT_PROMO_HIGHLIGHT,
+    ctaHref: "",
+    ctaText: "",
     messages: [
       "Join a community of enthusiasts — No subscription.",
       "Discover premium car events — Promote or find events for free.",
@@ -45,6 +48,8 @@ export const defaultFreeCallouts: Record<FreeCalloutSection, FreeCalloutContent>
     promoLabel: DEFAULT_PROMO_LABEL,
     promoText: DEFAULT_PROMO_TEXT,
     promoHighlight: DEFAULT_PROMO_HIGHLIGHT,
+    ctaHref: "",
+    ctaText: "",
     messages: [
       "Join a community of enthusiasts — No subscription.",
       "Discover premium car auctions — Showcase or find auctions for free.",
@@ -58,6 +63,8 @@ export const defaultFreeCallouts: Record<FreeCalloutSection, FreeCalloutContent>
     promoLabel: DEFAULT_PROMO_LABEL,
     promoText: DEFAULT_PROMO_TEXT,
     promoHighlight: DEFAULT_PROMO_HIGHLIGHT,
+    ctaHref: "",
+    ctaText: "",
     messages: [
       "Join a community of enthusiasts — No subscription.",
       "Showcase car-friendly hotels — Get discovered for free.",
@@ -71,13 +78,13 @@ export const defaultFreeCallouts: Record<FreeCalloutSection, FreeCalloutContent>
     promoLabel: DEFAULT_PROMO_LABEL,
     promoText: DEFAULT_PROMO_TEXT,
     promoHighlight: DEFAULT_PROMO_HIGHLIGHT,
+    ctaHref: "/others/register",
+    ctaText: "Register Service",
     messages: [
       "Posting all services is free.",
       "Reach car enthusiasts — No subscription.",
       "Register your service today at no cost.",
     ],
-    ctaHref: "/others/register",
-    ctaText: "Register Service",
   },
   clubs: {
     title: "Grow Your Club — Free to Register",
@@ -85,11 +92,27 @@ export const defaultFreeCallouts: Record<FreeCalloutSection, FreeCalloutContent>
     promoLabel: DEFAULT_PROMO_LABEL,
     promoText: DEFAULT_PROMO_TEXT,
     promoHighlight: DEFAULT_PROMO_HIGHLIGHT,
+    ctaHref: "",
+    ctaText: "",
     messages: [
       "Join a community of enthusiasts — No subscription.",
       "Promote your car club — Get members for free.",
       "Register your club or join one — Free of charge.",
       "Worldwide exposure. Zero fees.",
+    ],
+  },
+  cars: {
+    title: "List Your Car — Free",
+    icon: "sparkles",
+    promoLabel: DEFAULT_PROMO_LABEL,
+    promoText: DEFAULT_PROMO_TEXT,
+    promoHighlight: DEFAULT_PROMO_HIGHLIGHT,
+    ctaHref: "",
+    ctaText: "",
+    messages: [
+      "Sell smarter. Free car listings until 31st December 2025.",
+      "Launch offer: List for free until 31st December 2025.",
+      "Zero listing fees — Get maximum exposure.",
     ],
   },
 };
@@ -105,8 +128,8 @@ export async function fetchFreeCallout(section: FreeCalloutSection): Promise<Fre
   return {
     title: stored.title ?? defaults.title,
     messages: Array.isArray(stored.messages) && stored.messages.length > 0 ? stored.messages : defaults.messages,
-    ctaHref: stored.ctaHref ?? defaults.ctaHref,
-    ctaText: stored.ctaText ?? defaults.ctaText,
+    ctaHref: stored.ctaHref ?? defaults.ctaHref ?? "",
+    ctaText: stored.ctaText ?? defaults.ctaText ?? "",
     icon: stored.icon ?? defaults.icon,
     promoLabel: stored.promoLabel ?? defaults.promoLabel ?? DEFAULT_PROMO_LABEL,
     promoText: stored.promoText ?? defaults.promoText ?? DEFAULT_PROMO_TEXT,
@@ -117,7 +140,12 @@ export async function fetchFreeCallout(section: FreeCalloutSection): Promise<Fre
 export async function saveFreeCallout(section: FreeCalloutSection, content: FreeCalloutContent) {
   const db = getFirestore(app);
   const docRef = doc(db, CONTENT_DOC_PATH[0], CONTENT_DOC_PATH[1]);
-  await setDoc(docRef, { [section]: content }, { merge: true });
+  const sanitized: FreeCalloutContent = {
+    ...content,
+    ctaHref: content.ctaHref ?? "",
+    ctaText: content.ctaText ?? "",
+  };
+  await setDoc(docRef, { [section]: sanitized }, { merge: true });
 }
 
 export async function fetchAllFreeCallouts(): Promise<Record<FreeCalloutSection, FreeCalloutContent>> {
@@ -132,8 +160,8 @@ export async function fetchAllFreeCallouts(): Promise<Record<FreeCalloutSection,
     result[key] = {
       title: stored.title ?? defaults.title,
       messages: Array.isArray(stored.messages) && stored.messages.length > 0 ? stored.messages : defaults.messages,
-      ctaHref: stored.ctaHref ?? defaults.ctaHref,
-      ctaText: stored.ctaText ?? defaults.ctaText,
+      ctaHref: stored.ctaHref ?? defaults.ctaHref ?? "",
+      ctaText: stored.ctaText ?? defaults.ctaText ?? "",
       icon: stored.icon ?? defaults.icon,
       promoLabel: stored.promoLabel ?? defaults.promoLabel ?? DEFAULT_PROMO_LABEL,
       promoText: stored.promoText ?? defaults.promoText ?? DEFAULT_PROMO_TEXT,

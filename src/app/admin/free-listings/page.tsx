@@ -13,7 +13,8 @@ import { useToast } from "@/hooks/use-toast";
 import { fetchAllFreeCallouts, saveFreeCallout, defaultFreeCallouts, type FreeCalloutSection, type FreeCalloutContent } from "@/lib/freeCallout";
 import { fetchFreeListingsModal, saveFreeListingsModal, defaultFreeListingsModal, type FreeListingsModalContent } from "@/lib/freeListingsModal";
 
-const sections: FreeCalloutSection[] = ["events", "auctions", "others", "clubs", "hotels"];
+// Public listing pages that use `FreeCalloutDynamic`.
+const sections: FreeCalloutSection[] = ["cars", "events", "auctions", "others", "clubs", "hotels"];
 
 export default function AdminFreeListingsPage() {
   const { toast } = useToast();
@@ -169,14 +170,14 @@ export default function AdminFreeListingsPage() {
                     <div className="space-y-2">
                       <Label>CTA Href</Label>
                       <Input
-                        value={(callouts[section]?.ctaHref ?? defaultFreeCallouts[section]?.ctaHref) || ""}
+                        value={callouts[section].ctaHref}
                         onChange={(e) => handleCalloutChange(section, "ctaHref", e.target.value)}
                       />
                     </div>
                     <div className="space-y-2">
                       <Label>CTA Text</Label>
                       <Input
-                        value={(callouts[section]?.ctaText ?? defaultFreeCallouts[section]?.ctaText) || ""}
+                        value={callouts[section].ctaText}
                         onChange={(e) => handleCalloutChange(section, "ctaText", e.target.value)}
                       />
                     </div>

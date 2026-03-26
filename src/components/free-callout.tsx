@@ -29,6 +29,7 @@ export default function FreeCallout({
   promoText = "Free car listings until",
   promoHighlight = "31st December 2025",
 }: FreeCalloutProps) {
+  const resolvedCtaText = typeof ctaText === "string" && ctaText.trim().length > 0 ? ctaText : "Get Started";
   const selectedMessage = useMemo(() => {
     if (!messages || messages.length === 0) return "Free to join and list.";
     const index = Math.floor(Math.random() * messages.length);
@@ -93,7 +94,7 @@ export default function FreeCallout({
                 className="rounded-full bg-[#C3A76D] hover:bg-[#B99754] text-black font-semibold text-base px-6 py-3 shadow-sm hover:shadow transition-all"
               >
                 <Link href={ctaHref}>
-                  {ctaText}
+                  {resolvedCtaText}
                 </Link>
               </Button>
             </div>

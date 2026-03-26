@@ -13,7 +13,7 @@ import { PlusCircle } from "lucide-react";
 import Link from "next/link";
 import PartnerAdRotator from '@/components/PartnerAdRotator';
 import { useSearchParams } from "next/navigation";
-import FreeCallout from "@/components/free-callout";
+import FreeCalloutDynamic from "@/components/FreeCalloutDynamic";
 import SimpleGallerySection from "@/components/SimpleGallerySection";
 import { getFirestore as getFirestoreClient, doc, getDoc } from "firebase/firestore";
 import { defaultPageContent, fetchPageHeader, type PageHeader } from "@/lib/pageContent";
@@ -274,15 +274,7 @@ function CarsPageContent() {
         </div>
         {isFreeCarListing && (
           <div className="mb-8">
-            <FreeCallout
-              title="List Your Car — Free until 31st December 2025"
-              icon="sparkles"
-              messages={[
-                "Sell smarter. Free car listings until 31st December 2025.",
-                "Launch offer: List for free until 31st December 2025.",
-                "Zero listing fees — Get maximum exposure.",
-              ]}
-            />
+            <FreeCalloutDynamic section="cars" />
           </div>
         )}
 
