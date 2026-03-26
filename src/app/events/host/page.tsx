@@ -146,6 +146,10 @@ export default function HostEventPage() {
   const onSubmit = async (data: EventFormData) => {
     setIsSubmitting(true);
     try {
+      if (!currentUser) {
+        throw new Error("User not authenticated. Please sign in and try again.");
+      }
+
       const imageRef = ref(storage, `event_images/${Date.now()}_${data.image.name}`);
       await uploadBytes(imageRef, data.image);
       const imageUrl = await getDownloadURL(imageRef);
@@ -178,15 +182,16 @@ export default function HostEventPage() {
         websiteUrl: data.websiteUrl,
         privacyMode: !!(data as any).privacyMode,
         mediaConsent: !!(data as any).mediaConsent,
-        status: "pending",
         submittedAt: new Date(),
+        createdAt: new Date(),
+        status: "approved",
         uploadedByUserId: currentUser?.uid || null,
         uploadedByUserEmail: currentUser?.email || null,
       } as Record<string, any>;
 
       const eventData = Object.fromEntries(Object.entries(raw).filter(([_, v]) => v !== undefined));
- 
-      const docRef = await addDoc(collection(db, "pendingEvents"), eventData);
+
+      const docRef = await addDoc(collection(db, "events"), eventData);
       
       // Create notification (non-blocking)
       try {
@@ -198,6 +203,22 @@ export default function HostEventPage() {
       } catch (notificationError) {
         console.error('Error creating event notification:', notificationError);
         // Don't fail the submission if notification fails
+      }
+
+      // Match admin approval side effects (email confirmation)
+      try {
+        await fetch('/api/emails/approval', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            to: eventData.uploadedByUserEmail || null,
+            listingType: 'event',
+            action: 'approved',
+            listingName: eventData.eventName,
+          }),
+        });
+      } catch (e) {
+        console.error('Failed to send approval email:', e);
       }
 
       router.push("/events/submission-success");
@@ -213,7 +234,7 @@ export default function HostEventPage() {
         <Card className="max-w-3xl mx-auto bg-white border border-gray-200 shadow-sm">
           <CardHeader className="bg-gray-50 border-b border-gray-200">
             <CardTitle className="text-3xl font-bold font-headline text-gray-900">Host an Event</CardTitle>
-            <CardDescription className="text-gray-600">Fill out the form below to submit your event for approval.</CardDescription>
+            <CardDescription className="text-gray-600">Fill out the form below to publish your event to our listings.</CardDescription>
           </CardHeader>
           <CardContent className="p-6">
             <form onSubmit={handleSubmit(onSubmit, onInvalid)} className="space-y-6">
@@ -518,7 +539,7 @@ export default function HostEventPage() {
                 )}
               </div>
               <Button type="submit" className="w-full bg-yellow-600 hover:bg-yellow-700 text-white border-yellow-600 focus:ring-yellow-400" disabled={isSubmitting}>
-                {isSubmitting ? "Submitting..." : "Submit for Approval"}
+                {isSubmitting ? "Submitting..." : "Publish Event"}
               </Button>
             </form>
           </CardContent>

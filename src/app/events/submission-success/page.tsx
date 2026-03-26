@@ -16,19 +16,19 @@ export default function SubmissionSuccessPage() {
                 <CheckCircle className="w-12 h-12 text-green-600" />
               </div>
             </div>
-            <CardTitle className="text-3xl font-bold font-headline text-gray-900">Event Submitted!</CardTitle>
+            <CardTitle className="text-3xl font-bold font-headline text-gray-900">Event Approved!</CardTitle>
             <CardDescription className="text-gray-600 text-lg">
-              Thank you for submitting your event to our community.
+              Your event is now live and visible in our listings.
             </CardDescription>
           </CardHeader>
           <CardContent className="p-8">
             <div className="space-y-6">
               <div className="text-center">
                 <p className="text-gray-700 mb-4">
-                  Your event has been successfully submitted and is now under review by our team.
+                  Thanks for hosting with us. Your details have been approved and added to the listings.
                 </p>
                 <p className="text-gray-600 text-sm">
-                  We typically review submissions within 24-48 hours. You'll receive an email notification once your event is approved.
+                  You should receive an email confirmation shortly.
                 </p>
               </div>
 
@@ -38,10 +38,8 @@ export default function SubmissionSuccessPage() {
                   What happens next?
                 </h3>
                 <ul className="text-blue-800 text-sm space-y-1">
-                  <li>• Our team will review your submission for quality and completeness</li>
-                  <li>• We'll verify your contact information and event details</li>
-                  <li>• Once approved, your event will appear in our listings</li>
-                  <li>• You'll receive an email confirmation with your event details</li>
+                  <li>• Your event is already visible in our listings</li>
+                  <li>• You will receive an email confirmation with your event details</li>
                 </ul>
               </div>
 
